@@ -16,7 +16,6 @@
         "sectionx",
         "anchor-navigation-ex",
         "3-ba",
-        "toggle-chapters",
         "tbfed-pagefooter"
     ],
     "pluginsConfig": {
@@ -24,7 +23,7 @@
             "shortName": "dn-framework"
         },
         "theme-default": {
-            "showLevel": true
+            "showLevel": false
         },
         "sectionx": {
             "tag": "b"
