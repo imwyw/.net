@@ -1,0 +1,48 @@
+{
+    "title": "Gitbook入门",
+    "author": "Wang Yuanwei <now_way@126.com>",
+    "description": "gitbook入门",
+    "language": "zh-hans",
+    "gitbook": ">=3.0.0",
+    "plugins": [
+        "disqus",
+        "anchors",
+        "multipart",
+        "-search",
+        "-lunr",
+        "search-plus",
+        "-sharing",
+        "splitter",
+        "sectionx",
+        "anchor-navigation-ex",
+        "3-ba",
+        "toggle-chapters",
+        "tbfed-pagefooter"
+    ],
+    "pluginsConfig": {
+        "disqus": {
+            "shortName": "wr-gitbook"
+        },
+        "theme-default": {
+            "showLevel": true
+        },
+        "sectionx": {
+            "tag": "b"
+        },
+        "3-ba": {
+            "token": "efc8d91fb1de5a2cf2359e5229a0328a"
+        },
+        "anchor-navigation-ex": {
+            "isRewritePageTitle": true,
+            "isShowTocTitleIcon": true,
+            "tocLevel1Icon": "fa fa-hand-o-right",
+            "tocLevel2Icon": "fa fa-hand-o-right",
+            "tocLevel3Icon": "fa fa-hand-o-right"
+        },
+        "tbfed-pagefooter": {
+            "copyright": "Copyright &copy imwyw",
+            "modify_label": "最后修改时间：",
+            "modify_format": "YYYY-MM-DD HH:mm:ss"
+        }
+    }
+}
