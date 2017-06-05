@@ -1,7 +1,7 @@
 {
-    "title": "Gitbook入门",
+    "title": ".net",
     "author": "Wang Yuanwei <now_way@126.com>",
-    "description": "gitbook入门",
+    "description": ".net framework c# asp.net mvc ",
     "language": "zh-hans",
     "gitbook": ">=3.0.0",
     "plugins": [
@@ -21,7 +21,7 @@
     ],
     "pluginsConfig": {
         "disqus": {
-            "shortName": "wr-gitbook"
+            "shortName": "dn-framework"
         },
         "theme-default": {
             "showLevel": true
@@ -30,7 +30,7 @@
             "tag": "b"
         },
         "3-ba": {
-            "token": "efc8d91fb1de5a2cf2359e5229a0328a"
+            "token": "54cfda0e664d4a912bc5b4e54aa0ac2f"
         },
         "anchor-navigation-ex": {
             "isRewritePageTitle": true,
