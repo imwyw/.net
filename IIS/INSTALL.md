@@ -122,3 +122,51 @@ IIS管理器中选择刚刚添加的网站，添加默认文档
 
 ![](../assets/IIS/15.png)
 
+# MVC项目的发布
+## 使用文件系统发布
+设置MVC项目为启动项
+
+![](../assets/IIS/mvc1.png)
+
+UI项目右键选择【发布】选项
+
+![](../assets/IIS/output_pub.gif)
+
+编译成功，发布成功
+
+![](../assets/IIS/output_print.png)
+
+生成bin包到指定目录
+
+![](../assets/IIS/output_dir.png)
+
+## 添加站点
+
+添加一个站点，注意物理路径对应上一步生成的bin包路径
+
+![](../assets/IIS/mvc_publish.png)
+
+直接访问即可 
+>http://localhost:8082
+
+## 发布到IIS网站调试
+发布到IIS的网站如何进入调试，与IDE自带的IIS Express调试不同
+
+MVC项目上右键选择【属性】-【Web】选项，将服务器修改为"本地IIS"，
+项目URL修改为对应目录
+
+![](../assets/IIS/debug_iis.png)
+
+直接调试（F5）即可进入调试状态
+
+# 疑难杂症
+##　启用windows功能报错 0x80070057
+环境是win10专业版，参数错误
+
+![](../assets/IIS/0x80070057.png)
+
+尝试解决方案有：
+- 打开windows update服务，更新到最新，无效；
+- 修改注册表项IsConvergedUpdateStackEnabled，无法保存；
+
+
