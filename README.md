@@ -1,1 +1,1 @@
-![](./assets/README.JPG)
+![](./assets/Microsoft-Stack.png)
