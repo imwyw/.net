@@ -208,7 +208,207 @@ new：隐藏，隐藏基类同名成员，使两成员均不出现彼此覆盖�
 不能被static、virtual、abstract和sealed修饰，但可以有new来隐藏基接口成员
 
 ### 多态
-多态是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定，即不修改程序代码就可以改变程序运行时所绑定的具体代码，让程序可以选择多个运行状态，这就是多态性
+多态是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定，即不修改程序代码就可以改变程序运行时所绑定的具体代码，让程序可以选择多个运行状态，这就是多态性。
 
 多态性增强了软件的灵活性和扩展性
 
+## 类之间的关系
+
+关系名称 | 描述 | 示例
+-----|----|---
+依赖(Dependency) | 使用关系，一个类的实现需要另一个类的协助 | 人使用计算机
+关联(Association) | 拥有关系，一个类知道另一个类的属性和方法 | 水和气候的关联
+泛化(Generalization) | 继承关系，指定子类如何特殊化父类的所有特征和行为 | 动物和植物均派生自生物
+实现(Implementation) | 类与接口的关系，表示类是接口所有特征和行为的实现 | 鸟会飞，飞机也会飞
+
+### 依赖
+人编码的模型作为示例,UML图中使用虚线箭头，由依赖的一方指向被依赖的一方：
+
+![](../assets/oop/dependency.png)
+
+1. A类是B类中的（某方法的）局部变量，如Computer类是Person类中某个方法的局部变量，则Person类可以调用它
+```cs
+public class Person
+{
+    public void Coding()
+    {
+        Computer pc = new Computer();
+    }
+}
+public class Computer {}
+```
+
+2. A类是B类方法当中的一个参数，如Computer类作为Person类中某个方法的参数或返回值
+```cs
+public class Person
+{
+    public Computer Coding(Computer pc) {}
+}
+public class Computer {}
+```
+
+3. A类向B类发送消息，从而影响B类发生变化；
+
+### 关联
+水和气候的关联关系，UML图中使用实线箭头表示：
+
+![](../assets/oop/association.png)
+
+```cs
+public class Water
+{
+    //气候作为一个属性
+    public Climate climate {get;set;};
+}
+
+public class Climate {}
+```
+
+以上示例是一个单向关联，还有双向关联、自身关联、多维关联
+
+### 关联和依赖的区别
+- 从类的属性是否增加的角度看：
+
+发生依赖关系的两个类都不会增加属性。其中的一个类作为另一个类的方法的参数或者返回值，或者是某个方法的变量而已。
+
+发生关联关系的两个类，其中的一个类成为另一个类的属性，而属性是一种更为紧密的耦合，更为长久的持有关系。
+
+- 从关系的生命周期来看：
+ 
+依赖关系是仅当类的方法被调用时而产生，伴随着方法的结束而结束了。
+
+关联关系是当类实例化的时候即产生，当类销毁的时候，关系结束。相比依赖讲，关联关系的生存期更长。
+
+### 泛化
+泛化关系(Generalization)也就是继承关系，也称为“is-a-kind-of”关系，泛化关系用于描述父类与子类之间的关系，父类又称作基类或超类，子类又称作派生类。在UML中，泛化关系用带空心三角形的直线来表示。
+
+```cs
+//生物
+public class Biology
+{
+    public string Name {get;set;}
+}
+
+//动物 继承生物
+public class Animal : Biology
+{
+    //进食
+    public void Eat(){}
+}
+
+//植物 继承生物
+public class Plant : Biology
+{
+    //光合作用
+    public void Photosynthetic(){}
+}
+```
+
+### 实现
+实现关系是一种类与接口的关系，表示类是接口所有特征和行为的实现。
+飞机和鸟都可以飞
+```cs
+public interface IFly
+{
+    //最高飞行高度
+    int MaxHigh { get; set; }
+
+    //飞起来
+    void Fly();
+}
+
+public class Plane : IFly
+{
+    /// <summary>
+    /// 最高飞行高度
+    /// </summary>
+    public int MaxHigh { get; set; }
+
+    /// <summary>
+    /// 飞机飞起来
+    /// </summary>
+    public void Fly() { }
+}
+
+public class Bird : IFly
+{
+    /// <summary>
+    /// 最高飞行高度
+    /// </summary>
+    public int MaxHigh { get; set; }
+
+    /// <summary>
+    /// 鸟儿飞起来
+    /// </summary>
+    public void Fly() { }
+}
+```
+
+### 聚合
+聚合关系(Aggregation):表示的是整体和部分的关系，整体与部分可以分开。
+
+- 聚合关系(Aggregation) 表示一个整体与部分的关系。通常在定义一个整体类后，再去分析这个整体类的组成结构，从而找出一些成员类，该整体类和成员类之间就形成了聚合关系。
+- 在聚合关系中，成员类是整体类的一部分，即成员对象是整体对象的一部分，但是成员对象可以脱离整体对象独立存在。
+
+在UML中，聚合关系用带空心菱形的直线表示。 
+
+```cs
+/// <summary>
+/// 大雁群
+/// </summary>
+public class GooseGroup
+{
+    public List<Goose> LstGoose { get; set; }
+}
+
+/// <summary>
+/// 大雁
+/// </summary>
+public class Goose { }
+```
+
+### 组合
+组合关系(Composition):也是整体与部分的关系，但是整体与部分不可以分开。
+
+- 组合关系(Composition)也表示类之间整体和部分的关系，但是组合关系中部分和整体具有统一的生存期。一旦整体对象不存在，部分对象也将不存在，部分对象与整体对象之间具有同生共死的关系。
+- 在组合关系中，成员类是整体类的一部分，而且整体类可以控制成员类的生命周期，即成员类的存在依赖于整体类。
+
+在UML中，组合关系用带实心菱形的直线表示。
+
+```cs
+/// <summary>
+/// 大雁
+/// </summary>
+public class Goose
+{
+    /// <summary>
+    /// 翅膀
+    /// </summary>
+    public object Wings { get; set; }
+}
+
+/// <summary>
+/// 翅膀
+/// </summary>
+public class Wings { }
+```
+
+### 聚合和组合
+
+引用程杰的《大话设计模式》里举大那个大雁的例子 ：
+
+大雁喜欢热闹害怕孤独，所以它们一直过着群居的生活，这样就有了雁群，每一只大雁都有自己的雁群，每个雁群都有好多大雁，大雁与雁群的这种关系就可以称之为聚合。
+
+另外每只大雁都有两只翅膀，大雁与雁翅的关系就叫做组合。
+
+有此可见：
+
+聚合的关系明显没有组合紧密，大雁不会因为它们的群主将雁群解散而无法生存；
+
+而雁翅就无法脱离大雁而单独生存——组合关系的类具有相同的生命周期。
+
+以上类之间关系部分引用自：
+
+[浅谈UML中类之间的五种关系及其在代码中的表现形式](http://www.cnblogs.com/DebugLZQ/archive/2013/05/13/3066715.html)
+
+[UML图中类之间的关系:依赖,泛化,关联,聚合,组合,实现](http://blog.csdn.net/hguisu/article/details/7609483/)
