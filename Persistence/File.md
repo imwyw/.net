@@ -248,6 +248,18 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
 
 ## 对象持久化
 ```cs
+[Serializable]
+public class Student
+{
+    public Student(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
 string path = @"E:\Attachment\iflytek\stu.bin";
 
 //写入
