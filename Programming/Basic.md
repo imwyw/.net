@@ -126,6 +126,15 @@ int[][] array = new int[][] { new int[] { 1, 2 }, new int[] { 1, 2, 3 }, new int
 ## 方法
 ### 定义、调用、形参、实参
 ### 重载
+```cs
+public int Calculate(int x, int y) {......}
+public double Calculate(double x, double y) {......}
+```
+特点（两必须一可以）
+1. 方法名必须相同
+2. 参数列表必须不相同
+3. 返回值类型可以不相同
+
 ### ref、out、params
 
 
