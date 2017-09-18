@@ -185,15 +185,15 @@ protected internal | 该成员既可以被同一工程的其它代码访问，�
 
 abstract：抽象的，不能实例化，只能被继承，可以有抽象成员
 
-sealed   ：密封的，不能被继承
+sealed：密封的，不能被继承
 
 #### 类成员继承修饰符
 
 - 基类中：
 
-virtual：虚拟，可以被派生类重写
+virtual：虚拟，可以被派生类重写，也可以不进行重写；
 
-abstract：抽象，必须被派生类重写，只要一个成员为抽象成员，该类也就必须声明为抽象类
+abstract：抽象，不需要方法实现，必须被派生类重写，只要一个成员为抽象成员，该类也就必须声明为抽象类
 
 - 派生类中：
 
@@ -209,6 +209,46 @@ new：隐藏，隐藏基类同名成员，使两成员均不出现彼此覆盖�
 
 ### 多态
 多态是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定，即不修改程序代码就可以改变程序运行时所绑定的具体代码，让程序可以选择多个运行状态，这就是多态性。
+
+```cs
+public class Animal
+{
+    public virtual void Eat()
+    {
+        Console.WriteLine("Animal eat");
+    }
+}
+
+public class Cat : Animal
+{
+    public override void Eat()
+    {
+        Console.WriteLine("Cat eat");
+    }
+}
+
+public class Dog : Animal
+{
+    public override void Eat()
+    {
+        Console.WriteLine("Dog eat");
+    }
+}
+
+static void Main(string[] args)
+{
+    Animal[] animals = new Animal[3];
+
+    animals[0] = new Animal();
+    animals[1] = new Cat();
+    animals[2] = new Dog();
+
+    for (int i = 0; i < 3; i++)
+    {
+        animals[i].Eat();
+    }
+}
+```
 
 多态性增强了软件的灵活性和扩展性
 
@@ -258,7 +298,7 @@ public class Computer {}
 public class Water
 {
     //气候作为一个属性
-    public Climate climate {get;set;};
+    public Climate climate {get;set;}
 }
 
 public class Climate {}
