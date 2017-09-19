@@ -45,7 +45,8 @@ if (File.Exists(filePath))
 }
 else
 {
-    File.Create(filePath);
+    //File.Create不会自动释放，需要人工释放一下资源
+    File.Create(filePath).Dispose();
 }
 
 //使用FileInfo实例化进行判断
@@ -56,7 +57,8 @@ if (fl.Exists)
 }
 else
 {
-    fl.Create();
+    //File.Create不会自动释放，需要人工释放一下资源
+    fl.Create().Dispose();
 }
 ```
 
@@ -286,3 +288,4 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
     }
 }
 ```
+
