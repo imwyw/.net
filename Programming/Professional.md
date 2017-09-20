@@ -219,5 +219,143 @@ static void Main(string[] args)
 
 [关于C# 中的Attribute 特性](http://blog.csdn.net/hegx2001/article/details/50352225)
 
+## 多线程
+### 什么是进程？
+当一个程序开始运行时，它就是一个进程，进程包括运行中的程序和程序所使用到的内存和系统资源。而一个进程又是由多个线程所组成的。
+
+### 什么是线程？
+线程是程序中的一个执行流，每个线程都有自己的专有寄存器(栈指针、程序计数器等)，但代码区是共享的，即不同的线程可以执行同样的函数。
+
+线程初体验：
+```cs
+static void Main(string[] args)
+{
+    //设置当前线程名称，默认为null
+    Thread.CurrentThread.Name = "My Thread Demo";
+    Console.WriteLine(Thread.CurrentThread.Name);//打印当前线程名称
+    Console.WriteLine(Thread.CurrentThread.ThreadState);//打印当前线程状态
+}
+```
+
+### 线程创建
+调用线程Thread类的构造函数进行创建：
+```cs
+static void Main(string[] args)
+{
+    /*
+    ThreadStart是一个线程委托，可以理解为一个方法指针，指向一个方法的地址
+    注意这个ThreadStart委托是无返回值无参，传递的方法也应该无返回值无参
+    public delegate void ThreadStart();
+    */
+    Thread threadVoid = new Thread(new ThreadStart(Say));
+    //启动该线程
+    threadVoid.Start();
+
+    /*
+    同样的，ParameterizedThreadStart也是一个线程委托，无返回值，参数为object，传递的方法也需要满足这个条件
+    public delegate void ParameterizedThreadStart(object obj);
+    */
+    Thread threadParam = new Thread(new ParameterizedThreadStart(Talk));
+    //启动有参数线程
+    threadParam.Start("王富贵");
+}
+
+static void Say()
+{
+    for (int i = 0; i < 100; i++)
+    {
+        Console.WriteLine("Say Hi,time:" + DateTime.Now.ToString("mm:ss.fff"));
+    }
+}
+
+static void Talk(object obj)
+{
+    for (int i = 0; i < 100; i++)
+    {
+        Console.WriteLine(obj.ToString() + "'s Talk Show,time:" + DateTime.Now.ToString("mm:ss.fff"));
+    }
+}
+```
+
+### 线程阻塞
+Thread.Sleep()和实例方法Join()，Sleep(int xxx)没有重载，而Join()方法有多个重载：
+```cs
+static void Main(string[] args)
+{
+    Thread worker = new Thread(delegate ()
+    {
+        Console.WriteLine("new");
+    });
+    worker.Start();
+    Console.WriteLine("main1");
+    /*
+    Join方法不传参数的时候，默认等待子线程执行完
+    子线程的join会阻塞主线程，直到子线程终止。结果如下：
+    main1
+    new
+    main2
+    注释下面这行，如果没有子线程阻塞的话，则是：
+    main1
+    main2
+    new
+    */
+    worker.Join();
+    Console.WriteLine("main2");
+}
+```
+
+### lock
+```cs
+/// <summary>
+/// 用于多线程操作时锁，火车票有余票100张，多个线程同时进行买票操作，如何保证同时操作的时候余票的显示正确的
+/// </summary>
+static object lockObj = new object();
+
+static int ticketCount = 100;
+
+//随机对象，用于随机买票
+static Random random = new Random();
+
+static void Main(string[] args)
+{
+    Thread buyWork1 = new Thread(BuyTicket);
+    buyWork1.Name = "王富贵";
+    Thread buyWork2 = new Thread(BuyTicket);
+    buyWork2.Name = "赵有才";
+    Thread buyWork3 = new Thread(BuyTicket);
+    buyWork3.Name = "郑钱花";
+
+    buyWork1.Start();
+    buyWork2.Start();
+    buyWork3.Start();
+}
 
 
+/// <summary>
+/// 买票操作，用于多线程委托
+/// </summary>
+static void BuyTicket()
+{
+    lock (lockObj)
+    {
+        //每个线程循环买票，一直买到没票为止
+        while (ticketCount > 0)
+        {
+            //生成一个[1,5]的随机数
+            int cnt = random.Next(1, 5);
+            Console.WriteLine("{0}需要购买{1}张票", Thread.CurrentThread.Name, cnt);
+            if (ticketCount < cnt)
+            {
+                Console.WriteLine("!!!系统余票不足，请重新输入需要购买的票数!!!");
+                return;
+            }
+            ticketCount -= cnt;
+            Console.WriteLine("##余票提示##购买{0}张，剩余{1}张", cnt, ticketCount);
+        }
+    }
+}
+```
+
+推荐阅读：
+
+[5天不再惧怕多线程系列](http://www.cnblogs.com/huangxincheng/archive/2012/03/14/2395279.html)
