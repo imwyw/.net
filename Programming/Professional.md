@@ -284,6 +284,7 @@ static void Main(string[] args)
 {
     Thread worker = new Thread(delegate ()
     {
+        Thread.Sleep(100);
         Console.WriteLine("new");
     });
     worker.Start();
