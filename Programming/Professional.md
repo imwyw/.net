@@ -337,10 +337,13 @@ static void Main(string[] args)
 /// </summary>
 static void BuyTicket()
 {
-    lock (lockObj)
+    /*
+    每个线程循环买票，一直买到没票为止
+    while包含lock，每次循环间隙其他线程可以介入操作共享资源
+    */
+    while (ticketCount > 0)
     {
-        //每个线程循环买票，一直买到没票为止
-        while (ticketCount > 0)
+        lock (lockObj)
         {
             //生成一个[1,5]的随机数
             int cnt = random.Next(1, 5);
@@ -356,6 +359,8 @@ static void BuyTicket()
     }
 }
 ```
+
+[Microsoft-“锁定”语句（C# 参考）](https://docs.microsoft.com/zh-cn/dotnet/csharp/language-reference/keywords/lock-statement)
 
 推荐阅读：
 
