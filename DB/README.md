@@ -82,5 +82,29 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 
 ![](..\assets\SqlServer\Config_2.png)
 
+## 常见问题
+### 无法登陆
+- 检查数据库服务是否开启  运行 services.msc查看SQL Server服务是否正在运行；或通过SQL Server配置管理器查看服务是否正在运行；
 
+![](..\assets\SqlServer\sql_server_1.png)
+![](..\assets\SqlServer\sql_server_2.png)
+
+- 是否启用TCP/IP协议
+
+![](..\assets\SqlServer\sql_server_3.png)
+
+- 是否启用混合模式及用户名密码是否正确
+
+![](..\assets\SqlServer\sql_server_4.gif)
+
+- 检查网络是否可以访问，使用ping进行检测
+
+### 已安装vs2010无法安装sqlserver2012
+具体呈现如下：
+
+![](..\assets\SqlServer\faq_vs2010_1.png)
+
+原因vs2010安装时未选择F#，进入维护模式选择安装即可。参考链接：
+
+[如何解決安裝 SQL Server 2012 後，開啟 Visual Studio 的錯誤訊息（一點通系列 - MVP 撰寫）](https://support.microsoft.com/zh-tw/help/2693973)
 

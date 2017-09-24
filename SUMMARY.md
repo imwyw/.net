@@ -12,7 +12,7 @@
     * [XML](.\Persistence\XML.md)
 
 * [数据库](.\DB\README.md)
-    * [基础](.\DB\Basic.md)
+    * [SqlServer基础](.\DB\SQLServer_Basic.md)
 
 * [ASP.NET MVC](.\ASP.NET-MVC\README.md)
     * [路由](.\ASP.NET-MVC\URL.md)
