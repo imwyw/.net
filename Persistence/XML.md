@@ -1,3 +1,17 @@
+<!-- TOC -->
+
+- [XML](#xml)
+    - [XML标准](#xml标准)
+        - [特点](#特点)
+        - [格式](#格式)
+    - [读写XML](#读写xml)
+        - [XmlWriter](#xmlwriter)
+        - [XmlReader](#xmlreader)
+        - [XmlDocument](#xmldocument)
+        - [XmlDocument和XmlReader](#xmldocument和xmlreader)
+        - [XDocument(方便、快捷)](#xdocument方便快捷)
+
+<!-- /TOC -->
 # XML
 ## XML标准
 可扩展标记语言（英语：Extensible Markup Language，简称：XML），是一种标记语言。标记指计算机所能理解的信息符号，通过此种标记，计算机之间可以处理包含各种信息的文章等。

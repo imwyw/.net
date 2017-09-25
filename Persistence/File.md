@@ -1,3 +1,18 @@
+<!-- TOC -->
+
+- [文件、流](#文件流)
+    - [路径](#路径)
+    - [文件File](#文件file)
+    - [目录](#目录)
+    - [文件读写](#文件读写)
+        - [文本文件](#文本文件)
+    - [流](#流)
+        - [FileStream](#filestream)
+        - [StreamReader/StreamWriter](#streamreaderstreamwriter)
+        - [BinaryWriter/BinaryReader](#binarywriterbinaryreader)
+    - [对象持久化](#对象持久化)
+
+<!-- /TOC -->
 # 文件、流
 ## 路径
 用户在磁盘上寻找文件时，所历经的文件夹线路叫路径。Windows 约定使用反斜线 (\\) 作为路径中的分隔符。UNIX 系统使用正斜线 (/)。

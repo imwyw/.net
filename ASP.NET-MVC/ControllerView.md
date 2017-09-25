@@ -1,3 +1,20 @@
+<!-- TOC -->
+
+- [Controller](#controller)
+- [View](#view)
+    - [部分视图](#部分视图)
+        - [调用方法](#调用方法)
+            - [Partial 与 RenderPartial 方法](#partial-与-renderpartial-方法)
+            - [RenderPartial 与 RenderAction 方法](#renderpartial-与-renderaction-方法)
+            - [RenderAction 与 Action](#renderaction-与-action)
+            - [RenderPage 与 RenderPartial 方法](#renderpage-与-renderpartial-方法)
+            - [总结](#总结)
+- [Controller 和 View 的传值](#controller-和-view-的传值)
+    - [Controller->View](#controller-view)
+        - [直接通过 View() 返回](#直接通过-view-返回)
+        - [通过 JsonResult 返回](#通过-jsonresult-返回)
+
+<!-- /TOC -->
 # Controller
 # View
 ## 部分视图

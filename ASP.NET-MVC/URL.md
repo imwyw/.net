@@ -1,4 +1,10 @@
+<!-- TOC -->
 
+- [路由](#路由)
+    - [默认路由](#默认路由)
+    - [URL的写法](#url的写法)
+
+<!-- /TOC -->
 # 路由
 ## 默认路由
 默认的路由在RegisterRoutes 方法中定义（/App_Start/RouteConfig.cs）
