@@ -104,7 +104,6 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 
 ![](..\assets\SqlServer\faq_vs2010_1.png)
 
-原因vs2010安装时未选择F#，进入维护模式选择安装即可。参考链接：
+需要安装vs2010 sp1补丁
 
-[如何解決安裝 SQL Server 2012 後，開啟 Visual Studio 的錯誤訊息（一點通系列 - MVP 撰寫）](https://support.microsoft.com/zh-tw/help/2693973)
-
+链接: https://pan.baidu.com/s/1kVuva3H 密码: 8kf5
