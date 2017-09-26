@@ -166,10 +166,6 @@ SUM([DISTINCT]列名) | SUM函数用于求和，只能用于精确或近似数�
 MAX(列名) | MAX函数用于计算最大值，忽略null值。max函数可以使用于numeric、char、varchar、money、smallmoney、或datetime列，但不能用于bit列。
 MIN(列名) | MIN函数用于计算最小值，MIN函数可以适用于numeric、char、varchar或datetime、money或smallmoney列，但不能用于bit列。
 
-**特别注意**：
-
-`COUNT(*),COUNT(1),COUNT(0)` : 数据行中是否有NULL值，返回统计均一样。
-
 ```sql
 SELECT AVG(FIELD1) FROM [TABLE_NAME];
 SELECT COUNT(*) FROM [TABLE_NAME];
@@ -179,6 +175,28 @@ SELECT SUM(FIELD1) FROM [TABLE_NAME];
 SELECT MAX(FIELD1) FROM [TABLE_NAME];
 SELECT MIN(FIELD1) FROM [TABLE_NAME];
 ```
+
+**特别注意**：
+
+`COUNT(*),COUNT(1),COUNT(0)` : 数据行中是否有NULL值，返回统计均一样。仅当COUNT(列名)会判断属性值是否为NULL。
+
+```sql
+CREATE TABLE TABLE_1
+(
+	ID INT,
+	NAME VARCHAR(20)
+)
+
+INSERT INTO TABLE_1 (ID,NAME) VALUES(NULL,'王');
+INSERT INTO TABLE_1 (ID,NAME) VALUES(NULL,'张');
+
+SELECT COUNT(*) FROM TABLE_1;--2
+SELECT COUNT(1) FROM TABLE_1;--2
+SELECT COUNT(NAME) FROM TABLE_1;--2
+SELECT COUNT(ID) FROM TABLE_1;--0
+```
+
+
 
 **GROUP BY...HAVING...**
 
