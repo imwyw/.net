@@ -15,8 +15,15 @@
         - [多表查询](#多表查询)
             - [连接JOIN](#连接join)
             - [合并UNION](#合并union)
+        - [用法拓展](#用法拓展)
+            - [DISTINCT](#distinct)
+            - [TOP](#top)
+            - [INSERT INTO...SELECT...](#insert-intoselect)
+            - [SELECT...INTO..](#selectinto)
+            - [CASE...WHEN...](#casewhen)
+            - [SELECT XXX()](#select-xxx)
         - [其他语句](#其他语句)
-            - [提高效率Prompt](#提高效率prompt)
+        - [提高效率Prompt](#提高效率prompt)
     - [索引](#索引)
         - [什么是索引？](#什么是索引)
         - [聚集索引](#聚集索引)
@@ -266,6 +273,79 @@ VALUES  ( 1, 'BigData'),(2,'AI'),(5,'SINGING')
 1. 两个结果集的数据列数量和数据类型必须保持一致；
 2. 如果有ALL则不会移除重复的行，也不会自动排序，仅仅做合并操作；
 
+### 用法拓展
+#### DISTINCT
+用于返回唯一不同的值。
+```sql
+-- 返回不同的FIELD1值
+SELECT DISTINCT FIELD1 FROM [TABLE_NAME];
+
+-- 返回不同的FIELD1，FIELD2值
+SELECT DISTINCT FIELD1, FIELD2 FROM [TABLE_NAME];
+
+-- 也可以搭配聚合函数使用，统计不同FIELD1字段值的数目
+SELECT COUNT(DISTINCT FIELD1) FROM [TABLE_NAME];
+```
+#### TOP
+TOP 子句用于规定要返回的记录的数目。
+```sql
+--返回前10行数据
+SELECT TOP 10 * FROM [TABLE_NAME];
+
+-- 返回前10%的数据
+SELECT TOP 10 PERCENT * FROM [TABLE_NAME];
+
+--拓展-随机返回10行数据，NEWID()生成随机数，每次生成随机数进行排序既是随机返回数据
+SELECT TOP 10 * FROM [TABLE_NAME] ORDER BY NEWID();
+```
+
+#### INSERT INTO...SELECT...
+用于已存在的表的数据拷贝，可以指定列进行拷贝。
+```sql
+-- 将TABLE_1中COLUMN_1，COLUMN_2拷贝到TABLE_2中的FIELD_1，FIELD_2，相当于往TABLE_2插入数据
+INSERT INTO TABLE_2(FIELD_1，FIELD_2) SELECT COLUMN_1，COLUMN_2 FROM TABLE_1;
+```
+
+#### SELECT...INTO..
+用于不存在的表，将数据从一个表导入另一个表，可以指定列。常用于表备份和记录存档。
+
+注意，这种方式不会保存主键、索引等信息。
+
+```sql
+-- 将表TABLE_NAME中数据拷贝到新表TABLE_NAME_2017，适用于不存在该表结构的拷贝
+SELECT * INTO [TABLE_NAME_2017] FROM [TABLE_NAME];
+```
+
+#### CASE...WHEN...
+条件判断语句，用于数据库中信息的转换。Oracle中不仅有CASE...WHEN...还有更方便使用的DECODE()
+
+有两种写法，如下示例：
+```sql
+SELECT CASE 
+WHEN FIELD_1 = 1 THEN 'A'
+WHEN FIELD_1 = 2 THEN 'B'
+ELSE 'OTH' END AS NEW_FIELD
+FROM TABLE_NAME;
+
+--和上面方式是等价的
+SELECT CASE FIELD_1
+WHEN 1 THEN 'A'
+WHEN 2 THEN 'B'
+ELSE 'OTH' END AS NEW_FIELD
+FROM TABLE_NAME;
+```
+
+#### SELECT XXX()
+需要测试某函数返回值，或者计算某值的时候，可以直接使用SELECT，而不加FROM。
+
+```sql
+--查看当前系统时间
+SELECT SYSDATETIME();
+
+--计算表达式的值
+SELECT 1+1 ;
+```
+
 ### 其他语句
 - 事务处理语言(TPL)
 
@@ -279,7 +359,7 @@ VALUES  ( 1, 'BigData'),(2,'AI'),(5,'SINGING')
 
 像DECLARE CURSOR，FETCH INTO和UPDATE WHERE CURRENT用于对一个或多个表单独行的操作。
 
-#### 提高效率Prompt
+### 提高效率Prompt
 
 ## 索引
 ### 什么是索引？
