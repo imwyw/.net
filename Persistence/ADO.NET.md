@@ -9,6 +9,7 @@
         - [DataAdapter](#dataadapter)
         - [参数化SQL语句](#参数化sql语句)
         - [存储过程的调用](#存储过程的调用)
+        - [事务的处理](#事务的处理)
 
 <!-- /TOC -->
 # ADO.NET
@@ -151,6 +152,8 @@ IsDBNull() | 判断当前读取的数据是否为Null。
 
 通过DataReader在控制台显示查询结果集：
 ```cs
+string connStr = "server=.;database=TEST_DB;uid=sa;pwd=1;";
+SqlConnection conn = new SqlConnection(connStr);
 try
 {
     //如果当前未打开连接，则进行打开连接
@@ -206,6 +209,8 @@ Update() | 更新数据源。
 
 通过DataAdapter在控制台显示查询结果集，并进行增删改查：
 ```cs
+string connStr = "server=.;database=TEST_DB;uid=sa;pwd=1;";
+SqlConnection conn = new SqlConnection(connStr);
 try
 {
     //如果当前未打开连接，则进行打开连接
@@ -279,6 +284,8 @@ AddRange() | 添加参数数组
 
 简单登录功能，防止SQL注入：
 ```cs
+string connStr = "server=.;database=TEST_DB;uid=sa;pwd=1;";
+SqlConnection conn = new SqlConnection(connStr);
 try
 {
     //如果当前未打开连接，则进行打开连接
@@ -361,6 +368,8 @@ AS
 ```
 
 ```cs
+string connStr = "server=.;database=TEST_DB;uid=sa;pwd=1;";
+SqlConnection conn = new SqlConnection(connStr);
 try
 {
     //如果当前未打开连接，则进行打开连接
@@ -403,6 +412,56 @@ try
 catch (Exception ex)
 {
     Console.WriteLine(ex.Message);
+}
+finally
+{
+    //如果当前连接未关闭，则进行关闭
+    if (conn.State != System.Data.ConnectionState.Closed)
+    {
+        conn.Close();
+    }
+}
+```
+
+### 事务的处理
+在ADO.NET中，事务的处理大致如下：
+1. 调用Connection 对象的BeginTransaction 方法来标记事务的开始。
+2. 将Transaction 对象分配给要执行的Command的Transaction 属性。
+3. 执行所需的命令。
+4. 调用Transaction 对象的Commit 方法来完成事务，或调用Rollback 方法来取消事务。
+
+```cs
+string connStr = "server=.;database=TEST_DB;uid=sa;pwd=1;";
+SqlConnection conn = new SqlConnection(connStr);
+//如果当前未打开连接，则进行打开连接
+if (conn.State != System.Data.ConnectionState.Open)
+{
+    conn.Open();
+}
+
+//启动一个事务
+SqlTransaction myTrans = conn.BeginTransaction();
+SqlCommand command = conn.CreateCommand();
+//设置事务
+command.Transaction = myTrans;
+
+try
+{
+    //先删除课程，可以删除，如未加事务，则课程已经删除但学生并未删除
+    command.CommandText = "DELETE FROM [T_COURSE] WHERE ID = 2";
+    command.ExecuteNonQuery();
+
+    //再删除关联的学生，表名有误，删除发生异常
+    command.CommandText = "DELETE FROM [T_STUDENT_1] WHERE C_ID = 2";
+    command.ExecuteNonQuery();
+
+    command.Transaction.Commit();
+}
+catch (Exception ex)
+{
+    //发生异常，进行回滚
+    command.Transaction.Rollback();
+    Console.WriteLine(ex.Message + "\r\n发生异常，已回滚操作");
 }
 finally
 {
