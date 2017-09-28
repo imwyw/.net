@@ -492,7 +492,10 @@ public class SqlHelper
     private SqlHelper() { }
 
     //static string connStr = "server=.;database=TEST_DB;uid=sa;pwd=1;";
-    //将数据库连接字符串放在配置文件中是更好的做法, ConfigurationManager类需要在工程中添加System.Configuration dll引用
+    /*
+    将数据库连接字符串放在配置文件中是更好的做法, 
+    ConfigurationManager类需要在工程中添加System.Configuration dll引用
+    */
     static string connStr = ConfigurationManager.AppSettings["ConnStr"];
 
     #region DML操作封装，如INSERT,UPDATE,DELETE
