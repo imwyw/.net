@@ -504,7 +504,8 @@ public class SqlHelper
     /// <param name="sqlParams">SQL参数</param>
     /// <param name="cmdType">命令类型，默认为Text</param>
     /// <returns>返回受影响的行数</returns>
-    public static int ExecuteNonQuery(string cmdText, SqlParameter[] sqlParams, CommandType cmdType = CommandType.Text)
+    public static int ExecuteNonQuery(string cmdText, SqlParameter[] sqlParams
+        , CommandType cmdType = CommandType.Text)
     {
         SqlConnection conn = new SqlConnection(connStr);
         SqlCommand cmd = conn.CreateCommand();
@@ -549,7 +550,8 @@ public class SqlHelper
     /// <param name="sqlParams">SQL参数</param>
     /// <param name="cmdType">命令类型</param>
     /// <returns>返回约束的类型集合</returns>
-    public static List<T> ExecuteReader<T>(string cmdText, SqlParameter[] sqlParams, CommandType cmdType = CommandType.Text) where T : new()
+    public static List<T> ExecuteReader<T>(string cmdText, SqlParameter[] sqlParams
+        , CommandType cmdType = CommandType.Text) where T : new()
     {
         SqlConnection conn = new SqlConnection(connStr);
         SqlCommand cmd = conn.CreateCommand();
@@ -610,7 +612,8 @@ public class SqlHelper
     /// <param name="sqlParams">SQL参数</param>
     /// <param name="cmdType">命令类型</param>
     /// <returns>返回一个数据表</returns>
-    public static DataTable FillTable(string cmdText, SqlParameter[] sqlParams, CommandType cmdType = CommandType.Text)
+    public static DataTable FillTable(string cmdText, SqlParameter[] sqlParams
+        , CommandType cmdType = CommandType.Text)
     {
         SqlConnection conn = new SqlConnection(connStr);
         SqlCommand cmd = conn.CreateCommand();
@@ -682,7 +685,8 @@ public class Pager<T>
 /// <param name="pageIndex">当前页码索引号，从0开始</param>
 /// <param name="pageSize">每页显示的记录条数</param>
 /// <returns>分页对象</returns>
-public static Pager<T> ExecutePager<T>(string sqlTable, string sqlColumns, string sqlWhere, string sqlSort, int pageIndex, int pageSize) where T : new()
+public static Pager<T> ExecutePager<T>(string sqlTable, string sqlColumns, string sqlWhere
+    , string sqlSort, int pageIndex, int pageSize) where T : new()
 {
     // 结果
     Pager<T> result = new Pager<T>();
