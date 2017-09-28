@@ -507,8 +507,8 @@ public class SqlHelper
     /// <param name="sqlParams">SQL参数</param>
     /// <param name="cmdType">命令类型，默认为Text</param>
     /// <returns>返回受影响的行数</returns>
-    public static int ExecuteNonQuery(string cmdText, SqlParameter[] sqlParams
-        , CommandType cmdType = CommandType.Text)
+    public static int ExecuteNonQuery(string cmdText, SqlParameter[] sqlParams, 
+        CommandType cmdType = CommandType.Text)
     {
         SqlConnection conn = new SqlConnection(connStr);
         SqlCommand cmd = conn.CreateCommand();
