@@ -2,7 +2,7 @@
 
 - [ADO.NET](#adonet)
     - [共享类](#共享类)
-    - [五大类](#五大类)
+    - [常用类及操作](#常用类及操作)
         - [SqlConnection-连接数据库](#sqlconnection-连接数据库)
         - [SqlCommand-数据库命名对象](#sqlcommand-数据库命名对象)
         - [DataReader](#datareader)
@@ -10,6 +10,7 @@
         - [参数化SQL语句](#参数化sql语句)
         - [存储过程的调用](#存储过程的调用)
         - [事务的处理](#事务的处理)
+    - [SqlHelper类的构造](#sqlhelper类的构造)
 
 <!-- /TOC -->
 # ADO.NET
@@ -22,7 +23,7 @@ ADO.NET是一组允许.NET开发人员使用标准的，结构化的，甚至无
 
 ![](..\assets\adonet\adonet_class.png)
 
-## 五大类
+## 常用类及操作
 - Connection(用于建立与 数据库的连接)
 - Command(用于执行SQL语句)
 - DataReader(用于读取数据)
@@ -469,6 +470,283 @@ finally
     if (conn.State != System.Data.ConnectionState.Closed)
     {
         conn.Close();
+    }
+}
+```
+
+## SqlHelper类的构造
+SqlHelper文件最初起源于微软，它是一个基于 .NET Framework 的数据库操作组件，封装了所有的关于数据库的操作。
+
+微软SqlHelper链接：http://pan.baidu.com/s/1jIMN38M 密码：c17o
+
+微软还提欧了企业开发库[Enterprise Library](https://www.microsoft.com/en-us/download/details.aspx?id=38789)，
+官网下载很慢的可以从百度云下载链接：http://pan.baidu.com/s/1nvspnaL 密码：kfwd
+
+很多时候，我们会自己进行简单的封装：
+```cs
+public class SqlHelper
+{
+    /// <summary>
+    /// 私有构造函数，不允许在外部进行new实例化操作
+    /// </summary>
+    private SqlHelper() { }
+
+    //static string connStr = "server=.;database=TEST_DB;uid=sa;pwd=1;";
+    //将数据库连接字符串放在配置文件中是更好的做法, ConfigurationManager类需要在工程中添加System.Configuration dll引用
+    static string connStr = ConfigurationManager.AppSettings["ConnStr"];
+
+    #region DML操作封装，如INSERT,UPDATE,DELETE
+
+    /// <summary>
+    /// 执行DML语句，如插入、删除、更新
+    /// </summary>
+    /// <param name="cmdText">SQL语句</param>
+    /// <param name="sqlParams">SQL参数</param>
+    /// <param name="cmdType">命令类型，默认为Text</param>
+    /// <returns>返回受影响的行数</returns>
+    public static int ExecuteNonQuery(string cmdText, SqlParameter[] sqlParams, CommandType cmdType = CommandType.Text)
+    {
+        SqlConnection conn = new SqlConnection(connStr);
+        SqlCommand cmd = conn.CreateCommand();
+        cmd.CommandType = cmdType;
+        cmd.CommandText = cmdText;
+        if (sqlParams != null && sqlParams.Length > 0)
+        {
+            cmd.Parameters.AddRange(sqlParams);
+        }
+
+        if (conn.State != ConnectionState.Open)
+        {
+            conn.Open();
+        }
+        try
+        {
+            int res = cmd.ExecuteNonQuery();
+            return res;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return -1;
+        }
+        finally
+        {
+            if (conn.State != ConnectionState.Closed)
+            {
+                conn.Close();
+            }
+        }
+    }
+    #endregion
+
+    #region DQL操作封装,SELECT查询
+
+    /// <summary>
+    /// 查询，返回泛型集合，需要注意约束类型的属性名称需要和数据库表字段名称保持一致，但不区分大小写
+    /// </summary>
+    /// <typeparam name="T">约束类型</typeparam>
+    /// <param name="cmdText">SQL语句</param>
+    /// <param name="sqlParams">SQL参数</param>
+    /// <param name="cmdType">命令类型</param>
+    /// <returns>返回约束的类型集合</returns>
+    public static List<T> ExecuteReader<T>(string cmdText, SqlParameter[] sqlParams, CommandType cmdType = CommandType.Text) where T : new()
+    {
+        SqlConnection conn = new SqlConnection(connStr);
+        SqlCommand cmd = conn.CreateCommand();
+        cmd.CommandType = cmdType;
+        cmd.CommandText = cmdText;
+
+        if (sqlParams != null && sqlParams.Length > 0)
+        {
+            cmd.Parameters.AddRange(sqlParams);
+        }
+
+        if (conn.State != ConnectionState.Open)
+        {
+            conn.Open();
+        }
+        try
+        {
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<T> lstRes = new List<T>();
+            T element = new T();
+
+            //获取该类型的所有公开属性
+            PropertyInfo[] props = typeof(T).GetProperties();
+
+            while (reader.Read())
+            {
+                element = new T();
+                foreach (PropertyInfo p in props)
+                {
+                    //默认当做属性名称和表字段名称对应，后期可以通过自定义特性进行匹配
+                    object obj = reader[p.Name];
+
+                    //设置对应的属性值
+                    p.SetValue(element, obj, null);
+                }
+                lstRes.Add(element);
+            }
+            return lstRes;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return null;
+        }
+        finally
+        {
+            if (conn.State != ConnectionState.Closed)
+            {
+                conn.Close();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 查询，返回数据表
+    /// </summary>
+    /// <param name="cmdText">SQL语句</param>
+    /// <param name="sqlParams">SQL参数</param>
+    /// <param name="cmdType">命令类型</param>
+    /// <returns>返回一个数据表</returns>
+    public static DataTable FillTable(string cmdText, SqlParameter[] sqlParams, CommandType cmdType = CommandType.Text)
+    {
+        SqlConnection conn = new SqlConnection(connStr);
+        SqlCommand cmd = conn.CreateCommand();
+        cmd.CommandType = cmdType;
+        cmd.CommandText = cmdText;
+
+        if (sqlParams != null && sqlParams.Length > 0)
+        {
+            cmd.Parameters.AddRange(sqlParams);
+        }
+
+        if (conn.State != ConnectionState.Open)
+        {
+            conn.Open();
+        }
+
+        try
+        {
+            DataTable dt = new DataTable();
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(dt);
+
+            return dt;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return null;
+        }
+        finally
+        {
+            if (conn.State != ConnectionState.Closed)
+            {
+                conn.Close();
+            }
+        }
+    }
+
+    #endregion
+}
+```
+
+分页查询的封装：
+```cs
+/// <summary>
+/// 分页实体类
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class Pager<T>
+{
+    /// <summary>
+    /// 满足去掉分页条件下的记录总数
+    /// </summary>
+    public int total { get; set; }
+    /// <summary>
+    /// 当前页码下的数据集合
+    /// </summary>
+    public List<T> rows { get; set; }
+}
+
+/// <summary>
+/// 执行分页查询操作
+/// </summary>
+/// <typeparam name="T">实体类</typeparam>
+/// <param name="sqlTable">关系表名</param>
+/// <param name="sqlColumns">投影列，如*</param>
+/// <param name="sqlWhere">条件子句，不带where</param>
+/// <param name="sqlSort">排序语句，不带 order by</param>
+/// <param name="pageIndex">当前页码索引号，从0开始</param>
+/// <param name="pageSize">每页显示的记录条数</param>
+/// <returns>分页对象</returns>
+public static Pager<T> ExecutePager<T>(string sqlTable, string sqlColumns, string sqlWhere, string sqlSort, int pageIndex, int pageSize) where T : new()
+{
+    // 结果
+    Pager<T> result = new Pager<T>();
+    result.total = 0;
+    result.rows = new List<T>();
+
+    // 连接并打开目标数据库
+    SqlConnection conn = new SqlConnection();
+    conn.ConnectionString = ConnStr;
+    try
+    {
+        conn.Open();
+
+        // 创建命令
+        SqlCommand cmd = new SqlCommand();
+        cmd.Connection = conn;
+        cmd.CommandType =  CommandType.StoredProcedure;
+        cmd.CommandText = "sp_paged_data";
+        cmd.Parameters.Clear();
+        cmd.Parameters.AddWithValue("@sqlTable", sqlTable);
+        cmd.Parameters.AddWithValue("@sqlColumns", sqlColumns);
+        cmd.Parameters.AddWithValue("@sqlWhere", sqlWhere);
+        cmd.Parameters.AddWithValue("@sqlSort", sqlSort);
+        cmd.Parameters.AddWithValue("@pageIndex", pageIndex);
+        cmd.Parameters.AddWithValue("@pageSize", pageSize);
+        cmd.Parameters.Add(new SqlParameter("@rowTotal", SqlDbType.Int) { Direction = ParameterDirection.Output });
+
+        // 执行命令
+        SqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            T a = new T();
+
+            Type classType = a.GetType();
+            PropertyInfo[] ps = classType.GetProperties();
+            foreach (PropertyInfo pi in ps)
+            {
+                try
+                {
+                    object v = reader[pi.Name];
+                    pi.SetValue(a, v, null);
+                }
+                catch
+                { }
+            }
+
+            result.rows.Add(a);
+        }
+        // 下一个结果
+        reader.NextResult();
+        result.total = int.Parse(cmd.Parameters["@rowTotal"].Value.ToString());
+        
+        return result;
+    }
+    catch (Exception ex)
+    {
+        return null;
+    }
+    finally
+    {
+        if (conn.State == ConnectionState.Open)
+        {
+            conn.Close();
+        }
     }
 }
 ```

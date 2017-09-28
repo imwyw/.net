@@ -194,6 +194,55 @@ AS
 EXEC P_IN_BATCH_DATA;
 ```
 
+分页存储过程：
+```sql
+CREATE PROCEDURE sp_paged_data
+    (
+      @sqlTable NVARCHAR(200) ,          ----待查询表名
+      @sqlColumns NVARCHAR(500) ,    ----待显示字段
+      @sqlWhere NVARCHAR(1000) ,     ----查询条件,不需where 
+      @sqlSort NVARCHAR(500) ,            ----排序字段，不需order by 
+      @pageIndex INT ,                         ----当前页
+      @pageSize INT ,                            ----每页显示的记录数
+      @rowTotal INT = 1 OUTPUT	         ----返回总记录数
+    )
+AS
+    BEGIN
+        --不返回计数（表示受 Transact-SQL 语句影响的行数）
+        SET NOCOUNT ON;
+        -- 获取记录总数的查询SQL语句
+        DECLARE @sqlcount NVARCHAR(1000);
+
+        SET @sqlcount = N' select @rowTotal=count(*) from ' + @sqlTable
+            + ' where 1=1 ' + @sqlWhere;
+        EXEC sp_executesql @sqlcount, N'@rowTotal int out ', @rowTotal OUT;
+        
+		-- 返回数据的查询SQL语句
+        DECLARE @sqldata NVARCHAR(1000);
+        IF ( @pageIndex = 0 )
+            BEGIN
+                SET @sqldata = ' select top ' + CAST(@pageSize AS VARCHAR(10))
+                    + ' ' + @sqlColumns + ' from ' + @sqlTable + ' where 1=1 '
+                    + @sqlWhere + ' order by ' + @sqlSort;
+            END
+        ELSE
+            BEGIN
+                SET @sqldata = ' select ' + @sqlColumns
+                    + ' from (select *,Row_number() over(order by ' + @sqlSort
+                    + ' ) as RN from ' + @sqlTable + ' where 1=1 ' + @sqlWhere
+                    + ') as TR where RN>'
+                    + CAST(@pageSize * @pageIndex AS VARCHAR(20)) + ' and RN<'
+                    + CAST(( @pageSize * ( @pageIndex + 1 ) + 1 ) AS VARCHAR(20));
+            END
+        EXEC sp_executesql @sqldata;
+    END
+```
+存储调用：
+```sql
+DECLARE @total INT;
+EXEC sp_paged_data '[emp]', '*', 'and 1=1', 'ID asc', 2, 10, @total OUT;
+```
+
 ## 事务
 在我们的常识中，事务就是要做的或所做的事情。但是在计算机术语中，事务(Transaction)是访问并可能更新数据库中各种数据项的一个程序执行单元(unit)。
 
