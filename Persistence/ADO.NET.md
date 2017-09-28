@@ -10,7 +10,7 @@
         - [参数化SQL语句](#参数化sql语句)
         - [存储过程的调用](#存储过程的调用)
         - [事务的处理](#事务的处理)
-    - [SqlHelper类的构造](#sqlhelper类的构造)
+    - [SqlHelper类的封装](#sqlhelper类的封装)
 
 <!-- /TOC -->
 # ADO.NET
@@ -474,7 +474,7 @@ finally
 }
 ```
 
-## SqlHelper类的构造
+## SqlHelper类的封装
 SqlHelper文件最初起源于微软，它是一个基于 .NET Framework 的数据库操作组件，封装了所有的关于数据库的操作。
 
 微软SqlHelper链接：http://pan.baidu.com/s/1jIMN38M 密码：c17o
@@ -507,8 +507,8 @@ public class SqlHelper
     /// <param name="sqlParams">SQL参数</param>
     /// <param name="cmdType">命令类型，默认为Text</param>
     /// <returns>返回受影响的行数</returns>
-    public static int ExecuteNonQuery(string cmdText, SqlParameter[] sqlParams, 
-        CommandType cmdType = CommandType.Text)
+    public static int ExecuteNonQuery(string cmdText, SqlParameter[] sqlParams
+        , CommandType cmdType = CommandType.Text)
     {
         SqlConnection conn = new SqlConnection(connStr);
         SqlCommand cmd = conn.CreateCommand();
@@ -535,7 +535,7 @@ public class SqlHelper
         }
         finally
         {
-            if (conn.State != ConnectionState.Closed)
+            if (conn.State == ConnectionState.Open)
             {
                 conn.Close();
             }
@@ -553,8 +553,8 @@ public class SqlHelper
     /// <param name="sqlParams">SQL参数</param>
     /// <param name="cmdType">命令类型</param>
     /// <returns>返回约束的类型集合</returns>
-    public static List<T> ExecuteReader<T>(string cmdText, SqlParameter[] sqlParams
-        , CommandType cmdType = CommandType.Text) where T : new()
+    public static List<T> ExecuteReader<T>(string cmdText, SqlParameter[] sqlParams,
+        CommandType cmdType = CommandType.Text) where T : new()
     {
         SqlConnection conn = new SqlConnection(connStr);
         SqlCommand cmd = conn.CreateCommand();
@@ -601,7 +601,7 @@ public class SqlHelper
         }
         finally
         {
-            if (conn.State != ConnectionState.Closed)
+            if (conn.State == ConnectionState.Open)
             {
                 conn.Close();
             }
@@ -648,7 +648,7 @@ public class SqlHelper
         }
         finally
         {
-            if (conn.State != ConnectionState.Closed)
+            if (conn.State == ConnectionState.Open)
             {
                 conn.Close();
             }
@@ -670,11 +670,11 @@ public class Pager<T>
     /// <summary>
     /// 满足去掉分页条件下的记录总数
     /// </summary>
-    public int total { get; set; }
+    public int Total { get; set; }
     /// <summary>
     /// 当前页码下的数据集合
     /// </summary>
-    public List<T> rows { get; set; }
+    public List<T> Rows { get; set; }
 }
 
 /// <summary>
@@ -683,8 +683,8 @@ public class Pager<T>
 /// <typeparam name="T">实体类</typeparam>
 /// <param name="sqlTable">关系表名</param>
 /// <param name="sqlColumns">投影列，如*</param>
-/// <param name="sqlWhere">条件子句，不带where</param>
-/// <param name="sqlSort">排序语句，不带 order by</param>
+/// <param name="sqlWhere">条件子句(可为空)，eg：and id=1 </param>
+/// <param name="sqlSort">排序语句(不可为空，必须有排序字段)，eg：id</param>
 /// <param name="pageIndex">当前页码索引号，从0开始</param>
 /// <param name="pageSize">每页显示的记录条数</param>
 /// <returns>分页对象</returns>
@@ -693,38 +693,40 @@ public static Pager<T> ExecutePager<T>(string sqlTable, string sqlColumns, strin
 {
     // 结果
     Pager<T> result = new Pager<T>();
-    result.total = 0;
-    result.rows = new List<T>();
+    result.Total = 0;
+    result.Rows = new List<T>();
 
-    // 连接并打开目标数据库
-    SqlConnection conn = new SqlConnection();
-    conn.ConnectionString = ConnStr;
-    try
+    SqlConnection conn = new SqlConnection(connStr);
+    if (conn.State != ConnectionState.Open)
     {
         conn.Open();
+    }
 
-        // 创建命令
-        SqlCommand cmd = new SqlCommand();
-        cmd.Connection = conn;
-        cmd.CommandType =  CommandType.StoredProcedure;
-        cmd.CommandText = "sp_paged_data";
-        cmd.Parameters.Clear();
-        cmd.Parameters.AddWithValue("@sqlTable", sqlTable);
-        cmd.Parameters.AddWithValue("@sqlColumns", sqlColumns);
-        cmd.Parameters.AddWithValue("@sqlWhere", sqlWhere);
-        cmd.Parameters.AddWithValue("@sqlSort", sqlSort);
-        cmd.Parameters.AddWithValue("@pageIndex", pageIndex);
-        cmd.Parameters.AddWithValue("@pageSize", pageSize);
-        cmd.Parameters.Add(new SqlParameter("@rowTotal", SqlDbType.Int) { Direction = ParameterDirection.Output });
+    // 创建命令
+    SqlCommand cmd = conn.CreateCommand();
+    cmd.Connection = conn;
+    cmd.CommandType = CommandType.StoredProcedure;
+    cmd.CommandText = "sp_paged_data";
+    cmd.Parameters.AddWithValue("@sqlTable", sqlTable);
+    cmd.Parameters.AddWithValue("@sqlColumns", sqlColumns);
+    cmd.Parameters.AddWithValue("@sqlWhere", sqlWhere);
+    cmd.Parameters.AddWithValue("@sqlSort", sqlSort);
+    cmd.Parameters.AddWithValue("@pageIndex", pageIndex);
+    cmd.Parameters.AddWithValue("@pageSize", pageSize);
+    cmd.Parameters.Add(new SqlParameter("@rowTotal", SqlDbType.Int)
+    {
+        Direction = ParameterDirection.Output
+    });
 
+    try
+    {
         // 执行命令
         SqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
             T a = new T();
 
-            Type classType = a.GetType();
-            PropertyInfo[] ps = classType.GetProperties();
+            PropertyInfo[] ps = typeof(T).GetProperties();
             foreach (PropertyInfo pi in ps)
             {
                 try
@@ -736,16 +738,17 @@ public static Pager<T> ExecutePager<T>(string sqlTable, string sqlColumns, strin
                 { }
             }
 
-            result.rows.Add(a);
+            result.Rows.Add(a);
         }
-        // 下一个结果
+        // 存在多个结果集，继续读取下一个结果
         reader.NextResult();
-        result.total = int.Parse(cmd.Parameters["@rowTotal"].Value.ToString());
-        
+        result.Total = int.Parse(cmd.Parameters["@rowTotal"].Value.ToString());
+
         return result;
     }
     catch (Exception ex)
     {
+        Console.WriteLine(ex.Message);
         return null;
     }
     finally

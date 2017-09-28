@@ -196,13 +196,13 @@ EXEC P_IN_BATCH_DATA;
 
 分页存储过程：
 ```sql
-CREATE PROCEDURE sp_paged_data
+CREATE PROCEDURE [dbo].[sp_paged_data]
     (
       @sqlTable NVARCHAR(200) ,          ----待查询表名
-      @sqlColumns NVARCHAR(500) ,    ----待显示字段
-      @sqlWhere NVARCHAR(1000) ,     ----查询条件,不需where 
-      @sqlSort NVARCHAR(500) ,            ----排序字段，不需order by 
-      @pageIndex INT ,                         ----当前页
+      @sqlColumns NVARCHAR(500) ,    ----待显示字段,eg:*
+      @sqlWhere NVARCHAR(1000) ,     ----查询条件,不需where,eg:and id=1
+      @sqlSort NVARCHAR(500) ,            ----排序字段(必须有！)，不需order by,eg:id
+      @pageIndex INT ,                         ----当前页，索引页从0开始
       @pageSize INT ,                            ----每页显示的记录数
       @rowTotal INT = 1 OUTPUT	         ----返回总记录数
     )
@@ -216,6 +216,8 @@ AS
         SET @sqlcount = N' select @rowTotal=count(*) from ' + @sqlTable
             + ' where 1=1 ' + @sqlWhere;
         EXEC sp_executesql @sqlcount, N'@rowTotal int out ', @rowTotal OUT;
+		--debug
+        --PRINT @sqlcount;
         
 		-- 返回数据的查询SQL语句
         DECLARE @sqldata NVARCHAR(1000);
@@ -224,6 +226,7 @@ AS
                 SET @sqldata = ' select top ' + CAST(@pageSize AS VARCHAR(10))
                     + ' ' + @sqlColumns + ' from ' + @sqlTable + ' where 1=1 '
                     + @sqlWhere + ' order by ' + @sqlSort;
+				
             END
         ELSE
             BEGIN
@@ -234,9 +237,12 @@ AS
                     + CAST(@pageSize * @pageIndex AS VARCHAR(20)) + ' and RN<'
                     + CAST(( @pageSize * ( @pageIndex + 1 ) + 1 ) AS VARCHAR(20));
             END
+		--debug
+        --PRINT @sqldata;
         EXEC sp_executesql @sqldata;
     END
 ```
+
 存储调用：
 ```sql
 DECLARE @total INT;
