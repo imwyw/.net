@@ -4,7 +4,7 @@
     - [共享类](#共享类)
     - [常用类及操作](#常用类及操作)
         - [SqlConnection-连接数据库](#sqlconnection-连接数据库)
-        - [SqlCommand-数据库命名对象](#sqlcommand-数据库命名对象)
+        - [SqlCommand-数据库命令对象](#sqlcommand-数据库命令对象)
         - [DataReader](#datareader)
         - [DataAdapter](#dataadapter)
         - [参数化SQL语句](#参数化sql语句)
@@ -80,7 +80,7 @@ finally
 }
 ```
 
-### SqlCommand-数据库命名对象
+### SqlCommand-数据库命令对象
 
 常用属性和方法：
 
