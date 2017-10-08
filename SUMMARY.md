@@ -16,6 +16,9 @@
     * [SqlServer基础](.\DB\SQLServer_Basic.md)
     * [SqlServer编程](.\DB\SQLServer_Program.md)
 
+* [设计]()
+    * [三层架构](.\Design\UIBLLDAL.md)
+
 * [ASP.NET MVC](.\ASP.NET-MVC\README.md)
     * [路由](.\ASP.NET-MVC\URL.md)
     * [Controller和View](.\ASP.NET-MVC\ControllerView.md)
