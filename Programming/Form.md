@@ -35,7 +35,7 @@ public partial class Form1 : Form
     private void button1_Click(object sender, EventArgs e)
     {
         Form2 frm = new Form2();
-        frm.parentForm = this;
+        frm.frmPrev = this;
         this.Hide();
         frm.Show();
     }
@@ -54,7 +54,7 @@ public partial class Form2 : Form
     /// <summary>
     /// 父窗体
     /// </summary>
-    public Form parentForm;
+    public Form frmPrev;
 
     /// <summary>
     /// 返回到父窗体
@@ -64,7 +64,7 @@ public partial class Form2 : Form
     private void button1_Click(object sender, EventArgs e)
     {
         this.Hide();
-        parentForm.Show();
+        frmPrev.Show();
     }
 }
 ```
@@ -89,7 +89,7 @@ public partial class Form1 : Form
     private void button1_Click(object sender, EventArgs e)
     {
         Form2 frm = new Form2();
-        frm.parentAction = new Action(delegate ()
+        frm.actionPrev = new Action(delegate ()
         {
             this.Show();
         });
@@ -111,7 +111,7 @@ public partial class Form2 : Form
     /// <summary>
     /// 父窗体的方法
     /// </summary>
-    public Action parentAction;
+    public Action actionPrev;
 
     /// <summary>
     /// 返回到父窗体
@@ -121,7 +121,7 @@ public partial class Form2 : Form
     private void button1_Click(object sender, EventArgs e)
     {
         this.Hide();
-        parentAction.Invoke();
+        actionPrev.Invoke();
     }
 }
 ```
@@ -150,11 +150,11 @@ public partial class Form1 : Form
     {
         Form2 frm = new Form2();
         //子窗体隐藏显示主窗体需要执行的方法
-        frm.parentAction = new Action(delegate ()
+        frm.actionPrev = new Action(delegate ()
         {
             this.Show();
         });
-        frm.parentAction += new Action(RefreshText);
+        frm.actionPrev += new Action(RefreshText);
 
         this.Hide();
         frm.Show();
@@ -193,7 +193,7 @@ public partial class Form2 : Form
     /// <summary>
     /// 父窗体的方法
     /// </summary>
-    public Action parentAction;
+    public Action actionPrev;
 
     /// <summary>
     /// 返回到父窗体
@@ -203,7 +203,7 @@ public partial class Form2 : Form
     private void button1_Click(object sender, EventArgs e)
     {
         this.Hide();
-        parentAction.Invoke();
+        actionPrev.Invoke();
     }
 
     /// <summary>
