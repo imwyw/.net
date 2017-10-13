@@ -1,0 +1,151 @@
+执行【Homework0927.sql】中的脚本，参照初始化的数据完成以下练习题
+注意SQL中不允许出现题干中未出现的字眼，即不要硬编码，例如第三题中的【J2SE】不要替换为实际数据C001进行查询！
+以文本方式进行提交：
+
+1、查询男生、女生平均分各多少，返回：性别，平均分；
+SQL：
+--1
+SELECT * FROM dbo.student a LEFT JOIN dbo.sc ON a.sno = sc.sno ;
+
+-- 2
+SELECT a.ssex '性别',AVG(sc.score) '平均分' FROM dbo.student a LEFT JOIN dbo.sc ON a.sno = sc.sno
+GROUP BY a.ssex ;
+
+2、查询各门课程的平均分，最高分，最低分，返回：课程名称，平均分，最高分，最低分；
+SQL:
+--1
+SELECT * FROM dbo.course a LEFT JOIN dbo.sc ON a.cno = sc.cno;
+--2
+SELECT a.cname AS '课程名称',AVG(sc.score) AS '平均分',MAX(sc.score) AS '最高分',
+MIN(sc.score) AS '最低分' FROM dbo.course a JOIN dbo.sc ON a.cno = sc.cno
+GROUP BY a.cname;
+
+3、查询选择【J2SE】课程学生的男女各有多少，返回：性别，人数；
+SQL:
+--1
+SELECT  *
+FROM    dbo.course a
+        JOIN dbo.sc ON a.cno = sc.cno
+        JOIN dbo.student st ON sc.sno = st.sno
+WHERE   a.cname = 'J2SE'
+
+--2
+SELECT  st.ssex '性别',COUNT(1) '人数'
+FROM    dbo.course a
+        JOIN dbo.sc ON a.cno = sc.cno
+        JOIN dbo.student st ON sc.sno = st.sno
+WHERE   a.cname = 'J2SE'
+GROUP BY ssex
+
+-- 
+4、查询所有选择谌燕老师课程的男女各有多少，返回：性别，人数；
+SQL:
+--使用distinct去重，推荐方法
+ SELECT stu.ssex '性别' ,
+        COUNT(DISTINCT stu.sno) '人数'
+ FROM   dbo.teacher a
+        JOIN dbo.course cr ON a.tno = cr.tno
+        JOIN sc ON cr.cno = sc.cno
+        JOIN dbo.student stu ON sc.sno = stu.sno
+ WHERE  a.tname = '谌燕'
+ GROUP BY stu.ssex
+
+ --嵌套查询
+SELECT  ssex '性别',
+        COUNT(1) '人数'
+FROM    ( SELECT    stu.sno ,
+                    stu.ssex
+          FROM      dbo.teacher a
+                    JOIN dbo.course ON a.tno = dbo.course.tno
+                    JOIN dbo.sc ON dbo.course.cno = sc.cno
+                    JOIN dbo.student stu ON sc.sno = stu.sno
+          WHERE     a.tname = '谌燕'
+          GROUP BY  stu.sno ,
+                    stu.ssex
+        ) a
+GROUP BY ssex
+ 
+5、查询所有学生和老师中有多少姓刘的，返回：姓名，身份(教师/学生)；
+SQL:
+SELECT  *
+FROM    ( SELECT    tname ,
+                    '教师' AS '身份'
+          FROM      dbo.teacher
+          UNION ALL
+          SELECT    sname ,
+                    '学生'
+          FROM      dbo.student
+        ) a
+WHERE   a.tname LIKE '刘%'
+
+6、统计所有学生选课的数目，返回：学生姓名，选课数；
+SQL:
+-- 按照sno进行group by 防止出现同名的情况
+SELECT  MAX(a.sname) '学生姓名' ,
+        COUNT(1) '选课数'
+FROM    dbo.student a
+        JOIN dbo.sc ON a.sno = sc.sno
+GROUP BY a.sno
+
+7、统计所有老师教授学生的数目，返回：教师姓名，学生数目；
+SQL:
+-- 存在一个学生选择了该老师教授的两门课程，需要distinct去重，推荐方法
+SELECT  teacher.tname AS '教师姓名' ,
+        COUNT(DISTINCT sno) AS '学生数目'
+FROM    teacher
+        INNER JOIN course ON teacher.tno = course.tno
+        INNER JOIN sc ON course.cno = sc.cno
+GROUP BY tname; 
+
+-- 嵌套查询方式
+SELECT  tname AS '教师姓名' ,
+        COUNT(1) AS '学生数目'
+FROM    ( SELECT    tname ,
+                    sno
+          FROM      teacher
+                    INNER JOIN course ON teacher.tno = course.tno
+                    INNER JOIN sc ON course.cno = sc.cno
+          GROUP BY  tname ,
+                    sno
+        ) a
+GROUP BY a.tname
+
+--使用到了窗口函数，作为拓展，不做全部要求
+8、查询C001/C002/C003三门课程得分前两名的学生情况，包括：课程、姓名、性别、年龄、教师
+SQL:
+SELECT  *
+FROM    ( SELECT    sc.cno ,
+                    dbo.course.cname ,
+                    sc.score ,
+                    ROW_NUMBER() OVER ( PARTITION BY sc.cno ORDER BY sc.score DESC ) AS rn
+          FROM      dbo.student a
+                    JOIN sc ON a.sno = sc.sno
+                    JOIN dbo.course ON sc.cno = dbo.course.cno
+                    JOIN dbo.teacher ON teacher.tno = course.tno
+          WHERE     dbo.course.cno IN ( 'c001', 'c002', 'c003' )
+        ) t
+WHERE   rn <= 2
+
+
+9、查询选修C001课程的学生中，得分大于平均分的学生，返回：学生姓名，学生分数；
+SQL:
+SELECT  sname AS 学生姓名 ,
+        score AS 学生分数
+FROM    student ,
+        sc
+WHERE   student.sno = sc.sno
+        AND sc.cno = 'c001'
+        AND sc.score > ( SELECT AVG(score)
+                         FROM   sc
+                       )
+
+10、发现学生张三、李四存在作弊行为，将所有课程分数统一调整为60，不足60分的不做调整；
+SQL：
+UPDATE  sc
+SET     sc.score = ( CASE WHEN sc.score < 60 THEN sc.score
+                          ELSE 60
+                     END )
+FROM    sc ,
+        student
+WHERE   sc.sno = student.sno
+        AND student.sname IN ( '张三', '李四' );

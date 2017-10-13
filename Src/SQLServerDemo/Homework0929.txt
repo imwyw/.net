@@ -1,0 +1,57 @@
+/*
+某餐饮企业针对白领商务人士设计了一套网上订餐系统，会员在柜台办理会员卡后即可通过会员号和密码进入订餐网站，不同的卡类型在订餐时会有不同的折扣，如至尊卡享7折、白金卡享8折、商务卡享9折等。会员登录系统后，可以选择一个桌号和订餐时间，然后根据菜谱中不同的菜品描述进行点菜，最后根据会员的卡类型打折后计算本次订餐费用进行网上结算。
+请通过以上描述，设计一套数据库满足该平台的业务需求。
+
+（提示：该题涉及到一条订单中包含多个订单明细的情况，比如从购物车中买东西，下一个订单，每个订单中都有很多商品信息的情况。同时该题还涉及了字典数据）
+
+请给出必要的描述和相应的脚本：
+*/
+
+-- 会员表
+create table t_users
+(
+	id int identity(1,1),
+	name varchar(20),
+	pwd varchar(20),
+	utype varchar(20)
+)
+
+--桌台
+create table t_desks
+(
+	id int identity(1,1),
+	name varchar(20)
+)
+
+--菜品
+create table t_menus
+(
+	id int identity(1,1),
+	name varchar(20),
+	price float,
+	mcount int
+)
+
+--详单
+create table t_bill_detail
+(
+	id int identity(1,1),
+	m_id int FOREIGN KEY REFERENCES t_menus(id),--关联到菜品
+	[count] int,--数量
+)
+
+--订单
+create table t_bill
+(
+	id int identity(1,1),
+	num varchar(20),--订单编号，针对用户
+	d_id int FOREIGN KEY REFERENCES t_desks(id),--关联桌台
+	det_id int FOREIGN KEY REFERENCES t_bill_detail(id),--关联菜单
+)
+
+/*
+订单 一对一 详单
+详单 一对多 菜单
+*/
+
+

@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<students>
+  <student age="12" course="BigData">王富贵</student>
+  <student age="18" course="AI">赵有才</student>
+</students>

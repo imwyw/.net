@@ -1,0 +1,68 @@
+选做任务：
+某数据表 T 中包含用户 name 字段和年龄 age 字段，现在想要查找“张三“的年龄，如果没有查找到，则返回年龄为0。
+
+准备：
+CREATE TABLE t_0928
+    (
+      id INT IDENTITY(1, 1) ,
+      name VARCHAR(20) ,
+      age INT
+    )
+
+INSERT  INTO dbo.t_0928
+        ( name, age )
+VALUES  ( '张三', 12 )
+
+1）使用自定义的标量函数来实现上述功能。 
+CREATE FUNCTION F_GET_AGE ( @NAME VARCHAR(20) )
+RETURNS INT
+AS
+    BEGIN
+        DECLARE @CNT INT;
+        SET @CNT = 0;
+        SELECT  @CNT = COUNT(1)
+        FROM    dbo.t_0928
+        WHERE   name = @NAME;
+        IF ( @CNT > 0 )
+            BEGIN
+			--不考虑重复名称记录，考虑当age为null，转换为0
+                SELECT  @CNT = ISNULL(age, 0)
+                FROM    dbo.t_0928
+                WHERE   name = @NAME
+            END
+        RETURN @CNT;
+    END
+
+SELECT  dbo.F_GET_AGE('张三');
+	
+2）使用自定义的存储过程来实现上述功能。
+CREATE PROCEDURE P_GET_AGE
+    (
+      @NAME VARCHAR(20) ,
+      @RES VARCHAR(20) OUTPUT
+    )
+AS
+    BEGIN
+        DECLARE @CNT INT;
+        SET @CNT = 0;
+        SELECT  @CNT = COUNT(1)
+        FROM    dbo.t_0928
+        WHERE   name = @NAME;
+        IF ( @CNT > 0 )
+            BEGIN
+			--不考虑重复名称记录，考虑当age为null，转换为0
+                SELECT  @CNT = ISNULL(age, 0)
+                FROM    dbo.t_0928
+                WHERE   name = @NAME
+                SET @RES = @NAME;
+            END
+        ELSE
+            BEGIN
+                SET @RES = '未找到' + @NAME
+            END
+        SELECT  @CNT;
+    END
+	
+DECLARE @RES VARCHAR(20);
+EXEC dbo.P_GET_AGE @NAME = '张三', @RES = @RES OUTPUT;
+SELECT @RES;
