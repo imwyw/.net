@@ -47,6 +47,8 @@
 
 
 ### 常量
+**const和static readonly**
+
 
 ### 类型转换
 
