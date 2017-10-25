@@ -59,7 +59,7 @@ Context
 
 方法 | 信息量大小 | 作用域和保存时间 | 应用范围 | 保存位置
 ---|-------|----------|------|-----
-Application | 任意大小 | 整个应用程序的生命期 | 整个应用程序/所有用户 | 服务器端
+Application | 任意大小 | 整个应用程序的生命周期 | 整个应用程序/所有用户 | 服务器端
 Cache | 任意大小 | 可以根据需要设定 | 整个应用程序/所有用户 | 服务器端
 Session | 小量,简单的数据 | 用户活动时间+一段延迟时间(一般为20分钟) | 单个用户 | 服务器端
 Cookie | 小量,简单的数据 | 可以根据需要设定 | 单个用户 | 客户端
@@ -71,7 +71,9 @@ Cookie | 小量,简单的数据 | 可以根据需要设定 | 单个用户 | 客�
 #### Session
 
 要想在.ashx中引用 session 必须 using System.Web.SessionState ，继承IReadOnlySessionState/IRequiresSessionState
+
 IReadOnlySessionState,为只读的session 不可以修改
+
 IRequiresSessionState ，可以修改。
 
 单用户数据独享时使用，属于会话级别对象；允许通过将对象存储在 Web 服务器的内存中在整个用户会话过程中保持任何对象；每个用户的Session对象是通过SessionID来识别的，该SessionID默认是由客户端的Cookie来存储并传输的。
@@ -156,6 +158,11 @@ if (context.Request.Cookies["CurUser"] != null)
     myCookie.Expires = DateTime.Now.AddDays(-1d);
     context.Response.Cookies.Add(myCookie);
 }
+
+```
+```js
+//js读取cookie
+document.cookie;
 ```
 
 ### 数据传递问题
@@ -307,7 +314,7 @@ context.Server.Transfer("Index.html");
 
 2）发送AJAX请求
 	GET请求：
-	req.open('GET', './Handlers/AjaxHandler.ashx ?username=zhangsan&sex=boy', true);
+	req.open('GET', './Handlers/AjaxHandler.ashx?username=zhangsan&sex=boy', true);
 	req.send(null);
 	POST请求：
 	req.open('POST', './Handlers/AjaxHandler.ashx', true);
@@ -331,55 +338,72 @@ context.Server.Transfer("Index.html");
 
 原生js封装ajax流程：
 ```js
-ajax({
-	url: "./TestXHR.aspx",              //请求地址
-	type: "POST",                       //请求方式
-	data: { name: "super", age: 20 },        //请求参数
-	dataType: "json",
-	success: function (response, xml) {
-		// 此处放成功后执行的代码
+//调用示例
+myAjax({
+	url: '../Handler/HomeHandler.ashx/Add',
+	type: 'POST',
+	data: {
+		name: name,
+		pwd: pwd
 	},
-	fail: function (status) {
-		// 此处放失败后执行的代码
+	success: function (data) {
+		if (data == 'true') {
+			alert('注册成功');
+		} else {
+			alert('未注册成功');
+		}
+	},
+	error: function (err) {
+		alert('请求发生异常');
+		console.error(err);
 	}
 });
 
-function ajax(options) {
-	options = options || {};
-	options.type = (options.type || "GET").toUpperCase();
-	options.dataType = options.dataType || "json";
-	var params = formatParams(options.data);
+/*
+参数说明：
+option = {
+	url:'',//请求的地址
+	type:'POST',//请求类型 POST或GET
+	data:{},//传输的数据
+	success:function(data){},//成功响应后的回调函数
+	error:function(err){},//失败后的回调函数
+}
+*/
+function myAjax(option) {
+	//1、创建XMLHttpRequest对象
+	var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 
-	//创建 - 非IE6 - 第一步
-	if (window.XMLHttpRequest) {
-		var xhr = new XMLHttpRequest();
-	} else { //IE6及其以下版本浏览器
-		var xhr = new ActiveXObject('Microsoft.XMLHTTP');
+	//默认为GET方式
+	option.type = option.type || "GET";
+
+	//2、发送AJAX请求
+	if (option.type == "GET") {
+		req.open('GET', option.url, true);
+		req.send(null);
+	} else {
+		req.open('POST', option.url, true);
+		req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		req.send(formatParams(option.data));
 	}
 
-	//接收 - 第三步
-	xhr.onreadystatechange = function () {
-		if (xhr.readyState == 4) {
-			var status = xhr.status;
-			if (status >= 200 && status < 300) {
-				options.success && options.success(xhr.responseText, xhr.responseXML);
-			} else {
-				options.fail && options.fail(status);
-			}
+	//3、接收AJAX响应
+	/*
+	其中，readyState可以取如下值：
+	0 (未初始化，XMLHttpRequest对象已经创建，但尚未初始化，还没有调用open方法)
+	1 (已经调用send方法，正在发送HTTP请求)
+	2 (send方法调用结束，已经接收到全部HTTP响应消息)
+	3 (正在解析响应内容，但状态和响应头还不可用)
+	4 (完成)
+	*/
+	req.onreadystatechange = function () {
+		if (req.readyState == 4 && req.status == 200) {
+			option.success(req.response);
+		} else if (req.readyState == 4) {
+			option.error(req.response);
 		}
 	}
-
-	//连接 和 发送 - 第二步
-	if (options.type == "GET") {
-		xhr.open("GET", options.url + "?" + params, true);
-		xhr.send(null);
-	} else if (options.type == "POST") {
-		xhr.open("POST", options.url, true);
-		//设置表单提交时的内容类型
-		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xhr.send(params);
-	}
 }
+		
 //格式化参数
 function formatParams(data) {
 	var arr = [];
