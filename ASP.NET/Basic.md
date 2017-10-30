@@ -424,6 +424,10 @@ JSON在大多数的情况下作为AJAX的数据交换格式而不是XML。因为
 1. 语法更简单，数据传输量更少
 2. Javascript解码JSON数据容易并且效率高
 
+关于JSON格式：
+1. key值必须由引号包含；例如推荐使用`{"name":"jack"}`格式，不要使用`{name:"jack"}`
+2. value部分，除数值和布尔其他必须也要用引号包含；
+
 在JavaScript中提供了JSON对象，帮助我们将js对象转换为json字符串或者是将json字符串转换为js对象。
 ```js
 //将js对象转换为字符串
