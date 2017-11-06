@@ -12,6 +12,7 @@
         - [接口API的透明性](#接口api的透明性)
         - [总结](#总结)
     - [Proxy代理模式](#proxy代理模式)
+        - [静态代理](#静态代理)
 
 <!-- /TOC -->
 # DesignPatterns
@@ -845,9 +846,237 @@ http://blog.csdn.net/qiaoquan3/article/details/78203502
 
 装饰者模式采用对象组合而非继承的方式实现了再运行时动态地扩展对象功能的能力，而且可以根据需要扩展多个功能，避免了单独使用继承带来的 ”灵活性差“和”多子类衍生问题“。同时它很好地符合面向对象设计原则中 ”优先使用对象组合而非继承“和”开放-封闭“原则。
 
-
-
 ## Proxy代理模式
+代理模式：为其他对象提供一种代理以便控制对这个对象的访问。
+
+可以详细控制访问某个类（对象）的方法，在调用这个方法前作的前置处理（统一的流程代码放到代理中处理）。调用这个方法后做后置处理。
+
+例如：明星的经纪人，租房的中介等等都是代理。
+
+代理模式分类：
+
+1. 静态代理（静态定义代理类，我们自己静态定义的代理类。比如我们自己定义一个明星的经纪人类）
+
+2. 动态代理（通过程序动态生成代理类，该代理类不是我们自己定义的。而是由程序自动生成）
+
+### 静态代理
+Proxy有很多种变化形式：
+
+- Virtual Proxy(虚拟代理)
+
+虚拟代理，是根据需要创建开销很大的对象，通过它来存放实例化需要很长时间的真实对象。
+
+例如《图解设计模式》中打印的示例，就是一个虚拟代理的应用。打印机类的实例化需要花费很多时间，所以使用代理进行初始化，需要打印时再进行实例化打印机。
+
+- Remote Proxy(远程代理)
+
+远程代理，也就是为了一个对象在不同的地址空间提供局部代表。这样可以隐藏一个对象存在于不同地址空间的事实。后面说道的SOA框架中WebService就是使用的这种代理方式。
+
+- Access Proxy(安全代理)
+
+安全代理，用来控制真实对象的访问时的权限。一般用于对象应该有不同的访问权限时。
+
+静态代理模式一般会有三个角色：
+
+Subject抽象角色：指代理角色（经纪人）和真实角色（明星）对外提供的公共方法，一般为一个接口
+
+RealSubject真实角色：需要实现抽象角色接口，定义了真实角色所要实现的业务逻辑，以便供代理角色调用。也就是真正的业务逻辑在此。
+
+Proxy代理角色：需要实现抽象角色接口，是真实角色的代理，通过真实角色的业务逻辑方法来实现抽象方法，并可以附加自己的操作。
+
+对应类图如下图所示：
+
+![](..\assets\Design\Proxy.png)
+
+《图解设计模式》中的打印示例属于VirtualProxy(虚拟代理),实现代码如下：
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        //如果是直接实例化Printer类，构造函数需要耗时等待，而通过代理方式，构造时无需等待，只需调用时等待
+        IPrintable p = new PrinterProxy("jack");
+        Console.WriteLine(p.Name);
+        p.Name = "lucy";
+        Console.WriteLine(p.Name);
+        //调用代理方法时才会实例化主体类
+        p.Print("hello world");
+    }
+}
+
+/// <summary>
+/// 打印接口-Subject主体接口或抽象类
+/// </summary>
+public interface IPrintable
+{
+    string Name { get; set; }
+    void Print(string str);
+}
+
+/// <summary>
+/// 打印机类-主体
+/// </summary>
+public class Printer : IPrintable
+{
+    public string Name { get; set; }
+
+    public Printer(string name)
+    {
+        Name = name;
+        HeavyJob("Printer实例(" + Name + ")生成中");
+    }
+
+    /// <summary>
+    /// 打印带本机名称的消息
+    /// </summary>
+    /// <param name="str"></param>
+    public void Print(string str)
+    {
+        Console.WriteLine("=== " + Name + " ===");
+        Console.WriteLine(str);
+    }
+
+    /// <summary>
+    /// 模拟耗时操作
+    /// </summary>
+    /// <param name="msg"></param>
+    private void HeavyJob(string msg)
+    {
+        Console.Write(msg);
+        for (int i = 0; i < 10; i++)
+        {
+            Thread.Sleep(500);
+            Console.Write(".");
+        }
+        Console.WriteLine("完成");
+    }
+}
+
+/// <summary>
+/// 代理类Proxy
+/// </summary>
+public class PrinterProxy : IPrintable
+{
+    Printer real;
+
+    string name;
+    /// <summary>
+    /// 设置代理属性的同时也设置实体的属性
+    /// </summary>
+    public string Name
+    {
+        get { return name; }
+        set
+        {
+            if (real != null)
+            {
+                real.Name = value;
+            }
+            name = value;
+        }
+    }
+
+    public PrinterProxy(string name)
+    {
+        Name = name;
+    }
+
+    public void Print(string str)
+    {
+        if (null == real)
+        {
+            real = new Printer(Name);
+        }
+        real.Print(str);
+    }
+
+}
+```
+
+以明星与经纪人的代理关系作为示例，静态实现如下：
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        Star baoqiang = new RealStar("王宝强");
+        Star songzhe = new StarProxy("宋喆", baoqiang);
+
+        songzhe.BookTicket();//可以由宋喆代理
+        songzhe.MakeMovie();//宋喆不可以代理，只能宝强拍电影
+    }
+}
+
+/// <summary>
+/// Subject抽象角色 明星和经纪人
+/// </summary>
+public abstract class Star
+{
+    public Star(string name) { Name = name; }
+    /// <summary>
+    /// 姓名
+    /// </summary>
+    public string Name { get; set; }
+    /// <summary>
+    /// 订票，可以由经纪人代理
+    /// </summary>
+    public abstract void BookTicket();
+    /// <summary>
+    /// 拍电影，不能由经纪人代理
+    /// </summary>
+    public abstract void MakeMovie();
+}
+
+/// <summary>
+/// RealSubject真实角色 明星
+/// </summary>
+public class RealStar : Star
+{
+    public RealStar(string name) : base(name) { }
+
+    public override void BookTicket()
+    {
+        Console.WriteLine(Name + "买票");
+    }
+
+    public override void MakeMovie()
+    {
+        Console.WriteLine(Name + "拍电影");
+    }
+}
+
+/// <summary>
+/// Proxy代理角色 经纪人
+/// </summary>
+public class StarProxy : Star
+{
+    private Star real;
+
+    /// <summary>
+    /// 自定义构造函数，给真实角色real进行赋值
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="star"></param>
+    public StarProxy(string name, Star star) : base(name)
+    {
+        Name = name;
+        real = star;
+    }
+
+    public override void BookTicket()
+    {
+        Console.WriteLine(Name + "买票");
+    }
+
+    /// <summary>
+    /// 不能代理，需要调用真实角色方法
+    /// </summary>
+    public override void MakeMovie()
+    {
+        real.MakeMovie();
+    }
+}
+```
 
 
 
