@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    设置session：
+    <input type="text" id="txtName" /><label id="lblTip"></label>
+    <br />
+    <input type="button" id="btnSet" value="设置session" />
+    <br />
+    <input type="button" id="btnGet" value="获取session" />
+    <label id="lblSession"></label>
+
+    <script>
+        document.getElementById('btnSet').addEventListener('click', ajaxSet, false);
+        document.getElementById('btnGet').addEventListener('click', ajaxGet, false);
+
+        function ajaxSet() {
+            //1、创建XMLHttpRequest对象
+            var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+
+            //2、发送ajax请求
+            var url = "./AjaxHandler.ashx/SetSession?name=" + document.getElementById('txtName').value;
+            req.open("GET", url, true);
+            req.send(null);
+
+            //3、接收Ajax的响应
+            req.onreadystatechange = function () {
+                if (req.status >= 200 && req.status < 300) {
+                    //alert(req.response);
+                    document.getElementById('lblTip').innerText = req.response;
+                }
+            }
+        }
+
+        function ajaxGet() {
+            //1、创建XMLHttpRequest对象
+            var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+
+            //2、发送ajax请求
+            var url = "./AjaxHandler.ashx/GetSession?";
+            req.open("GET", url, true);
+            req.send(null);
+
+            //3、接收Ajax的响应
+            req.onreadystatechange = function () {
+                if (req.status >= 200 && req.status < 300) {
+                    //alert(req.response);
+                    document.getElementById('lblSession').innerText = req.response;
+                }
+            }
+        }
+
+        
+
+    </script>
+</body>
+</html>

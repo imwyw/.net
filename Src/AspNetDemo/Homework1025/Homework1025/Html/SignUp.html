@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>注册</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <a href="Login.html">返回登录</a>
+    <table>
+        <tr>
+            <td><label for="txtName">用户名：</label></td>
+            <td><input type="text" id="txtName" required="required" /></td>
+        </tr>
+        <tr>
+            <td><label for="txtPwd">密码：</label></td>
+            <td><input type="password" id="txtPwd" required="required" /></td>
+        </tr>
+        <tr>
+            <td><label for="txtPwd2">确认密码：</label></td>
+            <td><input type="password" id="txtPwd2" required="required" /></td>
+        </tr>
+        <tr>
+            <td><input type="button" id="btnSignUp" value="提交" /></td>
+        </tr>
+    </table>
+    <script>
+        document.getElementById('btnSignUp').addEventListener('click', signUp, false);
+        function signUp() {
+            var name = document.getElementById('txtName').value;
+            var pwd = document.getElementById('txtPwd').value;
+            var pwd2 = document.getElementById('txtPwd2').value;
+
+            if (pwd != pwd2) {
+                alert('两次输入密码不一致，请重新输入');
+                return;
+            }
+            myAjax({
+                url: '../Handler/HomeHandler.ashx/Add',
+                type: 'POST',
+                data: {
+                    name: name,
+                    pwd: pwd
+                },
+                success: function (data) {
+                    if (data == 'true') {
+                        alert('注册成功');
+                    } else {
+                        alert('未注册成功');
+                    }
+                },
+                error: function (err) {
+                    alert('请求发生异常');
+                    console.error(err);
+                }
+            });
+
+        }
+
+        /*
+        参数说明：
+        option = {
+            url:'',//请求的地址
+            type:'POST',//请求类型 POST或GET
+            data:{},//传输的数据
+            success:function(data){},//成功响应后的回调函数
+            error:function(err){},//失败后的回调函数
+        }
+        */
+        function myAjax(option) {
+            //1、创建XMLHttpRequest对象
+            var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+
+            //默认为GET方式
+            option.type = option.type || "GET";
+
+            //2、发送AJAX请求
+            if (option.type == "GET") {
+                req.open('GET', option.url, true);
+                req.send(null);
+            } else {
+                req.open('POST', option.url, true);
+                req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                req.send(formatParams(option.data));
+            }
+
+            //3、接收AJAX响应
+            /*
+            其中，readyState可以取如下值：
+			0 (未初始化，XMLHttpRequest对象已经创建，但尚未初始化，还没有调用open方法)
+			1 (已经调用send方法，正在发送HTTP请求)
+			2 (send方法调用结束，已经接收到全部HTTP响应消息)
+			3 (正在解析响应内容，但状态和响应头还不可用)
+			4 (完成)
+            */
+            req.onreadystatechange = function () {
+                if (req.readyState == 4 && req.status == 200) {
+                    option.success(req.response);
+                } else if (req.readyState == 4) {
+                    option.error(req.response);
+                }
+            }
+        }
+
+        //格式化参数
+        function formatParams(data) {
+            var arr = [];
+            for (var name in data) {
+                arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+            }
+            arr.push(("v=" + Math.random()).replace(".", ""));
+            return arr.join("&");
+        }
+    </script>
+</body>
+</html>

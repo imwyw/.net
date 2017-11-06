@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>事件传播</title>
+    <meta charset="utf-8">
+</head>
+
+<body id="_body">
+    <div id="_div" style="width: 500px; height:200px; background:#EAEAEA;">
+        <input id="btn" type="button" value="确定" />
+    </div>
+    <script type="text/javascript">
+        function myclick1() {
+            alert("按钮被点击了");
+        }
+
+        function myclick2() {
+            alert("div被点击了");
+        }
+
+        function myclick3() {
+            alert("body被点击了");
+        }
+
+        //addEventListener最后一个参数修改为true再试试效果
+        document.getElementById("btn").addEventListener("click", myclick1, false);
+        document.getElementById("_div").addEventListener("click", myclick2, false);
+        document.getElementById("_body").addEventListener("click", myclick3, false);
+    </script>
+</body>
+
+</html>

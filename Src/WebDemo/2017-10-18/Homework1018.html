@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Homework1018</title>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <h1>Homework1018</h1>
+    <div>
+        <label for="txtInput">请输入字符串</label>
+        <input type="text" id="txtInput">
+        <button id="btnCalc">计算</button>
+    </div>
+    <p>=====================================================================</p>
+    <div>
+        编写JavaScript函数，实现两个数组的并集、交集、差集，在移除重复元素的前提下考虑
+        <br>
+        <label for="txtArr1">请输入第一个数值数组</label>
+        <input type="text" id="txtArr1" placeholder="元素间使用逗号分隔" value="1,2">
+        <br>
+        <label for="txtArr2">请输入第二个数值数组</label>
+        <input type="text" id="txtArr2" placeholder="元素间使用逗号分隔" value="2,4,7,9">
+        <br>
+        <button id="btnArr">交并差</button>
+    </div>
+    <script>
+        document.getElementById('btnCalc').addEventListener('click', function () {
+            calcStr(document.getElementById('txtInput').value);
+        }, false);
+
+        function calcStr(str) {
+            console.log('===============================================');
+            console.log('原字符串：' + str);
+            var numCount = 0; //包含的数字个数
+            var res = ''; //非数字的倒序输出
+
+            //倒序遍历每一个字符
+            for (var index = str.length - 1; index >= 0; index--) {
+                var element = str[index];
+                var tempNum = Number(element);
+                if (isNaN(tempNum)) { //转换为数字失败，则为非数字
+                    res += element;
+                } else { //属于数字
+                    numCount++;
+                }
+            }
+
+            console.log('数字个数为：' + numCount);
+            console.log('倒序输出：' + res);
+        }
+
+        document.getElementById('btnArr').addEventListener('click', function () {
+            calcArr(document.getElementById('txtArr1').value, document.getElementById('txtArr2').value);
+        }, false);
+
+        function calcArr(str1, str2) {
+            console.log('===============================================');
+            var arr1 = str1.split(',');
+            var arr2 = str2.split(',');
+            console.log('并集显示：' + union(arr1, arr2));
+            console.log('交集显示：' + intersection(arr1, arr2));
+            console.log('差集显示：' + difference(arr1, arr2));
+        }
+
+        //取并集
+        function union(arr1, arr2) {
+            var newArr = [];
+            //针对第一个原始数组遍历，将每一个元素添加到结果数组中，并去重
+            for (var index = 0; index < arr1.length; index++) {
+                var element = arr1[index];
+                //判断每一个元素在结果数组中是否已存在，存在则不进行添加
+                if (newArr.indexOf(element) == -1) {
+                    newArr.push(element);
+                }
+            }
+            for (var index = 0; index < arr2.length; index++) {
+                var element = arr2[index];
+                if (newArr.indexOf(element) == -1) {
+                    newArr.push(element);
+                }
+            }
+            return newArr;
+        }
+
+        //交集
+        function intersection(arr1, arr2) {
+            var newArr = [];
+            for (var index = 0; index < arr1.length; index++) {
+                var element = arr1[index];
+                //在另一个原始数组中判断是否存在该元素
+                if (arr2.indexOf(element) > -1) {
+                    newArr.push(element);
+                }
+            }
+            return newArr;
+        }
+
+        //差集
+        function difference(arr1, arr2) {
+            var newArr = [];            
+            for (var index = 0; index < arr1.length; index++) {
+                var element = arr1[index];
+                //在另一个原始数组中判断是否存在该元素，不存在则添加到结果数组中
+                if (arr2.indexOf(element) == -1) {
+                    newArr.push(element);
+                }
+            }
+            for (var index = 0; index < arr2.length; index++) {
+                var element = arr2[index];
+                //在另一个原始数组中判断是否存在该元素，不存在则添加到结果数组中
+                if (arr1.indexOf(element) == -1) {
+                    newArr.push(element);
+                }
+            }
+
+            return newArr;
+        }
+    </script>
+</body>
+
+</html>

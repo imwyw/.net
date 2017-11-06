@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>音乐响起来</title>
+    <meta charset="utf-8">
+    <style>
+        table {
+            width: 100%;
+        }
+
+        .td-span {
+            text-align: center;
+        }
+
+        table {
+            font-family: verdana, arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+
+        table th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+
+        table td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+    </style>
+    <!--<script src="../jquery-3.2.1.min.js"></script>-->
+</head>
+
+<body>
+    <h1>我的音乐故事</h1>
+    <table>
+        <tr>
+            <th>歌名</th>
+            <th>路径</th>
+        </tr>
+        <tr>
+            <td>
+                Into the Battlefield II
+            </td>
+            <td>
+                <a href="#" class="btn-play">Into the Battlefield II.mp3</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                17岁
+            </td>
+            <td>
+                <a href="#" class="btn-play">17岁.mp3</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Fing Fing 下
+            </td>
+            <td>
+                <a href="#" class="btn-play">Fing Fing 下.mp3</a>
+            </td>
+        </tr>
+    </table>
+
+    <p id="curSong"></p>
+    <audio id="aud" src="" controls="true">
+    </audio>
+
+    <script>
+        var eles = document.getElementsByClassName('btn-play');
+        for (var index = 0; index < eles.length; index++) {
+            var element = eles[index];
+            element.addEventListener('click', function (e) {
+                document.getElementById('aud').setAttribute('src', e.currentTarget.innerText);
+            }, false);
+        }
+    </script>
+</body>
+
+</html>

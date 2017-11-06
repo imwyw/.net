@@ -1,0 +1,70 @@
+<!DOCTYPE html >
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>js作用域</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <script>
+        //推荐方式
+        var opiton = {
+            config1: '',
+            config2: '',
+            config3: '',
+        };
+
+        //不推荐方式
+        var config1 = '';
+        var config2 = '';
+        var config3 = '';
+
+        //等价于window.num
+        var num = 1;
+
+        function outer() {
+            var num = 2;
+
+            //函数嵌套
+            function inner() {
+                var num = 3;
+                console.log(num);
+            }
+            inner();
+        }
+
+        outer(); //1？2？3？
+
+
+        function test() {
+            var testName = 'jack';
+        }
+        test();
+
+        //从函数外部访问内部的局部变量
+        //console.log(testName);
+
+        //没有块级作用域
+        function blockTest() {
+            for (var i = 0; i < 10; i++) {
+
+            }
+            console.log(i); //10
+        }
+        blockTest();
+
+        //全局变量，全局变量污染
+        function globalTest() {
+            globalName = '全球化'; //相当于 window.globalName='全球化';
+        }
+        globalTest();
+        console.log(globalName);
+    </script>
+
+</body>
+
+</html>

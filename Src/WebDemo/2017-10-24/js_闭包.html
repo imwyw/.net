@@ -1,0 +1,82 @@
+<!DOCTYPE html >
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>js闭包</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <script>
+        function test(name) {
+            var bar = function (age) {
+                console.log('hi,' + name + ' is ' + age);
+            };
+            return bar;
+        }
+        var foo = test('jack');
+        foo(18);
+
+        // function test() {
+        //     var testName = 'kkk';
+        // }
+        // test();
+        // console.log(testName);//undifined
+
+        function test1() {
+            var testName = 'john';
+            return function () {
+                console.log(testName);
+            }
+        }
+        test1()();
+
+
+        function func() {
+            //局部变量
+            var age = 0;
+
+            return {
+                setAge: function (val) {
+                    age = val;
+                },
+                getAge: function () {
+                    return age;
+                }
+            };
+        }
+        var res = func();
+
+
+
+
+        var arr = [];
+
+        function fooFor() {
+            for (var i = 0; i < 4; i++) {
+                arr[i] = (function (val) {
+                    return function () {
+                        console.log(val);
+                    }
+                })(i);
+            }
+        }
+        fooFor();
+        arr[0](); //4
+        arr[1](); //4
+        arr[2](); //4
+        arr[3](); //4
+
+        //自执行 匿名函数
+        console.log('自执行');
+        (function (a, b) {
+            console.log(a + b);
+        })(1, 2)
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlDemo", "HtmlDemo\HtmlDemo.csproj", "{EFEA09D3-6E48-4C3A-AE7C-35F0FF9E2127}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoginDemo", "LoginDemo\LoginDemo.csproj", "{A79FA956-D998-4B11-81B5-439C885D7370}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjaxDemo", "AjaxDemo\AjaxDemo.csproj", "{6F8851C1-0160-420D-9AD8-BC14AEC08007}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFEA09D3-6E48-4C3A-AE7C-35F0FF9E2127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFEA09D3-6E48-4C3A-AE7C-35F0FF9E2127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFEA09D3-6E48-4C3A-AE7C-35F0FF9E2127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFEA09D3-6E48-4C3A-AE7C-35F0FF9E2127}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A79FA956-D998-4B11-81B5-439C885D7370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A79FA956-D998-4B11-81B5-439C885D7370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A79FA956-D998-4B11-81B5-439C885D7370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A79FA956-D998-4B11-81B5-439C885D7370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F8851C1-0160-420D-9AD8-BC14AEC08007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F8851C1-0160-420D-9AD8-BC14AEC08007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F8851C1-0160-420D-9AD8-BC14AEC08007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F8851C1-0160-420D-9AD8-BC14AEC08007}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

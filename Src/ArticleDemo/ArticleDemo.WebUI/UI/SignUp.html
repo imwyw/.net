@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>注册</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../Scripts/Base.js?_dc=new Date()"></script>
+</head>
+<body>
+    <a href="Login.html">返回登录</a>
+    <table>
+        <tr>
+            <td><label for="txtName">用户名：</label></td>
+            <td><input type="text" id="txtName" required="required" /></td>
+        </tr>
+        <tr>
+            <td><label for="txtPwd">密码：</label></td>
+            <td><input type="password" id="txtPwd" required="required" /></td>
+        </tr>
+        <tr>
+            <td><label for="txtPwd2">确认密码：</label></td>
+            <td><input type="password" id="txtPwd2" required="required" /></td>
+        </tr>
+        <tr>
+            <td><input type="button" id="btnSignUp" value="提交" /></td>
+        </tr>
+    </table>
+    <script>
+        getEm('btnSignUp').addEventListener('click', signUp, false);
+
+        function signUp() {
+            var name = getEm('txtName').value;
+            var pwd = getEm('txtPwd').value;
+            var pwd2 = getEm('txtPwd2').value;
+
+            if (pwd != pwd2) {
+                alert('两次输入密码不一致，请重新输入');
+                return;
+            }
+
+            var url = '../Handlers/HomeHandler.ashx/Add';
+            postAjax(url, { 'name': name, 'pwd': pwd },
+                function (data) {
+                    var res = JSON.parse(data);
+                    if (res.status) {
+                        alert('注册成功');
+                        window.location.href = "Login.html";
+                    } else {
+                        alert('注册失败，请重新注册');
+                    }
+                },
+                function (err) {
+                    alert('发生异常，请查看控制台日志');
+                    console.error(err);
+                });
+
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html >
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>js_this</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <script>
+        //全局范围下调用this，this->window
+        console.log(this);
+
+        //函数的直接调用 this->window
+        function foo() {
+            console.log('foo:');
+            console.log(this);
+
+            function innerFoo() {
+                console.log('innerFoo:');
+                console.log(this);
+            }
+            innerFoo();
+        }
+        foo();
+
+
+        //对象方法的调用，指向当前的对象
+        var obj = {
+            test: function () {
+                console.log('obj.test:');
+                console.log(this);
+            }
+        };
+        // var obj = new Object();
+        // obj.test = function () {
+        //     console.log(this);
+        // }
+        obj.test();
+
+
+        //构造函数，函数内部的this指向新创建的实例
+        function Student() {
+            this.name = '';
+            this.test = function () {
+                console.log(this);
+            }
+        }
+        var stu = new Student();
+        stu.test();
+    </script>
+
+</body>
+
+</html>

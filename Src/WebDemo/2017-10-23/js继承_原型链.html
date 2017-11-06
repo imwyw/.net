@@ -1,0 +1,85 @@
+<!DOCTYPE html >
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>js继承-原型链</title>
+    <style>
+
+    </style>
+    <script>
+        //jquery/bootstrap...
+    </script>
+</head>
+
+<body>
+    <script>
+        //多边形类
+        var Polygon = function (side) {
+            //边数
+            Polygon.prototype.side = side;
+            //计算面积
+            Polygon.prototype.getAreas = function () {
+                return 0;
+            }
+
+            //定义一个属性，是一个对象
+            this.model = {};
+        };
+
+        //矩形
+        var Rectangle = function (width, height) {
+            this.width = width;
+            this.height = height;
+        }
+        Rectangle.prototype = new Polygon(4);
+        Rectangle.prototype.getAreas = function () {
+            return this.width * this.height;
+        };
+
+        //查看r1实例是否具有父类Polygon属性side和方法getAreas()
+        var r1 = new Rectangle(2, 1);
+        console.log(r1.getAreas());
+        var r2 = new Rectangle(3, 4);
+        console.log(r2.getAreas());
+
+        r1.model.Name = 'check now';
+        r2.model.Name = 'query now';
+
+        console.log(r1);
+        console.log(r2);
+
+        //三角形
+        var Triangle = function (a, b, c) {
+            //先冒充对象
+            Polygon.call(this,3);
+            this.A = a;
+            this.B = b;
+            this.C = c;
+        }
+        //原型继承
+        Triangle.prototype = new Polygon(3);
+        Triangle.prototype.getAreas = function () {
+            //海伦公式求面积
+            var hf = (this.A + this.B + this.C) / 2;
+            var res = Math.sqrt(hf * (hf - this.A) * (hf - this.B) * (hf - this.C));
+            return res;
+        };
+
+        var t = new Triangle(6, 8, 10);
+        console.log(t.getAreas());
+
+
+        /*
+        总结：
+        类 每个方法都有副本
+        原型 共享方法
+        对象冒充继承 每一个实例都会有方法的副本，并不是我们所期望的
+        原型继承  方法和属性都是共享的，也不是我们所期望的
+        组合继承，先冒充再原型继承，综合优点
+        */
+    </script>
+
+</body>
+
+</html>

@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.表示层", "1.表示层"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArticleDemo.Model", "ArticleDemo.Model\ArticleDemo.Model.csproj", "{EC3B2CF8-84A3-42B5-9ABC-1EB407F6EACA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArticleDemo.WebUI", "ArticleDemo.WebUI\ArticleDemo.WebUI.csproj", "{5DDA0926-87D9-4AA9-9F18-6F89070C7733}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EC3B2CF8-84A3-42B5-9ABC-1EB407F6EACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC3B2CF8-84A3-42B5-9ABC-1EB407F6EACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC3B2CF8-84A3-42B5-9ABC-1EB407F6EACA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DDA0926-87D9-4AA9-9F18-6F89070C7733}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DDA0926-87D9-4AA9-9F18-6F89070C7733}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DDA0926-87D9-4AA9-9F18-6F89070C7733}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DDA0926-87D9-4AA9-9F18-6F89070C7733}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,5 +54,6 @@ Global
 		{FE3FA3F8-B91F-4537-A409-174761BCEDBF} = {8B851A6B-79B4-4841-BAE3-5734D659107C}
 		{821C043F-4244-47CD-922D-9930E5D050B0} = {72A14BF9-E1A4-49A1-A9BD-0AA8F59A5BFF}
 		{EC3B2CF8-84A3-42B5-9ABC-1EB407F6EACA} = {CBB49F25-82A6-40B7-952D-91EFEE2B1B41}
+		{5DDA0926-87D9-4AA9-9F18-6F89070C7733} = {72A14BF9-E1A4-49A1-A9BD-0AA8F59A5BFF}
 	EndGlobalSection
 EndGlobal

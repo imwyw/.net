@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>定时器</title>
+    <meta charset="utf-8">
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        //2s后执行函数f，打印当前系统时间
+        var timeout = setTimeout(f, 2000);
+
+        //每2s执行一次函数f，打印当前系统时间
+        var inter = setInterval(f, 2000);
+
+        function f() {
+            console.log(new Date());
+        }
+
+        //8s后清除timeout和interval
+        setTimeout(function () {
+            clearTimeout(timeout);
+            clearInterval(inter);
+        }, 1);
+
+        // window.localStorage.setItem('version', '1.0');
+        // window.localStorage.setItem('name', 'microsoft');
+    </script>
+</body>
+
+</html>

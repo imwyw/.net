@@ -10,7 +10,7 @@ namespace ArticleDemo.BLL
 {
     public class ArticleMgr
     {
-        private static bool Add(Article entity)
+        public static bool Add(Article entity)
         {
             int res = ArticleDao.Add(entity);
             return res > 0;
@@ -28,7 +28,7 @@ namespace ArticleDemo.BLL
             return res > 0;
         }
 
-        private static List<Article> GetArticles()
+        public static List<Article> GetArticles()
         {
             List<Article> lstRes = ArticleDao.GetArticles();
             return lstRes;

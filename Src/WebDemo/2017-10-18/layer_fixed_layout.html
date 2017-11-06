@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>层模型-相对定位</title>
+    <style>
+        #divLeft {
+            width: 300px;
+            height: 100px;
+            background-color: red;
+        }
+
+        #divRight {
+            position: relative;
+            right: 0px;
+            width: 300px;
+            height: 100px;
+            background-color: gold;
+        }
+
+        #reTop {
+            width: 70px;
+            height: 60px;
+            background-color: azure;
+            position: fixed;
+            right: 5px;
+            bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="divLeft">
+        喜迎党的十九大召开
+    </div>
+    <div id="divRight">
+        富强 民主 文明 和谐
+    </div>
+    <a href="#" name="topic">首标题</a>
+    <h1>大娃</h1>
+    <h2>二娃</h2>
+    <h3>三娃</h3>
+    <h4>四娃</h4>
+    <h5>五娃</h5>
+    <h6>六娃</h6>
+
+    <p>
+        <label for="txtFruit">你最喜欢吃啥水果？</label>
+        <input type="text" id="txtFruit" />
+    </p>
+    <p>
+        <label for="txtRice">你最喜欢吃什么盖浇饭？</label>
+        <input type="text" id="txtRice" />
+    </p>
+
+    <p>你爱吃什么水果？</p>
+    <ul>
+        <li>桃子</li>
+        <li>菠萝</li>
+        <li>西瓜</li>
+    </ul>
+    <p>你最擅长什么？</p>
+    <ol>
+        <li>西瓜</li>
+        <li>桃子</li>
+        <li>菠萝</li>
+    </ol>
+
+    <p>你爱吃什么水果？</p>
+    <select name="Fruit" id="selFruit">
+        <option value="1">桃子</option>
+        <option value="2">西瓜</option>
+        <option value="3">菠萝</option>
+        <option value="4">橙子</option>
+        <option value="5">榴莲</option>
+    </select>
+
+    <p>
+        时间控件 http://www.daterangepicker.com/#examples 在线课件 https://imwyw.gitbooks.io/html-css-js
+    </p>
+
+    <div id="div1">
+        <a id="btnHello" href="hello world.html" target="_blank">侬好</a>
+        <a href="#topic">指向标题</a>
+        <a href="../temp.html" target="_blank">指向到temp页面</a>
+    </div>
+
+    <h2>课程表</h2>
+    <table>
+        <caption>课程表</caption>
+        <tr>
+            <th></th>
+            <th>周一</th>
+            <th>周二</th>
+            <th>周三</th>
+            <th>周四</th>
+            <th>周五</th>
+        </tr>
+        <tr>
+            <td colspan="6">上午</td>
+        </tr>
+        <tr>
+            <td>第一节 8:00-9:30</td>
+            <td>高数</td>
+            <td>英语</td>
+            <td>计算机导论</td>
+            <td>数据结构</td>
+            <td>高数</td>
+        </tr>
+        <tr>
+            <td>第二节 9:50-11:20</td>
+            <td>高数</td>
+            <td>英语</td>
+            <td>计算机导论</td>
+            <td>数据结构</td>
+            <td>高数</td>
+        </tr>
+        <tr>
+            <td colspan="6">下午</td>
+        </tr>
+        <tr>
+            <td>第一节 14:30-16:00</td>
+            <td>高数</td>
+            <td>英语</td>
+            <td>计算机导论</td>
+            <td>数据结构</td>
+            <td>高数</td>
+        </tr>
+        <tr>
+            <td>第二节 16:20-17:50</td>
+            <td>高数</td>
+            <td>英语</td>
+            <td>计算机导论</td>
+            <td>数据结构</td>
+            <td>高数</td>
+        </tr>
+    </table>
+
+    <h2>表单</h2>
+    <form id="loginForm" action="/UserMgr/LoginVerify" method="post">
+        <label for="txtID">用户名：</label>
+        <input type="text" id="txtID" />
+        <br/>
+        <label for="txtPassword">密码：</label>
+        <input type="password" id="txtPassword" />
+        <br/>
+        <input type="submit" value="登录" />
+    </form>
+
+    <iframe src="hello world.html" frameborder="1"></iframe>
+
+    <div id="reTop" style="">
+        <a href="#topic">返回顶部</a>
+    </div>
+</body>
+
+</html>

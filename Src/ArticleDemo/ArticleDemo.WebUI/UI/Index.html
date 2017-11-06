@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>文章发布系统</title>
+    <meta charset="utf-8" />
+    <script src="../Scripts/Base.js"></script>
+    <style type="text/css">
+        /*
+            页头样式
+        */
+        header#logo {
+            height: 55px;
+            background-color: aliceblue;
+            position: relative;
+        }
+
+            header#logo h1 {
+                font-size: 24px;
+                margin-left: 100px;
+                padding-top: 10px;
+            }
+
+            header#logo div {
+                position: absolute;
+                right: 10px;
+                top: 25px;
+            }
+
+        /*
+            导航栏样式
+        */
+        nav#divNav {
+            border: 1px solid #ddd;
+            float: left;
+            width: 120px;
+        }
+
+            nav#divNav h3 {
+                height: 32px;
+                line-height: 32px;
+                padding-left: 10px;
+                border-top: 1px solid #e3e3e3;
+                background: #f4f4f4;
+                cursor: pointer;
+                font: normal 14px/32px "Microsoft YaHei";
+            }
+
+                nav#divNav h3 em {
+                    float: right;
+                    display: block;
+                    width: 40px;
+                    height: 32px;
+                    cursor: pointer;
+                }
+
+                nav#divNav h3.on em {
+                    background-position: 16px -57px;
+                }
+
+            nav#divNav ul {
+                padding: 8px 25px;
+                color: #999;
+                display: none;
+            }
+
+            nav#divNav a {
+                display: block;
+            }
+
+        /*
+            页尾样式
+        */
+        footer#copyright {
+            background-color: #EFEFEF;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            clear: both;
+            font-size: 12px;
+        }
+
+        /*表格样式*/
+
+        table {
+            table-layout: fixed;
+            empty-cells: show;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        td {
+            height: 30px;
+        }
+
+        h1, h2, h3 {
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            border: 1px solid #cad9ea;
+            color: #666;
+        }
+
+            table th {
+                background-repeat: repeat-x;
+                height: 30px;
+            }
+
+            table td, table th {
+                border: 1px solid #cad9ea;
+                padding: 0 1em 0;
+            }
+
+            table tr.alter {
+                background-color: #f5fafe;
+            }
+    </style>
+</head>
+
+<body>
+    <header id="logo">
+        <h1>文章发布系统-管理端</h1>
+        <div>欢迎<span id="spUser"></span>&nbsp;<a href="Login.html" target="_self">退出</a></div>
+    </header>
+
+    <nav id="divNav">
+        <a href="#" id="btnShowArticles">查看文章</a>
+        <a href="#" id="btnAddArticle">添加文章</a>
+    </nav>
+
+    <div id="content"></div>
+
+    <footer id="copyright">
+        &copy;2016-2017 <a href="http://www.iflytek.com" target="_blank">iflytek</a>  版权所有，违者必究
+    </footer>
+    <script>
+        /*设置div容器大小*/
+        function reSizeContent() {
+            getEm('content').style.height = window.outerHeight - 240 + "px";
+        }
+        window.onload = reSizeContent;
+        window.onresize = reSizeContent;
+
+        getEm('btnShowArticles').addEventListener('click', showArticles);
+        getEm('btnAddArticle').addEventListener('click', addArticle);
+
+        //显示文章列表
+        function showArticles() {
+            clearContent();
+            var html = '<table><tr><th>ID</th><th>类别</th><th>标题</th><th>内容</th><th>更新时间</th><th>作者</th></tr>';
+            var url = '../Handlers/ArticleHandler.ashx/GetArticles';
+            getAjax(url, function (data) {
+                var arr = JSON.parse(data);
+                if (arr) {
+                    for (var i = 0; i < arr.length; i++) {
+                        if (i % 2 == 0) {
+                            html += '<tr>';
+                        } else {
+                            html += '<tr class="alter">';
+                        }
+
+                        html += '<td>' + arr[i].ID + '</td>';
+                        html += '<td>' + arr[i].Cate_Name + '</td>';
+                        html += '<td>' + arr[i].Title + '</td>';
+                        html += '<td>' + arr[i].Content + '</td>';
+                        html += '<td>' + arr[i].Update_Time + '</td>';
+                        html += '<td>' + arr[i].User_Name + '</td>';
+                        html += '</tr>';
+                    }
+                }
+                getEm('content').innerHTML = html;
+            }, function (err) {
+                alert('发生异常，请查看控制台日志');
+                console.error(err);
+            });
+        }
+
+        //添加文章内容
+        function addArticle() {
+            clearContent();
+            var html = '<div style="float:left;">';
+            html += '<div>文章标题：<input type="text" id="txtTitle"/></div>';
+            html += '<div>文章内容：<textarea rows="5" cols="80" id="txtContent"></textarea></div>';
+            html += '<div style="padding-left:50px;margin:10px;"><input type="button" id="btnAdd" value="保存"/></div>';
+            html += '</div>';
+            getEm('content').innerHTML = html;
+            getEm('btnAdd').addEventListener('click', postArticle);
+        }
+
+        //清空容器
+        function clearContent() {
+            getEm('content').innerHTML = '';
+        }
+
+        //保存文章内容到服务器
+        function postArticle() {
+            var params = {
+                title: getEm('txtTitle').value,
+                content: getEm('txtContent').value,
+                cateid: 0,//todo 默认写死0，后面有空再做成动态。注意该字段有外键约束，必须是t_category表中已有的数据
+            };
+            var url = '../Handlers/ArticleHandler.ashx/AddArticle';
+            postAjax(url, params, function (data) {
+                var res = JSON.parse(data);
+                if (res.status) {
+                    alert('添加成功');
+                    showArticles();
+                } else {
+                    alert('添加失败，请重新添加');
+                }
+            }, function (err) {
+                alert('发生异常，请查看控制台日志');
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>

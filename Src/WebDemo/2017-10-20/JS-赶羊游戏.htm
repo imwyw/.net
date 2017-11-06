@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>赶羊游戏</title>
+    <style type="text/css">
+        *
+        {
+            margin: 0px;
+            padding: 0px;
+            font-size: 14px;
+            font-family: "Microsoft Yahei" , "宋体" , verdana, tahoma, helvetica, arial, sans-serif;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = function () {
+            // 赶羊
+            var num = 10;
+			//小羊div上进行绑定事件
+            document.getElementById("drag").onclick = function () {
+
+                var element = document.getElementById("drag");
+                // 判断十次机会是否已经耗尽
+                if ((num--) == 0) {
+                    element.style.borderColor = "blue";
+                     alert("你就是抓不住我");
+                    return;
+                }
+                // 随机给出一个位置
+                var range_x = Math.floor(1000 * Math.random());
+                var range_y = Math.floor(300 * Math.random());
+
+                // 小羊进行跳跃
+                element.style.left = range_x + "px";
+                element.style.top = range_y + "px";
+
+                // 判断是否赶进羊圈中
+                if (range_x > 100 && range_x < 250 && range_y > 100 && range_y < 250) {
+                    element.style.borderColor = "red";
+                    alert("呜呜，我要出去！");
+                }
+            };
+        };
+    </script>
+</head>
+<body>
+    <div style="position: absolute; top: 100px; left: 100px; z-index: 99; border: 1px solid red;
+        width: 200px; height: 200px;">
+        羊圈
+    </div>
+    <div id="drag" style="position: absolute; top: 0px; left: 0px; z-index: 99; border: 1px solid #555;
+        background-color: #eee; width: 50px; height: 50px;">
+        小羊
+    </div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>登录</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="../Content/Main.css" />
+    <script type="text/javascript" src="../Scripts/Base.js?_dc=new Date()"></script>
+    <style>
+        table {
+            width: 300px;
+            /*让table在父容器中居中*/
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 align="center">文章管理系统</h1>
+    <form action="./Handlers/HomeHandler.ashx/Login" method="post">
+        <table>
+            <tr>
+                <td class="td-label"><label for="txtName">用户名：</label></td>
+                <!--注意，form表单中传值是name属性对应后台的Request["key"]的key值，而非id属性-->
+                <td class="td-input"><input type="text" id="txtName" name="name" /></td>
+            </tr>
+            <tr>
+                <td class="td-label"><label for="txtPwd">密码：</label></td>
+                <!--注意，form表单中传值是name属性对应后台的Request["key"]的key值，而非id属性-->
+                <td class="td-input"><input type="password" id="txtPwd" name="password" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="button" id="btnSignIn" value="登录" />
+                    <input type="button" id="btnSignUp" value="注册" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <script>
+        //添加监听事件
+        getEm('btnSignIn').addEventListener('click', signIn);
+        getEm('btnSignUp').addEventListener('click', function () { window.location.href = "SignUp.html";});
+
+        //登录请求
+        function signIn() {
+            var url = '../Handlers/HomeHandler.ashx/Login?name=' + getEm('txtName').value + '&pwd=' + getEm('txtPwd').value;
+            getAjax(url, function (data) {
+                var res = JSON.parse(data);
+                if (res.status) {
+                    window.location.href = "Index.html";
+                } else {
+                    alert('用户名或密码错误');
+                }
+            }, function (err) {
+                alert('登录异常，请查看控制台日志');
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>

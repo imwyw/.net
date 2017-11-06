@@ -1,0 +1,69 @@
+<!DOCTYPE html >
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>js类</title>
+    <style>
+
+    </style>
+    <script>
+        //jquery/bootstrap...
+    </script>
+</head>
+
+<body>
+    <script>
+        //Student类的构建
+        var Student = function () {
+            this.Name = '';
+            this.sayHi = function () {
+                console.log(this.Name);
+            };
+        };
+        /*
+        class Student
+        {
+            public string Name {get;set;}
+            public void sayHi()
+            {
+                Console.WriteLine(....);
+            }
+        }
+        */
+
+        var stu1 = new Student();
+        stu1.Name = 'jack';
+        stu1.sayHi();
+
+        var stu2 = new Student();
+        stu2.Name = 'lucy';
+        stu2.sayHi();
+
+
+        /*
+        1、除了null对象，在js中所有的对象都是有原型对象的
+        2、原型链，当前的对象上未找到属性x时，那么它会在原型链上逐级寻找，直到找到为止
+        3、对于一个类而言，所有实例的原型对象是唯一的
+        */
+        //Person类的创建
+        var Person = function () {
+            this.Name = '';
+            this.Age = 1;
+            //定义在原型对象上的方法
+            Person.prototype.sayHi = function () {
+                console.log('nihao,' + this.Name);
+            }
+
+            Person.prototype.Age = 123;
+        }
+
+        var p1 = new Person();
+        p1.Name = '李鸿章';
+        p1.Age = 78;
+        p1.sayHi();
+    </script>
+
+</body>
+
+</html>

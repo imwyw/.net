@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>登录</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <h1>请登录</h1>
+    <form action="./HomeHandler.ashx/Login" method="post">
+        <table>
+            <tr>
+                <td><label for="txtName">用户名：</label></td>
+                <!--注意，form表单中传值是name属性对应后台的Request["key"]的key值，而非id属性-->
+                <td><input type="text" id="txtName" name="name" /></td>
+            </tr>
+            <tr>
+                <td><label for="txtPwd">密码：</label></td>
+                <!--注意，form表单中传值是name属性对应后台的Request["key"]的key值，而非id属性-->
+                <td><input type="password" id="txtPwd" name="password" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <form action="./HomeHandler.ashx/GetSession" method="post">
+        获取session测试
+        <input type="submit" />
+    </form>
+</body>
+</html>
