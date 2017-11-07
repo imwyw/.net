@@ -7,12 +7,15 @@
         - [Simple Factory简单工厂](#simple-factory简单工厂)
         - [Factory Method工厂方法-将实例的生成交给子类](#factory-method工厂方法-将实例的生成交给子类)
     - [Abstract Factory模式-抽象工厂 将关联零件组装成产品](#abstract-factory模式-抽象工厂-将关联零件组装成产品)
+        - [.NET中抽象工厂模式实现](#net中抽象工厂模式实现)
         - [小结](#小结)
     - [Decorator装饰模式-装饰边框与被装饰物的一致性](#decorator装饰模式-装饰边框与被装饰物的一致性)
+        - [.NET中装饰者模式的实现](#net中装饰者模式的实现)
         - [接口API的透明性](#接口api的透明性)
         - [总结](#总结)
     - [Proxy代理模式-只在必要时生成实例](#proxy代理模式-只在必要时生成实例)
         - [静态代理](#静态代理)
+        - [总结](#总结-1)
     - [Observer 观察者模式-发送状态变化的通知](#observer-观察者模式-发送状态变化的通知)
     - [Visitor 访问者模式-访问数据结果并处理数据](#visitor-访问者模式-访问数据结果并处理数据)
     - [Iterator 迭代器模式-一个一个的遍历](#iterator-迭代器模式-一个一个的遍历)
@@ -20,7 +23,7 @@
 <!-- /TOC -->
 # DesignPatterns
 ## 设计模式
-模式设计（Design pattern）是一套被反复使用、多数人知晓的、经过分类编目的、代码设计经验的总结。使用设计模式是为了可重用代码、让代码更容易被他人理解、保证代码可靠性。 毫无疑问，设计模式于己于他人于系统都是多赢的，设计模式使代码编制真正工程化，设计模式是软件工程的基石，如同大厦的一块块砖石一样。
+模式设计(Design pattern)是一套被反复使用、多数人知晓的、经过分类编目的、代码设计经验的总结。使用设计模式是为了可重用代码、让代码更容易被他人理解、保证代码可靠性。 毫无疑问，设计模式于己于他人于系统都是多赢的，设计模式使代码编制真正工程化，设计模式是软件工程的基石，如同大厦的一块块砖石一样。
 
 ## Singleton单例模式-只有一个实例
 说到单例模式,大家第一反应应该就是——什么是单例模式？，从“单例”字面意思上理解为——一个类只有一个实例，所以单例模式也就是保证一个类只有一个实例的一种实现方法罢了(设计模式其实就是帮助我们解决实际开发过程中的方法, 该方法是为了降低对象之间的耦合度,然而解决方法有很多种,所以前人就总结了一些常用的解决方法为书籍,从而把这本书就称为设计模式)，下面给出单例模式的一个官方定义：确保一个类只有一个实例,并提供一个全局访问点。为了帮助大家更好地理解单例模式,大家可以结合下面的类图来进行理解,以及后面也会剖析单例模式的实现思路:
@@ -84,7 +87,7 @@ public class Singleton
     {
         // 当第一个线程运行到这里时，此时会对locker对象 "加锁"，
         // 当第二个线程运行该方法时，首先检测到locker对象为"加锁"状态，该线程就会挂起等待第一个线程解锁
-        // lock语句运行完之后（即线程运行完之后）会对该对象"解锁"
+        // lock语句运行完之后(即线程运行完之后)会对该对象"解锁"
         lock (locker)
         {
             // 如果类的实例不存在则创建，否则直接返回
@@ -99,7 +102,7 @@ public class Singleton
 }
 ```
 
-上面这种解决方案确实可以解决多线程的问题,但是上面代码对于每个线程都会对线程辅助对象locker加锁之后再判断实例是否存在，对于这个操作完全没有必要的，因为当第一个线程创建了该类的实例之后，后面的线程此时只需要直接判断（uniqueInstance==null）为假，此时完全没必要对线程辅助对象加锁之后再去判断，所以上面的实现方式增加了额外的开销，损失了性能，为了改进上面实现方式的缺陷，我们只需要在lock语句前面加一句（uniqueInstance==null）的判断就可以避免锁所增加的额外开销，这种实现方式我们就叫它 “双重锁定”，下面具体看看实现代码的：
+上面这种解决方案确实可以解决多线程的问题,但是上面代码对于每个线程都会对线程辅助对象locker加锁之后再判断实例是否存在，对于这个操作完全没有必要的，因为当第一个线程创建了该类的实例之后，后面的线程此时只需要直接判断(uniqueInstance==null)为假，此时完全没必要对线程辅助对象加锁之后再去判断，所以上面的实现方式增加了额外的开销，损失了性能，为了改进上面实现方式的缺陷，我们只需要在lock语句前面加一句(uniqueInstance==null)的判断就可以避免锁所增加的额外开销，这种实现方式我们就叫它 “双重锁定”，下面具体看看实现代码的：
 
 ```cs
 /// <summary>
@@ -126,7 +129,7 @@ public class Singleton
     {
         // 当第一个线程运行到这里时，此时会对locker对象 "加锁"，
         // 当第二个线程运行该方法时，首先检测到locker对象为"加锁"状态，该线程就会挂起等待第一个线程解锁
-        // lock语句运行完之后（即线程运行完之后）会对该对象"解锁"
+        // lock语句运行完之后(即线程运行完之后)会对该对象"解锁"
         // 双重锁定只需要一句判断就可以了
         if (uniqueInstance == null)
         {
@@ -505,6 +508,89 @@ public abstract class ZhouDuckFactory
 //3、实现抽象工厂派生类中的新增抽象方法。。。
 ```
 
+### .NET中抽象工厂模式实现
+抽象工厂模式在实际中的应用也是相当频繁的，然而在我们.NET类库中也存在应用抽象工厂模式的类，这个类就是System.Data.Common.DbProviderFactory，这个类位于System.Data.dll程序集中,该类扮演抽象工厂模式中抽象工厂的角色，我们可以用reflector反编译工具查看该类的实现：
+
+```cs
+/// <summary>
+/// 扮演抽象工厂的角色
+/// 创建连接数据库时所需要的对象集合，
+/// 这个对象集合包括有 DbConnection对象(这个是抽象产品类,如绝味例子中的YaBo类)、DbCommand类、DbDataAdapter类，
+/// 针对不同的具体工厂都需要实现该抽象类中方法，
+/// </summary>
+public abstract class DbProviderFactory
+{
+    // 提供了创建具体产品的接口方法
+    protected DbProviderFactory();
+    public virtual DbCommand CreateCommand();
+    public virtual DbCommandBuilder CreateCommandBuilder();
+    public virtual DbConnection CreateConnection();
+    public virtual DbConnectionStringBuilder CreateConnectionStringBuilder();
+    public virtual DbDataAdapter CreateDataAdapter();
+    public virtual DbDataSourceEnumerator CreateDataSourceEnumerator();
+    public virtual DbParameter CreateParameter();
+    public virtual CodeAccessPermission CreatePermission(PermissionState state);
+}
+```
+
+DbProviderFactory类是一个抽象工厂类，该类提供了创建数据库连接时所需要的对象集合的接口，实际创建的工作在其子类工厂中进行，微软使用的是SQL Server数据库，因此提供了连接SQL Server数据的具体工厂实现，具体代码可以用反编译工具查看，具体代码如下：
+
+```cs
+/// 扮演着具体工厂的角色，用来创建连接SQL Server数据所需要的对象
+public sealed class SqlClientFactory : DbProviderFactory, IServiceProvider
+{
+    // Fields
+    public static readonly SqlClientFactory Instance = new SqlClientFactory();
+
+   // 构造函数
+    private SqlClientFactory()
+    {
+    }
+    
+   // 重写抽象工厂中的方法
+    public override DbCommand CreateCommand()
+    {  // 创建具体产品
+        return new SqlCommand();
+    }
+
+    public override DbCommandBuilder CreateCommandBuilder()
+    {
+        return new SqlCommandBuilder();
+    }
+
+    public override DbConnection CreateConnection()
+    {
+        return new SqlConnection();
+    }
+
+    public override DbConnectionStringBuilder CreateConnectionStringBuilder()
+    {
+        return new SqlConnectionStringBuilder();
+    }
+
+    public override DbDataAdapter CreateDataAdapter()
+    {
+        return new SqlDataAdapter();
+    }
+
+    public override DbDataSourceEnumerator CreateDataSourceEnumerator()
+    {
+        return SqlDataSourceEnumerator.Instance;
+    }
+
+    public override DbParameter CreateParameter()
+    {
+        return new SqlParameter();
+    }
+
+    public override CodeAccessPermission CreatePermission(PermissionState state)
+    {
+        return new SqlClientPermission(state);
+    }
+}
+```
+因为微软只给出了连接SQL Server的具体工厂的实现，我们也可以自定义连接Oracle、MySql的具体工厂的实现。
+
 **不足之处：**
 抽象工厂模式很难支持新种类产品的变化。这是因为抽象工厂接口中已经确定了可以被创建的产品集合，如果需要添加新产品，此时就必须去修改抽象工厂的接口，这样就涉及到抽象工厂类的以及所有子类的改变，这样也就违背了“开放—封闭”OCP原则。
 
@@ -525,7 +611,7 @@ public abstract class ZhouDuckFactory
 应对产品族概念而生，增加新的产品线很容易，但是无法增加新的产品。
 
 ## Decorator装饰模式-装饰边框与被装饰物的一致性
-装饰器模式（Decorator Pattern）允许向一个现有的对象添加新的功能，同时又不改变其结构。这种类型的设计模式属于结构型模式，它是作为现有的类的一个包装。
+装饰器模式(Decorator Pattern)允许向一个现有的对象添加新的功能，同时又不改变其结构。这种类型的设计模式属于结构型模式，它是作为现有的类的一个包装。
 
 **意图**：动态地给一个对象添加一些额外的职责。就增加功能来说，装饰器模式相比生成子类更为灵活。
 
@@ -833,6 +919,26 @@ public class FullBorder : Border
 
 http://blog.csdn.net/qiaoquan3/article/details/78203502
 
+### .NET中装饰者模式的实现
+在.NET 类库中也有装饰者模式的实现，该类就是System.IO.Stream,下面看看Stream类结构：
+
+![](..\assets\Design\DecoratorStream.png)
+
+```cs
+// MemoryStream是内存流,为系统内存提供读写操作。被装饰
+MemoryStream memoryStream = new MemoryStream(new byte[] { 95, 96, 97, 98, 99 });
+
+// 添加扩展缓冲的功能
+BufferedStream buffStream = new BufferedStream(memoryStream);
+
+// 添加加密的功能
+CryptoStream cryptoStream = new CryptoStream(buffStream, new AesManaged().CreateEncryptor(), CryptoStreamMode.Write);
+
+// 添加压缩功能
+GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Compress, true);
+```
+
+
 ### 接口API的透明性
 在Decorator模式中，装饰器和被装饰物具有一致性，也就是装饰类和被装饰类具有相同的接口。如此形成一个对象链，类似于递归结构，就像是剥洋葱一样，以为洋葱心要出来了，结果发现还是一层皮。
 
@@ -852,15 +958,15 @@ http://blog.csdn.net/qiaoquan3/article/details/78203502
 ## Proxy代理模式-只在必要时生成实例
 代理模式：为其他对象提供一种代理以便控制对这个对象的访问。
 
-可以详细控制访问某个类（对象）的方法，在调用这个方法前作的前置处理（统一的流程代码放到代理中处理）。调用这个方法后做后置处理。
+可以详细控制访问某个类(对象)的方法，在调用这个方法前作的前置处理(统一的流程代码放到代理中处理)。调用这个方法后做后置处理。
 
 例如：明星的经纪人，租房的中介等等都是代理。
 
 代理模式分类：
 
-1. 静态代理（静态定义代理类，我们自己静态定义的代理类。比如我们自己定义一个明星的经纪人类）
+1. 静态代理(静态定义代理类，我们自己静态定义的代理类。比如我们自己定义一个明星的经纪人类)
 
-2. 动态代理（通过程序动态生成代理类，该代理类不是我们自己定义的。而是由程序自动生成）
+2. 动态代理(通过程序动态生成代理类，该代理类不是我们自己定义的。而是由程序自动生成)
 
 ### 静态代理
 Proxy有很多种变化形式：
@@ -879,9 +985,9 @@ Proxy有很多种变化形式：
 
 安全代理，用来控制真实对象的访问时的权限。一般用于对象应该有不同的访问权限时。
 
-静态代理模式一般会有三个角色：
+**静态代理模式一般会有三个角色：**
 
-Subject抽象角色：指代理角色（经纪人）和真实角色（明星）对外提供的公共方法，一般为一个接口
+Subject抽象角色：指代理角色(经纪人)和真实角色(明星)对外提供的公共方法，一般为一个接口
 
 RealSubject真实角色：需要实现抽象角色接口，定义了真实角色所要实现的业务逻辑，以便供代理角色调用。也就是真正的业务逻辑在此。
 
@@ -1081,7 +1187,280 @@ public class StarProxy : Star
 }
 ```
 
+### 总结
+优点：
+
+1. 代理模式能够将调用用于真正被调用的对象隔离，在一定程度上降低了系统的耦合度；
+2. 代理对象在客户端和目标对象之间起到一个中介的作用，这样可以起到对目标对象的保护。代理对象可以在对目标对象发出请求之前进行一个额外的操作，例如权限检查等。
+
+缺点：
+
+1. 由于在客户端和真实主题之间增加了一个代理对象，所以会造成请求的处理速度变慢。
+2. 实现代理类也需要额外的工作，从而增加了系统的实现复杂度。
+
 ## Observer 观察者模式-发送状态变化的通知
+观察者模式定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象，这个主题对象在状态发生变化时，会通知所有观察者对象，使它们能够自动更新自己的行为。
+
+对应类图如下：
+
+![](..\assets\Design\Observer.png)
+
+**抽象主题角色(Subject)**：抽象主题把所有观察者对象的引用保存在一个列表中，并提供增加和删除观察者对象的操作，抽象主题角色又叫做抽象被观察者角色，一般由抽象类或接口实现。
+**抽象观察者角色(Observer)**：为所有具体观察者定义一个接口，在得到主题通知时更新自己，一般由抽象类或接口实现。
+**具体主题角色(ConcreteSubject)**：实现抽象主题接口，具体主题角色又叫做具体被观察者角色。
+**具体观察者角色(ConcreteObserver)**：实现抽象观察者角色所要求的接口，以便使自身状态与主题的状态相协调。
+
+引用《图解设计模式》示例，观察数值生成，通过观察者对象作出不同的响应，该示例类图与代码如下所示：
+
+![](..\assets\Design\ObserverNumberDemo.png)
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        NumberGenerator rdGene = new RandomNumberGenerator();
+
+        IObserver dgObs = new DigitObserver();
+        rdGene.AddObserver(dgObs);
+
+        IObserver ghObs = new GraphObserver();
+        rdGene.AddObserver(ghObs);
+
+        rdGene.Excute();
+    }
+}
+
+/// <summary>
+/// 观察者接口
+/// </summary>
+public interface IObserver
+{
+    void Update(NumberGenerator generator);
+}
+
+/// <summary>
+/// 抽象观察主体
+/// </summary>
+public abstract class NumberGenerator
+{
+    protected List<IObserver> lstObservers = new List<IObserver>();
+
+    /// <summary>
+    /// 添加观察对象
+    /// </summary>
+    /// <param name="obs"></param>
+    public void AddObserver(IObserver obs)
+    {
+        lstObservers.Add(obs);
+    }
+
+    /// <summary>
+    /// 移除观察对象
+    /// </summary>
+    /// <param name="obs"></param>
+    public void RemoveObserver(IObserver obs)
+    {
+        lstObservers.Remove(obs);
+    }
+
+    /// <summary>
+    /// 通知更新
+    /// </summary>
+    public void NotifyObserver()
+    {
+        foreach (IObserver item in lstObservers)
+        {
+            item.Update(this);
+        }
+    }
+
+    /// <summary>
+    /// 获取数值
+    /// </summary>
+    /// <returns></returns>
+    public abstract int GetNumber();
+
+    /// <summary>
+    /// 生成数值
+    /// </summary>
+    public abstract void Excute();
+}
+
+/// <summary>
+/// 具体观察对象，被观察
+/// </summary>
+public class RandomNumberGenerator : NumberGenerator
+{
+    Random rd = new Random();
+
+    //当前数值
+    int number;
+
+    /// <summary>
+    /// 生成20个随机数
+    /// </summary>
+    public override void Excute()
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            number = rd.Next(0, 50);
+            NotifyObserver();
+        }
+    }
+
+    /// <summary>
+    /// 获取当前数
+    /// </summary>
+    /// <returns></returns>
+    public override int GetNumber()
+    {
+        return number;
+    }
+}
+
+/// <summary>
+/// 具体观察类，数字响应
+/// </summary>
+public class DigitObserver : IObserver
+{
+    public void Update(NumberGenerator generator)
+    {
+        Console.WriteLine("DigitObserver out:" + generator.GetNumber());
+        Thread.Sleep(100);
+    }
+}
+
+/// <summary>
+/// 具体观察类，模拟图像响应
+/// </summary>
+public class GraphObserver : IObserver
+{
+    public void Update(NumberGenerator generator)
+    {
+        Console.WriteLine("GraphObserver out:");
+        for (int i = 0; i < generator.GetNumber(); i++)
+        {
+            Console.Write("*");
+        }
+        Thread.Sleep(100);
+    }
+}
+```
+
+下面以微信订阅号的例子来说明观察者模式的实现。现在要实现监控腾讯游戏订阅号的状态的变化。
+类图及实现如下：
+
+![](..\assets\Design\ObserverWechat.png)
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        Tencent game = new TencentGame();
+        IObserverSubscriber jack = new ConcreteSubscriber("jack");
+        game.AddObserver(jack);
+
+        //模拟发布消息
+        game.Publish("王者荣耀新皮肤！双11特价");
+    }
+}
+
+/// <summary>
+/// 订阅者接口
+/// </summary>
+public interface IObserverSubscriber
+{
+    void Update(Tencent tencent);
+}
+
+/// <summary>
+/// 腾讯订阅号抽象类
+/// </summary>
+public abstract class Tencent
+{
+    /// <summary>
+    /// 消息内容
+    /// </summary>
+    public string Message { get; set; }
+
+    /// <summary>
+    /// 保存订阅者列表
+    /// </summary>
+    List<IObserverSubscriber> lstObservers = new List<IObserverSubscriber>();
+
+    /// <summary>
+    /// 添加订阅者
+    /// </summary>
+    /// <param name="obs"></param>
+    public void AddObserver(IObserverSubscriber obs)
+    {
+        lstObservers.Add(obs);
+    }
+
+    /// <summary>
+    /// 删除订阅者
+    /// </summary>
+    /// <param name="obs"></param>
+    public void RemoveObserver(IObserverSubscriber obs)
+    {
+        lstObservers.Remove(obs);
+    }
+
+    /// <summary>
+    /// 通知所有订阅者
+    /// </summary>
+    public void NotifyObservers()
+    {
+        foreach (IObserverSubscriber item in lstObservers)
+        {
+            item.Update(this);
+        }
+    }
+
+    /// <summary>
+    /// 模拟订阅号发布消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public abstract void Publish(string msg);
+}
+
+public class TencentGame : Tencent
+{
+    public override void Publish(string msg)
+    {
+        Message = msg;
+        Console.WriteLine(Message);
+        NotifyObservers();
+    }
+}
+
+/// <summary>
+/// 具体订阅者类
+/// </summary>
+public class ConcreteSubscriber : IObserverSubscriber
+{
+    /// <summary>
+    /// 订阅者名称
+    /// </summary>
+    public string Name { get; set; }
+
+    public ConcreteSubscriber(string name)
+    {
+        Name = name;
+    }
+
+    public void Update(Tencent tencent)
+    {
+        Console.Write(Name + "\t收到新的推送消息\t");
+        Console.WriteLine("订阅消息发送至邮箱，内容：" + tencent.Message);
+    }
+}
+```
+
+
+
 ## Visitor 访问者模式-访问数据结果并处理数据
 ## Iterator 迭代器模式-一个一个的遍历
 
