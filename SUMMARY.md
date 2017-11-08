@@ -19,7 +19,10 @@
 
 * [设计]()
     * [三层架构](.\Design\UIBLLDAL.md)
-    * [设计模式](.\Design\DesignPatterns.md)
+    * [设计模式](.\Design\DesignPattern.md)
+    * [设计模式-创建型模式](.\Design\DesignCreate.md)
+    * [设计模式-结构型模式](.\Design\DesignStructure.md)
+    * [设计模式-行为型模式](.\Design\DesignAction.md)
 
 * [ASP.NET]()
     * [ASP.NET基础](.\ASP.NET\Basic.md)
