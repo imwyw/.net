@@ -1,13 +1,13 @@
 <!-- TOC -->
 
-- [创建型设计模式](#创建型设计模式)
-    - [Singleton单例模式-只有一个实例](#singleton单例模式-只有一个实例)
-    - [Factory Method工厂方法](#factory-method工厂方法)
-        - [Simple Factory简单工厂](#simple-factory简单工厂)
-        - [Factory Method工厂方法-将实例的生成交给子类](#factory-method工厂方法-将实例的生成交给子类)
-    - [Abstract Factory模式-抽象工厂 将关联零件组装成产品](#abstract-factory模式-抽象工厂-将关联零件组装成产品)
-        - [.NET中抽象工厂模式实现](#net中抽象工厂模式实现)
-        - [小结](#小结)
+- [创建型设计模式](#%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F)
+    - [Singleton单例模式-只有一个实例](#singleton%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F-%E5%8F%AA%E6%9C%89%E4%B8%80%E4%B8%AA%E5%AE%9E%E4%BE%8B)
+    - [Factory Method工厂方法](#factory-method%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95)
+        - [Simple Factory简单工厂](#simple-factory%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82)
+        - [Factory Method工厂方法-将实例的生成交给子类](#factory-method%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95-%E5%B0%86%E5%AE%9E%E4%BE%8B%E7%9A%84%E7%94%9F%E6%88%90%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB)
+    - [Abstract Factory模式-抽象工厂 将关联零件组装成产品](#abstract-factory%E6%A8%A1%E5%BC%8F-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82-%E5%B0%86%E5%85%B3%E8%81%94%E9%9B%B6%E4%BB%B6%E7%BB%84%E8%A3%85%E6%88%90%E4%BA%A7%E5%93%81)
+        - [.NET中抽象工厂模式实现](#net%E4%B8%AD%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0)
+        - [小结](#%E5%B0%8F%E7%BB%93)
 
 <!-- /TOC -->
 # 创建型设计模式
