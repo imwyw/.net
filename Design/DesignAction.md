@@ -10,10 +10,126 @@
 <!-- /TOC -->
 <a id="markdown-行为型设计模式" name="行为型设计模式"></a>
 # 行为型设计模式
-
 <a id="markdown-iterator-迭代器模式-一个一个的遍历" name="iterator-迭代器模式-一个一个的遍历"></a>
 ## Iterator 迭代器模式-一个一个的遍历
+迭代器模式提供了一种方法顺序访问一个聚合对象（理解为集合对象）中各个元素，而又无需暴露该对象的内部表示，这样既可以做到不暴露集合的内部结构，又可让外部代码透明地访问集合内部的数据。
 
+既然，迭代器模式承担了遍历集合对象的职责，则该模式自然存在2个类，一个是聚合类，一个是迭代器类。在面向对象涉及原则中还有一条是针对接口编程，所以，在迭代器模式中，抽象了2个接口，一个是聚合接口，另一个是迭代器接口，这样迭代器模式中就四个角色了，具体的类图如下所示：
+
+![](..\assets\Design\Iterator.png)
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        IAggregate c1 = new ConcreteAggregate();
+        IIterator ite = c1.CreateIterator();
+
+        while (ite.HasNext())
+        {
+            Console.Write(ite.Next());
+        }
+    }
+}
+
+/// <summary>
+/// 迭代器接口
+/// </summary>
+public interface IIterator
+{
+    /// <summary>
+    /// 是否有下一个元素
+    /// </summary>
+    /// <returns></returns>
+    bool HasNext();
+
+    /// <summary>
+    /// 返回下一个元素
+    /// </summary>
+    /// <returns></returns>
+    object Next();
+}
+
+/// <summary>
+/// 集合类接口
+/// </summary>
+public interface IAggregate
+{
+    /// <summary>
+    /// 构造迭代器返回
+    /// </summary>
+    /// <returns></returns>
+    IIterator CreateIterator();
+}
+
+/// <summary>
+/// 具体集合类
+/// </summary>
+public class ConcreteAggregate : IAggregate
+{
+    string[] collections;
+
+    public ConcreteAggregate()
+    {
+        collections = new string[] { "h", "e", "l", "l", "o" };
+    }
+
+    /// <summary>
+    /// 构造一个迭代器
+    /// </summary>
+    /// <returns></returns>
+    public IIterator CreateIterator()
+    {
+        return new ConcreteIterator(this);
+    }
+
+    /// <summary>
+    /// 返回集合的长度
+    /// </summary>
+    /// <returns></returns>
+    public int GetLength()
+    {
+        return collections.Length;
+    }
+
+    /// <summary>
+    /// 返回指定索引位置的元素
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public string ElementAt(int index)
+    {
+        return collections[index];
+    }
+
+}
+
+/// <summary>
+/// 具体迭代器
+/// </summary>
+public class ConcreteIterator : IIterator
+{
+    int index;
+    ConcreteAggregate aggregate;
+
+    public ConcreteIterator(ConcreteAggregate agg)
+    {
+        aggregate = agg;
+    }
+
+    public bool HasNext()
+    {
+        return index < aggregate.GetLength();
+    }
+
+    public object Next()
+    {
+        string element = aggregate.ElementAt(index++);
+        return element;
+    }
+}
+```
 
 <a id="markdown-observer-观察者模式-发送状态变化的通知" name="observer-观察者模式-发送状态变化的通知"></a>
 ## Observer 观察者模式-发送状态变化的通知
