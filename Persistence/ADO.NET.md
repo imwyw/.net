@@ -13,16 +13,19 @@
     - [SqlHelper类的封装](#sqlhelper类的封装)
 
 <!-- /TOC -->
+<a id="markdown-adonet" name="adonet"></a>
 # ADO.NET
 ADO.NET是一组允许.NET开发人员使用标准的，结构化的，甚至无连接的方式与数据交互的技术。
 
 简单来说，ADO.NET就是一种数据访问接口，可以让我们在程序中调用相应的类库对数据库(通常为SQL Server，也可以是access 等其他数据库)进行增删改查等操作。
 
+<a id="markdown-共享类" name="共享类"></a>
 ## 共享类
 无论是使用SQL Server类，还是OLE DB类，都可以使用以下共享类：
 
 ![](..\assets\adonet\adonet_class.png)
 
+<a id="markdown-常用类及操作" name="常用类及操作"></a>
 ## 常用类及操作
 - Connection(用于建立与 数据库的连接)
 - Command(用于执行SQL语句)
@@ -35,6 +38,7 @@ ADO.NET是一组允许.NET开发人员使用标准的，结构化的，甚至无
 2. 创建并执行命令
 3. 如果数据检索的话，分为步进和填充两种方式
 
+<a id="markdown-sqlconnection-连接数据库" name="sqlconnection-连接数据库"></a>
 ### SqlConnection-连接数据库
 首先，要想访问数据库，我们需要一个媒介把程序与数据库连接起来。这就是连接字符串，它的基本语法为：
 ```cs
@@ -80,6 +84,7 @@ finally
 }
 ```
 
+<a id="markdown-sqlcommand-数据库命令对象" name="sqlcommand-数据库命令对象"></a>
 ### SqlCommand-数据库命令对象
 
 常用属性和方法：
@@ -135,6 +140,7 @@ finally
 }
 ```
 
+<a id="markdown-datareader" name="datareader"></a>
 ### DataReader
 SqlDataReader是连接相关的，也就是说与数据库的连接一断开就无法读取数据库中的数据，说明查询结果并不是放在程序中，而是放在数据库的服务中。
 
@@ -194,6 +200,7 @@ finally
 }
 ```
 
+<a id="markdown-dataadapter" name="dataadapter"></a>
 ### DataAdapter
 数据适配器，表示用于填充 System.Data.DataSet 和更新 SQL Server 数据库的一组数据命令和一个数据库连接。
 
@@ -269,6 +276,7 @@ finally
 }
 ```
 
+<a id="markdown-参数化sql语句" name="参数化sql语句"></a>
 ### 参数化SQL语句
 若想在程序中传递参数给数据库，可以使用SqlParameter。
 
@@ -351,6 +359,7 @@ finally
 }
 ```
 
+<a id="markdown-存储过程的调用" name="存储过程的调用"></a>
 ### 存储过程的调用
 由于SqlCommand的CommandType属性默认为Txt，需要修改为存储类型才可以进行存储的调用
 
@@ -424,6 +433,7 @@ finally
 }
 ```
 
+<a id="markdown-事务的处理" name="事务的处理"></a>
 ### 事务的处理
 在ADO.NET中，事务的处理大致如下：
 1. 调用Connection 对象的BeginTransaction 方法来标记事务的开始。
@@ -474,6 +484,7 @@ finally
 }
 ```
 
+<a id="markdown-sqlhelper类的封装" name="sqlhelper类的封装"></a>
 ## SqlHelper类的封装
 SqlHelper文件最初起源于微软，它是一个基于 .NET Framework 的数据库操作组件，封装了所有的关于数据库的操作。
 

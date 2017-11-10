@@ -4,7 +4,9 @@
     - [简单三层架构](#简单三层架构)
 
 <!-- /TOC -->
+<a id="markdown-三层架构" name="三层架构"></a>
 # 三层架构
+<a id="markdown-简单三层架构" name="简单三层架构"></a>
 ## 简单三层架构
 ![](..\assets\Design\1.jpg)
 

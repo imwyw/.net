@@ -31,7 +31,9 @@
         - [聚合和组合](#聚合和组合)
 
 <!-- /TOC -->
+<a id="markdown-面向对象" name="面向对象"></a>
 # 面向对象
+<a id="markdown-抽象" name="抽象"></a>
 ## 抽象
 世间万物皆对象，面向对象的设计也是基于现实世界的。
 
@@ -65,7 +67,9 @@ public class 人{}
 //todo...
 ```
 
+<a id="markdown-对象和类型" name="对象和类型"></a>
 ## 对象和类型
+<a id="markdown-类和结构的区别" name="类和结构的区别"></a>
 ### 类和结构的区别
 类：创建对象的模板
 ```cs
@@ -87,7 +91,9 @@ public class Student
 }
 ```
 
+<a id="markdown-类成员" name="类成员"></a>
 ### 类成员
+<a id="markdown-字段" name="字段"></a>
 #### 字段
 声明：修饰符 + 标准的变量声明
 ```cs
@@ -105,6 +111,7 @@ public const double PI = 3.1415926;
 
 ```
 
+<a id="markdown-属性" name="属性"></a>
 #### 属性
 属性描述的是内置映射字段的读写能力
 ```cs
@@ -120,6 +127,7 @@ public string Name
 }
 ```
 
+<a id="markdown-方法" name="方法"></a>
 #### 方法
 ```cs
 /// <summary>
@@ -133,6 +141,7 @@ void Say() { }
 static void Talk() { }
 ```
 
+<a id="markdown-构造函数和静态构造函数" name="构造函数和静态构造函数"></a>
 ### 构造函数和静态构造函数
 ```cs
 public class Student
@@ -166,6 +175,7 @@ public class Student
 }
 ```
 
+<a id="markdown-访问修饰符" name="访问修饰符"></a>
 ## 访问修饰符
 一个类编写完成后，并不是任何角色都能去访问该类或该类中的某些特定成员。
 
@@ -188,38 +198,46 @@ protected | 受保护的，成员只能由本类或其派生类中的代码访�
 internal | 内部的，成员只能由定义它的工程内部的代码访问
 protected internal | 该成员既可以被同一工程的其它代码访问，也可以被其派生类访问
 
+<a id="markdown-三个基本特征" name="三个基本特征"></a>
 ## 三个基本特征
 
 **搞笑图解**
 
 ![](../assets/oop/oop_cate.jpg)
 
+<a id="markdown-封装" name="封装"></a>
 ### 封装
 屏蔽具体的实现，不用关心实现的过程。
 
+<a id="markdown-继承" name="继承"></a>
 ### 继承
 继承是子类自动共享父类数据和方法的机制，这是类之间的一种关系，提高了软件的可重用性和可扩展性
 
+<a id="markdown-类继承" name="类继承"></a>
 #### 类继承
 
 直接使用基类的属性和方法而无需额外编码的能力，基类和派生类一样，也是一个类，使用 class 关键字定义一个基类
 
+<a id="markdown-接口继承" name="接口继承"></a>
 #### 接口继承
 
 仅使用属性和方法的名称、但是子类必须提供实现的能力，需要使用 interface 关键字去定义一个接口
 
+<a id="markdown-基类与派生类" name="基类与派生类"></a>
 #### 基类与派生类
 
 通过继承创建的新类称为“子类”或“派生类”；被继承的类称为“基类”、“父类”或“超类”；
 
 编译器不允许派生类的访问级别比基类更高，如没有显式标记基类，则默认基类为Object类；
 
+<a id="markdown-类继承修饰符" name="类继承修饰符"></a>
 #### 类继承修饰符
 
 abstract：抽象的，不能实例化，只能被继承，可以有抽象成员
 
 sealed：密封的，不能被继承
 
+<a id="markdown-类成员继承修饰符" name="类成员继承修饰符"></a>
 #### 类成员继承修饰符
 
 - 基类中：
@@ -234,12 +252,14 @@ override：重写，派生类重写基类成员
 
 new：隐藏，隐藏基类同名成员，使两成员均不出现彼此覆盖的影响，可不写，但会出现警告
 
+<a id="markdown-接口继承-1" name="接口继承-1"></a>
 #### 接口继承
 
 所有接口成员都是公共 public 的，可以定义属性、方法，**但不能定义字段**
 
 不能被static、virtual、abstract和sealed修饰，但可以有new来隐藏基接口成员
 
+<a id="markdown-多态" name="多态"></a>
 ### 多态
 同一操作作用于不同的对象，可以有不同的解释，产生不同的执行结果，这就是多态性。
 
@@ -291,6 +311,7 @@ static void Main(string[] args)
 
 多态性增强了软件的灵活性和扩展性
 
+<a id="markdown-类之间的关系" name="类之间的关系"></a>
 ## 类之间的关系
 
 关系名称 | 描述 | 示例
@@ -300,6 +321,7 @@ static void Main(string[] args)
 泛化(Generalization) | 继承关系，指定子类如何特殊化父类的所有特征和行为 | 动物和植物均派生自生物
 实现(Implementation) | 类与接口的关系，表示类是接口所有特征和行为的实现 | 鸟会飞，飞机也会飞
 
+<a id="markdown-依赖" name="依赖"></a>
 ### 依赖
 人编码的模型作为示例,UML图中使用虚线箭头，由依赖的一方指向被依赖的一方：
 
@@ -328,6 +350,7 @@ public class Computer {}
 
 3. A类向B类发送消息，从而影响B类发生变化；
 
+<a id="markdown-关联" name="关联"></a>
 ### 关联
 水和气候的关联关系，UML图中使用实线箭头表示：
 
@@ -345,6 +368,7 @@ public class Climate {}
 
 以上示例是一个单向关联，还有双向关联、自身关联、多维关联
 
+<a id="markdown-关联和依赖的区别" name="关联和依赖的区别"></a>
 ### 关联和依赖的区别
 - 从类的属性是否增加的角度看：
 
@@ -358,6 +382,7 @@ public class Climate {}
 
 关联关系是当类实例化的时候即产生，当类销毁的时候，关系结束。相比依赖讲，关联关系的生存期更长。
 
+<a id="markdown-泛化" name="泛化"></a>
 ### 泛化
 泛化关系(Generalization)也就是继承关系，也称为“is-a-kind-of”关系，泛化关系用于描述父类与子类之间的关系，父类又称作基类或超类，子类又称作派生类。在UML中，泛化关系用带空心三角形的直线来表示。
 
@@ -383,6 +408,7 @@ public class Plant : Biology
 }
 ```
 
+<a id="markdown-实现" name="实现"></a>
 ### 实现
 实现关系是一种类与接口的关系，表示类是接口所有特征和行为的实现。
 飞机和鸟都可以飞
@@ -423,6 +449,7 @@ public class Bird : IFly
 }
 ```
 
+<a id="markdown-聚合" name="聚合"></a>
 ### 聚合
 聚合关系(Aggregation):表示的是整体和部分的关系，整体与部分可以分开。
 
@@ -446,6 +473,7 @@ public class GooseGroup
 public class Goose { }
 ```
 
+<a id="markdown-组合" name="组合"></a>
 ### 组合
 组合关系(Composition):也是整体与部分的关系，但是整体与部分不可以分开。
 
@@ -472,6 +500,7 @@ public class Goose
 public class Wings { }
 ```
 
+<a id="markdown-聚合和组合" name="聚合和组合"></a>
 ### 聚合和组合
 
 引用程杰的《大话设计模式》里举大那个大雁的例子 ：

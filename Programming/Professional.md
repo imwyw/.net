@@ -17,7 +17,9 @@
         - [lock](#lock)
 
 <!-- /TOC -->
+<a id="markdown-高级编程" name="高级编程"></a>
 # 高级编程
+<a id="markdown-委托" name="委托"></a>
 ## 委托
 委托是安全封装方法的类型，类似于 C 和 C++ 中的函数指针。 与 C 函数指针不同的是，委托是面向对象的、类型安全的和可靠的。
 
@@ -78,6 +80,7 @@ static void Main(string[] args)
 }
 ```
 
+<a id="markdown-反射" name="反射"></a>
 ## 反射
 在运行期间处理和检测代码，反射指程序可以访问、检测和修改它本身状态或行为的一种能力。
 
@@ -85,6 +88,7 @@ static void Main(string[] args)
 
 您可以使用反射动态地创建类型的实例，将类型绑定到现有对象，或从现有对象中获取类型。然后，可以调用类型的方法或访问其字段和属性。
 
+<a id="markdown-反射reflection" name="反射reflection"></a>
 ### 反射（Reflection）
 ```cs
 public class Student
@@ -154,7 +158,9 @@ static void Main(string[] args)
 
 很多设计模式是基于反射实现的，设计模式的好处是复用解决方案，可靠性高等。如何取舍是一个见仁见智的问题。。。
 
+<a id="markdown-自定义特性attribute" name="自定义特性attribute"></a>
 ### 自定义特性（Attribute）
+<a id="markdown-特性是什么" name="特性是什么"></a>
 #### 特性是什么
 Attribute 是一种可由用户自由定义的修饰符（Modifier），可以用来修饰各种需要被修饰的目标。
 
@@ -162,15 +168,18 @@ Attribute 是一种可由用户自由定义的修饰符（Modifier），可以�
 
 这些附着物的作用是为它们的附着体追加上一些额外的信息（这些信息就保存在附着物的体内）—— 比如这个属性对应数据库中哪个字段，这个类对应数据库中哪张表等等。
 
+<a id="markdown-作用" name="作用"></a>
 #### 作用
 特性Attribute 的作用是添加元数据。
 
 元数据可以被工具支持，比如：编译器用元数据来辅助编译，调试器用元数据来调试程序。
 
+<a id="markdown-attribute-与注释的区别" name="attribute-与注释的区别"></a>
 #### Attribute 与注释的区别
 - 注释是对程序源代码的一种说明，主要目的是给人看的，在程序被编译的时候会被编译器所丢弃，因此，它丝毫不会影响到程序的执行。
 - Attribute是程序代码的一部分，不但不会被编译器丢弃，而且还会被编译器编译进程序集（Assembly）的元数据（Metadata）里，在程序运行的时候，你随时可以从元数据里提取出这些附加信息来决策程序的运行。
 
+<a id="markdown-使用" name="使用"></a>
 #### 使用
 自定义特性的定义：
 ```cs
@@ -238,10 +247,13 @@ static void Main(string[] args)
 
 [关于C# 中的Attribute 特性](http://blog.csdn.net/hegx2001/article/details/50352225)
 
+<a id="markdown-多线程" name="多线程"></a>
 ## 多线程
+<a id="markdown-什么是进程" name="什么是进程"></a>
 ### 什么是进程？
 当一个程序开始运行时，它就是一个进程，进程包括运行中的程序和程序所使用到的内存和系统资源。而一个进程又是由多个线程所组成的。
 
+<a id="markdown-什么是线程" name="什么是线程"></a>
 ### 什么是线程？
 线程是程序中的一个执行流，每个线程都有自己的专有寄存器(栈指针、程序计数器等)，但代码区是共享的，即不同的线程可以执行同样的函数。
 
@@ -256,6 +268,7 @@ static void Main(string[] args)
 }
 ```
 
+<a id="markdown-线程创建" name="线程创建"></a>
 ### 线程创建
 调用线程Thread类的构造函数进行创建：
 ```cs
@@ -296,6 +309,7 @@ static void Talk(object obj)
 }
 ```
 
+<a id="markdown-线程阻塞" name="线程阻塞"></a>
 ### 线程阻塞
 Thread.Sleep()和实例方法Join()，Sleep(int xxx)没有重载，而Join()方法有多个重载：
 ```cs
@@ -324,6 +338,7 @@ static void Main(string[] args)
 }
 ```
 
+<a id="markdown-lock" name="lock"></a>
 ### lock
 ```cs
 /// <summary>

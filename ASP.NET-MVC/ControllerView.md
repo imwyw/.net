@@ -15,21 +15,27 @@
         - [通过 JsonResult 返回](#通过-jsonresult-返回)
 
 <!-- /TOC -->
+<a id="markdown-controller" name="controller"></a>
 # Controller
+<a id="markdown-view" name="view"></a>
 # View
+<a id="markdown-部分视图" name="部分视图"></a>
 ## 部分视图
 为了代码的复用，相当于我们自己实现的分页控件一样。
 
 使用部分视图 ：  1. 可以简写代码。2. 页面代码更加清晰、更好维护。
 
+<a id="markdown-调用方法" name="调用方法"></a>
 ### 调用方法
 Partial()  Action()  **RenderPartial()  RenderAction()**  RenderPage() 
 
+<a id="markdown-partial-与-renderpartial-方法" name="partial-与-renderpartial-方法"></a>
 #### Partial 与 RenderPartial 方法
 1. Razor 语法：@Html.Partial() 与 @{Html.RenderPartial();}
 
 2. 区别：Partial 可以直接输出内容，它内部是 将 html 内容转换为 string 字符（MVCHtmlString），然后缓存起来，      最后在一次性输出到页面。显然，这个转换的过程，会降低效率，所以通常使用 RenderPartial 代替。
 
+<a id="markdown-renderpartial-与-renderaction-方法" name="renderpartial-与-renderaction-方法"></a>
 #### RenderPartial 与 RenderAction 方法
 1. Razor 语法：@{Html.RenderPartial();}  与 @{Html.RenderAction();}
 
@@ -39,21 +45,27 @@ RenderAction 会先去调用 Contorller 的 Action ，最后再 呈现视图，�
 
 如果这个部分视图只是一些简单 的 html 代码，请使用 RenderPartial。 但如果这个部分视图 除了有 html 代码外，     还需要 通过 读取数据库里的数据 来渲染，就必须使用 RenderAction 了，因为 它可以在 Action 里调用 Model里的     方法读取数据库，渲染视图后在呈现，而 RenderPartial 没有 Action，所以无法做到。
 
+<a id="markdown-renderaction-与-action" name="renderaction-与-action"></a>
 #### RenderAction 与 Action
 1. Razor 语法：@{Html.RenderAction();}  与 @Html.Action();
 
 2. 区别：Action 也是直接输出，和 Partial 一样，也存在一个转换的过程。不如 RenderAction 直接输出到 当前 HttpContext 的效率高。
 
+<a id="markdown-renderpage-与-renderpartial-方法" name="renderpage-与-renderpartial-方法"></a>
 #### RenderPage 与 RenderPartial 方法
 1. Razor 语法：@{Html.RenderPartial();}  与 @RenderPage()
 
 2. 区别：也可以使用 RenderPage 来呈现部分，但它不能使用 原来视图的 Model 和 ViewData ,只能通过参数来传递。而 RenderPartial 可以使用原来视图的 Model 和 ViewData。
 
+<a id="markdown-总结" name="总结"></a>
 #### 总结
 最常用的还是 @{Html.RenderAction();} 和 @{Html.RenderPartial();}
 
+<a id="markdown-controller-和-view-的传值" name="controller-和-view-的传值"></a>
 # Controller 和 View 的传值
+<a id="markdown-controller-view" name="controller-view"></a>
 ## Controller->View
+<a id="markdown-直接通过-view-返回" name="直接通过-view-返回"></a>
 ### 直接通过 View() 返回
 - 强类型
 
@@ -120,6 +132,7 @@ public ActionResult GetTempDataView()
 效果：
 ![](../assets/asp.net-mvc/TempData.gif)
 
+<a id="markdown-通过-jsonresult-返回" name="通过-jsonresult-返回"></a>
 ### 通过 JsonResult 返回
 ``` cs
 public JsonResult GetAllPerson()

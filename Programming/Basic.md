@@ -29,15 +29,20 @@
         - [Dictionay<Tkey,Tvalue>](#dictionaytkeytvalue)
 
 <!-- /TOC -->
+<a id="markdown-编程基础" name="编程基础"></a>
 # 编程基础
 
+<a id="markdown-数据类型" name="数据类型"></a>
 ## 数据类型
+<a id="markdown-变量" name="变量"></a>
 ### 变量
+<a id="markdown-值类型" name="值类型"></a>
 #### 值类型
 原类型（Sbyte、Byte、Short、Ushort、Int、Uint、Long、Ulong、Char、Float、Double、Bool、Decimal）、枚举(enum)、结构(struct)
 
 值型就是在栈中分配内存，在申明的同时就初始化，以确保数据不为NULL；
 
+<a id="markdown-引用类型" name="引用类型"></a>
 #### 引用类型
 类、数组、接口、委托、字符串等。
 
@@ -46,12 +51,15 @@
 
 
 
+<a id="markdown-常量" name="常量"></a>
 ### 常量
 **const和static readonly**
 
 
+<a id="markdown-类型转换" name="类型转换"></a>
 ### 类型转换
 
+<a id="markdown-装箱boxing拆箱unboxing" name="装箱boxing拆箱unboxing"></a>
 ### 装箱(boxing)、拆箱(unboxing)
 装箱就是隐式的将一个值型转换为引用型对象。
 ```cs
@@ -83,13 +91,17 @@ L3行，(int)obj的结果为值类型，控制台打印输出需要又一次的�
 
 频繁的装拆箱会造成性能的损耗
 
+<a id="markdown-流程控制" name="流程控制"></a>
 ## 流程控制
+<a id="markdown-顺序" name="顺序"></a>
 ### 顺序
 程序渐进的流程，一条语句一条语句地逐条推进，按预先设置好的步骤来完成功能
 
+<a id="markdown-分支" name="分支"></a>
 ### 分支
 if...else...
 
+<a id="markdown-循环" name="循环"></a>
 ### 循环
 - do{}while()
 - while(true){}
@@ -102,7 +114,9 @@ continue
 return
 
 
+<a id="markdown-数组" name="数组"></a>
 ## 数组
+<a id="markdown-初始化" name="初始化"></a>
 ### 初始化
 在内存中是顺序连续存储的，所以它的索引速度非常快，赋值与修改元素也很简单
 
@@ -115,6 +129,7 @@ int[] array = new int[5];
 int[] array = new int[] { 1, 2, 3, 4, 5 };
 ```
 
+<a id="markdown-array" name="array"></a>
 ### Array
 Array类是一个抽象类，无法实例化该类。
 
@@ -131,6 +146,7 @@ arr.SetValue("b", 1);
 arr.SetValue("c", 2);
 ```
 
+<a id="markdown-循环-1" name="循环-1"></a>
 ### 循环
 ```cs
 //索引遍历（for循环）
@@ -145,6 +161,7 @@ foreach (int data in array){..data..}
 foreach (var data in array){..data..}
 ```
 
+<a id="markdown-二维数组" name="二维数组"></a>
 ### 二维数组
 ```cs
 int[,] array1 = { { 1, 2, 3 }, { 4, 5, 6 } };
@@ -156,8 +173,11 @@ int[][] array = new int[2][] { new int[] { 1, 2 }, new int[] { 1, 2, 3 } };
 int[][] array = new int[][] { new int[] { 1, 2 }, new int[] { 1, 2, 3 }, new int[] { } };
 ```
 
+<a id="markdown-方法" name="方法"></a>
 ## 方法
+<a id="markdown-定义调用形参实参" name="定义调用形参实参"></a>
 ### 定义、调用、形参、实参
+<a id="markdown-重载" name="重载"></a>
 ### 重载
 ```cs
 public int Calculate(int x, int y) {......}
@@ -168,10 +188,13 @@ public double Calculate(double x, double y) {......}
 2. 参数列表必须不相同
 3. 返回值类型可以不相同
 
+<a id="markdown-refoutparams" name="refoutparams"></a>
 ### ref、out、params
 
 
+<a id="markdown-集合" name="集合"></a>
 ## 集合
+<a id="markdown-arraylist" name="arraylist"></a>
 ### ArrayList
 在System.Collections命名空间下，同时继承了IList接口。
 
@@ -189,6 +212,7 @@ arrList.Add(1);//装箱 int->object
 arrList.Add("abc");//装箱 string->object
 arrList.Add(true);//装箱 bool->object
 ```
+<a id="markdown-hashtable" name="hashtable"></a>
 ### Hashtable
 Hashtable也并非类型安全的，用于处理和表现类似keyvalue的键值对，其中key通常可用来快速查找，同时key是区分大小写；
 
@@ -219,7 +243,9 @@ HashtableObject.Contains(key);
 3. 查询字段包含字符串类型
 4. 数据类型不唯一
 
+<a id="markdown-泛型集合" name="泛型集合"></a>
 ## 泛型集合
+<a id="markdown-listt-很重要" name="listt-很重要"></a>
 ### List<T> 很重要！！！
 List<T>类是 ArrayList 类的泛型等效类。
 
@@ -244,6 +270,7 @@ lstRes.Contains("a");
 ```
 更多的方法等待你去探索。。。
 
+<a id="markdown-dictionaytkeytvalue" name="dictionaytkeytvalue"></a>
 ### Dictionay<Tkey,Tvalue>
 在初始化的时候也必须指定其类型，而且他还需要指定一个Key,并且这个Key是唯一的。正因为这样，Dictionary的索引速度非常快。但是也因为他增加了一个Key,Dictionary占用的内存空间比其他类型要大。他是通过Key来查找元素的，元素的顺序是不定的。
 

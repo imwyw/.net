@@ -5,7 +5,9 @@
     - [URL的写法](#url的写法)
 
 <!-- /TOC -->
+<a id="markdown-路由" name="路由"></a>
 # 路由
+<a id="markdown-默认路由" name="默认路由"></a>
 ## 默认路由
 默认的路由在RegisterRoutes 方法中定义（/App_Start/RouteConfig.cs）
 Web应用程序启动时调用Application_Start 方法，该方法会调用RegisterRoutes 方法
@@ -22,6 +24,7 @@ public static void RegisterRoutes(RouteCollection routes)
         );
     }
 ```
+<a id="markdown-url的写法" name="url的写法"></a>
 ## URL的写法
 {controller}/{action}/{id}
 ``` cs

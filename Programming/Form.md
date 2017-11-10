@@ -7,8 +7,11 @@
         - [异步编程](#异步编程)
 
 <!-- /TOC -->
+<a id="markdown-桌面编程" name="桌面编程"></a>
 # 桌面编程
+<a id="markdown-winform" name="winform"></a>
 ## WinForm
+<a id="markdown-窗体交互" name="窗体交互"></a>
 ### 窗体交互
 在窗体间传递数据和方法有很多种，如下图中实现两个窗体之间的互相跳转
 
@@ -126,6 +129,7 @@ public partial class Form2 : Form
 }
 ```
 
+<a id="markdown-数据共享" name="数据共享"></a>
 ### 数据共享
 ![](..\assets\WinForm\QQ截图20171010165505.png)
 
@@ -235,6 +239,7 @@ public static class GlobalData
 
 ```
 
+<a id="markdown-异步编程" name="异步编程"></a>
 ### 异步编程
 实现检索硬盘内的图片信息，异步编程实现：
 

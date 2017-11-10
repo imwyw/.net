@@ -28,51 +28,66 @@
     - [启用windows功能报错 0x80070057](#启用windows功能报错-0x80070057)
 
 <!-- /TOC -->
+<a id="markdown-安装" name="安装"></a>
 # 安装
+<a id="markdown-启用或关闭windows应用" name="启用或关闭windows应用"></a>
 ## 启用或关闭windows应用
 
+<a id="markdown-打开控制面板" name="打开控制面板"></a>
 ### 打开控制面板
 
 ![](../assets/IIS/1.png) 
 
+<a id="markdown-选择程序" name="选择程序"></a>
 ### 选择程序
 
 ![](../assets/IIS/2.png)
 
+<a id="markdown-打开或关闭windows功能" name="打开或关闭windows功能"></a>
 ### 打开或关闭windows功能
 
 ![](../assets/IIS/3.png)
 
+<a id="markdown-启用iis功能" name="启用iis功能"></a>
 ## 启用IIS功能
 
+<a id="markdown-如下图所示勾选功能" name="如下图所示勾选功能"></a>
 ### 如下图所示勾选功能
 
 ![](../assets/IIS/4.png)
 
+<a id="markdown-启用功能成功" name="启用功能成功"></a>
 ### 启用功能成功
 
 ![](../assets/IIS/5.png)
 
+<a id="markdown-打开iis" name="打开iis"></a>
 # 打开IIS
 
+<a id="markdown-方法1-开始菜单-管理工具-iis" name="方法1-开始菜单-管理工具-iis"></a>
 ## 方法1 开始菜单-管理工具-IIS
 
 ![](../assets/IIS/6.png)
 
+<a id="markdown-方法2-运行命令中输入-inetmgr推荐高逼格" name="方法2-运行命令中输入-inetmgr推荐高逼格"></a>
 ## 方法2 运行命令中输入 inetmgr（推荐，高逼格）
 
 ![](../assets/IIS/7.png)
 
+<a id="markdown-方法3-桌面上右键点击此电脑管理" name="方法3-桌面上右键点击此电脑管理"></a>
 ## 方法3 桌面上右键点击此电脑，管理
 
 ![](../assets/IIS/8.png)
 
+<a id="markdown-进入iis管理器" name="进入iis管理器"></a>
 ## 进入IIS管理器
 
 ![](../assets/IIS/9.png)
 
+<a id="markdown-简单测试" name="简单测试"></a>
 # 简单测试
 
+<a id="markdown-默认default-web-site" name="默认default-web-site"></a>
 ## 默认Default Web Site
 
 默认网站的端口为80，可在浏览器中测试：
@@ -86,8 +101,10 @@
 
 ![](../assets/IIS/10.png)
 
+<a id="markdown-简单静态页面测试" name="简单静态页面测试"></a>
 ## 简单静态页面测试
 
+<a id="markdown-新建html页面" name="新建html页面"></a>
 ### 新建html页面
 新建一个html静态页面，内容如下：
 ``` html
@@ -116,6 +133,7 @@
 
 文件保存物理路径为 D:\release\myWeb\1.html
 
+<a id="markdown-添加网站" name="添加网站"></a>
 ### 添加网站
 
 IIS管理器添加一个网站
@@ -132,6 +150,7 @@ IIS管理器添加一个网站
 
 ![](../assets/IIS/12.png)
 
+<a id="markdown-添加默认文档" name="添加默认文档"></a>
 ### 添加默认文档
 
 IIS管理器中选择刚刚添加的网站，添加默认文档
@@ -142,6 +161,7 @@ IIS管理器中选择刚刚添加的网站，添加默认文档
 
 ![](../assets/IIS/14.png)
 
+<a id="markdown-浏览测试" name="浏览测试"></a>
 ### 浏览测试
 
 浏览器中输入地址测试
@@ -152,7 +172,9 @@ IIS管理器中选择刚刚添加的网站，添加默认文档
 
 ![](../assets/IIS/15.png)
 
+<a id="markdown-mvc项目的发布" name="mvc项目的发布"></a>
 # MVC项目的发布
+<a id="markdown-使用文件系统发布" name="使用文件系统发布"></a>
 ## 使用文件系统发布
 设置MVC项目为启动项
 
@@ -170,6 +192,7 @@ UI项目右键选择【发布】选项
 
 ![](../assets/IIS/output_dir.png)
 
+<a id="markdown-添加站点" name="添加站点"></a>
 ## 添加站点
 
 添加一个站点，注意物理路径对应上一步生成的bin包路径
@@ -179,6 +202,7 @@ UI项目右键选择【发布】选项
 直接访问即可 
 >http://localhost:8082
 
+<a id="markdown-发布到iis网站调试" name="发布到iis网站调试"></a>
 ## 发布到IIS网站调试
 发布到IIS的网站如何进入调试，与IDE自带的IIS Express调试不同
 
@@ -189,7 +213,9 @@ MVC项目上右键选择【属性】-【Web】选项，将服务器修改为"本
 
 直接调试（F5）即可进入调试状态
 
+<a id="markdown-疑难杂症" name="疑难杂症"></a>
 # 疑难杂症
+<a id="markdown-启用windows功能报错-0x80070057" name="启用windows功能报错-0x80070057"></a>
 ## 启用windows功能报错 0x80070057
 环境是win10专业版，参数错误
 

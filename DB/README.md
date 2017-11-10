@@ -8,6 +8,7 @@
         - [已安装vs2010无法安装sqlserver2012](#已安装vs2010无法安装sqlserver2012)
 
 <!-- /TOC -->
+<a id="markdown-db" name="db"></a>
 # DB
 常见的数据库有
 
@@ -20,6 +21,7 @@ MySql | Oracle收购 | 中小型企业
 SqlServer | Microsoft | 中小型企业
 SQLite | 开源 | 轻量级，但性能非常强悍
 
+<a id="markdown-sqlserver2012的安装" name="sqlserver2012的安装"></a>
 ## SqlServer2012的安装
 1. 打开setup.exe，选择安装选项，如下图：
 ![](..\assets\SqlServer\Install_1.png)
@@ -85,6 +87,7 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 21. 重启计算机，完成安装：
 ![](..\assets\SqlServer\Install_21.png)
 
+<a id="markdown-配置" name="配置"></a>
 ## 配置
 安装完成后打开【SQL Server ManagementStudio】连接工具，显示如下登录窗口，使用windows身份验证登录或者使用第13步安装配置的密码进行登录。
 
@@ -92,7 +95,9 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 
 ![](..\assets\SqlServer\Config_2.png)
 
+<a id="markdown-常见问题" name="常见问题"></a>
 ## 常见问题
+<a id="markdown-无法登陆" name="无法登陆"></a>
 ### 无法登陆
 - 检查数据库服务是否开启  运行 services.msc查看SQL Server服务是否正在运行；或通过SQL Server配置管理器查看服务是否正在运行；
 
@@ -109,6 +114,7 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 
 - 检查网络是否可以访问，使用ping进行检测
 
+<a id="markdown-已安装vs2010无法安装sqlserver2012" name="已安装vs2010无法安装sqlserver2012"></a>
 ### 已安装vs2010无法安装sqlserver2012
 具体呈现如下：
 

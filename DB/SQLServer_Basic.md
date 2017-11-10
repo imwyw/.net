@@ -33,13 +33,17 @@
     - [范式(NF)](#范式nf)
 
 <!-- /TOC -->
+<a id="markdown-sqlserver基础" name="sqlserver基础"></a>
 # SQLServer基础
+<a id="markdown-语句" name="语句"></a>
 ## 语句
+<a id="markdown-创建测试库" name="创建测试库"></a>
 ### 创建测试库
 ```sql
 CREATE DATABASE [TEST_DB]
 ```
 
+<a id="markdown-ddl-数据定义语言data-definition-language" name="ddl-数据定义语言data-definition-language"></a>
 ### DDL-数据定义语言(Data Definition Language)
 
 包括动词CREATE和DROP。在数据库中创建新表或删除表(CREAT TABLE 或 DROP TABLE)、为表加入索引等。
@@ -54,6 +58,7 @@ CREATE TABLE [table_name]
 );
 ```
 
+<a id="markdown-常见数据类型" name="常见数据类型"></a>
 #### 常见数据类型
 SQL Server数据类型 | 占用字节数 | 表示范围 | 对应的CLR类型 | 数据类型选择 | 适用场景
 ---------------|-------|------|----------|--------|-----
@@ -69,6 +74,7 @@ datetime | 8字节 | 1753 年 1 月 1 日到 9999 年 12 月 31 日 | System.Dat
 time |   |   | System.TimeSpan | time(7) | 表示时间间隔，比如计时和耗時
 varbinary |   |   | System.Byte | varbinary(max) | 表示二进制数据
 
+<a id="markdown-常见数据约束" name="常见数据约束"></a>
 #### 常见数据约束
 constraint_name | 说明
 ----------------|---
@@ -79,6 +85,7 @@ FOREIGN KEY | 保证一个表中的数据匹配另一个表中的值的参照完
 CHECK | 保证列中的值符合指定的条件。
 DEFAULT | 规定没有给列赋值时的默认值。
 
+<a id="markdown-示例" name="示例"></a>
 #### 示例
 
 ```sql
@@ -116,6 +123,7 @@ DROP TABLE [EMP];
 SELECT * INTO EMP_20170925 FROM EMP;
 ```
 
+<a id="markdown-dml-数据操作语言data-manipulation-language" name="dml-数据操作语言data-manipulation-language"></a>
 ### DML-数据操作语言(Data Manipulation Language)
 
 包括动词INSERT，UPDATE和DELETE。它们分别用于添加，修改和删除表中的行。
@@ -137,10 +145,12 @@ DELETE FROM [表名] WHERE 1 = 0 OR 其他条件...;
 TRUNCATE TABLE [表名];
 ```
 
+<a id="markdown-dql-数据查询语言data-query-language" name="dql-数据查询语言data-query-language"></a>
 ### DQL-数据查询语言(Data Query Language)
 
 用以从表中获得数据，确定数据怎样在应用程序给出。保留字SELECT是DQL(也是所有SQL)用得最多的动词，其他DQL常用的保留字有WHERE，ORDER BY，GROUP BY和HAVING。
 
+<a id="markdown-投影查询" name="投影查询"></a>
 #### 投影查询
 投影查询，从列的角度，即选择表中全部列或部分列
 
@@ -153,6 +163,7 @@ SELECT FIELD1 AS NEW_NAME1, FIELD2 AS NEW_NAME2, FIELD3 AS NEW_NAME3... FROM [TA
 SELECT FIELD1 NEW_NAME1, FIELD2 NEW_NAME2, FIELD3 NEW_NAME3... FROM [TABLE_NAME];
 ```
 
+<a id="markdown-选择查询" name="选择查询"></a>
 #### 选择查询
 选择查询，从行的角度，通过WHERE关键字筛选行
 ```sql
@@ -169,6 +180,7 @@ SELECT * FROM [TABLE_NAME] WHERE FIELD1 LIKE 'XXX_';
 -- ORDER BY 排序，默认升序ASC
 SELECT * FROM [TABLE_NAME] WHERE FIELD1 = 'XXX' ORDER BY FIELD2 DESC;
 ```
+<a id="markdown-聚合查询" name="聚合查询"></a>
 #### 聚合查询
 聚合查询，对查询做聚合操作，即统计，如何求和，取平均值等
 
@@ -231,7 +243,9 @@ INSERT INTO TABLE_1 (NAME) VALUES('张');
 SELECT NAME,COUNT(NAME) CNT FROM TABLE_1 GROUP BY NAME HAVING COUNT(NAME) > 1;
 ```
 
+<a id="markdown-多表查询" name="多表查询"></a>
 ### 多表查询
+<a id="markdown-连接join" name="连接join"></a>
 #### 连接JOIN
 ```sql
 CREATE TABLE T_STUDENT
@@ -267,13 +281,16 @@ VALUES  ( 1, 'BigData'),(2,'AI'),(5,'SINGING')
 
 -- 全外连接  full join 或 full outer join
 ```
+<a id="markdown-合并union" name="合并union"></a>
 #### 合并UNION
 将多个结果集进行合并，使用关键字时候 `UNION [ALL]`，有以下需要注意的地方：
 
 1. 两个结果集的数据列数量和数据类型必须保持一致；
 2. 如果有ALL则不会移除重复的行，也不会自动排序，仅仅做合并操作；
 
+<a id="markdown-用法拓展" name="用法拓展"></a>
 ### 用法拓展
+<a id="markdown-distinct" name="distinct"></a>
 #### DISTINCT
 用于返回唯一不同的值。
 ```sql
@@ -286,6 +303,7 @@ SELECT DISTINCT FIELD1, FIELD2 FROM [TABLE_NAME];
 -- 也可以搭配聚合函数使用，统计不同FIELD1字段值的数目
 SELECT COUNT(DISTINCT FIELD1) FROM [TABLE_NAME];
 ```
+<a id="markdown-top" name="top"></a>
 #### TOP
 TOP 子句用于规定要返回的记录的数目。
 ```sql
@@ -299,6 +317,7 @@ SELECT TOP 10 PERCENT * FROM [TABLE_NAME];
 SELECT TOP 10 * FROM [TABLE_NAME] ORDER BY NEWID();
 ```
 
+<a id="markdown-insert-intoselect" name="insert-intoselect"></a>
 #### INSERT INTO...SELECT...
 用于已存在的表的数据拷贝，可以指定列进行拷贝。
 ```sql
@@ -306,6 +325,7 @@ SELECT TOP 10 * FROM [TABLE_NAME] ORDER BY NEWID();
 INSERT INTO TABLE_2(FIELD_1，FIELD_2) SELECT COLUMN_1，COLUMN_2 FROM TABLE_1;
 ```
 
+<a id="markdown-selectinto" name="selectinto"></a>
 #### SELECT...INTO..
 用于不存在的表，将数据从一个表导入另一个表，可以指定列。常用于表备份和记录存档。
 
@@ -316,6 +336,7 @@ INSERT INTO TABLE_2(FIELD_1，FIELD_2) SELECT COLUMN_1，COLUMN_2 FROM TABLE_1;
 SELECT * INTO [TABLE_NAME_2017] FROM [TABLE_NAME];
 ```
 
+<a id="markdown-casewhen" name="casewhen"></a>
 #### CASE...WHEN...
 条件判断语句，用于数据库中信息的转换。Oracle中不仅有CASE...WHEN...还有更方便使用的DECODE()
 
@@ -335,6 +356,7 @@ ELSE 'OTH' END AS NEW_FIELD
 FROM TABLE_NAME;
 ```
 
+<a id="markdown-select-xxx" name="select-xxx"></a>
 #### SELECT XXX()
 需要测试某函数返回值，或者计算某值的时候，可以直接使用SELECT，而不加FROM。
 
@@ -346,6 +368,7 @@ SELECT SYSDATETIME();
 SELECT 1+1 ;
 ```
 
+<a id="markdown-其他语句" name="其他语句"></a>
 ### 其他语句
 - 事务处理语言(TPL)
 
@@ -359,9 +382,12 @@ SELECT 1+1 ;
 
 像DECLARE CURSOR，FETCH INTO和UPDATE WHERE CURRENT用于对一个或多个表单独行的操作。
 
+<a id="markdown-提高效率prompt" name="提高效率prompt"></a>
 ### 提高效率Prompt
 
+<a id="markdown-索引" name="索引"></a>
 ## 索引
+<a id="markdown-什么是索引" name="什么是索引"></a>
 ### 什么是索引？
 SQL索引在数据库优化中占有一个非常大的比例， 一个好的索引的设计，可以让你的效率提高几十甚至几百倍。
 
@@ -384,6 +410,7 @@ SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提�
 2. 索引需要占磁盘空间，除了数据表占数据空间之外，每一个索引还要占一定的物理空间，如果有大量的索引，索引文件可能比数据文件更快达到做大文件尺寸。
 3. 当对表中的数据进行增加，删除和修改的时候，索引也要动态地维护，这样就就降低了数据的维护速度。
 
+<a id="markdown-聚集索引" name="聚集索引"></a>
 ### 聚集索引
 聚集索引基于数据行的键值，在表内排序和存储这些数据行。每个表只能有一个聚集索引，因为数据行本身只能按一个顺序存储。
 1. 每个表只能有一个聚集索引；
@@ -391,6 +418,7 @@ SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提�
 3. 关键值的唯一性使用UNIQUE关键字或者由内部的唯一标识符明确维护。
 4. 在索引的创建过程中，SQL Server临时使用当前数据库的磁盘空间，所以要保证有足够的空间创建索引。
 
+<a id="markdown-非聚集索引" name="非聚集索引"></a>
 ### 非聚集索引
 非聚集索引具有完全独立于数据行的结构，使用非聚集索引不用将物理数据页中的数据按列排序，非聚集索引包含索引键值和指向表数据存储位置的行定位器。
 
@@ -404,6 +432,7 @@ SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提�
 3. 不返回大型结果集的查询。创建筛选索引以覆盖从大型表中返回定义完善的的行子集的查询。
 4. 经常包含在查询的搜索条件(如返回完全匹配的WHERE子句)中的列。
 
+<a id="markdown-索引设计原则" name="索引设计原则"></a>
 ### 索引设计原则
 索引设计不合理或者缺少索引都会对数据库和应用程序的性能造成障碍，高效的索引对于获得良好的性能非常重要。需要参考以下原则：
 1. 索引并非越多越好，以空间换取时间，不仅占用空间增加，而且会影响DML语句的效率。表中内容的更改需要索引做出同步修改，例如新华字典的修改。
@@ -412,6 +441,7 @@ SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提�
 4. 字段里的数据量太大，最好也不要加索引。比如行数据的该字段都保存几百个字符，则添加索引没有意义。
 5. 外键字段建议添加索引，以增加关联效率
 
+<a id="markdown-创建索引" name="创建索引"></a>
 ### 创建索引
 例如员工表EMP中需要经常按照[NAME]进行查询的话，则需要针对[NAME]添加索引
 ```sql
@@ -424,6 +454,7 @@ DROP INDEX TABLE_NAME.IDX_NAME;
 
 ```
 
+<a id="markdown-范式nf" name="范式nf"></a>
 ## 范式(NF)
 范式是“符合某一种级别的关系模式的集合，表示一个关系内部各属性之间的联系的合理化程度”。晦涩难懂，暂且简单理解成"一张数据表的表结构所符合的某种设计标准的级别。"
 

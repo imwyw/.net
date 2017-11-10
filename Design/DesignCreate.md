@@ -10,7 +10,9 @@
         - [小结](#小结)
 
 <!-- /TOC -->
+<a id="markdown-创建型设计模式" name="创建型设计模式"></a>
 # 创建型设计模式
+<a id="markdown-singleton单例模式-只有一个实例" name="singleton单例模式-只有一个实例"></a>
 ## Singleton单例模式-只有一个实例
 说到单例模式,大家第一反应应该就是——什么是单例模式？，从“单例”字面意思上理解为——一个类只有一个实例，所以单例模式也就是保证一个类只有一个实例的一种实现方法罢了(设计模式其实就是帮助我们解决实际开发过程中的方法, 该方法是为了降低对象之间的耦合度,然而解决方法有很多种,所以前人就总结了一些常用的解决方法为书籍,从而把这本书就称为设计模式)，下面给出单例模式的一个官方定义：确保一个类只有一个实例,并提供一个全局访问点。为了帮助大家更好地理解单例模式,大家可以结合下面的类图来进行理解,以及后面也会剖析单例模式的实现思路:
 
@@ -136,7 +138,9 @@ public class Singleton
 * 拓展-关于static方法和单例模式：
 [静态方法和实例化方法的区别](http://www.cnblogs.com/chinhr/archive/2008/04/03/1135561.html)
 
+<a id="markdown-factory-method工厂方法" name="factory-method工厂方法"></a>
 ## Factory Method工厂方法
+<a id="markdown-simple-factory简单工厂" name="simple-factory简单工厂"></a>
 ### Simple Factory简单工厂
 引用大话设计模式中的计算器示例：
 
@@ -220,6 +224,7 @@ public class OperationSub : Operation
 
 简单工厂最大的优点在于工厂类中包含了必要的逻辑判断，根据客户端的选择条件动态实例化相关类，对于客户端来说，去除了与具体产品的依赖。
 
+<a id="markdown-factory-method工厂方法-将实例的生成交给子类" name="factory-method工厂方法-将实例的生成交给子类"></a>
 ### Factory Method工厂方法-将实例的生成交给子类
 
 对于上面简单工厂的示例代码来说，Main方法中并不关心具体调用哪个类的实例，只要传入约定的操作符(+-*/)即可得到运算结果。但如果需要新增运算类型的话，需要修改到原有的工厂类，违背了开放-封闭原则。
@@ -332,6 +337,7 @@ Console.WriteLine(optMul.GetResult());
 
 以上，工厂方法是简单工厂的进一步抽象和推广。但缺点是，每新增一个产品，就需要一个产品工厂类，增加了额外的开发量。
 
+<a id="markdown-abstract-factory模式-抽象工厂-将关联零件组装成产品" name="abstract-factory模式-抽象工厂-将关联零件组装成产品"></a>
 ## Abstract Factory模式-抽象工厂 将关联零件组装成产品
 
 抽象工厂模式，提供一个创建一系列相关或互相依赖对象的接口，而无需指定它们具体的类。
@@ -494,6 +500,7 @@ public abstract class ZhouDuckFactory
 //3、实现抽象工厂派生类中的新增抽象方法。。。
 ```
 
+<a id="markdown-net中抽象工厂模式实现" name="net中抽象工厂模式实现"></a>
 ### .NET中抽象工厂模式实现
 抽象工厂模式在实际中的应用也是相当频繁的，然而在我们.NET类库中也存在应用抽象工厂模式的类，这个类就是System.Data.Common.DbProviderFactory，这个类位于System.Data.dll程序集中,该类扮演抽象工厂模式中抽象工厂的角色，我们可以用reflector反编译工具查看该类的实现：
 
@@ -580,6 +587,7 @@ public sealed class SqlClientFactory : DbProviderFactory, IServiceProvider
 **不足之处：**
 抽象工厂模式很难支持新种类产品的变化。这是因为抽象工厂接口中已经确定了可以被创建的产品集合，如果需要添加新产品，此时就必须去修改抽象工厂的接口，这样就涉及到抽象工厂类的以及所有子类的改变，这样也就违背了“开放—封闭”OCP原则。
 
+<a id="markdown-小结" name="小结"></a>
 ### 小结
 
 **简单工厂**

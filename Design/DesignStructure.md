@@ -10,8 +10,10 @@
         - [总结](#总结-1)
 
 <!-- /TOC -->
+<a id="markdown-结构型设计模式" name="结构型设计模式"></a>
 # 结构型设计模式
 
+<a id="markdown-decorator装饰模式-装饰边框与被装饰物的一致性" name="decorator装饰模式-装饰边框与被装饰物的一致性"></a>
 ## Decorator装饰模式-装饰边框与被装饰物的一致性
 装饰器模式(Decorator Pattern)允许向一个现有的对象添加新的功能，同时又不改变其结构。这种类型的设计模式属于结构型模式，它是作为现有的类的一个包装。
 
@@ -321,6 +323,7 @@ public class FullBorder : Border
 
 http://blog.csdn.net/qiaoquan3/article/details/78203502
 
+<a id="markdown-net中装饰者模式的实现" name="net中装饰者模式的实现"></a>
 ### .NET中装饰者模式的实现
 在.NET 类库中也有装饰者模式的实现，该类就是System.IO.Stream,下面看看Stream类结构：
 
@@ -341,9 +344,11 @@ GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Compress, t
 ```
 
 
+<a id="markdown-接口api的透明性" name="接口api的透明性"></a>
 ### 接口API的透明性
 在Decorator模式中，装饰器和被装饰物具有一致性，也就是装饰类和被装饰类具有相同的接口。如此形成一个对象链，类似于递归结构，就像是剥洋葱一样，以为洋葱心要出来了，结果发现还是一层皮。
 
+<a id="markdown-总结" name="总结"></a>
 ### 总结
 **优点：**
 
@@ -357,6 +362,7 @@ GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Compress, t
 
 装饰者模式采用对象组合而非继承的方式实现了再运行时动态地扩展对象功能的能力，而且可以根据需要扩展多个功能，避免了单独使用继承带来的 ”灵活性差“和”多子类衍生问题“。同时它很好地符合面向对象设计原则中 ”优先使用对象组合而非继承“和”开放-封闭“原则。
 
+<a id="markdown-proxy代理模式-只在必要时生成实例" name="proxy代理模式-只在必要时生成实例"></a>
 ## Proxy代理模式-只在必要时生成实例
 代理模式：为其他对象提供一种代理以便控制对这个对象的访问。
 
@@ -370,6 +376,7 @@ GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Compress, t
 
 2. 动态代理(通过程序动态生成代理类，该代理类不是我们自己定义的。而是由程序自动生成)
 
+<a id="markdown-静态代理" name="静态代理"></a>
 ### 静态代理
 Proxy有很多种变化形式：
 
@@ -589,6 +596,7 @@ public class StarProxy : Star
 }
 ```
 
+<a id="markdown-总结-1" name="总结-1"></a>
 ### 总结
 优点：
 

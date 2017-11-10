@@ -12,7 +12,9 @@
         - [XDocument(方便、快捷)](#xdocument方便快捷)
 
 <!-- /TOC -->
+<a id="markdown-xml" name="xml"></a>
 # XML
+<a id="markdown-xml标准" name="xml标准"></a>
 ## XML标准
 可扩展标记语言（英语：Extensible Markup Language，简称：XML），是一种标记语言。标记指计算机所能理解的信息符号，通过此种标记，计算机之间可以处理包含各种信息的文章等。
 
@@ -22,12 +24,14 @@ XML在.NET Framework中有重要作用。不仅允许在应用程序中使用XML
 
 它和超文本标记语言(HTML)语法区别：超文本标记语言的标记不是所有的都需要成对出现，它则要求所有的标记必须成对出现；HTML标记不区分大小写，它则大小敏感，即区分大小写。
 
+<a id="markdown-特点" name="特点"></a>
 ### 特点
 - 必须有一个根元素(有且只有一个)
 - 元素必须有结束，可以简写，例如：<student/>
 - 元素之间必须合理嵌套
 - 标记对于大小写是敏感的
 
+<a id="markdown-格式" name="格式"></a>
 ### 格式
 基本格式如下：
 ```xml
@@ -66,7 +70,9 @@ XML在.NET Framework中有重要作用。不仅允许在应用程序中使用XML
 </heros>
 ```
 
+<a id="markdown-读写xml" name="读写xml"></a>
 ## 读写XML
+<a id="markdown-xmlwriter" name="xmlwriter"></a>
 ### XmlWriter
 XmlWriter的用法，使用XmlWriter生成以下格式的student.xml文件：
 ```xml
@@ -117,6 +123,7 @@ using (XmlWriter xr = XmlWriter.Create(fileName, xmlSet))
 }
 ```
 
+<a id="markdown-xmlreader" name="xmlreader"></a>
 ### XmlReader
 读取一点，显示一点，并不是全部加载内存中才能进行显示
 
@@ -156,6 +163,7 @@ using (XmlReader reader = XmlReader.Create(fileName))
 ```
 
 
+<a id="markdown-xmldocument" name="xmldocument"></a>
 ### XmlDocument
 文档对象模型XmlDocument，适用于并不是很大的文档。因为需要全部加载到内存中。
 
@@ -252,6 +260,7 @@ docMaven.Save(mavenXmlPath);
 
 ```
 
+<a id="markdown-xmldocument和xmlreader" name="xmldocument和xmlreader"></a>
 ### XmlDocument和XmlReader
 - Dom模型
 
@@ -263,6 +272,7 @@ docMaven.Save(mavenXmlPath);
 
 流模型很好的解决了这个问题，因为它对XML文件的访问采用的是流的概念，也就是说，任何时候在内存中只有当前节点，但它也有它的不足，它是只读的，仅向前的，不能在文档中执行向后导航操作。
 
+<a id="markdown-xdocument方便快捷" name="xdocument方便快捷"></a>
 ### XDocument(方便、快捷)
 LINQ to XML API
 

@@ -13,7 +13,9 @@
     - [对象持久化](#对象持久化)
 
 <!-- /TOC -->
+<a id="markdown-文件流" name="文件流"></a>
 # 文件、流
+<a id="markdown-路径" name="路径"></a>
 ## 路径
 用户在磁盘上寻找文件时，所历经的文件夹线路叫路径。Windows 约定使用反斜线 (\\) 作为路径中的分隔符。UNIX 系统使用正斜线 (/)。
 
@@ -45,6 +47,7 @@ Path.GetFileNameWithoutExtension(@"E:\Attachment\iflytek.txt");//iflytek
 //其他方法自行查看研究
 ```
 
+<a id="markdown-文件file" name="文件file"></a>
 ## 文件File
 - File:静态类，提供文件操作的静态方法，无法被实例化。
 - FileInfo:可以被实例化，一个对象对应一个文件。
@@ -77,6 +80,7 @@ else
 }
 ```
 
+<a id="markdown-目录" name="目录"></a>
 ## 目录
 目录仅指定到文件夹，而非文件。
 
@@ -113,7 +117,9 @@ else
 //使用DirectoryInfo方案省略。。。
 ```
 
+<a id="markdown-文件读写" name="文件读写"></a>
 ## 文件读写
+<a id="markdown-文本文件" name="文本文件"></a>
 ### 文本文件
 ```cs
 string path = @"D:\attachment\iflytek.txt";
@@ -128,6 +134,7 @@ File.WriteAllText(path, "hello world", Encoding.UTF8);
 File.AppendAllText(path, "how do u do", Encoding.UTF8);
 ```
 
+<a id="markdown-流" name="流"></a>
 ## 流
 **流** 是一个用于传输数据的对象，按照传输方向分为读取流/写入流：
 - 读取流，从外部源到程序中，即从硬盘到内存。
@@ -139,6 +146,7 @@ File.AppendAllText(path, "how do u do", Encoding.UTF8);
 - FileStream(文件流)，这个类主要用于在二进制文件中读写二进制，也可以使用读写任何文件。
 - StreamReader(流读取器)和StreamWriter(流写入器)，这两个专门用于读写文本文件。
 
+<a id="markdown-filestream" name="filestream"></a>
 ### FileStream
 读写通过字节序列的方式
 
@@ -163,6 +171,7 @@ string content = Encoding.UTF8.GetString(array);
 fs.Close();
 ```
 
+<a id="markdown-streamreaderstreamwriter" name="streamreaderstreamwriter"></a>
 ### StreamReader/StreamWriter
 ```cs
 string path = @"E:\Attachment\iflytek\iflytek.txt";
@@ -241,6 +250,7 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
 }
 ```
 
+<a id="markdown-binarywriterbinaryreader" name="binarywriterbinaryreader"></a>
 ### BinaryWriter/BinaryReader
 ```cs
 string path = @"E:\Attachment\iflytek\stu.bin";
@@ -263,6 +273,7 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
 }
 ```
 
+<a id="markdown-对象持久化" name="对象持久化"></a>
 ## 对象持久化
 ```cs
 [Serializable]

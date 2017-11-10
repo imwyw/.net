@@ -19,7 +19,9 @@
         - [CompositionFailedException](#compositionfailedexception)
 
 <!-- /TOC -->
+<a id="markdown-aspnet基础" name="aspnet基础"></a>
 # ASP.NET基础
+<a id="markdown-状态管理" name="状态管理"></a>
 ## 状态管理
 在开发互联网程序时，不可避免的几个问题需要解决：
 1. 程序数据有些是某个用户独享，而有些是所有用户共享，这块如何设计？
@@ -55,6 +57,7 @@ Context
 2. Response：HTTP响应对象，用于收集服务器端的信息，并发送到浏览器。
 3. Context：当前上下文对象，封装了与当前页关联的信息。
 
+<a id="markdown-数据缓存" name="数据缓存"></a>
 ### 数据缓存
 
 方法 | 信息量大小 | 作用域和保存时间 | 应用范围 | 保存位置
@@ -68,6 +71,7 @@ Cookie | 小量,简单的数据 | 可以根据需要设定 | 单个用户 | 客�
 
 可以在全局应用程序类(Global.asax)中进行数据缓存的模拟。
 
+<a id="markdown-session" name="session"></a>
 #### Session
 
 要想在.ashx中引用 session 必须 using System.Web.SessionState ，继承IReadOnlySessionState/IRequiresSessionState
@@ -91,6 +95,7 @@ context.Session["FirstName"] = firstName;
 firstName = (string)(context.Session["FirstName"]);
 ```
 
+<a id="markdown-application" name="application"></a>
 #### Application
 多用户数据共享时使用，属于应用程序级别对象；用它保存的数据会在一个应用内多个用户信息共享，并在服务器运行期间持久保存该数据。服务器一关闭，Application对象就自动消失。允许共享 ASP.NET 应用程序内多个会话和请求之间的全局信息。
 
@@ -105,6 +110,7 @@ Application["AllGuests"] =(int)Application["AllGuests"]+ 1;//访问网站的总�
 Application.UnLock();//同步结束
 ```
 
+<a id="markdown-cache" name="cache"></a>
 #### Cache
 Cache对象用于在HTTP请求间保存页面或数据。该对象的使用可以极大地提高整个应用程序的效率。常用于将频繁访问的大量服务器资源存储在内存中，当用户发出相同的请求后服务器不再次处理而是将Cache中保存的信息返回给用户，节省了服务器处理请求的时间。其生存期依赖于该应用程序的生存期。当重新启动应用程序时，将重新创建其Cache对象的实例。使用Cache对象保存信息的代码如下。
 
@@ -117,6 +123,7 @@ context.Cache.Insert("nameID","0001");
 string NameID = context.Cache["nameID"].ToString();
 ```
 
+<a id="markdown-cookie" name="cookie"></a>
 #### Cookie
 Cookie 提供了一种在 Web 应用程序中存储用户特定信息的方法。例如，当用户访问您的站点时，您可以使用 Cookie 存储用户首选项或其他信息。当该用户再次访问您的网站时，应用程序便可以检索以前存储的信息。
 
@@ -165,7 +172,9 @@ if (context.Request.Cookies["CurUser"] != null)
 document.cookie;
 ```
 
+<a id="markdown-数据传递问题" name="数据传递问题"></a>
 ### 数据传递问题
+<a id="markdown-request" name="request"></a>
 #### Request
 请求对象，用来从客户端取得信息，包括浏览器种类、用户输入表单的数据、Cookies中的数据等信息。
 
@@ -176,12 +185,14 @@ document.cookie;
 3. Cookies：获取客户端的Cookie值
 4. ServerVariables：获得环境变量值
 
+<a id="markdown-response" name="response"></a>
 #### Response
 响应对象，用于将服务器端的信息发送到浏览器，包括：
 1. 将服务器端的数据用超文本的格式发送到浏览器上：Response.Write(“js脚本或html脚本”);
 2. 重定向浏览器到另一个URL：Response.Redirect(“url”, true);
 3. 设置Cookie的值：Response.Cookies.Add(cookie);
 
+<a id="markdown-aspnet静态网页实现简单登录跳转" name="aspnet静态网页实现简单登录跳转"></a>
 ## ASP.NET静态网页实现简单登录跳转
 新建Web应用程序，如下图：
 ![](..\assets\asp.net\HtmlLoginDemo1.png)
@@ -298,12 +309,15 @@ context.Server.Transfer("Index.html");
 
 这种方式的弊端是表单提交即发生跳转，无论验证成功与否。这个问题后面会讲到。。。
 
+<a id="markdown-ajax" name="ajax"></a>
 ## Ajax
+<a id="markdown-同步异步" name="同步异步"></a>
 ### 同步异步
 同步：发送方发出请求后，等接收方发回响应后，才会发送下一个请求。
 
 异步：发送方发出请求后，不等接收方发回响应，直接发送下一个请求。
 
+<a id="markdown-通过js请求" name="通过js请求"></a>
 ### 通过js请求
 
 原生js的ajax请求流程：
@@ -415,6 +429,7 @@ function formatParams(data) {
 }
 ```
 
+<a id="markdown-json" name="json"></a>
 ## JSON
 JSON(JavaScript Object Notation)是一种轻量级的数据交换格式，易于人阅读和编写，同时也易于机器解析和生成。它可以构建以下两种结构：
 1. “名称/值”对的集合
@@ -443,7 +458,9 @@ JSON.stringify({region:'芜湖市',citys:['镜湖区','弋江区','鸠江区','�
 JSON.parse('{"id":123,"userid":"coder1"}');// {id: 123, userid: "coder1"}
 ```
 
+<a id="markdown-疑难杂症" name="疑难杂症"></a>
 ## 疑难杂症
+<a id="markdown-compositionfailedexception" name="compositionfailedexception"></a>
 ### CompositionFailedException
 
 ![](..\assets\asp.net\Microsoft.VisualStudio.Composition.CompositionFailedException.png)
