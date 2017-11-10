@@ -2,6 +2,9 @@
 
 - [行为型设计模式](#行为型设计模式)
     - [Iterator 迭代器模式-一个一个的遍历](#iterator-迭代器模式-一个一个的遍历)
+        - [实现](#实现)
+        - [.NET中迭代器模式的应用](#net中迭代器模式的应用)
+        - [IEnumerator接口](#ienumerator接口)
     - [Observer 观察者模式-发送状态变化的通知](#observer-观察者模式-发送状态变化的通知)
         - [适用场景](#适用场景)
         - [优缺点](#优缺点)
@@ -14,6 +17,8 @@
 ## Iterator 迭代器模式-一个一个的遍历
 迭代器模式提供了一种方法顺序访问一个聚合对象（理解为集合对象）中各个元素，而又无需暴露该对象的内部表示，这样既可以做到不暴露集合的内部结构，又可让外部代码透明地访问集合内部的数据。
 
+<a id="markdown-实现" name="实现"></a>
+### 实现
 既然，迭代器模式承担了遍历集合对象的职责，则该模式自然存在2个类，一个是聚合类，一个是迭代器类。在面向对象涉及原则中还有一条是针对接口编程，所以，在迭代器模式中，抽象了2个接口，一个是聚合接口，另一个是迭代器接口，这样迭代器模式中就四个角色了，具体的类图如下所示：
 
 ![](..\assets\Design\Iterator.png)
@@ -130,6 +135,146 @@ public class ConcreteIterator : IIterator
     }
 }
 ```
+
+<a id="markdown-net中迭代器模式的应用" name="net中迭代器模式的应用"></a>
+### .NET中迭代器模式的应用
+在.NET下，迭代器模式中的聚集接口和迭代器接口都已经存在了，其中IEnumerator接口扮演的就是迭代器角色，IEnumberable接口则扮演的就是抽象聚集的角色，只有一个GetEnumerator()方法，关于这两个接口的定义可以自行参考MSDN。在.NET 1.0中，.NET 类库中很多集合都已经实现了迭代器模式，大家可以用反编译工具Reflector来查看下mscorlib程序集下的System.Collections命名空间下的类，这里给出ArrayList的定义代码，具体实现代码可以自行用反编译工具查看，具体代码如下所示：
+
+```cs
+public class ArrayList : IList, ICollection, IEnumerable, ICloneable
+{
+    // Fields
+    private const int _defaultCapacity = 4;
+    private object[] _items;
+    private int _size;
+    [NonSerialized]
+    private object _syncRoot;
+    private int _version;
+    private static readonly object[] emptyArray;
+
+    public virtual IEnumerator GetEnumerator();
+    public virtual IEnumerator GetEnumerator(int index, int count);
+
+    // Properties
+    public virtual int Capacity { get; set; }
+    public virtual int Count { get; }
+    //.............. 更多代码请自行用反编译工具Reflector查看
+}
+```
+
+<a id="markdown-ienumerator接口" name="ienumerator接口"></a>
+### IEnumerator接口
+使用IEnumerator接口方式实现一个迭代器：
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        ConcreteAggregate agg = new ConcreteAggregate();
+        StrIterator ite = new StrIterator(agg);
+        while (ite.MoveNext())
+        {
+            Console.Write(ite.Current);
+        }
+        Console.WriteLine();
+        
+        //foreach迭代
+        foreach (var item in agg)
+        {
+            Console.Write(item);
+        }
+    }
+}
+
+/// <summary>
+/// 具体集合类
+/// 实现IEnumerable接口可以用foreach进行遍历
+/// 依靠MoveNext和Current来达到Foreach的遍历，返回自定义的一个迭代器
+/// </summary>
+public class ConcreteAggregate : IEnumerable
+{
+    string[] collections;
+
+    public ConcreteAggregate()
+    {
+        collections = new string[] { "h", "e", "l", "l", "o" };
+    }
+
+    /// <summary>
+    /// 返回集合的长度
+    /// </summary>
+    /// <returns></returns>
+    public int GetLength()
+    {
+        return collections.Length;
+    }
+
+    /// <summary>
+    /// 返回指定索引位置的元素
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public string ElementAt(int index)
+    {
+        return collections[index];
+    }
+
+    /// <summary>
+    /// 构造一个自定义迭代器
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator GetEnumerator()
+    {
+        return new StrIterator(this);
+    }
+}
+
+/// <summary>
+/// 自定义一个迭代器，必须实现IEnumerator接口
+/// 实现IEnumerator就是为了集合类的调用
+/// </summary>
+public class StrIterator : IEnumerator
+{
+    ConcreteAggregate aggregate;
+    int index;
+    string current;
+
+    public StrIterator(ConcreteAggregate agg)
+    {
+        aggregate = agg;
+    }
+
+    public object Current
+    {
+        get
+        {
+            return current;
+        }
+    }
+
+    public bool MoveNext()
+    {
+        if (index + 1 > aggregate.GetLength())
+        {
+            return false;
+        }
+        else
+        {
+            current = aggregate.ElementAt(index);
+            index++;
+            return true;
+        }
+    }
+
+    public void Reset()
+    {
+        index = 0;
+    }
+}
+```
+
+https://www.cnblogs.com/fangyz/p/5721269.html
 
 <a id="markdown-observer-观察者模式-发送状态变化的通知" name="observer-观察者模式-发送状态变化的通知"></a>
 ## Observer 观察者模式-发送状态变化的通知
