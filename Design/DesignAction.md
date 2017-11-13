@@ -5,6 +5,7 @@
         - [实现](#实现)
         - [.NET中迭代器模式的应用](#net中迭代器模式的应用)
         - [IEnumerator接口](#ienumerator接口)
+        - [新特性简化迭代器的实现](#新特性简化迭代器的实现)
     - [Observer 观察者模式-发送状态变化的通知](#observer-观察者模式-发送状态变化的通知)
         - [适用场景](#适用场景)
         - [优缺点](#优缺点)
@@ -274,7 +275,43 @@ public class StrIterator : IEnumerator
 }
 ```
 
-https://www.cnblogs.com/fangyz/p/5721269.html
+<a id="markdown-新特性简化迭代器的实现" name="新特性简化迭代器的实现"></a>
+### 新特性简化迭代器的实现
+在C# 2.0后可以通过yield return语句简化迭代器的实现。yield是C#为了简化遍历操作实现的语法糖，我们知道如果要某个类型支持遍历就必须要实现系统接口IEnumerable，这个接口后续实现比较繁琐要写一大堆代码才能支持真正的遍历功能。如下：
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        ConcreteAggregate agg = new ConcreteAggregate();
+        foreach (string item in agg)
+        {
+            Console.Write(item);
+        }
+    }
+}
+
+public class ConcreteAggregate : IEnumerable
+{
+    string[] collections;
+
+    public ConcreteAggregate()
+    {
+        collections = new string[] { "h", "e", "l", "l", "o" };
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        //这样就不需要额外定义一个迭代器来实现IEnumerator
+        for (int i = 0; i < collections.Length; i++)
+        {
+            yield return collections[i];
+        }
+    }
+}
+```
+
 
 <a id="markdown-observer-观察者模式-发送状态变化的通知" name="observer-观察者模式-发送状态变化的通知"></a>
 ## Observer 观察者模式-发送状态变化的通知
