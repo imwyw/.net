@@ -5,7 +5,7 @@
 ## svn pre-commit
 强制写提交消息：
 ```bat
-@echo off  <!-- TOC -->
+<!-- TOC -->
 
 - [svn](#svn)
     - [svn pre-commit](#svn-pre-commit)
@@ -16,13 +16,9 @@
  set REPOS=%1  
  set TXN=%2          
 
- 
-
 rem 保证输入8个字符 
  svnlook log %REPOS% -t %TXN% | findstr "........" > nul 
  if %errorlevel% gtr 0 goto :err_action
-
- 
 
 rem 过滤空格字符 
 svnlook log %REPOS% -t %TXN% | findstr /ic:"        " > nul 
@@ -34,14 +30,11 @@ svnlook log %REPOS% -t %TXN% | findstr /ic:"        " > nul
  echo 输入的日志信息不少于8个字符说明(或4个汉字),谢谢! >&2 
  echo *******************禁止空格数据***************** >&2
 
-
  goto :err_exit
-
- 
 
 :err_exit 
  exit 1 
-  
+
  :success 
  exit 0
 ```
