@@ -706,6 +706,99 @@ public class ConcreteSubscriber
 
 ![](..\assets\Design\Visitor.png)
 
+基本Visitor的实现：
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        ObjectStructure objectStructure = new ObjectStructure();
+        foreach (Element item in objectStructure.lstElement)
+        {
+            //每个元素接收访问者访问
+            item.Accept(new ConcreteVistor());
+        }
+    }
+}
+
+public abstract class Element
+{
+    public abstract void Accept(IVistor vistor);
+    public abstract void Print();
+}
+
+public class ElementA : Element
+{
+    public override void Accept(IVistor vistor)
+    {
+        vistor.Visit(this);
+    }
+
+    public override void Print()
+    {
+        Console.WriteLine("ElementA");
+    }
+}
+
+public class ElementB : Element
+{
+    public override void Accept(IVistor vistor)
+    {
+        vistor.Visit(this);
+    }
+
+    public override void Print()
+    {
+        Console.WriteLine("ElementB");
+    }
+}
+
+/// <summary>
+/// 抽象访问者接口
+/// </summary>
+public interface IVistor
+{
+    void Visit(ElementA a);
+    void Visit(ElementB b);
+}
+
+public class ConcreteVistor : IVistor
+{
+    public void Visit(ElementB b)
+    {
+        b.Print();
+    }
+
+    public void Visit(ElementA a)
+    {
+        a.Print();
+    }
+}
+
+public class ObjectStructure
+{
+    public List<Element> lstElement { get; protected set; }
+
+    public ObjectStructure()
+    {
+
+        lstElement = new List<Element>();
+        Random rd = new Random();
+        for (int i = 0; i < 10; i++)
+        {
+            if (rd.Next(0, 2) % 2 == 0)
+            {
+                lstElement.Add(new ElementA());
+            }
+            else
+            {
+                lstElement.Add(new ElementB());
+            }
+        }
+    }
+}
+```
+
 下面我们以一个财务相关账单示例，在一个账单中会有多个交易流水，交易类型可能是工资、饮食、购物、股票、开房等等各种，但可以划分两个固定的类型，收入和支出。
 那么在这样的账单示例中，交流流水的收入和支出类型属于不会变动的元素，属于一种数据结构。
 现要求针对账单里的所有交易流水进行操作，操作的种类并不固定，so 我们并不能将对数据的操作放在数据结构中进行封装，而是应该将对数据的操作和数据结构本身分离开来，这就是Vistor模式。
