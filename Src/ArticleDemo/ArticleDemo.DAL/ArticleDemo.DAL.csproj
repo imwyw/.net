@@ -48,6 +48,10 @@
     <Compile Include="UserDao.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ArticleDemo.Common\ArticleDemo.Common.csproj">
+      <Project>{8e5f3da4-815c-49b6-8d40-c219ff6630dd}</Project>
+      <Name>ArticleDemo.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ArticleDemo.Model\ArticleDemo.Model.csproj">
       <Project>{ec3b2cf8-84a3-42b5-9abc-1eb407f6eaca}</Project>
       <Name>ArticleDemo.Model</Name>

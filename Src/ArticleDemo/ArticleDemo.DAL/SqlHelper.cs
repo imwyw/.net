@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArticleDemo.Common;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -43,12 +44,14 @@ namespace ArticleDemo.DAL
             }
             try
             {
+                LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
                 int res = cmd.ExecuteNonQuery();
                 return res;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
+                LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
                 return -1;
             }
             finally
@@ -85,12 +88,14 @@ namespace ArticleDemo.DAL
             }
             try
             {
+                LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
                 int res = int.Parse(cmd.ExecuteScalar().ToString());
                 return res;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
                 return -1;
             }
             finally
@@ -129,6 +134,7 @@ namespace ArticleDemo.DAL
             }
             try
             {
+                LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
                 SqlDataReader reader = cmd.ExecuteReader();
                 List<T> lstRes = new List<T>();
                 T entity = new T();
@@ -154,6 +160,7 @@ namespace ArticleDemo.DAL
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
                 return null;
             }
             finally
@@ -192,6 +199,7 @@ namespace ArticleDemo.DAL
             }
             try
             {
+                LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
                 SqlDataReader reader = cmd.ExecuteReader();
                 T entity = new T();
 
@@ -218,7 +226,8 @@ namespace ArticleDemo.DAL
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
+                LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
 
                 //需要限定where T : class, new() 有class引用类型才可确定返回null
                 return null;
@@ -259,6 +268,7 @@ namespace ArticleDemo.DAL
 
             try
             {
+                LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
                 DataTable dt = new DataTable();
                 SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                 adapter.Fill(dt);
@@ -268,6 +278,7 @@ namespace ArticleDemo.DAL
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
                 return null;
             }
             finally
@@ -324,6 +335,7 @@ namespace ArticleDemo.DAL
 
             try
             {
+                LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
                 // 执行命令
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -353,6 +365,7 @@ namespace ArticleDemo.DAL
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
                 return null;
             }
             finally
@@ -362,6 +375,25 @@ namespace ArticleDemo.DAL
                     conn.Close();
                 }
             }
+        }
+
+        /// <summary>
+        /// 将command属性SqlParameterCollection转换为字符串显示
+        /// </summary>
+        /// <param name="sqlParams"></param>
+        /// <returns></returns>
+        static string Params2String(SqlParameterCollection sqlParams)
+        {
+            StringBuilder builder = new StringBuilder("SqlValues:");
+            if (sqlParams == null)
+            {
+                return string.Empty;
+            }
+            foreach (SqlParameter item in sqlParams)
+            {
+                builder.AppendFormat("[{0},{1}],", item.ParameterName, item.Value);
+            }
+            return builder.ToString().Substring(0, builder.ToString().Length - 1);
         }
     }
 
@@ -380,4 +412,6 @@ namespace ArticleDemo.DAL
         /// </summary>
         public List<T> Rows { get; set; }
     }
+
+
 }

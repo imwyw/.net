@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FE3FA3F8-B91F-4537-A409-174761BCEDBF}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{949CEC08-7DDF-4DD7-9161-F3B3493F786F}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArticleDemo.BLL</RootNamespace>
-    <AssemblyName>ArticleDemo.BLL</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>DecoratorStrBorder</RootNamespace>
+    <AssemblyName>DecoratorStrBorder</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,29 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArticleMgr.cs" />
-    <Compile Include="CategoryMgr.cs" />
-    <Compile Include="IUserMgr.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserMgr.cs" />
-    <Compile Include="UserMgrProxy.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ArticleDemo.Common\ArticleDemo.Common.csproj">
-      <Project>{8e5f3da4-815c-49b6-8d40-c219ff6630dd}</Project>
-      <Name>ArticleDemo.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ArticleDemo.DAL\ArticleDemo.DAL.csproj">
-      <Project>{518c18f6-6e41-47ec-92ef-65f497dce765}</Project>
-      <Name>ArticleDemo.DAL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ArticleDemo.Model\ArticleDemo.Model.csproj">
-      <Project>{ec3b2cf8-84a3-42b5-9abc-1eb407f6eaca}</Project>
-      <Name>ArticleDemo.Model</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

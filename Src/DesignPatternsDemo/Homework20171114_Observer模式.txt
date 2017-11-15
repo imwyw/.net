@@ -1,0 +1,11 @@
+任务一、
+完成课后习题P204习题17-1
+
+任务二、
+编写一个继承NumberGenerator类具有生成Fibonacci数列的子类，构造函数有一个int型参数表示生成数列的长度。
+让DigitObserver和GraphObserver观察数列的生成过程。
+
+备注：
+斐波那契数列（Fibonacci sequence）
+F[n]=F[n-1]+F[n-2](n>=2,F[0]=0,F[1]=1)
+https://baike.baidu.com/item/%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97

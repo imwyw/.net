@@ -37,7 +37,7 @@ namespace ArticleDemo.WebUI.Handlers
             string name = context.Request["name"];
             string pwd = context.Request["pwd"];
 
-            User user = new UserMgr().Login(name, pwd);
+            User user = new UserMgrProxy().Login(name, pwd);
             if (null != user)
             {
                 //将当前用户写入到session中
@@ -57,7 +57,7 @@ namespace ArticleDemo.WebUI.Handlers
             user.Pwd = context.Request["pwd"];
             user.Zh_Name = context.Request["name"];
 
-            bool res = new UserMgr().Add(user);
+            bool res = new UserMgrProxy().Add(user);
             if (res)
             {
                 context.Response.Write("{\"status\":true}");
