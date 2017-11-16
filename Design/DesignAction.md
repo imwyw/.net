@@ -712,39 +712,54 @@ class Program
 {
     static void Main(string[] args)
     {
-        ObjectStructure objectStructure = new ObjectStructure();
-        foreach (Element item in objectStructure.lstElement)
-        {
-            //每个元素接收访问者访问
-            item.Accept(new ConcreteVistor());
-        }
+        ObjectStructure objs = new ObjectStructure();
+        objs.Show();
     }
 }
 
+/// <summary>
+/// 数据结构的抽象类
+/// </summary>
 public abstract class Element
 {
-    public abstract void Accept(IVistor vistor);
+    /// <summary>
+    /// 接收访问者访问的方法
+    /// </summary>
+    /// <param name="v"></param>
+    public abstract void Accept(Visitor v);
+    /// <summary>
+    /// 数据具有的方法
+    /// </summary>
     public abstract void Print();
 }
-
-public class ElementA : Element
+/// <summary>
+/// 具体元素A
+/// </summary>
+public class ConcreteElementA : Element
 {
-    public override void Accept(IVistor vistor)
+    /// <summary>
+    /// 接收访问者访问实现
+    /// </summary>
+    /// <param name="v"></param>
+    public override void Accept(Visitor v)
     {
-        vistor.Visit(this);
+        v.Visit(this);
     }
 
+    /// <summary>
+    /// 元素A的方法
+    /// </summary>
     public override void Print()
     {
         Console.WriteLine("ElementA");
     }
 }
 
-public class ElementB : Element
+public class ConcreteElementB : Element
 {
-    public override void Accept(IVistor vistor)
+    public override void Accept(Visitor v)
     {
-        vistor.Visit(this);
+        v.Visit(this);
     }
 
     public override void Print()
@@ -754,46 +769,68 @@ public class ElementB : Element
 }
 
 /// <summary>
-/// 抽象访问者接口
+/// 访问者抽象类
 /// </summary>
-public interface IVistor
+public abstract class Visitor
 {
-    void Visit(ElementA a);
-    void Visit(ElementB b);
+    public abstract void Visit(ConcreteElementA em);
+    public abstract void Visit(ConcreteElementB em);
 }
 
-public class ConcreteVistor : IVistor
+/// <summary>
+/// 具体访问者
+/// </summary>
+public class ConcreteVisitor : Visitor
 {
-    public void Visit(ElementB b)
+    /// <summary>
+    /// 访问实现，操作实例
+    /// </summary>
+    /// <param name="em"></param>
+    public override void Visit(ConcreteElementA em)
     {
-        b.Print();
+        //todo 针对 ElementA实例 xxxx
+        em.Print();
     }
 
-    public void Visit(ElementA a)
+    /// <summary>
+    /// 访问实现，操作实例
+    /// </summary>
+    /// <param name="em"></param>
+    public override void Visit(ConcreteElementB em)
     {
-        a.Print();
+        //todo 针对 ElementB实例 xxxx
+        em.Print();
     }
 }
 
+/// <summary>
+/// 对象结构，模拟具体业务
+/// </summary>
 public class ObjectStructure
 {
-    public List<Element> lstElement { get; protected set; }
-
+    List<Element> lst = new List<Element>();
+    Random rd = new Random();
     public ObjectStructure()
     {
-
-        lstElement = new List<Element>();
-        Random rd = new Random();
         for (int i = 0; i < 10; i++)
         {
             if (rd.Next(0, 2) % 2 == 0)
             {
-                lstElement.Add(new ElementA());
+                lst.Add(new ConcreteElementA());
             }
             else
             {
-                lstElement.Add(new ElementB());
+                lst.Add(new ConcreteElementB());
             }
+        }
+    }
+
+    public void Show()
+    {
+        Visitor v1 = new ConcreteVisitor();
+        foreach (Element item in lst)
+        {
+            item.Accept(v1);
         }
     }
 }
