@@ -1,3 +1,10 @@
+<!-- TOC -->
+
+- [svn](#svn)
+    - [svn pre-commit](#svn-pre-commit)
+
+<!-- /TOC -->
+
 <a id="markdown-svn" name="svn"></a>
 # svn
 
@@ -5,12 +12,7 @@
 ## svn pre-commit
 强制写提交消息：
 ```bat
-<!-- TOC -->
 
-- [svn](#svn)
-    - [svn pre-commit](#svn-pre-commit)
-
-<!-- /TOC -->
  setlocal 
 
  set REPOS=%1  
