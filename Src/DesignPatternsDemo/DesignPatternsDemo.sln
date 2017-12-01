@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserverHomework1114", "Obs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserverTencentDemo", "ObserverTencentDemo\ObserverTencentDemo.csproj", "{2EE21D0E-3724-45CE-8BD4-425416FAE8D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisitorDemo", "VisitorDemo\VisitorDemo.csproj", "{8FFF36A5-AA93-4106-B35D-E95B30A77A6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisitorBillDemo", "VisitorBillDemo\VisitorBillDemo.csproj", "{F5E67B5B-51C5-416E-9FB3-30CBE23086BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +103,14 @@ Global
 		{2EE21D0E-3724-45CE-8BD4-425416FAE8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EE21D0E-3724-45CE-8BD4-425416FAE8D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EE21D0E-3724-45CE-8BD4-425416FAE8D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FFF36A5-AA93-4106-B35D-E95B30A77A6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FFF36A5-AA93-4106-B35D-E95B30A77A6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FFF36A5-AA93-4106-B35D-E95B30A77A6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FFF36A5-AA93-4106-B35D-E95B30A77A6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5E67B5B-51C5-416E-9FB3-30CBE23086BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5E67B5B-51C5-416E-9FB3-30CBE23086BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5E67B5B-51C5-416E-9FB3-30CBE23086BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5E67B5B-51C5-416E-9FB3-30CBE23086BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
