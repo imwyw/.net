@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../JS/Base.js"></script>
+    <style>
+        /*表格样式*/
+
+        table {
+            table-layout: fixed;
+            empty-cells: show;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        td {
+            height: 30px;
+        }
+
+
+
+        table {
+            border: 1px solid #cad9ea;
+            color: #666;
+        }
+
+            table th {
+                background-repeat: repeat-x;
+                height: 30px;
+            }
+
+            table td, table th {
+                border: 1px solid #cad9ea;
+                padding: 0 1em 0;
+            }
+
+            table tr.alter {
+                background-color: #f5fafe;
+            }
+    </style>
+</head>
+<body>
+    <div>
+        请选择需要的票：
+        <select id="selType">
+            <option selected="selected">飞机票</option>
+            <option>火车票</option>
+            <option>汽车票</option>
+        </select>
+        &nbsp;&nbsp;<input type="button" id="btnRefresh" value="刷新" />
+    </div>
+    <div id="content" style="padding:10px;">
+        <div id="dataContent" style="float:left;width:600px;"></div>
+        <div id="optContent" style="float:left;"></div>
+        <div id="ticOut" style="clear:both;padding:10px;"></div>
+    </div>
+    <script>
+        getEm('selType').addEventListener('change', showTicket);
+        getEm('btnRefresh').addEventListener('click', showTicket);
+        showTicket();
+
+        //获取余票数据并显示
+        function showTicket() {
+            var ticType = getEm('selType').value;
+            var actionName;
+            console.log(ticType);
+            var url = '../TicketHandler.ashx/GetTickets?ticketType=' + ticType;
+            getAjax(url, function (data) {
+                var arr = JSON.parse(data);
+                appendTable(arr);
+            }, function (err) {
+                console.error(err);
+            });
+        }
+
+        //当前余票信息显示在表格中
+        function appendTable(arr) {
+            var html = '<table><tr><th>ID</th><th>类型</th><th>起点</th><th>终点</th><th>余票</th><th>操作</th></tr>';
+            getEm('dataContent').innerHTML = '';
+            for (var i = 0; i < arr.length; i++) {
+                if (i % 2 == 0) {
+                    html += '<tr>';
+                } else {
+                    html += '<tr class="alter">';
+                }
+
+                html += '<td>' + arr[i].ID + '</td>';
+                html += '<td>' + arr[i].TicketType + '</td>';
+                html += '<td>' + arr[i].Beginning + '</td>';
+                html += '<td>' + arr[i].Destination + '</td>';
+                html += '<td>' + arr[i].Remainder + '</td>';
+                html += '<td><input type="button" class="btnBuy" value="购买"/></td>';
+                html += '</tr>';
+            }
+            getEm('dataContent').innerHTML = html;
+            attachBuy();
+        }
+
+        //绑定表格中的购买按钮事件
+        function attachBuy() {
+            var btns = document.getElementsByClassName('btnBuy');
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].addEventListener('click', appendOptContent);
+            }
+        }
+
+        //添加购买操作到表格右侧
+        function appendOptContent(e) {
+            getEm('optContent').innerHTML = '';
+            getEm('ticOut').innerHTML = '';
+            var emTr = e.currentTarget.parentElement.parentElement;
+            var tds = emTr.children;
+            var remainder = tds[4].innerText;
+            var ticket = {
+                id: tds[0].innerText,
+                ticketType: tds[1].innerText,
+                beginning: tds[2].innerText,
+                destination: tds[3].innerText,
+                remainder: tds[4].innerText,
+            };
+            var html = '<div><h3>购票类型：' + tds[1].innerText + '</h3>';
+            html += '<br/>起始地：' + tds[2].innerText;
+            html += '<br/>目的地：' + tds[3].innerText;
+            html += '<br/>购票：<input type="number" id="numBuy" value="1" /><input type="button" id="btnPost" value="确认" />';
+            html += '</div>';
+
+            getEm('optContent').innerHTML = html;
+            getEm('btnPost').addEventListener('click', function () {
+                confirmBuy(ticket);
+            });
+        }
+
+        //确认购买，提交
+        function confirmBuy(ticket) {
+            if (parseInt(getEm('numBuy').value) > ticket.remainder) {
+                alert('余票不足');
+                return;
+            }
+            var url = '../TicketHandler.ashx/BuyTickets';
+            ticket.count = getEm('numBuy').value;
+            postAjax(url, ticket, function (data) {
+                var arr = JSON.parse(data);
+                appendTicketOut(arr);
+                showTicket();
+            }, function (err) {
+                showTicket();
+            });
+        }
+
+        //显示座位号
+        function appendTicketOut(arr) {
+            var index = 1;
+            var html = '';
+            getEm('ticOut').innerHTML = '';
+            for (var i = 0; i < arr.length; i++) {
+                html += '<h5>第 ' + index++ + '张票，座位：' + arr[i].seat + '</h5>';
+            }
+            getEm('ticOut').innerHTML = html;
+        }
+
+    </script>
+</body>
+</html>

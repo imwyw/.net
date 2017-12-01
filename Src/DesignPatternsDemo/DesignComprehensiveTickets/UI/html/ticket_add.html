@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="../JS/Base.js"></script>
+</head>
+<body>
+    <div>
+        选择需要添加的类型：
+        <select id="selType">
+            <option>飞机票</option>
+            <option>火车票</option>
+            <option>汽车票</option>
+        </select>
+        <span style="margin-left:10px;">加票张数：</span>
+        <input type="number" id="numCount" />
+    </div>
+    <div>
+        <div>起点：<input type="text" id="txtBeginning" placeholder="起点" /></div>
+        <div>终点：<input type="text" id="txtDestination" placeholder="终点" /></div>
+    </div>
+    <div>
+        <input type="button" id="btnAdd" value="添加" />
+    </div>
+    <script>
+        getEm('btnAdd').addEventListener('click', addTicket);
+
+        function addTicket() {
+            var ticType = getEm('selType').value;
+            var beginning = getEm('txtBeginning').value;
+            var destination = getEm('txtDestination').value;
+            var count = getEm('numCount').value;
+
+            var url = '../TicketHandler.ashx/AddTickets';
+            var parameters = {
+                'ticketType': ticType,
+                'beginning': beginning,
+                'destination': destination,
+                'count': count
+            };
+            postAjax(url, parameters, function (data) {
+                var obj = JSON.parse(data);
+                if (obj.status) {
+                    alert('添加成功');
+                } else {
+                    alert('添加失败');
+                }
+            }, function (err) {
+            });
+        }
+    </script>
+</body>
+</html>

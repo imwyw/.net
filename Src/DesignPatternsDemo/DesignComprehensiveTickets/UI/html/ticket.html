@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>模拟购票</title>
+    <meta charset="utf-8" />
+    <style type="text/css">
+        /*
+            页头样式
+        */
+        header#logo {
+            height: 55px;
+            background-color: aliceblue;
+            position: relative;
+        }
+
+            header#logo h1 {
+                font-size: 24px;
+                margin-left: 100px;
+                padding-top: 10px;
+            }
+
+            header#logo div {
+                position: absolute;
+                right: 10px;
+                top: 25px;
+            }
+
+        h1, h2, h3 {
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+        }
+        /*
+            导航栏样式
+        */
+        nav#divNav {
+            border: 1px solid #ddd;
+            float: left;
+            width: 120px;
+        }
+
+            nav#divNav h3 {
+                height: 32px;
+                line-height: 32px;
+                padding-left: 10px;
+                border-top: 1px solid #e3e3e3;
+                background: #f4f4f4;
+                cursor: pointer;
+                font: normal 14px/32px "Microsoft YaHei";
+            }
+
+                nav#divNav h3 em {
+                    float: right;
+                    display: block;
+                    width: 40px;
+                    height: 32px;
+                    cursor: pointer;
+                }
+
+                nav#divNav h3.on em {
+                    background-position: 16px -57px;
+                }
+
+            nav#divNav ul {
+                padding: 8px 25px;
+                color: #999;
+                display: none;
+            }
+
+            nav#divNav a {
+                display: block;
+            }
+
+        /*
+            页尾样式
+        */
+        footer#copyright {
+            background-color: #EFEFEF;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            clear: both;
+            font-size: 12px;
+        }
+
+        /*内联框架样式*/
+        iframe {
+            float: left;
+        }
+    </style>
+</head>
+<body>
+    <header id="logo">
+        <h1>模拟购票</h1>
+    </header>
+
+    <nav id="divNav">
+        <a href="/html/ticket_add.html" target="frmContent">添加票</a>
+        <a href="/html/ticket_buy.html" target="frmContent">购票</a>
+    </nav>
+
+    <!--内联框架-->
+    <iframe id="frmContent" name="frmContent" src="about:blank" frameborder="0" scrolling="auto"></iframe>
+
+    <footer id="copyright">
+        &copy;2016-2017 <a href="http://www.iflytek.com" target="_blank">iflytek</a>  版权所有，违者必究
+    </footer>
+    <script>
+        //页面加载完成后触发事件
+        window.onload = function () {
+            //修改iframe宽度
+            var width = window.innerWidth - document.getElementById('divNav').offsetWidth - 20;
+            document.getElementById('frmContent').style.width = width + 'px';
+            //修改iframe高度，让其撑开铺满
+            var height = window.innerHeight - document.getElementById('logo').offsetHeight - document.getElementById('copyright').offsetHeight - 20;
+            document.getElementById('frmContent').style.height = height + 'px';
+        }
+    </script>
+</body>
+</html>
