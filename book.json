@@ -16,7 +16,8 @@
         "sectionx",
         "anchor-navigation-ex",
         "3-ba",
-        "tbfed-pagefooter"
+        "tbfed-pagefooter",
+        "copy-code-button"
     ],
     "pluginsConfig": {
         "disqus": {
