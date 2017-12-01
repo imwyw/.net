@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="Scripts/angular.min.js"></script>
+</head>
+<body>
+    <h1>ng-repeat使用，重复填充dom元素</h1>
+    <div ng-app ng-init="names=['Jani','Hege','Kai'];arrs=[{name:'Jani',country:'Norway'},{name:'Hege',country:'Sweden'},{name:'Kai',country:'Denmark'}]">
+        <p>使用 ng-repeat 来循环数组</p>
+        <ul>
+            <li ng-repeat="x in names">
+                {{ x }}
+            </li>
+        </ul>
+        <hr/>
+        <p>循环对象：</p>
+        <ul>
+            <li ng-repeat="x in arrs">
+                <!--{{ x.name + ', ' + x.country }}-->
+                {{ x }}
+            </li>
+        </ul>
+        <hr/>
+        <h1>状态指令</h1>
+        <input type="text" ng-disabled="true" />
+        <br/>
+<input type="button" value="123" ng-hide="true" />
+    </div>
+</body>
+</html>

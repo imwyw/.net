@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+    <style>
+        .red {
+            background-color: red;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        .tr-back {
+            background-color: aquamarine;
+        }
+
+        #deleDiv table {
+            border: 1px solid #808080;
+        }
+
+            #deleDiv table td {
+                border: 1px solid #808080;
+            }
+    </style>
+</head>
+<body>
+    <input type="button" id="btn" value="按钮" />
+    <input type="text" id="txtBlur" value="" />
+
+    <ul>
+        <li>Milk</li>
+        <li>Bread</li>
+        <li class='fade'>Chips</li>
+        <li class='fade'>Socks</li>
+    </ul>
+
+    <input type="button" id="btnMulti" value="多重事件" />
+
+    <h3>委托事件</h3>
+    <div id="deleDiv">
+        <input type="button" id="btnAddRow" value="添加行" />
+        <table>
+            <tr><td>编号</td><td>名称</td></tr>
+            <tr><td>1</td><td>张三</td></tr>
+            <tr><td>2</td><td>jack</td></tr>
+        </table>
+    </div>
+
+    <script>
+        //按钮实际执行 文本框的blur事件
+        $('#btn').click(function () {
+            $('#txtBlur').trigger('blur');
+        });
+
+        //焦点离开 blur事件
+        $('#txtBlur').on('blur', function () {
+            alert('焦点离开');
+        });
+
+        //$('li').hover(function () {
+        //    $(this).addClass('red');
+        //}, function () {
+        //    $(this).removeClass();
+        //});
+
+        $('li').mouseenter(function () {
+            $(this).addClass('red');
+        });
+        $('li').mouseleave(function () {
+            $(this).removeClass();
+        });
+
+        /*
+        on off的方式添加和移除事件绑定
+        */
+        $('#btnMulti').on('click', firstFoo);
+        $('#btnMulti').on('click', { name: 'jack' }, secondFoo);
+        function firstFoo() {
+            alert('hello');
+        }
+        function secondFoo(event) {
+            alert('say goodbye:' + event.data.name);
+        }
+        $('#btnMulti').off('click', firstFoo);
+
+        /*
+        动态增加表格行，事件委托
+        */
+        //$('#deleDiv table tr').hover(function () {
+        //    $(this).addClass('tr-back');
+        //}, function () {
+        //    $(this).removeClass('tr-back');
+        //});
+        $('#btnAddRow').click(function () {
+            var index = Math.floor(Math.random() * 100);
+            $('#deleDiv table').append('<tr><td>' + index + '</td><td>' + index + '动态</td></tr>');
+        });
+        $('#deleDiv table').on('mouseenter', 'tr', function (e) {
+            console.log(e.target);
+            console.log(e.currentTarget);
+            $(this).addClass('tr-back');
+        });
+        $('#deleDiv table').on('mouseleave', 'tr', function (e) {
+            $(this).removeClass('tr-back');
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jquery-3.2.1.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <style>
+        #navHalf a{
+            display:block;
+        }
+    </style>
+</head>
+<body>
+    <h1>图标应用</h1>
+    <p>
+        字体图标、SVG
+        <button class="btn btn-primary">
+            <span class="glyphicon glyphicon-qrcode" style="font-size:10em;"></span>
+            二维码
+        </button>
+    </p>
+    <h1>导航</h1>
+    <ul class="nav nav-pills nav-stacked">
+        <li role="presentation" class="active"><a href="#">Home</a></li>
+        <li role="presentation"><a href="#">Profile</a></li>
+        <li role="presentation"><a href="#">Messages</a></li>
+    </ul>
+    <h1>手动实现垂直导航</h1>
+    <div id="divVeri">
+        <div class="pull-left">
+            <nav id="navHalf">
+                <a>主页</a>
+                <a>个人</a>
+                <a>管理</a>
+            </nav>
+        </div>
+        <div class="pull-left" style="width:500px; height:300px;background-color:azure;"></div>
+    </div>
+    
+
+    <script>
+        $('ul li').on('click', function () {
+            $(this).closest('ul').find('li').removeClass('active');
+            $(this).addClass('active');
+        });
+    </script>
+</body>
+</html>

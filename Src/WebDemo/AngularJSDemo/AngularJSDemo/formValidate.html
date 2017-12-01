@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="Scripts/angular.min.js"></script>
+</head>
+<body ng-app="validationApp" ng-controller="mainController">
+    <div class="container">
+        <div class="row">
+
+            <!--向右偏移两列-->
+            <div class="col-md-8 col-md-offset-2">
+                <div class="page-header"><h1>AngularJS 表单验证</h1></div>
+
+                <!--novalidate 属性是在 HTML5 中新增的。禁用了使用浏览器的默认验证。-->
+                <form name="userForm" ng-submit="submitForm(userForm.$valid)" novalidate>
+                    <div class="form-group">
+                        <label>用户名-</label>
+                        <!--  input的name属性很重要，需要与验证属性对应  -->
+                        <input class="form-control" type="text" name="name" ng-model="name"
+                               ng-minlength="3" ng-maxlength="5" required />
+                        <!-- 当userForm.name.$invalid为true值，即验证不通过时，ng-show为true，即显示当前段落 -->
+                        <p class="bg-info" ng-show="userForm.name.$invalid">用户名为必填项，长度在3~5之间</p>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱-</label>
+                        <!--  input的name属性很重要，需要与验证属性对应  -->
+                        <input class="form-control" type="email" name="email" ng-model="email" required />
+                        <!-- 当userForm.email.$invalid为true值，即验证不通过时，ng-show为true，即显示当前段落 -->
+                        <p class="bg-info" ng-show="userForm.email.$invalid">请输入正确邮箱地址</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        var validationApp = angular.module('validationApp', []);
+
+        validationApp.controller('mainController', function ($scope) {
+
+            //isValid 是表单是否验证通过的属性
+            $scope.submitForm = function (isValid) {
+
+                if (isValid) {
+                    alert('验证通过');
+                    // $.post();
+                } else {
+                    alert('输入有误，请重新检查后再进行提交');
+                }
+            };
+
+        });
+    </script>
+</body>
+</html>

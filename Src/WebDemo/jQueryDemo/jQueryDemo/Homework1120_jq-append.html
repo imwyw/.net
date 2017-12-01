@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="js/jquery-3.2.1.js"></script>
+</head>
+<body>
+    <button id="btn1">追加段落</button>
+    <button id="btn2">追加列表项</button>
+
+    <div id="poemContent">
+        <p>人生若只如初见</p>
+        <p>何事秋风悲画扇</p>
+    </div>
+
+    <ol>
+        <li>橘子</li>
+        <li>香蕉</li>
+        <li>苹果</li>
+    </ol>
+
+    <script>
+        $(document).ready(function () {
+            var arrPoem = ['等闲变却故人心', '却道故人心易变', '骊山语罢清宵半', '泪雨霖铃终不怨'];
+            $("#btn1").click(function () {
+                var val = arrPoem[Math.floor(Math.random() * 10) % 4];
+                $("#poemContent").append(" <p>" + val + "</p>");
+            });
+
+            var arrFruit = ['火龙果', '菠萝', '西瓜', '巴拿马'];
+            $("#btn2").click(function () {
+                var val = arrFruit[Math.floor(Math.random() * 10) % 4];
+                $("ol").append("<li>" + val + "</li>");
+            });
+        });
+    </script>
+
+</body>
+</html>

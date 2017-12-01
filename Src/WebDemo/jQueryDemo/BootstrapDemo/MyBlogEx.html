@@ -1,0 +1,197 @@
+﻿<!--页面参考 http://wenda.ghostchina.com/-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>我的高仿论坛</title>
+    <meta charset="utf-8" />
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jquery-3.2.1.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            /*移除body默认样式*/
+            margin: 0;
+            background-color: #edece4;
+        }
+
+        .my-header {
+            background-color: #fff;
+            height: 50px;
+        }
+
+        #txtSearch {
+            width: 230px;
+        }
+
+        .search-box {
+            float: left;
+            position: relative;
+            margin-left: 200px;
+        }
+
+            .search-box div.form-group {
+                margin: 8px 0;
+            }
+
+            .search-box .glyphicon.glyphicon-search {
+                position: absolute;
+                right: 5px;
+                top: 18px;
+            }
+
+        .header-nav {
+            float: left;
+        }
+
+        .header-sign {
+            float: right;
+        }
+
+        .my-content {
+            margin-top: 20px;
+        }
+
+            .my-content .container {
+                width: 990px;
+                background-color: #fff;
+            }
+
+            .my-content ul.nav {
+                float: right;
+            }
+
+        .blog-nav-box {
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .blog-item {
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+            .blog-item div.pull-left {
+                margin-left: 10px;
+            }
+
+            .blog-item span.glyphicon.glyphicon-user {
+                font-size: 5em;
+            }
+
+            .blog-item .blog-item-title {
+                font-size: 1.4em;
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid my-header">
+        <!--搜索框表单-->
+        <form role="form" class="search-box">
+            <div class="form-group">
+                <label class="sr-only">搜索：</label>
+                <input class="form-control" type="text" id="txtSearch" placeholder="搜索问题、话题或人" />
+                <span class="glyphicon glyphicon-search"></span>
+            </div>
+        </form>
+        <!--导航条-->
+        <div class="header-nav">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="javascript:void(0)">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                        发现
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">
+                        <span class="glyphicon glyphicon-comment"></span>
+                        话题
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--登录/注册操作-->
+        <div class="header-sign">
+            <button class="btn btn-primary">登录</button>
+            <button class="btn btn-success">注册</button>
+        </div>
+    </div>
+    <div class="my-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="blog-nav-box">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#">最新</a></li>
+                            <li><a href="#">推荐</a></li>
+                            <li><a href="#">热门</a></li>
+                            <li><a href="#">等待回复</a></li>
+                        </ul>
+                        <h3>
+                            <span class="glyphicon glyphicon-th-list"></span>
+                            <span id="spanBlogCate">最新</span>
+                        </h3>
+                    </div>
+                    <div class="blog-list-box">
+                        <div class="blog-item clearfix">
+                            <div class="pull-left">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </div>
+                            <div class="pull-left">
+                                <div class="blog-item-title">
+                                    <a href="javascipt:void(0)">jQuery&Bootstrap 21天入门到放弃</a>
+                                </div>
+                                <div class="blog-item-summary">
+                                    Omega 发起了问题 • 1 人关注 • 0 个回复 • 787 次浏览 • 2017-10-07 15:47
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+    </div>
+    <footer class="text-center">Copyright © 2017, All Rights Reserved</footer>
+    <script>
+        $(function () {
+            bindEvent();
+            addTestData();
+        });
+
+        function bindEvent() {
+            $('.search-box .glyphicon.glyphicon-search').on('click', function () {
+                alert('搜索');
+            });
+
+            $('.blog-nav-box ul.nav li').on('click', function () {
+                $(this).closest('ul').find('li').removeClass('active');
+                $(this).addClass('active');
+                $('#spanBlogCate').text($(this).text());
+            });
+        }
+
+        function addTestData() {
+            for (var i = 0; i < 20; i++) {
+                $('.blog-list-box').append(generateBlogItem());
+            }
+        }
+
+        function generateBlogItem() {
+            var html = '<div class="blog-item clearfix">';
+            html += '<div class="pull-left">';
+            html += '<span class="glyphicon glyphicon-user"></span>';
+            html += '</div>';
+            html += '<div class="pull-left">';
+            html += '<div class="blog-item-title">';
+            html += '<a href="javascipt:void(0)">jQuery&Bootstrap 21天入门到放弃</a>';
+            html += '</div>';
+            html += '<div class="blog-item-summary">';
+            html += 'Omega 发起了问题 • 1 人关注 • 0 个回复 • 787 次浏览 • 2017-10-07 15:47';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+            return html;
+        }
+    </script>
+</body>
+</html>

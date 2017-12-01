@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+</head>
+<body>
+    <div id="container">
+        内部
+    </div>
+    外部
+
+    <h1>删除操作</h1>
+    <div id="remove">删除</div>
+    <div id="empty"><input type="checkbox" id="chk"/><label for="chk">勾选</label></div>
+
+    <script>
+        /*
+        内部插入
+        append和appendTo
+        */
+        $('#container').append('<a href="#" >append连接</a>');
+        $('<a href="#" >append连接</a>').append('#container');
+
+        $('<ul><li>Item A</li><li>Item B</li></ul>').appendTo('#container');
+
+        /*
+        外部插入
+        after和insertAfter
+        */
+        $('#container').after('<h5>难忘今宵</h5>');
+        $('<h5>我要吃元宵</h5>').insertAfter('#container');
+
+        /*
+        覆盖、设置/获取内容
+        html()
+        */
+        $('#container').html('<h1>123</h1>');
+
+        /*
+        两种删除
+        remove()
+        empty()
+        */
+        //$('#remove').remove();
+        //$('#empty').empty();
+    </script>
+</body>
+</html>

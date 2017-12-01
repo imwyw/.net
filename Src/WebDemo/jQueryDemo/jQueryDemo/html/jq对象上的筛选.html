@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+    <style>
+        .tr-back {
+            background-color: aliceblue;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <input name="email" disabled="disabled" />
+        <input name="id" />
+        <input type="checkbox" id="chk1" /><label for="chk1">庐山</label>
+        <input type="checkbox" id="chk2" /><label for="chk2">黄山</label>
+        <select>
+            <option>A</option>
+            <option selected="selected">B</option>
+            <option>C</option>
+        </select>
+    </form>
+
+    <div id="tablePart">
+        <input type="button" id="btnChange" value="改变样式" />
+        <table>
+            <tr><td>Header 0</td></tr>
+            <tr><td>Value 1</td></tr>
+            <tr><td>Value 2</td></tr>
+            <tr><td>Value 3</td></tr>
+            <tr><td>Value 4</td></tr>
+        </table>
+    </div>
+    
+
+    <script>
+        // $('')[0] == document.getElementById();
+        // $(document.getElementById()) -> jq对象
+
+        /*
+        hasClass()、addClass()、removeClass()综合应用
+        */
+        $('table tr:even').addClass('tr-back');
+        $('#btnChange').click(function () {
+            var arr = $('#tablePart table tr');
+            for (var i = 0; i < arr.length; i++) {
+                if ($(arr[i]).hasClass('tr-back')) {
+                    $(arr[i]).removeClass('tr-back');
+                } else {
+                    $(arr[i]).addClass('tr-back');
+                }
+            }
+        });
+
+        /*
+        children() 获得匹配元素集合中每个元素的子元素，选择器选择性筛选。
+        */
+        $('form').children();
+        $('form').children('label');
+
+        /*
+        closest() 从元素本身开始，在DOM 树上逐级向上级元素匹配，并返回最先匹配的祖先元素。
+        */
+        var td3 = $('td:contains(Value 3)');
+        //jq closest方式
+        td3.closest('tr');//获取最近上级tr元素
+        td3.closest('table');//获取最近上级table元素
+
+        //先将jq对象转换为dom
+        var emtd3 = td3[0];
+        emtd3.parentElement.parentElement.parentElement;//才能找到最近上级的table元素
+
+        /*
+        find() 通过一个选择器，jQuery对象，或元素过滤，得到当前匹配的元素集合中每个元素的后代。
+        */
+        $('body').find('input');
+
+        /*
+        next()
+        */
+        $('#chk1').next();
+
+    </script>
+</body>
+</html>

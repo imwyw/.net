@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>table checkbox示例</title>
+    <meta charset="utf-8" />
+    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="../js/jquery-3.2.1.js"></script>
+    <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <style>
+        /*#demoTable td {
+            width: 80px;
+            text-align: center;
+        }
+
+        .tr-title {
+            color: white;
+            background-color: rgb(0, 129, 196);
+        }
+
+        .tr-content {
+            background-color: rgb(235, 247, 253);
+        }*/
+    </style>
+</head>
+<body>
+    <h1>表格check示例</h1>
+    <div>
+        <input class="btn btn-primary" type="button" id="btnInverse" value="反选" />
+        <input class="btn btn-primary" type="button" id="btnGet" value="获取勾选" />
+        <input class="btn btn-primary" type="button" id="btnGetUnCheck" value="获取未勾选" />
+        <table id="demoTable" class="table table-bordered table-hover table-condensed">
+            <tr class="tr-title">
+                <th><input type="checkbox" /></th>
+                <th>ID</th>
+                <th>名称</th>
+                <th>备注</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        $(function () {
+            initTable();
+            initEvent();
+        });
+
+        //初始化表格
+        function initTable() {
+            //填充假数据
+            for (var i = 0; i < 10; i++) {
+                var html = '<tr>';
+                html += '<td><input type="checkbox" /></td>';
+                html += '<td>编号' + i + '</td>';
+                html += '<td>名称' + i + '</td>';
+                html += '<td>备注' + i + '</td>';
+                html += '</tr>';
+                $('#demoTable').append(html);
+            }
+            //设置数据行的隔行样式
+            $('#demoTable tr:not(.tr-title):odd').addClass('tr-content');
+        }
+
+        //绑定事件
+        function initEvent() {
+            //表头第一个checkbox的全选功能实现
+            $('#demoTable th input:checkbox').on('click', function () {
+                //如果全选被选中的话，则将所有数据行也改变为选中状态
+                if (headerCheck()) {
+                    setDataCheck(true);
+                } else {
+                    setDataCheck(false);
+                }
+            });
+
+            //选择所有数据行中的checkbox进行绑定事件
+            $('#demoTable td input:checkbox').on('click', function () {
+                if ($('#demoTable td input:checkbox:not(:checked)').length > 0) {
+                    headerCheck(false);
+                }
+                if ($('#demoTable td input:checkbox:not(:checked)').length == 0) {
+                    headerCheck(true);
+                }
+            });
+
+            //反选绑定
+            $('#btnInverse').on('click', function () {
+                $.each($('#demoTable td input:checkbox'), function (index, it) {
+                    $(this).prop('checked') ? $(this).prop('checked', false) : $(this).prop('checked', true);
+                });
+            });
+
+            //获取所有勾选数据绑定
+            $('#btnGet').on('click', function () {
+                var trs = $('#demoTable td input:checkbox:checked').closest('tr');
+                alert(getStrFromRows(trs));
+            });
+
+            //获取所有勾选数据绑定
+            $('#btnGetUnCheck').on('click', function () {
+                var trs = $('#demoTable td input:checkbox:not(:checked)').closest('tr');
+                alert(getStrFromRows(trs));
+            });
+        }
+
+        //设置所有数据行的状态
+        function setDataCheck(isCheck) {
+            $('#demoTable td input:checkbox').prop('checked', isCheck);
+        }
+
+        //表头checkbox的状态，不传参数时为获取状态，传参true/false进行状态设置
+        function headerCheck(isCheck) {
+            if (isCheck == undefined) {
+                return $('#demoTable th input:checkbox').prop('checked');
+            } else {
+                $('#demoTable th input:checkbox').prop('checked', isCheck);
+            }
+        }
+
+        //根据行数据返回摘要信息
+        function getStrFromRows(arr) {
+            var text = '';
+            $.each(arr, function (index, it) {
+                text += $(it).text() + '\n';
+            });
+            return text;
+        }
+
+    </script>
+</body>
+</html>

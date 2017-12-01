@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>选择器-层级</title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+    <style>
+        #tablePart table {
+            border: 1px solid #808080;
+        }
+
+            #tablePart table td {
+                border: 1px solid #808080;
+            }
+
+        .row-even {
+            background-color: azure;
+        }
+    </style>
+
+</head>
+<body>
+    <form>
+        <label>Name:</label>
+        <input name="name" />
+        <div>
+            <input type="text" name="pwd" />
+        </div>
+
+        <fieldset>
+            <label>Newsletter:</label>
+            <input name="newsletter" />
+            <div>
+                <input type="text" />
+            </div>
+        </fieldset>
+    </form>
+    <input name="none" />
+    <div>
+        <ul>
+            <li>list item 1</li>
+            <li>list item 2</li>
+            <li>list item 3</li>
+            <li>list item 4</li>
+            <li>list item 5</li>
+        </ul>
+    </div>
+
+    <div id="checkPart">
+        <input type="checkbox" name="apple" />
+        <input type="checkbox" name="B" checked="checked" />
+        <input type="checkbox" name="C" checked="checked" />
+        <input type="checkbox" name="D" checked="checked" />
+        <input type="checkbox" name="E" />
+    </div>
+
+    <div id="tablePart">
+        <table>
+            <tr><td>Header 0</td></tr>
+            <tr><td>Value 1</td></tr>
+            <tr><td data-id="a">Value 2</td></tr>
+            <tr><td data-id="b">Value 3</td></tr>
+            <tr><td data-id="c">Value 4</td></tr>
+        </table>
+    </div>
+
+    <form id="form2">
+        <input name="email" disabled="disabled" />
+        <input name="id" />
+        <input type="checkbox" id="chk1" /><label for="chk1">庐山</label>
+        <input type="checkbox" id="chk2" /><label for="chk2">黄山</label>
+        <select>
+            <option>A</option>
+            <option selected="selected">B</option>
+            <option>C</option>
+        </select>
+    </form>
+
+    <script>
+        /*
+        $(ancestor descendant) (中间的是空格)
+        ancestor和descendant分别是选择器
+        */
+        $('form input');//form中3个input:[ <input name="name" />, <input type="text" name="pwd" /> , <input name="newsletter" /> ]
+        $('form div input');//form div 中1个input:[<input type="text" name="pwd" />]
+
+        /*
+        $(parent > child)
+        筛选直接子元素，不会继续往下寻找
+        */
+        $('form>input');//直接子元素只有：[ <input name="name" /> ]
+
+        /*
+        $(prev + next)
+        紧接在prev元素后的一个next元素
+        */
+        $('label+input');//[ <input name="name" />, <input name="newsletter" /> ]
+
+        /*
+        $(prev ~ siblings)
+        prev后面的兄弟，它们具有共同的父元素
+        */
+        $('form~input');//表单后的元素：[ <input name="none" /> ]
+    </script>
+</body>
+</html>

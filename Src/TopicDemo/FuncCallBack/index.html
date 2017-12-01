@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="AjaxDemo.js"></script>
+</head>
+<body>
+    <div>
+        <h1>GET方式</h1>
+        <input type="button" id="btnGet" value="GET" />
+    </div>
+    <div>
+        <h1>POST方式</h1>
+        <input type="button" id="btnPOST" value="POST" />
+    </div>
+    <script>
+        document.getElementById('btnGet').addEventListener('click', fooGet);
+        document.getElementById('btnPOST').addEventListener('click', fooPost);
+
+        function fooGet() {
+            myAjax({
+                url: './HomeHandler.ashx?username=jack&pwd=admin',
+                type: 'GET',
+                succ: function (data) { console.log(data); },
+                err: function (err) { console.error(err); }
+            });
+        }
+
+        function fooPost() {
+            myAjax({
+                url: './HomeHandler.ashx',
+                type: 'POST',
+                data: {
+                    username: 'jack',
+                    pwd: 'admin'
+                },
+                succ: function (data) { console.log(data); },
+                err: function (err) { console.error(err); }
+            });
+        }
+    </script>
+</body>
+</html>

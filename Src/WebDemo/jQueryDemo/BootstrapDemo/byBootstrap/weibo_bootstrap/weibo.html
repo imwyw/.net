@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>高仿微博</title>
+    <meta charset="utf-8" />
+    <link href="../../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="../../js/jquery-3.2.1.js"></script>
+    <script src="../../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background-color: darkslateblue;
+            margin: 0;
+            line-height: 30px;
+        }
+
+        #msgBox {
+            background-color: #fff;
+            border-radius: 5px;
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        #conBox {
+            width: 480px;
+        }
+
+        form label {
+            cursor: default;
+            color: #999;
+        }
+
+        form div {
+            padding: 5px;
+        }
+
+        form textarea {
+            height: 70px;
+        }
+
+        #sendBtn {
+            width: 85px;
+            height: 27px;
+            cursor: pointer;
+            margin-left: 10px;
+            background: url(btn.png) no-repeat;
+            background-position: 0 0;
+        }
+
+            #sendBtn:hover {
+                background-position: -85px 0px;
+            }
+
+        .padright {
+            float: right;
+        }
+
+        .list {
+            clear: both;
+        }
+
+            .list li {
+                width: 100%;
+                border-bottom: 1px dashed #d8d8d8;
+                padding: 10px 0;
+                overflow: hidden;
+            }
+
+            .list .user-name {
+                color: #5e5353;
+                font-size: 12px;
+            }
+
+            .list .user-del {
+                display: none;
+            }
+
+            .list .user-time {
+                color: #889db6;
+                font-size: 9px;
+            }
+
+            .list .user-del {
+                float: right;
+                color: #889db6;
+                padding-right: 10px;
+            }
+    </style>
+</head>
+<body>
+    <div id="msgBox">
+        <form role="form">
+            <div class="form-group">
+                <label>来 , 说说你在做什么 , 想什么</label>
+                <div>
+                    姓名：<input class="form-control" id="userName" value="jack" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="sr-only">广播内容：</label>
+                <div><textarea class="form-control" id="conBox">lucy jump,jack jump.well double jump!</textarea></div>
+            </div>
+            <div class="padright">
+                <p>
+                    <span class="countTxt">还能输入</span><strong class="maxNum">140</strong><span>个字</span>
+                    <input id="sendBtn" type="button" value="" title="快捷键 Ctrl+Enter" />
+                </p>
+            </div>
+        </form>
+        <div class="list">
+            <h3><span>大家在说</span></h3>
+            <ul></ul>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#conBox').keyup(function () {
+                var len = $.trim($('#conBox').val()).length;
+                $('.maxNum').text(140 - len);
+            });
+
+            $('#conBox').trigger('keyup');
+
+            $('#sendBtn').on('click', function () {
+                var name = $.trim($('#userName').val());
+                var content = $.trim($('#conBox').val());
+                if (name && content) {
+                    var html = "<li style='display:none;'><div class='content'>";
+                    html += "<div class='user-name'>" + name + "</div>";
+                    html += "<div class='user-content'>" + content + "</div>";
+                    html += "<div class='user-time'><span>" + getTime() + "</span><a class='user-del' href='javascript:void(0)' >删除</a></div>";
+                    html += "</div></li>";
+                    $('div.list ul').append(html);
+                    $('div.list ul li').show(5000);
+                } else {
+                    alert('请输入名称和内容！');
+                }
+            });
+
+            $('.list').on('mouseenter', 'li', function () {
+                $(this).find('a').show();
+            });
+
+            $('.list').on('mouseleave', 'li', function () {
+                $(this).find('a').hide();
+            });
+
+            $('.list').on('click', 'li a.user-del', function () {
+                $(this).closest('li').remove();
+            });
+        })
+
+        function getTime() {
+            var now = new Date();
+            var timestr = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate() + " "
+                + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+            return timestr;
+        }
+    </script>
+</body>
+</html>

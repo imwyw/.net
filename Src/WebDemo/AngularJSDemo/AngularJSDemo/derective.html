@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="Scripts/angular.min.js"></script>
+</head>
+<body>
+    <!-- 定义ng变量firstName，初始值为John -->
+    <div ng-app ng-init="firstName='John'">
+        <h1>双向绑定及model的使用</h1>
+        <p>在输入框中尝试输入：</p>
+        <p>姓名：<input type="text" ng-model="firstName"></p>
+        <p>你输入的为： {{ firstName }} </p>
+        <input type="text" value="{{firstName}}" disabled="disabled" />
+        <hr />
+        <h1>计算两个数</h1>
+        <p>
+            A:<input type="number" ng-model="numA" />
+            <br />
+            B:<input type="number" ng-model="numB" />
+            <br />
+            A*B: {{ numA*numB }}
+        </p>
+    </div>
+</body>
+</html>

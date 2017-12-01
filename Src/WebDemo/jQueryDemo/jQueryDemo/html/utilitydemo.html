@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+</head>
+<body>
+    <h1>用户信息</h1>
+    <input type="text" id="txt" />
+    <input type="button" id="btn" value="show" />
+
+    <script>
+        /*
+        $.each() 迭代
+        */
+        var arr = [{ id: 1, name: 'jack' }, { id: 2, name: 'zhangsanfeng' }, { id: 3, name: 'lucy' }];
+        for (var i = 0; i < arr.length; i++) {
+            console.log(arr[i].name);
+        }
+        $.each(arr, function (index, it) {
+            //回调函数的两个参数，index是索引，it是当前元素
+            console.log(index + "@@" + it.name);
+            //循环内，this指向当前元素
+            console.log(this);
+        });
+
+        /*
+        $.inArray()判断元素是否在数组中
+        */
+        var arr2 = ['a', 'b', 'c', 'd'];
+        console.log($.inArray('f', arr2));
+
+        $('#btn').click(function () {
+            alert('您输入的内容是：' + $.trim($('#txt').val()) + '。请确认');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="Scripts/angular.min.js"></script>
+</head>
+<body ng-app="myApp">
+    <div ng-controller="myController">
+        <input type="text" ng-model="name" />
+        <h4>{{name}}</h4>
+    </div>
+    <hr />
+    <h1>ng-option的使用</h1>
+    <div ng-controller="optionController">
+        <select ng-model="selectedCar" ng-options="value.brand for (key,value) in cars">
+        <!--<select ng-model="selectedCar" ng-options="x.brand for x in cars">-->
+            <option value="">请选择购车品牌</option>
+        </select>
+        <p>选的车品牌是：{{selectedCar}}</p>
+    </div>
+
+    <script>
+        var myApp = angular.module('myApp', []);
+        myApp.controller('myController', function ($scope) {
+            //设置了name的初始值
+            $scope.name = 'zhangsan';
+        });
+
+        myApp.controller('optionController', function ($scope) {
+            //通过控制器初始化了一个数组
+            $scope.cars = [
+                { brand: "Ford", model: "Mustang", color: "red" },
+                { brand: "Fiat", model: "500", color: "white" },
+                { brand: "Volvo", model: "XC90", color: "black" }
+            ];
+        });
+    </script>
+</body>
+</html>

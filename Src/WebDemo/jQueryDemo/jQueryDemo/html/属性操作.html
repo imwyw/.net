@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+    <style>
+        .red {
+            background-color: red;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <!--data-self 自定义属性，命名遵循（data-xxx）-->
+    <div id="div1" class="red" data-self="今晚打老虎" style="width:200px;height:100px;background-color:aquamarine;"></div>
+
+    <h4>性别</h4>
+    <input type="radio" name="radSex" id="chkMan" /><label for="chkMan">男</label>
+    <input type="radio" name="radSex" id="chkWomen" /><label for="chkWomen">女</label>
+
+    <h4>动态样式</h4>
+    <button id="btn1">红色</button>
+    <button id="btn2">蓝色</button>
+    <div id="divDy" style="width:300px;height:100px;"></div>
+
+    <div>
+        <input type="text" id="txtName" placeholder="输入您的姓名" />
+        <input type="button" id="btnShowName" value="显示您的输入" />
+    </div>
+
+    <script>
+        /*
+        attr()/removeAttr()
+        */
+        //获取、然后修改后再获取属性
+        console.log($("#div1").attr('class'));
+        console.log($("#div1").attr('data-self'));
+        $('#div1').attr('data-self', '赌侠');
+        console.log($("#div1").attr('data-self'));
+
+        //移除属性
+        $('#div1').removeAttr('class');
+
+        /*
+        prop()/removeProp()
+        */
+        console.log($('#div1').prop('data-self'));
+
+        //默认加载时选择女性
+        $('#chkWomen').prop('checked', true);
+        $('#chkWomen').prop('checked');//true
+        $('#chkWomen').attr('checked')//undefined
+
+        //addClass()/removeClass()  动态的控制div的背景色，
+        $('#btn1').click(function () {
+            $('#divDy').removeClass();
+            $('#divDy').addClass('red');
+        });
+        $('#btn2').click(function () {
+            $('#divDy').removeClass();
+            $('#divDy').addClass('blue');
+        });
+
+        /*
+        html/text/val
+        */
+
+        //注意 html和append的区别，html()会替换元素内部所有的内容
+        $('#divDy').html('<h6>哈弗H2</h6>');
+        $('#divDy').html('<h6>哈弗H6</h6>');
+        $('#divDy').html('<h6>哈弗H8</h6>');
+        console.log('打印div内容：' + $('#divDy').html());
+
+        //val() 必须记住
+        document.getElementById('txtName').value;
+        $('#btnShowName').click(function () {
+            alert($('#txtName').val());
+            //弹出alert后重置文本框为默认值
+            $('#txtName').val('变成默认值');
+        });
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery-3.2.1.js"></script>
+    <title></title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #div {
+            width: 400px;
+            margin: 0 auto;
+        }
+            /*居中*/
+
+            #div #text {
+                width: 350px;
+                height: 100px;
+            }
+
+                #div #text input {
+                    width: 250px;
+                    height: 30px;
+                    margin: 10px;
+                }
+
+            #div #btn {
+                width: 300px;
+                height: 40px;
+            }
+
+                #div #btn #ok {
+                    width: 70px;
+                    height: 30px;
+                    margin-left: 73px;
+                }
+
+                #div #btn #reset {
+                    width: 70px;
+                    height: 30px;
+                }
+
+            #div #test-area {
+                width: 300px;
+                height: 300px;
+                margin-left: 60px;
+                background: #000000;
+                color: #fff;
+            }
+    </style>
+    <script>
+        //window.onload = function() {
+        //	function color(id) {
+        //		return document.getElementById(id);
+        //	}; //通过id获取元素对象
+        //	function changeValue(name, value) {
+        //		color("test-area").style[name] = value;
+        //	}; //改变样式
+        //	color('ok').onclick = function() {
+        //		changeValue(color('name').value, color('value').value); //把编辑框中的值传进去
+        //	}
+        //	color('reset').onclick = function() {
+        //		color('test-area').removeAttribute('style'); //去掉style属性即可重置
+        //		color('name').value = '';
+        //		color('value').value = '';
+        //	}
+        //}
+        //$(function () {
+        //    	function color(id) {
+        //    		return document.getElementById(id);
+        //    	}; //通过id获取元素对象
+        //    	function changeValue(name, value) {
+        //    		color("test-area").style[name] = value;
+        //    	}; //改变样式
+        //    	color('ok').onclick = function() {
+        //    		changeValue(color('name').value, color('value').value); //把编辑框中的值传进去
+        //    	}
+        //    	color('reset').onclick = function() {
+        //    		color('test-area').removeAttribute('style'); //去掉style属性即可重置
+        //    		color('name').value = '';
+        //    		color('value').value = '';
+        //    	}
+        //});
+
+        //dom加载完执行
+        $(function () {
+            $("#ok").click(function () {
+                var name = $('#name').val();
+                var val = $('#value').val();
+                //$('#test-area')[0].style[name] = val;
+                $('#test-area').css(name, val);
+            });
+
+            $('#reset').click(function () {
+                $('#test-area').removeAttr('style');
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="div">
+        <form action="">
+            <div id="text">
+                <label>属性名:<input type="text" name="name" id="name" /></label></br>
+                <label>属性值:<input type="text" name="value" id="value" /></label>
+            </div>
+            <div id="btn">
+                <input type="button" name="ok" id="ok" value="确定" />
+                <input type="button" name="reset" id="reset" value="重置" />
+            </div>
+            <div id="test-area">
+                在上方输入框输入"属性名"及"属性值"，点击确定按钮查看效果
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

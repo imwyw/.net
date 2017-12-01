@@ -9,12 +9,12 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DBB23BAE-4230-40C7-B2CE-C07A9685ADDC}</ProjectGuid>
+    <ProjectGuid>{DF5D186A-5495-4C77-8328-89C8E850FEC7}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FuncCallBack</RootNamespace>
-    <AssemblyName>FuncCallBack</AssemblyName>
+    <RootNamespace>jQueryDemo</RootNamespace>
+    <AssemblyName>jQueryDemo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -66,9 +66,22 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="index.html" />
+    <Content Include="Homework1120_jq-append.html" />
+    <Content Include="Homework1123_tablecheckbox.html" />
+    <Content Include="html\ajaxDemo.html" />
+    <Content Include="html\Classwork20171123-2.html" />
+    <Content Include="html\Classwork20171123-1.html" />
+    <Content Include="html\event.html" />
+    <Content Include="html\jq对象上的筛选.html" />
+    <Content Include="html\ready_onload.html" />
+    <Content Include="html\utilitydemo.html" />
+    <Content Include="html\属性操作.html" />
+    <Content Include="html\文档操作.html" />
+    <Content Include="html\选择器-层级.html" />
     <Content Include="packages.config" />
-    <Content Include="HomeHandler.ashx" />
+    <Content Include="AjaxHandler.ashx" />
+    <Content Include="weibo\btn.png" />
+    <Content Include="weibo\weibo.html" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -77,13 +90,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AjaxDemo.js" />
-    <Content Include="Func.js" />
+    <Content Include="html\jquery选择器.html" />
+    <Content Include="js\jquery-3.2.1.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HomeHandler.ashx.cs">
-      <DependentUpon>HomeHandler.ashx</DependentUpon>
+    <Compile Include="AjaxHandler.ashx.cs">
+      <DependentUpon>AjaxHandler.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -100,9 +113,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>5198</DevelopmentServerPort>
+          <DevelopmentServerPort>7467</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:5198/</IISUrl>
+          <IISUrl>http://localhost:7467/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

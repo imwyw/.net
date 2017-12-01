@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="https://cdn.bootcss.com/angular.js/1.6.6/angular.min.js"></script>
+</head>
+<body ng-app="myApp">
+    <div ng-controller="myController">
+        <p>
+            id-<input type="number" ng-model="userid" /><br />
+            name-<input type="text" ng-model="username" />
+        </p>
+        <button ng-click="getData()">get</button><br />
+        ID:{{getObj.ID}}<br />
+        NAME:{{getObj.NAME}}
+        <hr />
+        <button ng-click="quickGet()">quickGet</button>
+        <br />
+        ID:{{quickObj.ID}}<br />
+        NAME:{{quickObj.NAME}}
+        <hr />
+        <button ng-click="postData()">postData</button>
+        <br />
+        ID:{{postObj.ID}}<br />
+        NAME:{{postObj.NAME}}
+    </div>
+    <script>
+        var myApp = angular.module('myApp', [], function ($httpProvider) {
+            /*
+        做一些全局性的设置，主要是content-type和param传参的改变
+        */
+
+            // Use x-www-form-urlencoded Content-Type
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+            /**
+                * The workhorse; converts an object to x-www-form-urlencoded serialization.
+                * @param {Object} obj
+                * @return {String}
+                */
+            var param = function (obj) {
+                var query = '',
+                    name, value, fullSubName, subName, subValue, innerObj, i;
+
+                for (name in obj) {
+                    value = obj[name];
+
+                    if (value instanceof Array) {
+                        for (i = 0; i < value.length; ++i) {
+                            subValue = value[i];
+                            fullSubName = name + '[' + i + ']';
+                            innerObj = {};
+                            innerObj[fullSubName] = subValue;
+                            query += param(innerObj) + '&';
+                        }
+                    } else if (value instanceof Object) {
+                        for (subName in value) {
+                            subValue = value[subName];
+                            fullSubName = name + '[' + subName + ']';
+                            innerObj = {};
+                            innerObj[fullSubName] = subValue;
+                            query += param(innerObj) + '&';
+                        }
+                    } else if (value !== undefined && value !== null)
+                        query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+                }
+
+                return query.length ? query.substr(0, query.length - 1) : query;
+            };
+
+            // Override $http service's default transformRequest
+            $httpProvider.defaults.transformRequest = [function (data) {
+                return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
+            }];
+        });
+
+        //回调的参数要加上 $http
+        myApp.controller('myController', function ($scope,$http) {
+
+            $scope.getData = function () {
+                var _url = '/HomeHandler.ashx?id=' + $scope.userid + '&name=' + $scope.username;
+                $http({
+                    method: 'GET',
+                    //url: '/HomeHandler.ashx?id=9527&name=华安'
+                    url: _url
+                }).then(function (resp) {
+                    $scope.getObj = resp.data;
+                    console.log(resp);
+                }, function (err) {
+                    console.error(err);
+                });
+            };
+
+            $scope.quickGet = function () {
+                var _url = '/HomeHandler.ashx?id=' + $scope.userid + '&name=' + $scope.username;
+                $http.get(_url).then(function (resp) {
+                    $scope.quickObj = resp.data;
+                });
+            }
+
+            $scope.postData = function () {
+                var params = {
+                    id: $scope.userid,
+                    name:$scope.username
+                };
+                $http.post('/HomeHandler.ashx', params).then(function (resp) {
+                    $scope.postObj = resp.data;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

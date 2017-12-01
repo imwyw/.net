@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>window.onload和$(document).ready()</title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+</head>
+<body>
+    <h1>图片加载示例</h1>
+    <!--模拟显示一张图片-->
+    <img src="http://desk.fd.zol-img.com.cn/t_s1920x1200c5/g5/M00/0D/02/ChMkJlnHOj2ICeciACiHxj33cI4AAgvowKUnYMAKIfe688.jpg" />
+
+    <script>
+        //等待dom加载，等待图片、音乐、视频、广告等加载完成才触发
+        window.onload = function () {
+            alert('hello onload');
+        }
+
+        //dom文档结构加载完成后立即触发
+        $(document).ready(function () {
+            alert('hello ready');
+        });
+        //此写法同上，推荐此用法
+        $(function () {
+
+        });
+    </script>
+</body>
+</html>

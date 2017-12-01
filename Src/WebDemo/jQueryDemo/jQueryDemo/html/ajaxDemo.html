@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+</head>
+<body>
+    <script>
+        /*
+        $.ajax({
+            url: '',//请求的地址
+            dataType: 'json',//从服务器返回你期望的数据类型。
+            method: 'post',//post或get 或者使用type属性，1.9之前必须用type
+            data: {},//对象或数组。发送到服务器的数据。它被转换成一个查询字符串,如果已经是一个字符串的话就不会转换。
+            async: true,//true/false,是否异步，默认true
+            success: function (data, textStatus, jqXHR) { },//请求成功后的回调函数。
+            error: function (jqXHR, textStatus, errorThrown) { },//请求失败时调用此函数。
+            complete: function (jqXHR, textStatus) { },//请求完成后回调函数 (请求success 和 error之后均调用)。
+        });
+        */
+
+        $.ajax({
+            url: '/AjaxHandler.ashx',
+            dataTye: 'json',
+            method: 'GET',
+            data: {
+                id: 6789,
+                name: '顺子'
+            },
+            success: function (data) {
+                var obj = JSON.parse(data);
+                console.log(obj);
+            }
+        });
+
+        $.get('/AjaxHandler.ashx?id=xxx&name=jjj', function (data) {
+            console.log('$.get:' + data);
+        });
+        $.post('/AjaxHandler.ashx', { id: 'xxx', name: 'ooo' }, function (data) {
+            console.log('$.post:' + data);
+        });
+    </script>
+</body>
+</html>

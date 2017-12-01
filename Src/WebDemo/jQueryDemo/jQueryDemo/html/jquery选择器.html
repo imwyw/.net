@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>选择器</title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-3.2.1.js"></script>
+    <style>
+        .red {
+            color: red;
+        }
+
+        #htag, #hsel {
+            color: bisque;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="red">ID选择器 #ID</h1>
+    <div id="zhangsan">
+        <div id="jack"></div>
+    </div>
+
+    <h1 id="htag">标签选择器 Element</h1>
+
+    <h1 class="red">样式选择器 .class</h1>
+
+    <h1>通配选择 即选择所有元素 *</h1>
+
+    <h1 id="hsel">组合选择 selector1,selector2...</h1>
+
+    <script>
+        // id选择
+        $('#zhangsan');
+        jQuery('#zhangsan');
+
+        //根据标签选择
+        $('div');
+        $('h1');
+
+        //通配选择，即选择所有元素。还可以根据限定范围进行通配，比如在body下进行通配筛选
+        $('*');
+        $('body *');//body下 。。。。。
+
+        //组合选择，
+        $('#htag,#hsel');
+        $('#htag,.red');
+    </script>
+</body>
+</html>

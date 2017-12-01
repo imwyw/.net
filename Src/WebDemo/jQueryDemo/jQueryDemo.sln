@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jQueryDemo", "jQueryDemo\jQueryDemo.csproj", "{DF5D186A-5495-4C77-8328-89C8E850FEC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BootstrapDemo", "BootstrapDemo\BootstrapDemo.csproj", "{1FD83BA7-8ED5-4B9B-A075-9DD9EB89328C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF5D186A-5495-4C77-8328-89C8E850FEC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF5D186A-5495-4C77-8328-89C8E850FEC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF5D186A-5495-4C77-8328-89C8E850FEC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF5D186A-5495-4C77-8328-89C8E850FEC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FD83BA7-8ED5-4B9B-A075-9DD9EB89328C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FD83BA7-8ED5-4B9B-A075-9DD9EB89328C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FD83BA7-8ED5-4B9B-A075-9DD9EB89328C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FD83BA7-8ED5-4B9B-A075-9DD9EB89328C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jquery-3.2.1.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <header class="text-center">
+        <h2>xxxxxxx系统</h2>
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <ul id="nav" class="nav nav-pills nav-stacked">
+                    <li><a href="javascript:void(0)">主页</a></li>
+                    <li><a href="javascript:void(0)">个人</a></li>
+                    <li><a href="javascript:void(0)">发布</a></li>
+                    <li><a href="javascript:void(0)">帮助</a></li>
+                    <li><a href="javascript:void(0)">关于</a></li>
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <div style="height:600px;">
+                    <h1 id="hTest"></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="text-center">copyright xxxxx </footer>
+    <script>
+        $('#nav li').on('click', function () {
+            var name = $(this).find('a').text();
+            $('#hTest').text(name);
+        });
+    </script>
+</body>
+</html>

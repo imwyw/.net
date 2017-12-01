@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="https://cdn.bootcss.com/angular.js/1.6.6/angular.min.js"></script>
+</head>
+<body ng-app="myApp">
+    <div ng-controller="myController">
+        <button ng-click="showLocation()">show</button>
+        {{url}}
+    </div>
+    <script>
+        angular.module('myApp', [])
+            //.controller('myController', function ($scope) { })
+            .controller('myController', ['$scope', '$location', function ($scope, $location) {
+                $scope.showLocation = function () {
+                    $scope.url = $location.absUrl();
+                }
+            }])
+    </script>
+</body>
+</html>
