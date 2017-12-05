@@ -11,15 +11,22 @@
             - [总结](#总结)
         - [View-Controller传值](#view-controller传值)
     - [视图View](#视图view)
-        - [选择视图](#选择视图)
-        - [部分视图](#部分视图)
-            - [Partial 与 RenderPartial 方法](#partial-与-renderpartial-方法)
-            - [RenderPartial 与 RenderAction 方法](#renderpartial-与-renderaction-方法)
-            - [RenderAction 与 Action](#renderaction-与-action)
-            - [RenderPage 与 RenderPartial 方法](#renderpage-与-renderpartial-方法)
         - [视图引擎Razor](#视图引擎razor)
             - [@符号](#符号)
+        - [选择视图](#选择视图)
+        - [公共模板@RenderBody()](#公共模板renderbody)
+        - [@Section](#section)
+        - [PartialView部分视图](#partialview部分视图)
+    - [HTML 帮助器](#html-帮助器)
+        - [建议使用强类型辅助方法](#建议使用强类型辅助方法)
+        - [Html.Encode](#htmlencode)
+        - [自定义 HTML 辅助方法](#自定义-html-辅助方法)
+    - [Url 辅助方法](#url-辅助方法)
+        - [Url.Action()](#urlaction)
+        - [Url.Encode](#urlencode)
+        - [Url.Content](#urlcontent)
     - [模型Model](#模型model)
+    - [Area区域](#area区域)
 
 <!-- /TOC -->
 
@@ -140,7 +147,7 @@ public ViewDataDictionary ViewData { get; set; }
 ```
 
 ViewData 是一个 ViewDataDictionary 类，可用于存储任意对象的数据，但存储的键值必须为字符串。
-ViewData 只会存在于当前的 HTTP请求中。
+ViewData 只会存在于当前的 HTTP请求中，可以当做当前视图View中可以访问。
 
 ViewBag 是 dynamic 类型对象，基于.NET4.0，在查询数据时不需要类型转换，可读性更好。
 **也是应用最多的一种传值方式!**
@@ -263,36 +270,121 @@ public ActionResult GetTempDataView()
 
 <a id="markdown-view-controller传值" name="view-controller传值"></a>
 ### View-Controller传值
-其中一种常见的是表单提交的方式，通过表单的action属性进行提交到controller，具体示例如下：
+其中一种常见的是表单提交的方式，通过表单的action属性进行提交到controller，View2Controller.cs控制器示例如下：
 ```cs
-public ActionResult Index()
+public class View2Controller : Controller
 {
-    return View();
+    public ActionResult Index()
+    {
+        return View();
+    }
+
+    /// <summary>
+    /// 通过表单提交参数
+    /// </summary>
+    /// <param name="userid"></param>
+    /// <param name="userpwd"></param>
+    /// <returns></returns>
+    public ActionResult Login(string userid, string userpwd)
+    {
+        //以文本形式返回
+        return Content(string.Format("该用户名：{0},密码：{1},在{2}尝试登录", userid, userpwd, DateTime.Now));
+    }
+
+    /// <summary>
+    /// 通过ajax传递参数
+    /// </summary>
+    /// <param name="param"></param>
+    /// <returns></returns>
+    public ActionResult GetDataAjax(SimpleParams param)
+    {
+        //json序列化后再返回
+        return Json(param);
+    }
 }
 
-public ActionResult GetData(string userid)
+/// <summary>
+/// 定义一个参数类
+/// </summary>
+public class SimpleParams
 {
-    ViewBag.Name = userid;
-    return Content(userid);
+    public string Type { get; set; }
+    public string Level { get; set; }
 }
 ```
 
 视图Index.cshtml：
 ```html
-<form method="get" action="@Url.Action("GetData")">
-    <input type="text" name="userid" value="" placeholder="userid" />
-    <br />
-    <input type="submit" />
-</form>
-```
-针对上例，打开连接进行请求，会将表单中对应的值传递到controller中定义GetData方法中，并通过text方式进行返回。
+@{
+    ViewBag.Title = "Index";
+}
 
-还有另一种方式，就是通过ajax进行请求，同上。
+<h2>表单提交</h2>
+
+@* 表单提交参数，action是url地址 *@
+<form action="/View2/Login" method="post">
+    <div>
+        <label>用户名-</label>
+        <input type="text" name="userid" placeholder="用户名" />
+    </div>
+    <div>
+        <label>密码</label>
+        <input type="password" name="userpwd" placeholder="密码" />
+    </div>
+    <div>
+        @*点击后提交至form的action*@
+        <button type="submit">登录</button>
+    </div>
+</form>
+
+<hr />
+<h2>Ajax调用</h2>
+<div>
+    <div>
+        <label>请选择类型</label>
+        <select id="selType">
+            <option value="火星人">火星</option>
+            <option value="月球">月球</option>
+            <option value="半人马">半人马</option>
+        </select>
+    </div>
+    <div>
+        <label>请选择等级：</label>
+        <select id="selLevel">
+            <option value="赛亚人">赛亚人</option>
+            <option value="赛亚人2">赛亚人2</option>
+            <option value="赛亚人3">赛亚人3</option>
+        </select>
+    </div>
+    <input type="button" id="btnQuery" class="btn btn-primary" value="查询" />
+</div>
+
+<script>
+    $(function () {
+        $("#btnQuery").on("click", getData);
+    });
+
+    function getData() {
+        var url = "/View2/GetDataAjax";
+        var params = {
+            Type: $("#selType").val(),
+            Level: $("#selLevel").val()
+        };
+
+        $.post(url, params, function (data) {
+            console.log(data);
+        });
+    }
+</script>
+```
+针对上例，打开连接进行请求，会将表单中对应的值传递到controller中定义Login方法中，并通过text方式进行返回。
+
+还有另一种方式，就是通过ajax进行请求，序列化json字符串后返回。
 
 <a id="markdown-视图view" name="视图view"></a>
 ## 视图View
 
-类 | Controller辅助方法 | 用途
+Action返回类型 | Controller辅助方法 return xxx(); | 用途
 --|----------------|---
 ActionResult |  | 所有Result类型的抽象基类
 ContentResult | Content | 返回一段用户自定义的文字内容
@@ -305,10 +397,42 @@ PartialViewResult | PartialView | 与 ViewResult 类相似，返回的是“部�
 FileResult | File | 以二进制串流的方式返回一个文件数据
 JavaScriptResult | JavaScript | 返回的是 JavaScript 指令码
 
+<a id="markdown-视图引擎razor" name="视图引擎razor"></a>
+### 视图引擎Razor
+Razor是ASP.NET MVC内置的引擎，也是我们推荐使用的引擎
+
+具有以下特点：
+1. 精简、表达性强、
+2. 容易学习
+3. VS 提供很好的智能提示
+
+<a id="markdown-符号" name="符号"></a>
+#### @符号
+所有以 @开头 或 @{ /* 代码体 */ }  (在@与{之间不得添加任何空格) 的部分代码都会被ASP.NET引擎进行处理.在 @{ /*代码体*/ } 内的代码每一行都必须以";"结束,如
+```cs
+@{
+    var i = 10;
+    var y = 20;
+}
+```
+而 @xxx 则不需要以";"作为结束符,如
+
+@i 输出 10
+
+@y; 输出 20;
+
+**总的来说，可以归纳为以下几点：**
+1. @{ ... } 中，@ 和 { 之间不得添加空格
+2. @{ ... } 内的代码每一行C#代码都必须以 ; 号结束，而@xxx则不需要；符合
+3. @{ ... } 内可以包含HTML标记
+4. @{ ... } 内输出文本的话，需要在文本前加上 @: 前缀，或使用<text/>进行多行输出
+5. @xxx的前一个字符若是非空白字符，则ASP.NET不会对其进行处理
+
 <a id="markdown-选择视图" name="选择视图"></a>
 ### 选择视图
 View()方法有多种方法重载，Action中也有多种处理方式。
-项目结构和代码如下所示：
+
+基于下图中的项目结构演示不同的使用方式：
 
 ![](../assets/asp.net-mvc/view01.png)
 ```cs
@@ -355,75 +479,264 @@ public ActionResult Reirect2Action()
 }
 ```
 
-<a id="markdown-部分视图" name="部分视图"></a>
-### 部分视图
-为了代码的复用，相当于我们自己实现的分页控件一样。
+<a id="markdown-公共模板renderbody" name="公共模板renderbody"></a>
+### 公共模板@RenderBody()
+在网站公用部分通过一个占位符@RenderBody()来为网站独立部分预留一个位置。
+
+然后私有页面顶部通过`@{Layout="公用模板路径"}`来引入公用模板，并在自身放到公用模板的位置。
+
+同时也可以设置ViewData或ViewBag设置网站标题，关键词等信息。
+
+公有模板 _Layout.cshtml 布局页：
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+</head>
+
+<body>
+    <div>下面是页面私有部分</div>
+    @RenderBody()
+</body>
+</html>
+```
+
+具体页面 比如Index.cshtml：
+```
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "从这里可以设置网站标题";
+}
+```
+
+这样引入了公用的页面其它部分，同时还设置了标题。
+
+当多个页面都使用到了同一个布局时，每个页面都要通过Layout属性来指定它的布局，会造成冗余，【`_ViewStart.cshtml`】可以用来消除这种冗余，在Views目录下又一个【`_ViewStart.cshtml`】文件，这个文件优先于同目录下任何视图的执行，可以用它来指定一个默认布局。
+
+**当没有显明的设置Layout时，Layout继承自文件【_ViewStart.cshtml】中的Layout设置。**
+
+如果不想要布局，则设置Layout=""或Layout=null即可。
+
+<a id="markdown-section" name="section"></a>
+### @Section
+在页面设置自定义的模板部分，WebViewPage.RenderSection提供了两个方法重载：
+```
+@* 定义一个节，当视图不提供这个节的代码时会报错：节未定义:“xxxxxx”。 *@
+@RenderSection("Footer")
+
+@* 重载，如果设置了第二个参数为false，则说明这个节不是必须的，当视图不提供这个节的代码时也不会报错。 *@
+@RenderSection("Footer",false)
+```
+
+应用案例：
+_Layout.cshtml中
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+</head>
+<body>
+    @RenderBody()
+    <hr />
+    @RenderSection("myFoot",false)
+    <footer>
+        <p>&copy; @DateTime.Now - My ASP.NET Application</p>
+    </footer>
+</body>
+</html>
+```
+
+具体页面中实现section的定义，如Index.cshtml中实现：
+```html
+@section {
+    <h1>这是myFoot</h1>
+}
+```
+
+<a id="markdown-partialview部分视图" name="partialview部分视图"></a>
+### PartialView部分视图
+为了代码的复用，相当于我们自己实现的分页控件一样。当我们想要不同的视图之间共享的网页的可重用部件时很有用。
+
+分部视图是另一个视图中呈现的视图。 通过执行分部视图生成的 HTML 输出呈现到调用 （或父） 视图。 分部视图和视图一样使用.cshtml文件扩展名。
 
 使用部分视图 ：  
 1. 可以简写代码。
 2. 页面代码更加清晰、更好维护。
 
 ```
-Partial();
-Action();
-RenderPartial();//常用
-RenderAction();//常用
-RenderPage() ;
+@* 
+1、返回的是string类型，所以结果可以存储在变量里
+2、结果以HTML-encoded 字符串展示，但是有一个临时变量StringWriter，也正是因为这一点效率不如 RenderPartial() 
+3、使用简单，无需创建action，不经过Controller
+*@
+@Html.Partial("_Comments")
+
+@*
+1、无返回值
+2、通过直接输出到HtmlHelper.ViewContext.Writer(即直接输出到response中)实现view的插入
+*@
+@{
+    Html.RenderPartial("_Comments");
+}
+
+@*
+1、有返回值，结果直接展示为HtmlString .
+2、需要创建对应的action，即需要经过Controller的请求
+3、需要有对应的Action
+*@
+@Html.Action("actionName")
+@Html.Action("actionName","controllerName")
+
+@*
+1、无返回值
+2、同RenderPartial直接写在HtmlHelper.ViewContext.Writer中实现
+3、需要有对应的Action
+*@
+@{
+    Html.RenderAction();
+}
+
+
+@Html.RenderPage() ;
 ```
 
-<a id="markdown-partial-与-renderpartial-方法" name="partial-与-renderpartial-方法"></a>
-#### Partial 与 RenderPartial 方法
-1. Razor 语法：@Html.Partial() 与 @{Html.RenderPartial();}
-2. 区别：Partial 可以直接输出内容，它内部是 将 html 内容转换为 string 字符（MVCHtmlString），然后缓存起来，最后在一次性输出到页面。显然，这个转换的过程，会降低效率，所以通常使用 RenderPartial 代替。
+RenderPartial因为是直接写在响应流中，所以性能会更好（微量影响），而Partial不用写在代码块中，所以更方便.
 
-<a id="markdown-renderpartial-与-renderaction-方法" name="renderpartial-与-renderaction-方法"></a>
-#### RenderPartial 与 RenderAction 方法
-1. Razor 语法：@{Html.RenderPartial();}  与 @{Html.RenderAction();}
-2. 区别：RenderPartial 不需要创建 Controller 的 Action ，而 RenderAction 需要在 Controller 创建要加载的 Action。
+参考引用：[asp.net MVC3 Helpers Partial RenderPartial Action RenderAction](http://www.cnblogs.com/jiagoushi/archive/2012/11/19/2778191.html)
 
-RenderAction会先去调用 Contorller 的 Action ，最后再呈现视图，所以这里 页面会再发起一个链接。
+<a id="markdown-html-帮助器" name="html-帮助器"></a>
+## HTML 帮助器
+HTML 帮助器用于修改 HTML 输出。在大多数情况下，HTML 帮助器仅仅是返回字符串的方法。
 
-如果这个部分视图只是一些简单 的 html 代码，请使用 RenderPartial。 但如果这个部分视图 除了有 html 代码外，还需要通过读取数据库里的数据来渲染，就必须使用RenderAction了，因为它可以在Action里调用 Model里的方法读取数据库，渲染视图后在呈现，而RenderPartial没有Action，所以无法做到。
+呈现 HTML 链接的最简单方法是使用 HTML.ActionLink() 帮助器。
+```html
+@* Razor 语法 *@
+@Html.ActionLink("About this Website", "About")
 
-<a id="markdown-renderaction-与-action" name="renderaction-与-action"></a>
-#### RenderAction 与 Action
-1. Razor 语法：@{Html.RenderAction();}  与 @Html.Action();
-2. 区别：Action 也是直接输出，和 Partial 一样，也存在一个转换的过程。不如 RenderAction 直接输出到 当前 HttpContext 的效率高。
+<!-- 对应输出的Html标记 -->
+<a href="/Home/About">About this Website</a>
+```
 
-<a id="markdown-renderpage-与-renderpartial-方法" name="renderpage-与-renderpartial-方法"></a>
-#### RenderPage 与 RenderPartial 方法
-1. Razor 语法：@{Html.RenderPartial();}  与 @RenderPage()
-2. 区别：也可以使用 RenderPage 来呈现部分，但它不能使用原来视图的Model 和ViewData ,只能通过参数来传递。而 RenderPartial 可以使用原来视图的 Model 和 ViewData。
+![actionlink](../assets/asp.net-mvc/html.actionlink.png)
 
-<a id="markdown-视图引擎razor" name="视图引擎razor"></a>
-### 视图引擎Razor
-Razor是ASP.NET MVC内置的引擎，也是我们推荐使用的引擎
-特点：
-1. 精简、表达性强、
-2. 容易学习
-3. VS 提供很好的智能提示
+生成表单Html.BeginForm()：
 
-<a id="markdown-符号" name="符号"></a>
-#### @符号
-所有以 @开头 或 @{ /* 代码体 */ }  (在@与{之间不得添加任何空格) 的部分代码都会被ASP.NET引擎进行处理.在 @{ /*代码体*/ } 内的代码每一行都必须以";"结束,如
+![html.form](../assets/asp.net-mvc/html.form.png)
+
+
+作为了解，其余辅助方法：
+
+HTML辅助方法 | 说明
+---------|---
+Html.Password() | 生成密码字段
+Html.Hidden() | 生成隐藏字段
+Html.TextArea() | 生成文字区域
+Html.DropDownList() | 生成下拉菜单
+Html.ListBox() | 生成多选的下拉菜单
+Html.RadioButton() | 生成单选按钮
+Html.CheckBox() | 生成复选按钮
+
+<a id="markdown-建议使用强类型辅助方法" name="建议使用强类型辅助方法"></a>
+### 建议使用强类型辅助方法
+* Html.TextBoxFor()	
+* Html.HiddenFor()
+* Html.TextAreaFor()	
+* Html.LabelFor()
+* Html.DropDownListFor()	
+* Html.EditorFor()
+* Html.CheckboxFor()	
+* Html.DisplayFor()
+* Html.RadioButtonFor()	
+* Html.DisplayTextFor()
+* Html.ListBoxFor()	
+* Html.ValidationMessageFor()
+* Html.PasswordFor()	
+
+定义一个ViewModel类如下：
 ```cs
-@{
-    var i = 10;
-    var y = 20;
+public class Student
+{
+    public Student(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string UserPwd { get; set; }
 }
 ```
-而 @xxx 则不需要以";"作为结束符,如
 
-@i 输出 10
+视图中的强类型绑定如下：
+```html
+@model EmptyDemo.Controllers.Student
+@{
+    ViewBag.Title = "Index";
+}
 
-@y; 输出 20;
+<h2>Index</h2>
 
-- 字符类型常量必须用""括起
-例如: @{ string str = "my string"; }
-- Razor提供智能分析功能
-如果在@的前一个字符若是非空白字符,则ASP.NET不会对其进行处理。如:<p>text@i xx</p> 输出 text@i xx
-- Razor的单行语法
+@using (Html.BeginForm())
+{
+    @Html.Label("姓名-") @Html.TextBoxFor(m => m.Name)
+    <br />
+    @Html.Label("年龄-") @Html.TextBoxFor(m => m.Age, new { @type = "number" })
+    <br />
+    @Html.Label("密码-") @Html.PasswordFor(m => m.UserPwd)
+}
+```
 
+<a id="markdown-htmlencode" name="htmlencode"></a>
+### Html.Encode
+将指定值转换为 HTML 编码的字符串。
+```html
+<!--转换为html编码形式： &amp;&lt;&gt;中文  -->
+@Html.Encode("&<>中文")
+```
+
+**注释**
+完整的HTML编码可确保编码文本不被浏览器解释为HTML标记。 例如，如果一个字符串包含小于（<）或大于（>）的字符，并且在编码之前将其写入HTTP响应，则这些字符将被浏览器解释为打开和关闭HTML元素 标签。 通过使用Encode（String）方法将这些符号编码为它们的HTML转义序列（“＆lt;”和“＆gt;”），确保这些字符被解释为文本而不是标记，并且它们显示在网页上 页面使用小于（<）和大于（>）字符。
+
+<a id="markdown-自定义-html-辅助方法" name="自定义-html-辅助方法"></a>
+### 自定义 HTML 辅助方法
+有时觉得 HTML 辅助方法太少，可以通过扩充方法来扩充 HtmlHelper 类。
+
+![HtmlHelper扩展](../assets/asp.net-mvc/HtmlHelper扩展.png)
+
+<a id="markdown-url-辅助方法" name="url-辅助方法"></a>
+## Url 辅助方法
+
+<a id="markdown-urlaction" name="urlaction"></a>
+### Url.Action()
+单纯地想输出某个网址，利用该方法。
+
+用法 | 输出结果
+---|-----
+@Url.Action("About") | /Account/About
+@Url.Action("About", new { id = 1 }) | /Account/About/1
+@Url.Action("About", "Home") | /Home/About
+@Url.Action("About", "Home", new { id = 1 }) | /Home/About/1
+
+<a id="markdown-urlencode" name="urlencode"></a>
+### Url.Encode
+将指定值转换为 HTML 编码的字符串。
+
+将字符转换为对应的url编码：
+```html
+<!-- 转换为url编码形式 %3c%3e%25123%e4%b8%ad%e6%96%87 -->
+@Url.Encode("&<>中文")
+```
+
+**注释**
+如果将空格和标点符号等字符传入 HTTP 流中，则可能会在处理这些字符时错误地解释这些字符。 URL 编码会将 URL 中不允许的字符转换成字符实体等效项。 例如，当字符 < 和 > 嵌入到要在 URL 中传输的文本块中时，这两个字符将编码为 %3c 和 %3e。
+
+<a id="markdown-urlcontent" name="urlcontent"></a>
+### Url.Content
+将虚拟（相对）路径转换为应用程序绝对路径。
 
 <a id="markdown-模型model" name="模型model"></a>
 ## 模型Model
@@ -438,3 +751,95 @@ MVC 模型包含程序中的所有逻辑，而这些逻辑并不包含在视图�
 
 通常，你应该为“胖”模型和“瘦”控制器而努力。控制器方法应该只包含几行代码。如果控制器action变得太“胖”的话，那么就应该考虑将逻辑挪出到Models文件夹中的一个新类中。
 
+<a id="markdown-area区域" name="area区域"></a>
+## Area区域
+虽然在同一个 ASP.NET MVC 项目中区分多个子系统模块，但有时难免有某个子系统会用到与其他子系统相同的 Controller 名称的情况出现。
+
+ASP.NET MVC中,是依靠文件夹以及类的固定命名规则去组织model实体层，视图层和控制层的。如果是大规模的应用程序，经常会由不同功能的模块组成，而每个功能模块都由MVC中的三层所构成，因此，随着应用程序规模的增大，如何组织这些不同功能模块中的MVC三层的目录结构，有时对开发者来说是种负担。
+
+ASP.NET MVC允许开发者将应用划分为“区域”（Area）的概念，每个区域都是按照asp.net mvc的规定对文件目录结构和类的命名规则进行命名。
+
+Areas是将ASP.NET MVC应用按照不同的功能模块划分，对每个功能模块使用ASP.NET MVC规则的目录结构和命名方法。
+
+原项目结构如下，默认路由设置为/Home/Index
+
+![](..\assets\asp.net-mvc\area01.png)
+
+右键工程选择 添加->区域，弹出如下填写Area的对话框：
+
+![](..\assets\asp.net-mvc\area02.png)
+
+添加区域后，项目结构变化如下：
+
+![](..\assets\asp.net-mvc\area03.png)
+
+上图结构和创建一个空MVC工程结构类似，Admin Area 有自己的 Controllers、Models 和 Views 文件夹，不一样的地方就是多了一个 AdminAreaRegistration.cs 文件，这个文件中定义了一个叫 AdminAreaRegistration 的类，它的内容如下：
+
+```cs
+namespace Hello.Areas.Admin
+{
+    public class AdminAreaRegistration : AreaRegistration
+    {
+        /// <summary>
+        /// 重写抽象类AreaRegistration的属性
+        /// </summary>
+        public override string AreaName
+        {
+            get
+            {
+                return "Admin";
+            }
+        }
+
+        /// <summary>
+        /// 重写抽象类AreaRegistration的注册区域方法
+        /// 不需要我们手动去调用，在Global.asax中系统自动生成的代码有帮我们注册区域AreaRegistration.RegisterAllAreas();
+        /// </summary>
+        /// <param name="context"></param>
+        public override void RegisterArea(AreaRegistrationContext context)
+        {
+            context.MapRoute(
+                "Admin_default",
+                "Admin/{controller}/{action}/{id}",
+                new { action = "Index", id = UrlParameter.Optional }
+            );
+        }
+    }
+}
+```
+
+系统自动生成的 AdminAreaRegistration 类继承至抽象类 AreaRegistration，并重写了 AreaName 属性和 RegisterArea 方法。
+
+在 RegisterArea 方法中它为我们定义了一个默认路由，我们也可在这个方法中定义专属于Admin Area的的其他路由。
+
+但有一点要注意，在这如果要给路由起名字，一定要确保它和整个应用程序不一样。
+
+**一定要注意**：
+AreaRegistrationContext 类的 MapRoute 方法和 RouteCollection 类的 MapRoute 方法的使用是一样的，只是 AreaRegistrationContext 类限制了注册的路由只会去匹配当前 Area 的 controller，所以，如果你把在 Area 中添加的 controller 的默认命名空间改了，路由系统将找不到这个controller 。
+
+为了模拟特殊情况，我们在Admin Area中也添加一个重名的控制器，也叫HomeController，对应有一个相同的Action Index。项目结构如下：
+
+![](..\assets\asp.net-mvc\area04.png)
+
+在工程中存在两个相同的控制器HomeController，此时默认路由的匹配会发生混乱，不知道需要匹配是哪个HomeController，会抛出如下异常：
+
+![](..\assets\asp.net-mvc\area05.png)
+
+针对RouteConfig路由配置做namespace的设置，如下：
+```cs
+public class RouteConfig
+{
+    public static void RegisterRoutes(RouteCollection routes)
+    {
+        routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+        routes.MapRoute(
+            name: "Default",
+            url: "{controller}/{action}/{id}",
+            defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+            // Hello.Controllers 为工程根路径下Controller的命名空间
+            namespaces: new[] { "Hello.Controllers" }
+        );
+    }
+}
+```

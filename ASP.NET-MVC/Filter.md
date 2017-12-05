@@ -12,7 +12,11 @@
 <!-- /TOC -->
 <a id="markdown-筛选器的执行" name="筛选器的执行"></a>
 # 筛选器的执行
-ASP.NET-MVC的筛选器是一种基于AOP(面向方面编程)的设计，我们将一些非业务的逻辑实现在相应的筛选器，并以一种横切( Crosscutting)的方式应用到对应的 Action 方法上。在Action方法执行前后，这些筛选器会自动执行。 ASP.NETMVC 提供了 AuthorizationFilter、ActionFilter、ResultFilter和ExceptionFilter这四种筛选器，它们对应着四个接口IAuthorizationFilter、IActionFilter、IResultFilter 和 IExceptionFilter。经常应用在用户权限验证、系统日志、异常处理、缓存等功能上。
+ASP.NET-MVC的筛选器是一种基于AOP(面向方面编程)的设计，我们将一些非业务的逻辑实现在相应的筛选器，并以一种横切( Crosscutting)的方式应用到对应的 Action 方法上。
+
+在Action方法执行前后，这些筛选器会自动执行。 ASP.NETMVC 提供了 AuthorizationFilter、ActionFilter、ResultFilter和ExceptionFilter这四种筛选器，它们对应着四个接口IAuthorizationFilter、IActionFilter、IResultFilter 和 IExceptionFilter。
+
+经常应用在用户权限验证、系统日志、异常处理、缓存等功能上。
 
 | Filter类型 | 接口 | MVC默认实现 | Description |
 |---|---|---|---|
