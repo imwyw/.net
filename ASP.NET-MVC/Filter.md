@@ -1,18 +1,20 @@
 <!-- TOC -->
 
-- [筛选器的执行](#筛选器的执行)
-    - [先后顺序](#先后顺序)
-- [Authorization](#authorization)
-    - [接口含义](#接口含义)
-    - [简单验证是否登录](#简单验证是否登录)
-- [ActionFilter](#actionfilter)
-    - [接口含义](#接口含义-1)
-    - [简单权限](#简单权限)
+- [Filter筛选器的执行](#filter筛选器的执行)
+    - [AuthorizeAttribute](#authorizeattribute)
+        - [接口含义](#接口含义)
+        - [简单验证是否登录](#简单验证是否登录)
+    - [ActionFilterAttribute](#actionfilterattribute)
+        - [接口含义](#接口含义-1)
+        - [简单权限](#简单权限)
 
 <!-- /TOC -->
-<a id="markdown-筛选器的执行" name="筛选器的执行"></a>
-# 筛选器的执行
+<a id="markdown-filter筛选器的执行" name="filter筛选器的执行"></a>
+# Filter筛选器的执行
+
 ASP.NET-MVC的筛选器是一种基于AOP(面向方面编程)的设计，我们将一些非业务的逻辑实现在相应的筛选器，并以一种横切( Crosscutting)的方式应用到对应的 Action 方法上。
+
+![ASP.NET-MVC](../assets/asp.net-mvc/MVC生命周期.png)
 
 在Action方法执行前后，这些筛选器会自动执行。 ASP.NETMVC 提供了 AuthorizationFilter、ActionFilter、ResultFilter和ExceptionFilter这四种筛选器，它们对应着四个接口IAuthorizationFilter、IActionFilter、IResultFilter 和 IExceptionFilter。
 
@@ -20,24 +22,34 @@ ASP.NET-MVC的筛选器是一种基于AOP(面向方面编程)的设计，我们�
 
 | Filter类型 | 接口 | MVC默认实现 | Description |
 |---|---|---|---|
-|Authorization|IAuthorizationFilter|AuthorizeAttribute|最先执行，在其他类型的filter和action方法前执行|
-|Action|IActionFilter|ActionFilterAttribute|在action方法执行前和执行后执行|
+|Authorize|IAuthorizationFilter|AuthorizeAttribute|最先执行，在其他类型的filter和action方法前执行|
+|ActionFilter|IActionFilter|ActionFilterAttribute|在action方法执行前和执行后执行|
 |Result|IResultFilter|ActionFilterAttribute|在result执行前和执行后执行|
 |Exception|IExceptionFilter|HandleErrorAttribute|在抛出异常时执行，（异常发生在action/result/filter）|
 
-
-<a id="markdown-先后顺序" name="先后顺序"></a>
-## 先后顺序
+**先后顺序**
 IAuthorizationFilter -> IActionFilter - >IResultFilter ->IExceptionFilter
 
-<a id="markdown-authorization" name="authorization"></a>
-# Authorization
+<a id="markdown-authorizeattribute" name="authorizeattribute"></a>
+## AuthorizeAttribute
 是所有Filter类型第一个执行的Filter，在Action调用前执行，需要实现IAuthorizationFilter接口。
 
-用于完成授权相关的工作，如果希望在调用Action前做点啥也可以通过自定义Authorize的方式实现。
+我们可以通过使用控制器上或者控制器内部特定操作上的Authorize操作过滤器来实现，甚至可以为整个应用程序全局使用Authorize操作过滤器。Authorize Attribute是ASP.NET MVC自带的默认授权过滤器，可用来限制用户对操作方法的访问。将该特性应用于整个控制器，就可以快速将其应用于控制器中的每个方法。
+
+MSDN: 
+> https://msdn.microsoft.com/zh-cn/library/system.web.mvc.authorizeattribute(v=vs.118).aspx
+
+在控制器或方法上使用Authorize特性：
+```cs
+[Authorize]
+public class TestController : Controller
+{
+    ......
+}
+```
 
 <a id="markdown-接口含义" name="接口含义"></a>
-## 接口含义
+### 接口含义
 ``` cs
 //请求Action前调用
 public virtual void OnAuthorization(AuthorizationContext filterContext);
@@ -47,50 +59,27 @@ protected virtual bool AuthorizeCore(HttpContextBase httpContext);
 
 //身份验证未通过时执行，即AuthorizeCore方法返回false时调用
 protected virtual void HandleUnauthorizedRequest(AuthorizationContext filterContext);
-
-/***************************************************************************/
 ```
+
 <a id="markdown-简单验证是否登录" name="简单验证是否登录"></a>
-## 简单验证是否登录
-``` cs
-//自定义Authorize特性
-public class CustomAuthorizeAttribute : AuthorizeAttribute
+### 简单验证是否登录
+
+方案一，通过Session判断用户是否已经登录，并重写HandleUnauthorizedRequest方法实现跳转
+```cs
+/// <summary>
+/// 自定义验证授权特性
+/// </summary>
+public class CustomeAuthorize : AuthorizeAttribute
 {
     /// <summary>
-    /// 请求action前的验证
-    /// </summary>
-    /// <param name="filterContext"></param>
-    public override void OnAuthorization(AuthorizationContext filterContext)
-    {
-        base.OnAuthorization(filterContext);
-
-        //var statusResult = filterContext.Result as HttpStatusCodeResult;
-
-        //通过AuthorizeCore验证返回判断
-        //if (statusResult != null && statusResult.StatusCode == 401)
-        //{
-        //    //重定向到登录页
-        //    filterContext.Result = new RedirectResult("/Login/Login");
-        //}
-
-        //通过Session判断
-        //if (ContextObjects.CurrentUser == null)
-        //{
-        //    //重定向到登录页
-        //    filterContext.Result = new RedirectResult("/Login/Login");
-        //}
-    }
-
-    /// <summary>
-    /// 当验证没有通过的时候
-    /// 或者重写OnAuthorization方法实现
+    /// 处理未能授权的 HTTP 请求。
+    /// 当验证没有通过的时候所执行方法
     /// </summary>
     /// <param name="filterContext"></param>
     protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
     {
-        base.HandleUnauthorizedRequest(filterContext);
         //重定向到登录页
-        filterContext.Result = new RedirectResult("/Login/Login");
+        filterContext.Result = new RedirectResult("/Login/SignInView");
     }
 
     /// <summary>
@@ -100,34 +89,87 @@ public class CustomAuthorizeAttribute : AuthorizeAttribute
     /// <returns></returns>
     protected override bool AuthorizeCore(HttpContextBase httpContext)
     {
-        if (HttpContext.Current.Session["xxx-user"] == null)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        bool isLogin = HttpContext.Current.Session["CurUser"] != null;
+        return isLogin;
     }
 }
+```
 
-//调用方法：
-//[CustomAuthorize] 在Controller上同样
-public class UserMgrController : Controller
+方案二，通过Session判断用户是否已经登录,重写OnAuthorization和AuthorizeCore
+```cs
+/// <summary>
+/// 自定义验证授权特性
+/// </summary>
+public class CustomeAuthorize : AuthorizeAttribute
 {
-    [CustomAuthorize]
-    [CustomActionFilter(Roles = "superadmin")]
-    public ActionResult UserInfo()
+    public override void OnAuthorization(AuthorizationContext filterContext)
+    {
+        base.OnAuthorization(filterContext);
+
+        var statusResult = filterContext.Result as HttpStatusCodeResult;
+
+        //通过AuthorizeCore验证，判断验证状态
+        if (statusResult != null && statusResult.StatusCode == 401)
+        {
+            //重定向到登录页
+            filterContext.Result = new RedirectResult("/Login/SignInView");
+        }
+    }
+
+    /// <summary>
+    /// 由OnAuthorization调用，是否允许该用户通过验证
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <returns></returns>
+    protected override bool AuthorizeCore(HttpContextBase httpContext)
+    {
+        bool isLogin = HttpContext.Current.Session["CurUser"] != null;
+        return isLogin;
+    }
+}
+```
+
+在控制器中的调用示例：
+```cs
+/// <summary>
+/// 主页控制器
+/// 添加在类前面的 [CustomeAuthorize] 特性标签表示该特性对控制器内所有Action均有作用
+/// 同样的，我们也可以将 [CustomeAuthorize] 特性标签添加在Action方法的前面
+/// </summary>
+[CustomeAuthorize]
+public class HomeController : Controller
+{
+    /// <summary>
+    /// 主页
+    /// </summary>
+    /// <returns></returns>
+    public ActionResult Index()
+    {
+        return View();
+    }
+
+    /// <summary>
+    /// 结合类前 [CustomeAuthorize] 特性标签，如果有Action需要实现匿名访问，即忽略验证
+    /// 则需要添加该特性标签 [AllowAnonymous]
+    /// </summary>
+    /// <returns></returns>
+    [AllowAnonymous]
+    public ActionResult AnyoneView()
     {
         return View();
     }
 }
 ```
 
-<a id="markdown-actionfilter" name="actionfilter"></a>
-# ActionFilter
+<a id="markdown-actionfilterattribute" name="actionfilterattribute"></a>
+## ActionFilterAttribute
+
+MSDN:
+> https://msdn.microsoft.com/zh-cn/library/system.web.mvc.actionfilterattribute(v=vs.118).aspx
+
+
 <a id="markdown-接口含义-1" name="接口含义-1"></a>
-## 接口含义
+### 接口含义
 ``` cs
 //执行Action后调用
 public virtual void OnActionExecuted(ActionExecutedContext filterContext);
@@ -142,7 +184,7 @@ public virtual void OnResultExecuted(ResultExecutedContext filterContext);
 public virtual void OnResultExecuting(ResultExecutingContext filterContext);
 ```
 <a id="markdown-简单权限" name="简单权限"></a>
-## 简单权限
+### 简单权限
 ``` cs
 public class CustomActionFilterAttribute : ActionFilterAttribute
 {
@@ -172,7 +214,6 @@ public class CustomActionFilterAttribute : ActionFilterAttribute
             return;
         }
 
-
         //已登录用户，判断权限
         //ContextObjects.CurrentUser.Roles 当登录时一并从数据库读取
         if (!string.IsNullOrEmpty(ContextObjects.CurrentUser.Roles))
@@ -188,9 +229,7 @@ public class CustomActionFilterAttribute : ActionFilterAttribute
             if (!isAuthorize)
             {
                 ContentResult Content = new ContentResult();
-                Content.Content = @"<script type='text/javascript'>alert('权限验证未通过！');
-                history.go(-1);
-                </script>";
+                //Content.Content = @"<script type='text/javascript'>alert('权限验证未通过！');history.go(-1);</script>";
                 filterContext.Result = Content;
             }
         }
@@ -207,6 +246,30 @@ public class UserMgrController : Controller
     public ActionResult UserInfo()
     {
         return View();
+    }
+}
+```
+
+BLL层中保存上下文对象，即Session中对象
+```cs
+/// <summary>
+/// 当前上下文对象
+/// </summary>
+public class ContextObjects
+{
+    /// <summary>
+    /// 当前用户对象（ASP.NET版本设计）,需要当前BLL层引入System.Web.dll
+    /// </summary>
+    public static User CurrentUser
+    {
+        get
+        {
+            return HttpContext.Current.Session["CurUser"] as User;
+        }
+        set
+        {
+            HttpContext.Current.Session["CurUser"] = value;
+        }
     }
 }
 ```

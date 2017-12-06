@@ -32,6 +32,7 @@
     * [路由](.\ASP.NET-MVC\URL.md)
     * [MVC概述](.\ASP.NET-MVC\mvc.md)
     * [筛选器Filter](.\ASP.NET-MVC\Filter.md)
+    * [疑难杂症](.\ASP.NET-MVC\FAQ.md)
 
 * [IIS](.\IIS\README.md)
     * [安装](.\IIS\INSTALL.md)
