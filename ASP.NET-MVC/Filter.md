@@ -7,6 +7,8 @@
     - [ActionFilterAttribute](#actionfilterattribute)
         - [接口含义](#接口含义-1)
         - [简单权限设计与实现](#简单权限设计与实现)
+    - [FilterAttribute抽象类](#filterattribute抽象类)
+        - [Order属性](#order属性)
 
 <!-- /TOC -->
 <a id="markdown-filter筛选器的执行" name="filter筛选器的执行"></a>
@@ -29,6 +31,7 @@ ASP.NET-MVC的筛选器是一种基于AOP(面向方面编程)的设计，我们�
 
 **先后顺序**
 IAuthorizationFilter -> IActionFilter - >IResultFilter ->IExceptionFilter
+
 
 <a id="markdown-authorizeattribute" name="authorizeattribute"></a>
 ## AuthorizeAttribute
@@ -164,6 +167,16 @@ public class HomeController : Controller
 <a id="markdown-actionfilterattribute" name="actionfilterattribute"></a>
 ## ActionFilterAttribute
 
+有时候你想在调用action方法之前或者action方法之后处理一些逻辑，为了支持这个，ASP.NET MVC允许你创建action过滤器。Action过滤器是自定义的Attributes，用来标记添加Action方法之前或者Action方法之后的行为到控制器类中的Action方法中。
+
+一些可能用到Action过滤器的地方有：
+* 日志
+* 身份验证和授权 － 限制用户的访问
+* 输出缓存 － 保存一个Action的结果
+* 网络爬虫的过滤
+* 本地化
+* 动态Action － 将一个Action注入到控制器中
+
 MSDN:
 > https://msdn.microsoft.com/zh-cn/library/system.web.mvc.actionfilterattribute(v=vs.118).aspx
 
@@ -171,17 +184,17 @@ MSDN:
 <a id="markdown-接口含义-1" name="接口含义-1"></a>
 ### 接口含义
 ``` cs
-//执行Action后调用
-public virtual void OnActionExecuted(ActionExecutedContext filterContext);
-
-//执行Action前调用，但是在Authorization OnAuthorization方法后调用
+//1、执行Action前调用
 public virtual void OnActionExecuting(ActionExecutingContext filterContext);
 
-//在执行操作结果后
-public virtual void OnResultExecuted(ResultExecutedContext filterContext);
+//2、执行Action后调用
+public virtual void OnActionExecuted(ActionExecutedContext filterContext);
 
-//在返回执行操作结果前
+//3、在返回执行操作结果前
 public virtual void OnResultExecuting(ResultExecutingContext filterContext);
+
+//4、在执行操作结果后
+public virtual void OnResultExecuted(ResultExecutedContext filterContext);
 ```
 <a id="markdown-简单权限设计与实现" name="简单权限设计与实现"></a>
 ### 简单权限设计与实现
@@ -331,4 +344,73 @@ public class HomeController : Controller
         return View();
     }
 }
+```
+
+<a id="markdown-filterattribute抽象类" name="filterattribute抽象类"></a>
+## FilterAttribute抽象类
+
+<a id="markdown-order属性" name="order属性"></a>
+### Order属性
+获取或者设置执行操作筛选器的顺序。
+
+Order 属性采用必须为 0（默认值）或更大（有一处异常）的整数值。 如果省略 Order 属性，则将为筛选器赋予顺序值 -1，这表示未指定顺序。 范围中 Order 属性设置为 -1 的任何操作筛选器将按不确定的顺序执行，但在具有指定顺序的筛选器之前执行。
+
+以AuthorizeAttribute验证授权进行示例，自定义两个特性：
+
+```cs
+public class CustomAuthorize1 : System.Web.Mvc.AuthorizeAttribute
+{
+    public override void OnAuthorization(AuthorizationContext filterContext)
+    {
+        base.OnAuthorization(filterContext);
+        System.Diagnostics.Debug.WriteLine("CustomAuthorize1-OnAuthorization");
+    }
+
+    /// <summary>
+    /// 为了测试Order，忽略验证
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <returns></returns>
+    protected override bool AuthorizeCore(HttpContextBase httpContext)
+    {
+        return true;
+    }
+}
+
+public class CustomAuthorize1 : System.Web.Mvc.AuthorizeAttribute
+{
+    public override void OnAuthorization(AuthorizationContext filterContext)
+    {
+        base.OnAuthorization(filterContext);
+        System.Diagnostics.Debug.WriteLine("CustomAuthorize2-OnAuthorization");
+    }
+
+    /// <summary>
+    /// 为了测试Order，忽略验证
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <returns></returns>
+    protected override bool AuthorizeCore(HttpContextBase httpContext)
+    {
+        return true;
+    }
+}
+```
+
+在Action中应用如下：
+```cs
+[CustomAuthorize2(Order = 2)]//最后执行
+[CustomAuthorize1(Order = 1)]//在Order=2之前执行
+[CustomAuthorize3]//Order 默认，在指定Order之前执行
+public ActionResult Index()
+{
+    return View();
+}
+```
+
+上面的示例中，AuthorizeCore均为true，即验证都通过。在输出窗口中打印的顺序和Order的顺序一致，输出窗口打印如下：
+```
+CustomAuthorize3-OnAuthorization
+CustomAuthorize1-OnAuthorization
+CustomAuthorize2-OnAuthorization
 ```
