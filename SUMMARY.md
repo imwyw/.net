@@ -7,6 +7,7 @@
     * [面向对象](.\Programming\OOP.md)
     * [高级](.\Programming\Professional.md)
     * [桌面编程](.\Programming\Form.md)
+    * [LINQ](.\Programming\LINQ.md)
 
 * [持久化](.\Persistence\README.md)
     * [文件](.\Persistence\File.md)
