@@ -377,12 +377,31 @@ public class CustomAuthorize1 : System.Web.Mvc.AuthorizeAttribute
     }
 }
 
-public class CustomAuthorize1 : System.Web.Mvc.AuthorizeAttribute
+public class CustomAuthorize2 : System.Web.Mvc.AuthorizeAttribute
 {
     public override void OnAuthorization(AuthorizationContext filterContext)
     {
         base.OnAuthorization(filterContext);
         System.Diagnostics.Debug.WriteLine("CustomAuthorize2-OnAuthorization");
+    }
+
+    /// <summary>
+    /// 为了测试Order，忽略验证
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <returns></returns>
+    protected override bool AuthorizeCore(HttpContextBase httpContext)
+    {
+        return true;
+    }
+}
+
+public class CustomAuthorize3 : System.Web.Mvc.AuthorizeAttribute
+{
+    public override void OnAuthorization(AuthorizationContext filterContext)
+    {
+        base.OnAuthorization(filterContext);
+        System.Diagnostics.Debug.WriteLine("CustomAuthorize3-OnAuthorization");
     }
 
     /// <summary>
