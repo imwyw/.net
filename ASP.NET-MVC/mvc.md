@@ -828,7 +828,7 @@ AreaRegistrationContext 类的 MapRoute 方法和 RouteCollection 类的 MapRout
 
 ![](..\assets\asp.net-mvc\area05.png)
 
-针对RouteConfig路由配置做namespace的设置，如下：
+针对RouteConfig路由配置做namespace的设置，将默认路由指向根路径下的控制器，如下：
 ```cs
 public class RouteConfig
 {
@@ -843,6 +843,28 @@ public class RouteConfig
             // Hello.Controllers 为工程根路径下Controller的命名空间
             namespaces: new[] { "Hello.Controllers" }
         );
+    }
+}
+```
+
+也可将默认路由设置为区域中的Action，如下:
+
+![](..\assets\asp.net-mvc\area-defaultroute.png)
+
+```cs
+public class RouteConfig
+{
+    public static void RegisterRoutes(RouteCollection routes)
+    {
+        routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+        //添加默认路由指向到 区域Admin下的/Home/Index Action
+        routes.MapRoute(
+            name: "Default"
+            , url: "{controller}/{action}/{id}"
+            , defaults: new { area = "Admin", controller = "Home", action = "Index", id = UrlParameter.Optional }
+            , namespaces: new string[] { "EmptyDemo.Areas.Admin.Controllers" }
+        ).DataTokens.Add("area", "Admin");
     }
 }
 ```
