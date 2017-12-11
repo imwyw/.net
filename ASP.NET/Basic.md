@@ -15,6 +15,7 @@
         - [同步异步](#同步异步)
         - [通过js请求](#通过js请求)
     - [JSON](#json)
+        - [对象和JSON格式互相转换](#对象和json格式互相转换)
     - [疑难杂症](#疑难杂症)
         - [CompositionFailedException](#compositionfailedexception)
 
@@ -463,6 +464,38 @@ JSON.stringify({region:'芜湖市',citys:['镜湖区','弋江区','鸠江区','�
 
 //将字符串转换为对象
 JSON.parse('{"id":123,"userid":"coder1"}');// {id: 123, userid: "coder1"}
+```
+
+<a id="markdown-对象和json格式互相转换" name="对象和json格式互相转换"></a>
+### 对象和JSON格式互相转换
+实用.NET提供的功能，需要添加System.Runtime.Serialization.dll引用
+```cs
+/// <summary>
+/// C#对象 转换成 JSON字符串
+/// </summary>
+/// <param name="item">C#对象</param>
+/// <returns>JSON字符串</returns>
+public static string ToJson(object item)
+{
+	DataContractJsonSerializer serializer = new DataContractJsonSerializer(item.GetType());
+	using (MemoryStream ms = new MemoryStream())
+	{
+		serializer.WriteObject(ms, item);
+		string str = Encoding.UTF8.GetString(ms.ToArray());
+		// 将其中的 "" 转化成“-”
+		str = str.Replace("\"\"", "\"-\"");
+		// 替换Json的Date字符串
+		string p = @"\\/Date\((\d+)\+\d+\)\\/";
+		MatchEvaluator matchEvaluator = new MatchEvaluator(delegate (Match m)
+		{
+			return new DateTime(1970, 1, 1).AddMilliseconds(long.Parse(m.Groups[1].Value)).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
+		});
+		Regex reg = new Regex(p);
+		str = reg.Replace(str, matchEvaluator);
+
+		return str;
+	}
+}
 ```
 
 <a id="markdown-疑难杂症" name="疑难杂症"></a>
