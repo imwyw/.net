@@ -847,7 +847,7 @@ public class RouteConfig
 }
 ```
 
-也可将默认路由设置为区域中的Action，如下:
+也可将默认路由设置为区域中的Action，但是会引发一个问题，根路径下的路由会失效，如下:
 
 ![](..\assets\asp.net-mvc\area-defaultroute.png)
 
@@ -868,3 +868,5 @@ public class RouteConfig
     }
 }
 ```
+
+以上，一般建议将默认路由设置在根路径下的Controller中。
