@@ -11,6 +11,12 @@
         - [添加数据](#添加数据)
         - [修改数据](#修改数据)
         - [删除数据](#删除数据)
+        - [事务](#事务)
+    - [在EntityFramework6中执行SQL语句](#在entityframework6中执行sql语句)
+        - [ExecuteSqlCommand](#executesqlcommand)
+        - [SqlQuery](#sqlquery)
+        - [DbSet下的SqlQuery](#dbset下的sqlquery)
+    - [更新模型](#更新模型)
 
 <!-- /TOC -->
 
@@ -126,13 +132,13 @@ public partial class ARTICLE_DBEntities : DbContext
 
 通过lambda表达式 读取数据
 ```cs
-//实例化EMD对象ARTICLE_DBEntities，可以看做是一个数据库对象
-using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 {
     /*
     创建一个查询 lambda表达式的方式
     */
-    var query = db.v_get_articles
+    var query = context.v_get_articles
         .Where(t => t.user_name == "w")
         .Select(t => new { uname = t.user_name, uid = t.id, utitle = t.title, ucontent = t.content });
 
@@ -149,12 +155,12 @@ using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
 因为EDM 的访问改变为一种对对象集合的访问方式，所以可以利用 LINQ 来访问 EDM。
 
 ```cs
-//实例化EMD对象ARTICLE_DBEntities，可以看做是一个数据库对象
-using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 {
     /* 创建一个查询 linq方式   
     */
-    var query = from t in db.v_get_articles
+    var query = from t in context.v_get_articles
                 where t.user_name == "w"
                 select new { a = t.title, b = t.content, c = t.user_name };
 
@@ -171,15 +177,15 @@ using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
 向数据库中添加数据就跟往List<>集合添加数据一样，不过最后需要调用SaveChanges()向数据库保存一下数据。
 
 ```cs
-//实例化EMD对象ARTICLE_DBEntities，可以看做是一个数据库对象
-using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 {
     var cate = new t_category();
     cate.name = "EntityFramework";
 
-    db.t_category.Add(cate);
+    context.t_category.Add(cate);
 
-    db.SaveChanges();
+    context.SaveChanges();
 }
 ```
 
@@ -188,14 +194,14 @@ using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
 先查询出你要修改的那条数据，之后直接更改其中的值就可以了。以上一节中新添加的数据为示例修改，如下：
 
 ```cs
-//实例化EMD对象ARTICLE_DBEntities，可以看做是一个数据库对象
-using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 {
-    var cate = db.t_category.FirstOrDefault(t => t.name == "EntityFramework");
+    var cate = context.t_category.FirstOrDefault(t => t.name == "EntityFramework");
     if (null != cate)
     {
         cate.name = "EntityFramework_new";
-        db.SaveChanges();
+        context.SaveChanges();
     }
 }
 ```
@@ -205,19 +211,180 @@ using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
 使用EF删除数据就和在List<>集合中删除元素一样
 
 ```cs
-//实例化EMD对象ARTICLE_DBEntities，可以看做是一个数据库对象
-using (ARTICLE_DBEntities db = new ARTICLE_DBEntities())
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 {
-    var cate = db.t_category.FirstOrDefault(t => t.name == "EntityFramework_new");
+    var cate = context.t_category.FirstOrDefault(t => t.name == "EntityFramework_new");
     if (null != cate)
     {
-        db.t_category.Remove(cate);
-        db.SaveChanges();
+        context.t_category.Remove(cate);
+        context.SaveChanges();
     }
 }
 ```
 
+<a id="markdown-事务" name="事务"></a>
+### 事务
+在EF使用事务有两种方案，一种是EF自带的.BeginTransaction()方法，另一种是使用TransactionScope类。
+
+使用BeginTransaction：
+```cs
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+{
+    //开始事务
+    var tran = context.Database.BeginTransaction();
+
+    try
+    {
+        var user = context.t_users.FirstOrDefault(t => t.name == "w");
+        context.t_users.Remove(user);
+
+        context.SaveChanges();
+
+        //进行提交，否则开始事务后的操作在数据库并不会生效
+        tran.Commit();
+    }
+    catch (Exception ex)
+    {
+        //发生异常则进行回滚
+        tran.Rollback();
+    }
+}
+```
+
+使用TransactionScope，前提需要引用System.Transactions.dll，如下：
+```cs
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+{
+    //开始事务，有异常发生会跳出using TransactionScope代码块，TransactionScope 将自行释放并回滚该事务。
+    using (var trans = new System.Transactions.TransactionScope())
+    {
+        var user = context.t_users.FirstOrDefault(t=>t.name=="w");
+        context.t_users.Remove(user);
+
+        context.SaveChanges();
+
+        //提交操作
+        trans.Complete();
+    }
+}
+```
+
+<a id="markdown-在entityframework6中执行sql语句" name="在entityframework6中执行sql语句"></a>
+## 在EntityFramework6中执行SQL语句
+前面的内容除了Entity Client 方式我们了SQL脚本，其余方式我们都没有写任何SQL脚本。
+
+但不可避免的需要在EF中写SQL，比如需要根据条件更新/删除数据，使用集合Predicate方式就显得效率低下并且麻烦了。
+
+使用EF执行SQL又比ADO.NET方便，特别是在执行查询语句的时候，EF会把查询到的数据自动保存到数据实体中，省去了使用DataReader的麻烦。同时查询出来的数据还会进行跟踪，如果你修改了查询出的值，之后就可以很方便的使用.SaveChanges()直接更新到数据库了。
+
+在数据上下文DBModel的实例中有个Database属性，其中有两组方法.ExecuteSqlCommand()和.SqlQuery()。它们都可以执行SQL语句。
+
+<a id="markdown-executesqlcommand" name="executesqlcommand"></a>
+### ExecuteSqlCommand
+ExecuteSqlCommand()是不返回结果的，只返回受影响的行数，所以.ExecuteSqlCommand()更适合执行创建、更新、删除操作。
+
+```cs
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+{
+    //同步的方式执行SQL，并返回受影响的行数
+    int result = context.Database.ExecuteSqlCommand(@"CREATE TABLE `test`.`test` (
+        `id` INT NOT NULL,
+        PRIMARY KEY(`id`)); ");
+
+    //使用SqlParameter传值可以避免SQL注入
+    var p_name = new SqlParameter("@name", "萝莉");
+    var p_age = new SqlParameter("@age", 13);
+
+    //更改学生年龄
+    result = context.Database.ExecuteSqlCommand(@"UPDATE `test`.`student`
+                                SET `age` = @age
+                                WHERE `name` = @name;", p_age, p_name);
+
+    //异步的方式执行SQL，并返回受影响的行数
+    Task<int> result2 = context.Database.ExecuteSqlCommandAsync("DROP TABLE `test`.`test`;");
+}
+```
+
+如果需要创建或删除当前数据库，Database属性中还存在.Create() 和.Delete()方法，它们不接受参数，返回一个bool值表示执行成功或失败。
+
+<a id="markdown-sqlquery" name="sqlquery"></a>
+### SqlQuery
+SqlQuery()返回查询到的结果，并将结果保存在数据实体中，所以更适合执行查询操作。
+
+从名字就看的出来.SqlQuery()是用来执行查询的。.SqlQuery()使用前需指定返回值的数据类型，比如我查询寻一条学生的完整信息，类型就可以指定为student类型。如果是统计有多少个学生，返回值是个整数，就以设置为int。
+
+**注意：不仅返回值的个数必须与传入类型中属性值的个数相同，而且名称还必须一样，不然会出错。**那么如果我只想获取姓名和年龄，那就得单独定义一个类（其中包含一个string类型的name和int类型的age），来保存数据了。
+
+```cs
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+{
+    /*
+    按条件返回集合，以下两种方式均可。
+    注意，如果没有ToList()，查询并不会执行
+    */
+    var list = context.Database.SqlQuery<t_users>("SELECT * FROM T_USERS").ToList();
+
+    /*
+    按条件查询返回实体，如果没有符合条件的数据，则返回为null
+    注意，如果没有FirstOrDefault()的调用，查询并不会执行
+    */
+    var res1 = context.Database.SqlQuery<t_users>("SELECT  * FROM T_USERS WHERE NAME = 'www'").FirstOrDefault();
+
+    /*
+    统计数目
+    注意，如果没有FirstOrDefault()的调用，查询并不会执行
+    */
+    var result2 = context.Database.SqlQuery<int>("SELECT  COUNT(*) FROM T_USERS");
+    Console.WriteLine(result2.FirstOrDefault());
+
+    /*
+    按条件返回自定义对象
+    注意，如果没有FirstOrDefault()的调用，查询并不会执行
+    */
+    var result3 = context.Database.SqlQuery<SimpleUser>("SELECT NAME,PWD FROM T_USERS").ToList();
+}
+```
+
+<a id="markdown-dbset下的sqlquery" name="dbset下的sqlquery"></a>
+### DbSet下的SqlQuery
+在每个数据实体集合DbSet<T>下也有一个.SqlQuery()，功能与上面介绍的一样，只不过DbSet<T>下的.SqlQuery()只能返回DbSet<T>中包含的类型。
+
+但DbSet<T>下的.SqlQuery()在返回数据的同时还会让数据库上下文（DBModel）跟踪返回数据的状态，如果返回的数据发生了修改，就可以使用.SaveChanges()将结果直接保存回数据库。而.Database.SqlQuery()查出的结果则是做不到的。
+
+```cs
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+{
+    //查询一个用户实体
+    t_users user = context.t_users.SqlQuery("SELECT * FROM T_USERS WHERE NAME = 'w'").FirstOrDefault();
+
+    //存在该用户则进行修改
+    if (null != user)
+    {
+        //实体集合下获取数据，修改后是可以再保存到数据库的
+        user.zh_name = "悔创阿里杰克马";
+
+        context.SaveChanges();
+    }
+}
+```
+
+<a id="markdown-更新模型" name="更新模型"></a>
+## 更新模型
+
+以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，在Diagram界面右键选择【从数据库更新模型...】即可，如下：
+
+![](..\assets\adonet\EF_update_model.png)
+
+完成更新后，就会将底层最新的库表结构转换为实体类。
 
 参考引用：
 
 [初识EntityFramework6](http://www.cnblogs.com/wujingtao/p/5401132.html)
+
+[.NET Entity Framework(EF)使用SqlQuery直接操作SQL查询语句或者执行过程](https://www.ofnhkb1.com/chenmo/128.html)

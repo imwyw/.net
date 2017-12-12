@@ -13,6 +13,7 @@
     * [文件](.\Persistence\File.md)
     * [XML](.\Persistence\XML.md)
     * [ADO.NET](.\Persistence\ADO.NET.md)
+    * [EntityFramework](.\Persistence\EntityFramework.md)
 
 * [数据库](.\DB\README.md)
     * [SqlServer基础](.\DB\SQLServer_Basic.md)
