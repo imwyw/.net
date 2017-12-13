@@ -90,6 +90,24 @@ TestServiceReference.TestWebServiceSoapClient client = new TestServiceReference.
 var res = client.PostData("jack", "admin");
 ```
 
+不跨域的话，还可以通过jquery ajax进行调用，如下：
+```js
+$.ajax({
+    //注意跨域问题，不要进行跨域访问
+    url: "/testwebservice.asmx/PostData",
+    dataType: "json",
+    type: "post",
+    //request contentType必须指明是json格式，否则服务端不知道客户端期望json格式
+    contentType: "application/json; charset=utf-8",
+    //由于request contentType指明为json的关系，传参必须以json字符串的形式传递，而不是通常所写的js对象
+    data: '{ "name": "杰克马","pwd":"123123" }',
+    success: function (data) {
+        debugger;
+    },
+    error: function (err) { }
+});
+```
+
 也可以添加 免费WebService接口的引用，以添加天气预报为示例：
 
 添加服务引用窗口选择【高级】选项，然后选择【添加Web引用】，如图所示：
@@ -111,4 +129,12 @@ var res = client.PostData("jack", "admin");
 cn.com.webxml.www.WeatherWebService srv = new cn.com.webxml.www.WeatherWebService();
 var cityWeather = srv.getWeatherbyCityName("芜湖");
 ```
+
+## SOAP
+SOAP（Simple Object Access Protocol ）简单对象访问协议，它是在分散或分布式的环境中交换信息的简单的协议，是一个基于XML的协议，它包括四个部分：
+
+1. 封装：封装定义了一个描述消息中的内容是什么，是谁发送的，谁应当接受并处理它以及如何处理它们的框架
+2. 编码规则：用于表示应用程序需要使用的数据类型的实例
+3. RPC表示：表示远程过程调用和应答的协定
+4. SOAP绑定：使用底层协议交换信息。
 
