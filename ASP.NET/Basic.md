@@ -16,6 +16,8 @@
         - [通过js请求](#通过js请求)
     - [JSON](#json)
         - [对象和JSON格式互相转换](#对象和json格式互相转换)
+            - [System.Runtime.Serialization](#systemruntimeserialization)
+            - [Newtonsoft.Json](#newtonsoftjson)
     - [疑难杂症](#疑难杂症)
         - [CompositionFailedException](#compositionfailedexception)
 
@@ -468,7 +470,10 @@ JSON.parse('{"id":123,"userid":"coder1"}');// {id: 123, userid: "coder1"}
 
 <a id="markdown-对象和json格式互相转换" name="对象和json格式互相转换"></a>
 ### 对象和JSON格式互相转换
-实用.NET提供的功能，需要添加System.Runtime.Serialization.dll引用
+
+<a id="markdown-systemruntimeserialization" name="systemruntimeserialization"></a>
+#### System.Runtime.Serialization
+使用.NET提供的功能，需要添加System.Runtime.Serialization.dll引用
 ```cs
 /// <summary>
 /// C#对象 转换成 JSON字符串
@@ -488,7 +493,8 @@ public static string ToJson(object item)
 		string p = @"\\/Date\((\d+)\+\d+\)\\/";
 		MatchEvaluator matchEvaluator = new MatchEvaluator(delegate (Match m)
 		{
-			return new DateTime(1970, 1, 1).AddMilliseconds(long.Parse(m.Groups[1].Value)).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
+			return new DateTime(1970, 1, 1).AddMilliseconds(long.Parse(m.Groups[1].Value))
+				.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
 		});
 		Regex reg = new Regex(p);
 		str = reg.Replace(str, matchEvaluator);
@@ -496,6 +502,49 @@ public static string ToJson(object item)
 		return str;
 	}
 }
+```
+
+<a id="markdown-newtonsoftjson" name="newtonsoftjson"></a>
+#### Newtonsoft.Json
+使用第三方 Newtonsoft.Json.net进行序列化和反序列化：
+
+Serialize JSON
+```cs
+Product product = new Product();
+product.Name = "Apple";
+product.Expiry = new DateTime(2008, 12, 28);
+product.Sizes = new string[] { "Small" };
+
+string json = JsonConvert.SerializeObject(product);
+// {
+//   "Name": "Apple",
+//   "Expiry": "2008-12-28T00:00:00",
+//   "Sizes": [
+//     "Small"
+//   ]
+// }
+```
+
+Deserialize JSON
+```cs
+string json = @"{
+  'Name': 'Bad Boys',
+  'ReleaseDate': '1995-4-7T00:00:00',
+  'Genres': [
+    'Action',
+    'Comedy'
+  ]
+}";
+
+Movie m = JsonConvert.DeserializeObject<Movie>(json);
+
+string name = m.Name;
+// Bad Boys
+```
+
+Newtonsoft默认序列化会带来一个问题，时间格式中默认会有一个【T】，可以通过修改时间格式解决：
+```cs
+JsonConvert.SerializeObject(list, new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" });
 ```
 
 <a id="markdown-疑难杂症" name="疑难杂症"></a>
