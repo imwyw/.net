@@ -4,6 +4,7 @@
     - [三种开发方式](#三种开发方式)
     - [Database First](#database-first)
         - [EF创建](#ef创建)
+    - [更新模型](#更新模型)
     - [EF应用](#ef应用)
         - [Entity Client 方式](#entity-client-方式)
         - [Object Context 方式](#object-context-方式)
@@ -16,7 +17,6 @@
         - [ExecuteSqlCommand](#executesqlcommand)
         - [SqlQuery](#sqlquery)
         - [DbSet下的SqlQuery](#dbset下的sqlquery)
-    - [更新模型](#更新模型)
 
 <!-- /TOC -->
 
@@ -60,6 +60,15 @@ EF是一种ORM（Object-relational mapping）框架，它能把我们在编程�
 ![](..\assets\adonet\EF_create5.png)
 
 以上，针对Database First这种创建方式就完成了。
+
+<a id="markdown-更新模型" name="更新模型"></a>
+## 更新模型
+
+以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，在Diagram界面右键选择【从数据库更新模型...】即可，如下：
+
+![](..\assets\adonet\EF_update_model.png)
+
+完成更新后，就会将底层最新的库表结构转换为实体类。
 
 <a id="markdown-ef应用" name="ef应用"></a>
 ## EF应用
@@ -136,18 +145,30 @@ public partial class ARTICLE_DBEntities : DbContext
 using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 {
     /*
-    创建一个查询 lambda表达式的方式
+    创建一个查询 lambda表达式的方式。
+    可以理解为是一个SQL的封装，并没有执行查询
     */
     var query = context.v_get_articles
-        .Where(t => t.user_name == "w")
-        .Select(t => new { uname = t.user_name, uid = t.id, utitle = t.title, ucontent = t.content });
+        .Where(t => t.cate_id == 2)
+        .Select(t =>
+            new
+            {
+                uname = t.user_name,
+                uid = t.id,
+                utitle = t.title,
+                ucontent = t.content
+            }
+        );
 
-    //遍历打印
+    // ToList 将查询执行，并返回集合
+    var res1 = context.t_users.Where(t => t.name == "w").ToList();
+
+    //遍历打印 才会调用query查询
     foreach (var item in query)
     {
+        //Console.WriteLine(item.title + "\t" + item.content);
         Console.WriteLine(item);
     }
-}
 ```
 
 <a id="markdown-linq-to-entities-方式" name="linq-to-entities-方式"></a>
@@ -374,14 +395,7 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-<a id="markdown-更新模型" name="更新模型"></a>
-## 更新模型
 
-以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，在Diagram界面右键选择【从数据库更新模型...】即可，如下：
-
-![](..\assets\adonet\EF_update_model.png)
-
-完成更新后，就会将底层最新的库表结构转换为实体类。
 
 参考引用：
 
