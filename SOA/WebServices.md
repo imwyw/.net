@@ -1,20 +1,16 @@
 
 # WebService
-Web服务技术（Web Services）是架构一个平台独立的，低耦合的，自包含的Web服务实例（Web Service）的技术框架，常用于开发分布式互操作的应用程序。
-
-是一种在 Web 上部署并可以被任何应用程序或其他服务调用的服务。主要特点：
-1. 互操作性：任何的 Web Service都可以与其他 Web Service进行交互
-2. 普遍性：Web Service使用 HTTP 和 XML 进行通信
-3. 松散耦合
-
-我们可以简单的理解为就是一个对外的接口。假若我们是服务端，我们写好了个webservice，然后把它给了客户（同时我们给了他们调用规则），客户就可以在从服务端获取信息时处于一个相对透明的状态。即使客户不了解（也不需要）其过程，他们只获取数据。
-
-通过SOAP在Web上提供的软件服务，使用WSDL文件进行说明，并通过UDDI进行注册。
-
-webservice传递的数据只能是序列化的数据，典型的就是xml数据。
+Web Service也叫XML Web Service WebService是一种可以接收从Internet或者Intranet上的其它系统中传递过来的请求，轻量级的独立的通讯技术。是:通过SOAP在Web上提供的软件服务，使用WSDL文件进行说明，并通过UDDI进行注册。
 
 * XML：(Extensible Markup Language)扩展型可标记语言。面向短期的临时数据处理、面向万维网络，是Soap的基础。
-* Soap：(Simple Object Access Protocol)简单对象存取协议。是XML Web Service 的通信协议。
+
+* Soap：(Simple Object Access Protocol)简单对象存取协议。是XML Web Service 的通信协议。当用户通过UDDI找到你的WSDL描述文档后，他通过可以SOAP调用你建立的Web服务中的一个或多个操作。SOAP是XML文档形式的调用方法的规范，它可以支持不同的底层接口，像HTTP(S)或者SMTP。
+
+* WSDL：(Web Services Description Language) WSDL 文件是一个 XML 文档，用于说明一组 SOAP 消息以及如何交换这些消息。大多数情况下由软件自动生成和使用。
+
+* UDDI (Universal Description, Discovery, and Integration) 是一个主要针对Web服务供应商和使用者的新项目。在用户能够调用Web服务之前，必须确定这个服务内包含哪些商务方法，找到被调用的接口定义，还要在服务端来编制软件，UDDI是一种根据描述文档来引导系统查找相应服务的机制。UDDI利用SOAP消息机制（标准的XML/HTTP）来发布，编辑，浏览以及查找注册信息。它采用XML格式来封装各种不同类型的数据，并且发送到注册中心或者由注册中心来返回需要的数据。
+
+WebService是一种跨编程语言和跨操作系统平台的远程调用技术。
 
 ## 创建
 
@@ -85,12 +81,15 @@ public class Student
 对应的调用代码：
 ```cs
 //服务代理类
-TestServiceReference.TestWebServiceSoapClient client = new TestServiceReference.TestWebServiceSoapClient();
+TestServiceReference.TestWebServiceSoapClient srv = new TestServiceReference.TestWebServiceSoapClient();
 
-var res = client.PostData("jack", "admin");
+var res = srv.PostData("jack", "admin");
 ```
 
-不跨域的话，还可以通过jquery ajax进行调用，如下：
+不跨域的话，还可以通过jquery ajax进行调用，项目结构和代码如下：
+
+![](..\assets\SOA\webservice_ajax1.png)
+
 ```js
 $.ajax({
     //注意跨域问题，不要进行跨域访问
@@ -130,6 +129,10 @@ cn.com.webxml.www.WeatherWebService srv = new cn.com.webxml.www.WeatherWebServic
 var cityWeather = srv.getWeatherbyCityName("芜湖");
 ```
 
+另有云聚数据可以提供类似服务，免费用户都有一定的访问限制，具体可以查阅官网提供的文档。
+
+> http://www.36wu.com/Service
+
 ## SOAP
 SOAP（Simple Object Access Protocol ）简单对象访问协议，它是在分散或分布式的环境中交换信息的简单的协议，是一个基于XML的协议，它包括四个部分：
 
@@ -138,3 +141,115 @@ SOAP（Simple Object Access Protocol ）简单对象访问协议，它是在分�
 3. RPC表示：表示远程过程调用和应答的协定
 4. SOAP绑定：使用底层协议交换信息。
 
+### 使用SOAP头自定义身份验证
+身份验证和授权是控制用户访问所有Web应用程序时的两道安全机制，第一道是如何标识身份，第二道是如何分配权限。这里，我们来着重讨论一下在ASP.NET Web服务框架中如何实现身份验证机制。
+
+在ASP.NET Web服务框架中，常见的身份验证的类型有三种：
+
+1. IIS身份验证
+2. ASP.NET身份验证
+3. 自定义SOAP头身份验证
+
+我们使用自定义头身份验证实现一个简单的身份验证功能,添加验证处理类 【SoapHeaderHelper.cs】，项目结构和代码如下：
+
+![](..\assets\SOA\webservice_soap_header1.png)
+
+```cs
+/// <summary>
+/// 自定义SOAP头
+/// </summary>
+public class SoapHeaderHelper : SoapHeader
+{
+    public string UserID { get; set; }
+    public string UserPwd { get; set; }
+
+    /// <summary>
+    /// 简单验证消息
+    /// out 参数 传递的不是副本，而是对象的引用
+    /// </summary>
+    /// <param name="msg"></param>
+    /// <returns></returns>
+    public bool IsValid(out string msg)
+    {
+        if (UserID != "admin" || UserPwd != "admin")
+        {
+            msg = "无权访问";
+            return false;
+        }
+        msg = string.Empty;
+        return true;
+    }
+}
+```
+
+在需要验证的服务添加特性【SoapHeader】标签，指定验证的实例，如下：
+```cs
+/// <summary>
+/// TestWebService 的摘要说明
+/// </summary>
+[WebService(Namespace = "http://tempuri.org/")]
+[WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+[System.ComponentModel.ToolboxItem(false)]
+// 若要允许使用 ASP.NET AJAX 从脚本中调用此 Web 服务，请取消注释以下行。 
+[System.Web.Script.Services.ScriptService]
+public class TestWebService : System.Web.Services.WebService
+{
+    /// <summary>
+    /// 简单验证实例 必须为public
+    /// </summary>
+    public SoapHeaderHelper simpleValid = new SoapHeaderHelper();
+
+    /// <summary>
+    /// 根据编号查询图书信息
+    /// 使用特性 [SoapHeader("simpleValid")] 进行简单验证
+    /// </summary>
+    /// <param name="bookID"></param>
+    /// <returns></returns>
+    [WebMethod(Description = "根据编号查询图书信息")]
+    [SoapHeader("simpleValid")]
+    public Book QueryBook(int bookID)
+    {
+        string msg = string.Empty;
+        if (!simpleValid.IsValid(out msg))
+        {
+            return new Book() { Name = msg, Author = msg };
+        }
+
+        if (bookID == 1)
+        {
+            return new Book() { Name = "C#编程基础", Author = "张三" };
+        }
+        if (bookID == 2)
+        {
+            return new Book() { Name = "JAVA编程基础", Author = "李四" };
+        }
+        return new Book() { Name = "未知", Author = "未知" };
+    }
+}
+
+/// <summary>
+/// 图书类
+/// </summary>
+public class Book
+{
+    public string Name { get; set; }
+    public string Author { get; set; }
+}
+```
+
+在ASP.NET应用程序调用处，更新服务引用后，调用时添加验证信息，如下：
+```cs
+//服务代理
+TestServiceReference.TestWebServiceSoapClient srv = new TestServiceReference.TestWebServiceSoapClient();
+
+//验证对象
+TestServiceReference.SoapHeaderHelper valid = new TestServiceReference.SoapHeaderHelper();
+valid.UserID = "admin";
+valid.UserPwd = "admin";
+
+var res = srv.QueryBook(valid, 1);
+```
+
+参考引用：
+
+[WebService到底是什么？](http://blog.csdn.net/wooshn/article/details/8069087)
