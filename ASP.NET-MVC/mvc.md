@@ -605,6 +605,8 @@ _Layout.cshtml中
 
 RenderPartial因为是直接写在响应流中，所以性能会更好(微量影响)，而Partial不用写在代码块中，所以更方便.
 
+---
+
 参考引用：[asp.net MVC3 Helpers Partial RenderPartial Action RenderAction](http://www.cnblogs.com/jiagoushi/archive/2012/11/19/2778191.html)
 
 <a id="markdown-html-帮助器" name="html-帮助器"></a>

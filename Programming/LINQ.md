@@ -69,6 +69,7 @@ foreach (int num in numQuery)
 
 ![](..\assets\Programming\linq1.png)
 
+---
 
 参考引用：
 

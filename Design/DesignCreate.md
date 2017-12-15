@@ -604,6 +604,7 @@ public sealed class SqlClientFactory : DbProviderFactory, IServiceProvider
 
 应对产品族概念而生，增加新的产品线很容易，但是无法增加新的产品。
 
+---
 
 参考引用：
 

@@ -1040,6 +1040,8 @@ public class BillStructure
 }
 ```
 
+---
+
 参考引用：
 
 [C#设计模式总结](http://www.cnblogs.com/zhili/p/DesignPatternSummery.html)

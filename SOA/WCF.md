@@ -4,6 +4,7 @@
     - [创建一个WCF程序](#创建一个wcf程序)
         - [创建服务](#创建服务)
         - [客户端调用](#客户端调用)
+        - [Rest服务](#rest服务)
 
 <!-- /TOC -->
 <a id="markdown-wcf" name="wcf"></a>
@@ -145,13 +146,27 @@ public class CalculatorService : ICalculatorService
 }
 ```
 
-在客户端更新服务引用后，即可调用更新后的服务
+在客户端更新服务引用后，即可调用更新后的服务。
+
+<a id="markdown-rest服务" name="rest服务"></a>
+### Rest服务
+基于REST的服务与基于SOAP的服务相比，性能、效率和易用性上都更高，而SOAP协议非常的复杂和不透明。REST受到越来越多的Web服务供应商欢迎。目前大部分供应商，如yahoo、google、Amazon等都提供REST风格的服务。
+
+REST是基于Http协议的，任何对资源的操作行为都是通过Http协议来实现。Http把对一个资源的操作限制在4个方法以内：GET、POST、PUT和DELETE，这正是对资源CRUD操作的实现。
+
+REST的资源表述形式可以是XML、HTML、JSON，或者其他任意的形式，这取决于服务提供商和消费服务的用户。
+
+
+
+---
 
 参考引用：
 
 [Windows Communication Foundation MSDN中文](https://msdn.microsoft.com/zh-cn/library/ms735119.aspx)
 
 [我的WCF之旅](http://www.cnblogs.com/artech/archive/2007/02/26/656901.html)
+
+[WCF实现REST服务](http://www.cnblogs.com/wuhong/archive/2011/01/13/1934492.html)
 
 扩展，有兴趣的可以了解下：
 

@@ -608,6 +608,8 @@ public class StarProxy : Star
 1. 由于在客户端和真实主题之间增加了一个代理对象，所以会造成请求的处理速度变慢。
 2. 实现代理类也需要额外的工作，从而增加了系统的实现复杂度。
 
+---
+
 参考引用：
 
 [C#设计模式总结](http://www.cnblogs.com/zhili/p/DesignPatternSummery.html)

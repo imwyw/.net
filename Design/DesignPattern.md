@@ -59,6 +59,8 @@ Liskov Substitution Principle,LSP（里氏代替原则）指的是子类必须�
 
 关于迪米特法则其他的一些表述有：只与你直接的朋友们通信；不要跟“陌生人”说话。
 
+---
+
 参考引用：
 
 [C#设计模式总结](http://www.cnblogs.com/zhili/p/DesignPatternSummery.html)
