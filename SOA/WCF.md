@@ -156,7 +156,130 @@ REST是基于Http协议的，任何对资源的操作行为都是通过Http协�
 
 REST的资源表述形式可以是XML、HTML、JSON，或者其他任意的形式，这取决于服务提供商和消费服务的用户。
 
+同样在上述示例基础上进行rest服务的实现
+实体类Book：
+```cs
+/// <summary>
+/// 图书类
+/// </summary>
+[DataContract]
+public class Book
+{
+    [DataMember]
+    public string Name { get; set; }
+    [DataMember]
+    public string Author { get; set; }
+}
+```
 
+服务契约IBookService：
+```cs
+// 注意: 使用“重构”菜单上的“重命名”命令，可以同时更改代码和配置文件中的接口名“IBookService”。
+[ServiceContract]
+public interface IBookService
+{
+    [OperationContract]
+    //对应url：localhost:xxxx/BookService.svc/QueryBook/xxx
+    //[WebGet(UriTemplate = "/QueryBook/{bookID}", ResponseFormat = WebMessageFormat.Json)]
+    //默认url：localhost:xxxx/BookService.svc/QueryBook?bookID=xxx
+    [WebGet(ResponseFormat = WebMessageFormat.Json)]//即 UriTemplate="QueryBook?bookID={bookID}"
+    Book QueryBook(string bookID);
+
+    [OperationContract]
+    [WebInvoke(Method = "GET", UriTemplate = "/QueryBookInvoke?bookID={bookID}"
+        , RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+    Book QueryBookInvoke(string bookID);
+}
+```
+
+服务BookService：
+```cs
+public class BookService : IBookService
+{
+
+    public Book QueryBook(string bookID)
+    {
+        return Query(bookID);
+    }
+
+    public Book QueryBookInvoke(string bookID)
+    {
+        return Query(bookID);
+    }
+
+    private Book Query(string bookID)
+    {
+        if (bookID == "1")
+        {
+            return new Book() { Name = "C#编程基础", Author = "张三" };
+        }
+        if (bookID == "2")
+        {
+            return new Book() { Name = "JAVA编程基础", Author = "李四" };
+        }
+        return new Book() { Name = "未知", Author = "未知" };
+    }
+}
+```
+
+另外服务端的配置文件很重要，主要在`<system.serviceModel>`节点中配置和，web.config文件如下：
+```config
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+
+  <appSettings>
+    <add key="aspnet:UseTaskFriendlySynchronizationContext" value="true" />
+  </appSettings>
+  <system.web>
+    <compilation debug="true" targetFramework="4.5" />
+    <httpRuntime targetFramework="4.5"/>
+  </system.web>
+  <system.serviceModel>
+    <bindings>
+      <webHttpBinding>
+        <binding name="webBinding"></binding>
+      </webHttpBinding>
+    </bindings>
+    <services>
+      <!--service name 为对应的svc名称，包含命名空间 -->
+      <service name="WcfRestService.BookService" behaviorConfiguration="testServiceBehavior">
+        <endpoint address="" behaviorConfiguration="webBehavior"
+                  binding="webHttpBinding" bindingConfiguration="webBinding"
+                  contract="WcfRestService.IBookService"></endpoint>
+      </service>
+    </services>
+    <behaviors>
+      <endpointBehaviors>
+        <behavior name="webBehavior">
+          <!--这里必须设置-->
+          <webHttp/>
+        </behavior>
+      </endpointBehaviors>
+      <serviceBehaviors>
+        <behavior name="testServiceBehavior"></behavior>
+        <behavior name="">
+          <serviceMetadata httpGetEnabled="true" httpsGetEnabled="true" />
+          <serviceDebug includeExceptionDetailInFaults="false" />
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+    <protocolMapping>
+      <add binding="basicHttpsBinding" scheme="https" />
+    </protocolMapping>
+    <serviceHostingEnvironment aspNetCompatibilityEnabled="true"
+      multipleSiteBindingsEnabled="true" />
+  </system.serviceModel>
+  <system.webServer>
+    <modules runAllManagedModulesForAllRequests="true"/>
+    <!--
+        若要在调试过程中浏览 Web 应用程序根目录，请将下面的值设置为 True。
+        在部署之前将该值设置为 False 可避免泄露 Web 应用程序文件夹信息。
+      -->
+    <directoryBrowse enabled="true"/>
+  </system.webServer>
+
+</configuration>
+```
 
 ---
 
