@@ -281,6 +281,10 @@ public class BookService : IBookService
 </configuration>
 ```
 
+客户端访问：
+
+![](..\assets\SOA\wcf_client_json.png)
+
 ---
 
 参考引用：
