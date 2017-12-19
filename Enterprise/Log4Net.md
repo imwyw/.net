@@ -102,6 +102,8 @@ log4net框架会在相对于AppDomain.CurrentDomain.BaseDirectory 属性定义�
 
     <!--文本方式记录日志 -->
     <appender name="InfoFileAppender" type="log4net.Appender.RollingFileAppender,log4net" >
+      <!-- 最小锁定模型 允许多个进程可以写入同一个文件 -->
+      <lockingModel type="log4net.Appender.FileAppender+MinimalLock" />
       <!-- 输出到什么目录-->
       <param name="File" value="Logs" />
       <!-- 是否覆写到文件中-->
