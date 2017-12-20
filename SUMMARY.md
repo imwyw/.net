@@ -40,10 +40,11 @@
     * [安装](.\IIS\INSTALL.md)
 
 * [SOA](.\SOA\README.md)
-    * [WebService](.\SOA\WebService.md)
+    * [WebService](.\SOA\WebServices.md)
     * [WCF](.\SOA\WCF.md)
 
 * [企业开发](.\Enterprise\README.md)
     * [Log4Net](.\Enterprise\Log4Net.md)
+    * [Autofac](.\Enterprise\Autofac.md)
     * [ABP](.\Enterprise\ABP.md)
 
