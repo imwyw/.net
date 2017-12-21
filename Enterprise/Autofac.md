@@ -1,3 +1,21 @@
+<!-- TOC -->
+
+- [Autofac](#autofac)
+    - [前言](#前言)
+        - [DIP、IOC、DI、IOC容器](#dipiocdiioc容器)
+        - [案例引入](#案例引入)
+        - [DI实践](#di实践)
+            - [构造函数注入](#构造函数注入)
+            - [属性注入](#属性注入)
+            - [接口注入](#接口注入)
+        - [总结](#总结)
+    - [Autofac配置及使用](#autofac配置及使用)
+        - [项目搭建](#项目搭建)
+        - [Autofac安装及配置](#autofac安装及配置)
+        - [Autofac的使用](#autofac的使用)
+
+<!-- /TOC -->
+<a id="markdown-autofac" name="autofac"></a>
 # Autofac
 
 Autofac是.NET领域最为流行的IOC框架之一，传说是速度最快的一个。
@@ -8,7 +26,9 @@ Autofac是.NET领域最为流行的IOC框架之一，传说是速度最快的一
 
 在介绍Autofac前，我们需要了解几个重要的概念，DIP,DI,IOC,IOC容器
 
+<a id="markdown-前言" name="前言"></a>
 ## 前言
+<a id="markdown-dipiocdiioc容器" name="dipiocdiioc容器"></a>
 ### DIP、IOC、DI、IOC容器
 * 依赖倒置原则 DIP(Dependency Inversion Principle)：一种软件架构**设计原则**(抽象概念)。
 
@@ -27,6 +47,7 @@ Autofac是.NET领域最为流行的IOC框架之一，传说是速度最快的一
 
 IoC容器实际上是一个DI框架，它能简化我们的工作量。
 
+<a id="markdown-案例引入" name="案例引入"></a>
 ### 案例引入
 
 我们模拟一个电商网站的下订单操作，当用户下订单的时候需要有入库操作，即保存到数据库，通常我们的实现方式是这样的：
@@ -103,6 +124,7 @@ public class SqLiteDal
 
 那么DI所做的操作就是将new()实例化操作放到类的外部来实现，解决Order依赖于SqlServerDal的问题，**就是将依赖对象的创建和绑定转移到被依赖对象类的外部来实现。**
 
+<a id="markdown-di实践" name="di实践"></a>
 ### DI实践
 我们以一个简化的例子有一个初步的认识，例如现在有类A依赖于C
 ```cs
@@ -143,6 +165,7 @@ public interface ISub { }
 public class B : ISub { }
 ```
 
+<a id="markdown-构造函数注入" name="构造函数注入"></a>
 #### 构造函数注入
 通过添加上层模块类的自定义构造函数，将依赖通过构造函数传入的方式实现：
 ```cs
@@ -171,6 +194,7 @@ public class B : ISub { }
 public class C : ISub { }
 ```
 
+<a id="markdown-属性注入" name="属性注入"></a>
 #### 属性注入
 通过属性的方式，达到引用从外部的传入：
 ```cs
@@ -198,6 +222,7 @@ public class B : ISub { }
 
 public class C : ISub { }
 ```
+<a id="markdown-接口注入" name="接口注入"></a>
 #### 接口注入
 具体思路是先定义一个接口，包含一个设置依赖的方法。然后依赖类，继承并实现这个接口。这种方式使用的并不多，比较麻烦。
 ```cs
@@ -233,6 +258,7 @@ public class B : ISub { }
 public class C : ISub { }
 ```
 
+<a id="markdown-总结" name="总结"></a>
 ### 总结
 对于大型项目来说，相互依赖的组件比较多。如果还用手动的方式，自己来创建和注入依赖的话，显然效率很低，而且往往还会出现不可控的场面。正因如此，IoC容器诞生了。
 IoC容器实际上是一个DI框架，它能简化我们的工作量。它包含以下几个功能：
@@ -242,9 +268,11 @@ IoC容器实际上是一个DI框架，它能简化我们的工作量。它包含
 
 配置文件加反射注入(各种IOC容器框架)：通过配置文件中的Interface或abstract class名和实现的类名，利用反射将Interface或abstract class与其实现实现动态装配完成注入。
 
+<a id="markdown-autofac配置及使用" name="autofac配置及使用"></a>
 ## Autofac配置及使用
 同样的，我们以前言中不同数据业务的需求作为示例进行IOC。
 
+<a id="markdown-项目搭建" name="项目搭建"></a>
 ### 项目搭建
 搭建项目结构如下：
 
@@ -254,6 +282,7 @@ IoC容器实际上是一个DI框架，它能简化我们的工作量。它包含
 * 【IOC.Service】定义了底层模块的接口，上层模块【IOC.UI】项目仅依赖于该抽象层，而底层模块【IOC.OracleDal】和【IOC.SqlServerDal】项目实现该接口即可；
 * 【IOC.OracleDal】、【IOC.SqlServerDal】数据操作的具体实现，实现【IOC.Service】服务接口。
 
+<a id="markdown-autofac安装及配置" name="autofac安装及配置"></a>
 ### Autofac安装及配置
 
 通过NuGet管理包添加Autofac的引用：
@@ -290,6 +319,7 @@ IoC容器实际上是一个DI框架，它能简化我们的工作量。它包含
 
 ![](..\assets\Enterprise\Autofac_nuget2.png)
 
+<a id="markdown-autofac的使用" name="autofac的使用"></a>
 ### Autofac的使用
 
 封装Autofac帮助类，实现组件注入，封装Resolve方法：

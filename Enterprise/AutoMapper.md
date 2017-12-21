@@ -1,3 +1,18 @@
+<!-- TOC -->
+
+- [AutoMapper](#automapper)
+    - [前言](#前言)
+        - [VO、DTO、DO、PO、DAO](#vodtodopodao)
+        - [为什么要有DTO](#为什么要有dto)
+    - [应用场景](#应用场景)
+        - [人工转换](#人工转换)
+        - [AutoMapper安装](#automapper安装)
+        - [默认映射](#默认映射)
+        - [Reverse Mapping](#reverse-mapping)
+        - [Customizing reverse mapping](#customizing-reverse-mapping)
+
+<!-- /TOC -->
+<a id="markdown-automapper" name="automapper"></a>
 # AutoMapper
 
 > http://automapper.org/
@@ -6,7 +21,9 @@
 
 简单来说就是：就是根据A的模型和B的模型中的定义，自动将A模型映射为一个全新的B模型。
 
+<a id="markdown-前言" name="前言"></a>
 ## 前言
+<a id="markdown-vodtodopodao" name="vodtodopodao"></a>
 ### VO、DTO、DO、PO、DAO
 * VO(View Object)：视图对象，用于展示层，它的作用是把某个指定页面(或组件)的所有数据封装起来。 
 * DTO(Data Transfer Object)：数据传输对象，泛指用于展示层与服务层之间的数据传输对象。 
@@ -14,12 +31,15 @@
 * PO(Persistent Object)：持久化对象，它跟持久层(通常是关系型数据库)的数据结构形成一一对应的映射关系，如果持久层是关系型数据库，那么，数据表中的每个字段(或若干个)就对应PO的一个(或若干个)属性。
 * DAO(Data Access Object):数据访问对象，主要用来封装对数据库的操作。
 
+<a id="markdown-为什么要有dto" name="为什么要有dto"></a>
 ### 为什么要有DTO
 通常我们通过DAO获取PO，PO是和数据库映射的，但是可能包含了很多对于传输来说并不需要的属性。
 
 比如一张表有100个字段，那么对应的PO可能就是100个属性，但是对于表示层而言并不需要那么多属性展示给用户，同样的也不应该把底层表结构暴露给表示层，那么中间就有一个DTO对象的转换，表示层需要多少属性则DTO的设置就定义多少属性。
 
+<a id="markdown-应用场景" name="应用场景"></a>
 ## 应用场景
+<a id="markdown-人工转换" name="人工转换"></a>
 ### 人工转换
 我们经常需要有这样的转换，将PO模型转换为实际传递需要的DTO模型，如果人工方式实现就会有一堆如下繁琐、效率低下的代码：
 ```cs
@@ -66,11 +86,13 @@
     }
 ```
 
+<a id="markdown-automapper安装" name="automapper安装"></a>
 ### AutoMapper安装
 同样，我们通过NuGet程序包管理器进行安装引用：
 
 ![](..\assets\Enterprise\AutoMapper_nuget1.png)
 
+<a id="markdown-默认映射" name="默认映射"></a>
 ### 默认映射
 > AutoMapper uses a convention-based matching algorithm to match up source to destination values.
 
@@ -142,6 +164,7 @@ public class StudentDTO
 }
 ```
 
+<a id="markdown-reverse-mapping" name="reverse-mapping"></a>
 ### Reverse Mapping
 反向映射，在上述的示例中，进行了PO->DTO和DTO->PO转换的映射，我们也可以通过反向映射来代替：
 ```cs
@@ -153,6 +176,7 @@ AutoMapper.Mapper.Initialize(cfg =>
 });
 ```
 
+<a id="markdown-customizing-reverse-mapping" name="customizing-reverse-mapping"></a>
 ### Customizing reverse mapping
 默认的映射有时候可能并不符合我们的需求，对于以下属性名称并不相同的映射需求，我们可以ForMember()自定义映射关系：
 ```cs

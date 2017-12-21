@@ -1,8 +1,20 @@
+<!-- TOC -->
+
+- [Log4Net](#log4net)
+    - [安装](#安装)
+    - [组成](#组成)
+    - [配置使用](#配置使用)
+        - [简单示例](#简单示例)
+        - [多个Appender使用](#多个appender使用)
+
+<!-- /TOC -->
+<a id="markdown-log4net" name="log4net"></a>
 # Log4Net
 日志记录往往是软件开发周期中的重要组成部分。它具有以下几个优点：它可以提供应用程序运行时的精确环境，可供开发人员尽快找到应用程序中的Bug；一旦在程序中加入了Log 输出代码，程序运行过程中就能生成并输出日志信息而无需人工干预。另外，日志信息可以输出到不同的地方（控制台，文件等）以备以后研究之用。
 
 github开源：https://github.com/apache/logging-log4net
 
+<a id="markdown-安装" name="安装"></a>
 ## 安装
 可以通过以下方式获取它：
 1. 官网：http://logging.apache.org/log4net/
@@ -24,6 +36,7 @@ github开源：https://github.com/apache/logging-log4net
 
 以上，就是通过NuGet方式添加Log4Net引用。除此，还可以通过在官网上下载dll手动添加引用的方式进行使用。
 
+<a id="markdown-组成" name="组成"></a>
 ## 组成
 1. Logger：用于记录日志是输出方式和日志的输出级别。
     log4net支持输出的日志媒介主要有数据库、控制台、文件、邮件等。
@@ -39,8 +52,10 @@ github开源：https://github.com/apache/logging-log4net
 
 5. Object Renders：通过它，log4net将按照用户定义的标准输出日志消息。
 
+<a id="markdown-配置使用" name="配置使用"></a>
 ## 配置使用
 
+<a id="markdown-简单示例" name="简单示例"></a>
 ### 简单示例
 log4net框架会在相对于AppDomain.CurrentDomain.BaseDirectory 属性定义的目录路径下查找配置文件，在配置文件里要查找的唯一标识是<log4net>标签。
 
@@ -130,6 +145,7 @@ log4net框架会在相对于AppDomain.CurrentDomain.BaseDirectory 属性定义�
 Log4Helper.Log.Debug("日志测试");
 ```
 
+<a id="markdown-多个appender使用" name="多个appender使用"></a>
 ### 多个Appender使用
 将异常和消息显示分开写日志，还可以控制日志文件为html格式，方便查阅：
 
