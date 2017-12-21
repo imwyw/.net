@@ -50,10 +50,10 @@ IoC容器实际上是一个DI框架，它能简化我们的工作量。
     {
         /// <summary>
         /// 私有变量，保存对数据操作的对象
-        /// 即 Order 依赖于 IOC.SqlServerDal，上层的功能依赖于底层的功能
-        /// 不好的设计，当IOC.SqlServerDal发生变化或者不再需要IOC.SqlServerDal的时候需要改动业务层Order类!
+        /// 即 Order 依赖于 SqlServerDal，上层的功能依赖于底层的功能
+        /// 不好的设计，当SqlServerDal发生变化或者不再需要SqlServerDal的时候需要改动业务层Order类!
         /// </summary>
-        readonly IOC.SqlServerDal dal = new IOC.SqlServerDal();
+        readonly SqlServerDal dal = new SqlServerDal();
 
         /// <summary>
         /// 添加订单
@@ -69,7 +69,7 @@ IoC容器实际上是一个DI框架，它能简化我们的工作量。
     /// 模拟SqlServer数据库的操作，相当于数据访问层DAL
     /// 用于数据读写
     /// </summary>
-    public class IOC.SqlServerDal
+    public class SqlServerDal
     {
         public void Add()
         {
@@ -82,7 +82,7 @@ IoC容器实际上是一个DI框架，它能简化我们的工作量。
 
 比如，用户需求支持灵活的数据库存储方案，需要灵活支持SqlServer、Oracle、SQLite等等，那么对应的持久化保存方案都有对应的数据访问类，如下：
 ```cs
-public class IOC.OracleDal
+public class OracleDal
 {
     public void Insert()
     {
@@ -101,7 +101,7 @@ public class SqLiteDal
 
 对于如上的两个数据访问类，不仅类名不一样，方法名称也不一样，在遇到需求变化时业务层的适配很麻烦，并不是很好的方法。
 
-那么DI所做的操作就是将new()实例化操作放到类的外部来实现，解决Order依赖于IOC.SqlServerDal的问题，**就是将依赖对象的创建和绑定转移到被依赖对象类的外部来实现。**
+那么DI所做的操作就是将new()实例化操作放到类的外部来实现，解决Order依赖于SqlServerDal的问题，**就是将依赖对象的创建和绑定转移到被依赖对象类的外部来实现。**
 
 ### DI实践
 我们以一个简化的例子有一个初步的认识，例如现在有类A依赖于C
