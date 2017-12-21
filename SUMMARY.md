@@ -45,6 +45,8 @@
 
 * [企业开发](.\Enterprise\README.md)
     * [Log4Net](.\Enterprise\Log4Net.md)
+    * [Nunit](.\Enterprise\Nunit.md)
+    * [AutoMapper](.\Enterprise\AutoMapper.md)
     * [Autofac](.\Enterprise\Autofac.md)
     * [ABP](.\Enterprise\ABP.md)
 
