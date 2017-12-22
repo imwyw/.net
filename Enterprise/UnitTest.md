@@ -3,10 +3,10 @@
 - [UnitTest](#unittest)
     - [Nunit](#nunit)
         - [特性Attribute](#特性attribute)
-    - [安装及应用](#安装及应用)
-        - [安装](#安装)
-        - [创建测试方法](#创建测试方法)
-        - [进行测试](#进行测试)
+        - [安装及应用](#安装及应用)
+            - [安装](#安装)
+            - [创建测试方法](#创建测试方法)
+            - [进行测试](#进行测试)
     - [MS Test](#ms-test)
 
 <!-- /TOC -->
@@ -37,16 +37,16 @@ SetUp Attribute | 在一个TestFixture中提供一个通用的功能集，这个
 TearDown Attribute | 在一个TestFixture中提供一个通用的功能集，这个功能集在每个测试方法运行后执行。一个TestFixture只能有一个TearDown方法。
 
 <a id="markdown-安装及应用" name="安装及应用"></a>
-## 安装及应用
+### 安装及应用
 
 <a id="markdown-安装" name="安装"></a>
-### 安装
+#### 安装
 我们以一个简单三层的案例来进行Nunit的示例，添加Test项目并通过NuGet包管理器添加对Nunit的引用：
 
 ![](..\assets\Enterprise\Nunit_nuget1.png)
 
 <a id="markdown-创建测试方法" name="创建测试方法"></a>
-### 创建测试方法
+#### 创建测试方法
 针对上一步添加的【Test】项目添加引用，我们针对BLL业务逻辑的接口进行单元测试，添加对BLL和MODEL层的引用，如下：
 
 ![](..\assets\Enterprise\Nunit_create1.png)
@@ -54,6 +54,15 @@ TearDown Attribute | 在一个TestFixture中提供一个通用的功能集，这
 由于我们需要通过单元测试模拟UI层的调用，测试的接口包含有数据访问，所以对应单元测试项目也要添加相应的配置文件包含数据库连接字符串。如下：
 
 ![](..\assets\Enterprise\Nunit_create2.png)
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <add key="ConnStr" value="server=.;database=ARTICLE_DB;uid=sa;pwd=1;"/>
+  </appSettings>
+</configuration>
+```
 
 添加测试类【TestArticle.cs】，内容如下：
 ```cs
@@ -70,7 +79,7 @@ public class TestArticle
 ```
 
 <a id="markdown-进行测试" name="进行测试"></a>
-### 进行测试
+#### 进行测试
 
 在进行Nunit单元测试的运行时，需要安装TestAdapter适配器，如果已经安装过请略过此步骤。
 
