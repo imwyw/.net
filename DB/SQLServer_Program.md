@@ -8,6 +8,13 @@
         - [多语句表值函数](#多语句表值函数)
     - [存储过程](#存储过程)
         - [自定义存储过程](#自定义存储过程)
+        - [分页查询](#分页查询)
+        - [常用数据库分页方法](#常用数据库分页方法)
+            - [定位法(利用ID大于多少)](#定位法利用id大于多少)
+            - [利用TOP NOT IN](#利用top-not-in)
+            - [ROW_NUMBER()函数](#row_number函数)
+            - [通用分页存储过程](#通用分页存储过程)
+            - [扩展后千万级分页](#扩展后千万级分页)
     - [事务](#事务)
         - [编码示例](#编码示例)
 
@@ -36,7 +43,7 @@ DROP VIEW VIEW_NAME;
 
 <a id="markdown-函数" name="函数"></a>
 ## 函数
-与编程语言中的函数类似， SQL Server 用户定义函数是接受参数、执行操作（例如复杂计算）并将操作结果以值的形式返回的例程。 返回值可以是单个标量值或结果集。
+与编程语言中的函数类似， SQL Server 用户定义函数是接受参数、执行操作(例如复杂计算)并将操作结果以值的形式返回的例程。 返回值可以是单个标量值或结果集。
 
 - 允许模块化程序设计。
 
@@ -139,7 +146,7 @@ ELSE
 --游标，课余研究
 ```
 
-示例：有参有输出参数，返回输入参数是正数、负数、零
+示例：有参有输出存储，返回输入参数是正数、负数、零？
 ```sql
 CREATE PROCEDURE SP_TEST
     (
@@ -202,7 +209,113 @@ AS
 EXEC P_IN_BATCH_DATA;
 ```
 
-分页存储过程：
+<a id="markdown-分页查询" name="分页查询"></a>
+### 分页查询
+考虑数据库中保存大量数据的情况下，如万级、千万级等，一次将所有数据查询出显示在页面上，对服务器和客户端都是一个考验，显示不是一种合理的方式。
+
+所以要把数据进行分批查询出来，每页显示一定量的数据，这就是分页查询。
+
+<a id="markdown-常用数据库分页方法" name="常用数据库分页方法"></a>
+### 常用数据库分页方法
+
+假设有一张表如下：
+```sql
+CREATE TABLE TEST
+    (
+      ID INT PRIMARY KEY NOT NULL IDENTITY(1,1) ,
+      NAMES VARCHAR(64)
+    )
+```
+
+创建一个存储，添加测试数据：
+```sql
+-- 添加测试数据的存储
+CREATE PROC PROC_ADD_TEST_DATA
+AS
+    DECLARE @NN INT = 0;
+    BEGIN
+        -- 插入100w条记录
+        WHILE ( @NN < 1000000 )
+            BEGIN
+                SET @NN = @NN + 1;
+                INSERT  INTO DBO.TEST
+                        ( NAMES )
+                VALUES  ( SYSDATETIME()  -- NAMES - VARCHAR(20)
+                          );
+            END
+
+    END
+```
+
+查询窗口中执行该存储，插入测试数据：
+```sql
+--执行测试存储进行插入测试数据
+BEGIN
+EXEC PROC_ADD_TEST_DATA;
+END
+
+-- 测试插入是否成功
+SELECT COUNT(1) FROM dbo.TEST;
+```
+
+下面我们以每页10条数据，查询第3w页数据为例，即查询第300001~3000010条数据( `index > 30000*10 and index <= (30000+1)*10` )
+
+```sql
+-- 即实现以下SQL查询结果，此示例为极端情况(ID为有序递增)，实际应用情况下是无法使用 某字段直接进行大小比较得出结果的
+SELECT * FROM dbo.TEST WHERE id>300000 AND id <= 300010 ORDER BY ID ;
+```
+
+<a id="markdown-定位法利用id大于多少" name="定位法利用id大于多少"></a>
+#### 定位法(利用ID大于多少)
+
+```sql
+-- 1、找出排序后的前 30w条数据
+SELECT TOP ( 30000 * 10 ) ID FROM    TEST ORDER BY ID;
+
+-- 2、找出前30w条数据中最大的ID
+SELECT MAX(T.ID) FROM (SELECT TOP ( 30000 * 10 ) ID FROM    TEST ORDER BY ID) AS T;
+
+-- 3、使用ID大于xxx的方式实现分页查询，得出分页结果
+SELECT TOP 10 * FROM TEST WHERE ID > 
+(SELECT MAX(T.ID) FROM (SELECT TOP ( 30000 * 10 ) ID FROM    TEST ORDER BY ID) AS T)
+ORDER BY ID
+```
+
+<a id="markdown-利用top-not-in" name="利用top-not-in"></a>
+#### 利用TOP NOT IN
+
+```sql
+-- 1、找出当前页前面的数据
+SELECT TOP (30000*10) * FROM TEST ORDER BY ID;
+
+-- 2、使用NOT IN 的方式过滤
+SELECT TOP 10 * FROM TEST WHERE ID NOT IN 
+(SELECT TOP (30000*10) ID FROM TEST ORDER BY ID)
+ORDER BY ID;
+```
+
+<a id="markdown-row_number函数" name="row_number函数"></a>
+#### ROW_NUMBER()函数
+需要注意：SqlServer2005以上版本开始支持ROW_NUMBER()函数。
+
+```sql
+-- 1、使用ROW_NUMBER()开窗获取行号
+SELECT *,ROW_NUMBER() OVER(ORDER BY ID) RN FROM TEST;
+
+-- 2、按照行号筛选得出当前页对应的数据
+SELECT * FROM (SELECT *,ROW_NUMBER() OVER(ORDER BY ID) RN FROM TEST) AS T
+WHERE T.RN > (30000*10) AND T.RN <= (30000+1)*10;
+```
+
+---
+参考引用：
+
+[Sql Server 数据分页](http://www.cnblogs.com/qqlin/archive/2012/11/01/2745161.html)
+
+<a id="markdown-通用分页存储过程" name="通用分页存储过程"></a>
+#### 通用分页存储过程
+
+使用ROW_NUMBER()开窗函数简单实现分页查询
 ```sql
 CREATE PROCEDURE [dbo].[sp_paged_data]
     (
@@ -216,7 +329,7 @@ CREATE PROCEDURE [dbo].[sp_paged_data]
     )
 AS
     BEGIN
-        --不返回计数（表示受 Transact-SQL 语句影响的行数）
+        --不返回计数(表示受 Transact-SQL 语句影响的行数)
         SET NOCOUNT ON;
         -- 获取记录总数的查询SQL语句
         DECLARE @sqlcount NVARCHAR(1000);
@@ -253,8 +366,150 @@ AS
 
 存储调用：
 ```sql
+DECLARE @total INT = 0;
+EXEC DBO.SP_PAGED_DATA @SQLTABLE = N'TEST', -- NVARCHAR(200) 表名
+    @SQLCOLUMNS = N'*', -- NVARCHAR(500) 投影查询的字段 如：*
+    @SQLWHERE = N'', -- NVARCHAR(1000) where条件 需要加and 如：AND 1=1
+    @SQLSORT = N'ID', -- NVARCHAR(500) 排序 必填 ID/ID DESC,names asc
+    @PAGEINDEX = 30000, -- INT 当前页码 从0开始
+    @PAGESIZE = 10, -- INT 每页显示数据数目
+    @ROWTOTAL = @total OUT -- INT 总记录数
+
+SELECT  @total;
+```
+
+<a id="markdown-扩展后千万级分页" name="扩展后千万级分页"></a>
+#### 扩展后千万级分页
+
+增加容错扩展：
+```sql
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+--分页存储过程  
+CREATE PROCEDURE [DBO].[SP_PAGING]
+    (
+      @TABLES NVARCHAR(1000) ,                --表名/视图名
+      @PRIMARYKEY NVARCHAR(100) ,             --主键
+      @SORT NVARCHAR(200) = NULL ,            --排序字段(不带ORDER BY)
+      @PAGEINDEX INT = 1 ,                    --当前页码
+      @PAGESIZE INT = 10 ,                    --每页记录数
+      @FIELDS NVARCHAR(1000) = N'*' ,         --输出字段
+      @FILTER NVARCHAR(1000) = NULL ,         --WHERE过滤条件(不带WHERE)
+      @GROUP NVARCHAR(1000) = NULL ,          --GROUP语句(不带GROUP BY)
+      @TOTALCOUNT INT OUTPUT                 --总记录数
+    )
+AS
+    DECLARE @SORTTABLE NVARCHAR(100) 
+    DECLARE @SORTNAME NVARCHAR(100) 
+    DECLARE @STRSORTCOLUMN NVARCHAR(200) 
+    DECLARE @OPERATOR CHAR(2) 
+    DECLARE @TYPE NVARCHAR(100) 
+    DECLARE @PREC INT 
+
+    --设定排序语句
+    IF @SORT IS NULL
+        OR @SORT = ''
+        SET @SORT = @PRIMARYKEY      
+    IF CHARINDEX('DESC', @SORT) > 0
+        BEGIN         
+            SET @STRSORTCOLUMN = REPLACE(@SORT, 'DESC', '')         
+            SET @OPERATOR = '<='     
+        END 
+    ELSE
+        BEGIN                
+            SET @STRSORTCOLUMN = REPLACE(@SORT, 'ASC', '')                
+            SET @OPERATOR = '>='     
+        END 
+    IF CHARINDEX('.', @STRSORTCOLUMN) > 0
+        BEGIN         
+            SET @SORTTABLE = SUBSTRING(@STRSORTCOLUMN, 0,
+                                       CHARINDEX('.', @STRSORTCOLUMN))
+            SET @SORTNAME = SUBSTRING(@STRSORTCOLUMN,
+                                      CHARINDEX('.', @STRSORTCOLUMN) + 1,
+                                      LEN(@STRSORTCOLUMN))     
+        END 
+    ELSE
+        BEGIN         
+            SET @SORTTABLE = @TABLES         
+            SET @SORTNAME = @STRSORTCOLUMN  
+        END 
+
+    --设置排序字段类型和精度 
+    SELECT  @TYPE = T.NAME ,
+            @PREC = C.PREC
+    FROM    SYSOBJECTS O
+            JOIN SYSCOLUMNS C ON O.ID = C.ID
+            JOIN SYSTYPES T ON C.XUSERTYPE = T.XUSERTYPE
+    WHERE   O.NAME = @SORTTABLE
+            AND C.NAME = @SORTNAME
+        
+    IF CHARINDEX('CHAR', @TYPE) > 0
+        SET @TYPE = @TYPE + '(' + CAST(@PREC AS VARCHAR) + ')'
+   
+    DECLARE @STRPAGESIZE NVARCHAR(50) 
+    DECLARE @STRSTARTROW NVARCHAR(50) 
+    DECLARE @STRFILTER NVARCHAR(1000) 
+    DECLARE @STRSIMPLEFILTER NVARCHAR(1000) 
+    DECLARE @STRGROUP NVARCHAR(1000)  
+ 
+    IF @PAGEINDEX < 1
+        SET @PAGEINDEX = 1  
+    SET @STRPAGESIZE = CAST(@PAGESIZE AS NVARCHAR(50)) 
+    
+    --设置开始分页记录数 
+    SET @STRSTARTROW = CAST(( ( @PAGEINDEX - 1 ) * @PAGESIZE + 1 ) AS NVARCHAR(50))  
+    
+    --筛选以及分组语句
+    IF @FILTER IS NOT NULL
+        AND @FILTER != ''
+        BEGIN         
+            SET @STRFILTER = ' WHERE ' + @FILTER + ' ' 
+            SET @STRSIMPLEFILTER = ' AND ' + @FILTER + ' ' 
+        END 
+    ELSE
+        BEGIN         
+            SET @STRSIMPLEFILTER = ''         
+            SET @STRFILTER = ''     
+        END 
+    IF @GROUP IS NOT NULL
+        AND @GROUP != ''
+        SET @STRGROUP = ' GROUP BY ' 
+    
+    --计算总记录数
+    DECLARE @TOTALCOUNTSQL NVARCHAR(1000)
+    SET @TOTALCOUNTSQL = N'SELECT @TOTALCOUNT=COUNT(*)' + N' FROM ' + @TABLES
+        + @STRFILTER
+    EXEC SP_EXECUTESQL @TOTALCOUNTSQL, N'@TOTALCOUNT INT OUTPUT',
+        @TOTALCOUNT OUTPUT
+    
+    --执行查询语句    
+    EXEC(
+    '
+    DECLARE @SORTCOLUMN ' + @TYPE + '
+    SET ROWCOUNT ' + @STRSTARTROW + '
+    SELECT @SORTCOLUMN=' + @STRSORTCOLUMN + ' FROM ' + @TABLES + @STRFILTER + ' ' + @STRGROUP + ' ORDER BY ' + @SORT + '
+    SET ROWCOUNT ' + @STRPAGESIZE + '
+    SELECT ' + @FIELDS + ' FROM ' + @TABLES + ' WHERE ' 
+    + @STRSORTCOLUMN + @OPERATOR + ' @SORTCOLUMN ' + @STRSIMPLEFILTER + ' ' + @STRGROUP + ' ORDER BY ' + @SORT + '
+    '
+    )
+```
+
+```sql
+--存储调用
 DECLARE @total INT;
-EXEC sp_paged_data '[emp]', '*', 'and 1=1', 'ID asc', 2, 10, @total OUT;
+EXEC dbo.SP_PAGING @TABLES = N'TEST', -- nvarchar(1000) 表名
+    @PRIMARYKEY = N'', -- nvarchar(100) 主键字段 可为空
+    @SORT = N'ID', -- nvarchar(200) 排序字段 必填 如： ID
+    @PAGEINDEX = 2, -- int  当前页码，从1开始
+    @PAGESIZE = 10, -- int 每页记录数
+    @FIELDS = N'*', -- nvarchar(1000) 输出字段
+    @FILTER = N'', -- nvarchar(1000) where条件 如:(1=1 AND 1=1)
+    @GROUP = N'', -- nvarchar(1000) 分组(不带group by) 
+    @TOTALCOUNT = @total OUT -- int
+SELECT  @total;
 ```
 
 <a id="markdown-事务" name="事务"></a>
@@ -263,21 +518,21 @@ EXEC sp_paged_data '[emp]', '*', 'and 1=1', 'ID asc', 2, 10, @total OUT;
 
 事务具有4大特性：原子性、一致性、隔离性、持久性。这四个属性通常称为ACID特性。
 
-- 原子性（atomicity）
+- 原子性(atomicity)
 
 事务是一个不可分割的工作单位，事务中包括的诸操作要么都做，要么都不做。
 
-- 一致性（consistency）
+- 一致性(consistency)
 
 事务必须是使数据库从一个一致性状态变到另一个一致性状态。一致性与原子性是密切相关的。
 
-- 隔离性（isolation）
+- 隔离性(isolation)
 
 一个事务的执行不能被其他事务干扰。即一个事务内部的操作及使用的数据对并发的其他事务是隔离的，并发执行的各个事务之间不能互相干扰。
 
-- 持久性（durability）
+- 持久性(durability)
 
-持久性也称永久性（permanence），指一个事务一旦提交，它对数据库中数据的改变就应该是永久性的。接下来的其他操作或故障不应该对其有任何影响。
+持久性也称永久性(permanence)，指一个事务一旦提交，它对数据库中数据的改变就应该是永久性的。接下来的其他操作或故障不应该对其有任何影响。
 
 <a id="markdown-编码示例" name="编码示例"></a>
 ### 编码示例
