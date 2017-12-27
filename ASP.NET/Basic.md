@@ -7,6 +7,7 @@
             - [Application](#application)
             - [Cache](#cache)
             - [Cookie](#cookie)
+            - [js.cookie](#jscookie)
         - [数据传递问题](#数据传递问题)
             - [Request](#request)
             - [Response](#response)
@@ -173,6 +174,67 @@ if (context.Request.Cookies["CurUser"] != null)
 ```js
 //js读取cookie
 document.cookie;
+```
+
+<a id="markdown-jscookie" name="jscookie"></a>
+#### js.cookie
+A simple, lightweight JavaScript API for handling browser cookies
+
+github开源项目，封装了cookie操作的API。
+
+github:https://github.com/js-cookie/js-cookie
+
+Basic Usage基本使用：
+```js
+//Create a cookie, valid across the entire site:
+Cookies.set('name', 'value');
+
+//Create a cookie that expires 7 days from now, valid across the entire site:
+Cookies.set('name', 'value', { expires: 7 });
+
+//Create an expiring cookie, valid to the path of the current page:
+Cookies.set('name', 'value', { expires: 7, path: '' });
+
+//Read cookie:
+Cookies.get('name'); // => 'value'
+Cookies.get('nothing'); // => undefined
+
+//Read all visible cookies:
+Cookies.get(); // => { name: 'value' }
+
+//Delete cookie:
+Cookies.remove('name');
+
+//Delete a cookie valid to the path of the current page:
+Cookies.set('name', 'value', { path: '' });
+Cookies.remove('name'); // fail!
+Cookies.remove('name', { path: '' }); // removed!
+```
+
+JSON格式：
+```js
+/*
+When creating a cookie you can pass an Array or Object Literal instead of a string in the value.
+If you do so, js-cookie will store the string representation of the object according to JSON.stringify:
+set()方法写入对象或数组时，js-cookie会帮你序列化操作，及通过JSON.stringify()
+*/
+Cookies.set('name', { foo: 'bar' });
+
+/*
+When reading a cookie with the default Cookies.get api, 
+you receive the string representation stored in the cookie:
+get()方法返回的是序列化后的字符串
+*/
+Cookies.get('name'); // => '{"foo":"bar"}'
+Cookies.get(); // => { name: '{"foo":"bar"}' }
+
+/*
+When reading a cookie with the Cookies.getJSON api, 
+you receive the parsed representation of the string stored in the cookie according to JSON.parse:
+使用getJSON()方法可以返回对象
+*/
+Cookies.getJSON('name'); // => { foo: 'bar' }
+Cookies.getJSON(); // => { name: { foo: 'bar' } }
 ```
 
 <a id="markdown-数据传递问题" name="数据传递问题"></a>
