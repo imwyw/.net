@@ -368,6 +368,15 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
     注意，如果没有FirstOrDefault()的调用，查询并不会执行
     */
     var result3 = context.Database.SqlQuery<SimpleUser>("SELECT NAME,PWD FROM T_USERS").ToList();
+
+    /*
+    SqlQuery同样也支持 SqlParameter传参，以防止sql注入危险
+    */
+    //使用SqlParameter传值可以避免SQL注入
+    var sqlpams = new SqlParameter[] { 
+        new SqlParameter("@NAME", "admin");
+    };
+    var result4 = context.Database.SqlQuery<SimpleUser>("SELECT NAME,PWD FROM T_USERS WHERE NAME = @NAME", sqlpams).ToList();
 }
 ```
 
