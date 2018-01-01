@@ -61,6 +61,8 @@ EF是一种ORM（Object-relational mapping）框架，它能把我们在编程�
 
 以上，针对Database First这种创建方式就完成了。
 
+**有一点需要特别注意，EF只能映射具有主键的表，无主键的表是无法映射的。**
+
 <a id="markdown-更新模型" name="更新模型"></a>
 ## 更新模型
 
