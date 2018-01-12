@@ -1,4 +1,5 @@
 ﻿using ArticleDemo.Common;
+using ArticleDemo.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -118,6 +119,7 @@ namespace ArticleDemo.DAL
         public static List<T> ExecuteReader<T>(string cmdText, SqlParameter[] sqlParams,
             CommandType cmdType = CommandType.Text) where T : new()
         {
+            //connStr 为web.config中数据库连接字符串
             SqlConnection conn = new SqlConnection(connStr);
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = cmdType;
@@ -135,31 +137,46 @@ namespace ArticleDemo.DAL
             try
             {
                 LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
-                SqlDataReader reader = cmd.ExecuteReader();
-                List<T> lstRes = new List<T>();
-                T entity = new T();
-
-                //获取该类型的所有公开属性
-                PropertyInfo[] props = typeof(T).GetProperties();
-
-                while (reader.Read())
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    entity = new T();
-                    foreach (PropertyInfo p in props)
-                    {
-                        //默认当做属性名称和表字段名称对应，后期可以通过自定义特性进行匹配
-                        object obj = reader[p.Name];
+                    List<T> lstRes = new List<T>();
 
-                        //设置对应的属性值
-                        p.SetValue(entity, obj, null);
+                    //获取指定的数据类型
+                    Type modelType = typeof(T);
+
+                    //遍历reader
+                    while (reader.Read())
+                    {
+                        //创建指定类型的实例
+                        T entity = Activator.CreateInstance<T>();
+
+                        //遍历reader字段
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            //判断字段值是否为空或不存在
+                            if (!IsNullOrDbNull(reader[i]))
+                            {
+                                //根据reader序列返回对应名称，并反射找到匹配的属性
+                                PropertyInfo pi = typeof(T).GetProperty(reader.GetName(i),
+                                    BindingFlags.GetProperty | BindingFlags.Public
+                                    | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+                                if (pi != null)
+                                {
+                                    //设置对象中匹配属性的值
+                                    pi.SetValue(entity, CheckType(reader[i], pi.PropertyType), null);
+                                }
+                            }
+                        }
+                        lstRes.Add(entity);
                     }
-                    lstRes.Add(entity);
+                    return lstRes;
                 }
-                return lstRes;
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //发生异常时记录日志
                 LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
                 return null;
             }
@@ -183,6 +200,7 @@ namespace ArticleDemo.DAL
         public static T ExecuteReaderFirst<T>(string cmdText, SqlParameter[] sqlParams,
             CommandType cmdType = CommandType.Text) where T : class, new()
         {
+            //connStr 为web.config中数据库连接字符串
             SqlConnection conn = new SqlConnection(connStr);
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = cmdType;
@@ -199,34 +217,42 @@ namespace ArticleDemo.DAL
             }
             try
             {
+                //记录日志
                 LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
-                SqlDataReader reader = cmd.ExecuteReader();
-                T entity = new T();
 
-                //获取该类型的所有公开属性
-                PropertyInfo[] props = typeof(T).GetProperties();
-
-                if (reader.Read())
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    foreach (PropertyInfo p in props)
+                    if (reader.Read())
                     {
-                        //默认当做属性名称和表字段名称对应，后期可以通过自定义特性进行匹配
-                        object obj = reader[p.Name];
+                        //创建指定类型的实例
+                        T entity = Activator.CreateInstance<T>();
 
-                        //设置对应的属性值
-                        p.SetValue(entity, obj, null);
+                        //遍历reader字段
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            //判断字段值是否为空或不存在
+                            if (!IsNullOrDbNull(reader[i]))
+                            {
+                                //根据reader序列返回对应名称，并反射找到匹配的属性
+                                PropertyInfo pi = typeof(T).GetProperty(reader.GetName(i),
+                                    BindingFlags.GetProperty | BindingFlags.Public
+                                    | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+                                if (pi != null)
+                                {
+                                    //设置对象中匹配属性的值
+                                    pi.SetValue(entity, CheckType(reader[i], pi.PropertyType), null);
+                                }
+                            }
+                        }
+                        return entity;
                     }
-                    return entity;
-                }
-                else
-                {
                     return null;
                 }
-
             }
             catch (Exception ex)
             {
-                //Console.WriteLine(ex.Message);
+                //发生异常时记录日志
                 LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
 
                 //需要限定where T : class, new() 有class引用类型才可确定返回null
@@ -239,6 +265,44 @@ namespace ArticleDemo.DAL
                     conn.Close();
                 }
             }
+        }
+
+        /// <summary>
+        /// 判断对象是否为null或是dbnull
+        /// DbNull较为特殊，使用 obj is DbNull 或是 obj == DbNull.Value进行判断
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsNullOrDbNull(object obj)
+        {
+            return (obj == null || (obj is DBNull)) ? true : false;
+        }
+
+        /// <summary>
+        /// 对可空类型进行判断转换，考虑实体类属性可为空的情况
+        /// </summary>
+        /// <param name="value">reader中的值</param>
+        /// <param name="conversionType">实体类属性类型</param>
+        /// <returns></returns>
+        public static object CheckType(object value, Type conversionType)
+        {
+            /*
+            判断属性是否为可空类型  即可分配为 null 的值类型，有以下两种声明方式，是等价的： 
+            public Nullable<int> NumA { get; set; }
+            public int? NumB { get; set; }
+            */
+            if (conversionType.IsGenericType
+                && conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+                System.ComponentModel.NullableConverter nullableConverter =
+                    new System.ComponentModel.NullableConverter(conversionType);
+                conversionType = nullableConverter.UnderlyingType;
+            }
+            return Convert.ChangeType(value, conversionType);
         }
 
         /// <summary>
@@ -397,21 +461,7 @@ namespace ArticleDemo.DAL
         }
     }
 
-    /// <summary>
-    /// 分页实体类
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class Pager<T>
-    {
-        /// <summary>
-        /// 满足去掉分页条件下的记录总数
-        /// </summary>
-        public int Total { get; set; }
-        /// <summary>
-        /// 当前页码下的数据集合
-        /// </summary>
-        public List<T> Rows { get; set; }
-    }
+
 
 
 }

@@ -37,7 +37,18 @@ namespace ArticleDemo.DAL
         /// <param name="pwd"></param>
         public static User Login(string name, string pwd)
         {
-            string sql = "SELECT * FROM T_USERS WHERE NAME = @NAME AND PWD = @PWD ";
+            string sql = @"
+                SELECT  A.ID ,
+                        A.NAME ,
+                        A.PWD ,
+                        A.ZH_NAME ,
+                        A.ROLES ,
+                        R.ID ROLE_ID
+                FROM    DBO.T_USERS A
+                        LEFT JOIN DBO.T_ROLES_USERS RU ON A.ID = RU.USER_ID
+                        LEFT JOIN DBO.T_ROLES R ON RU.ROLE_ID = R.ID                
+                WHERE A.NAME = @NAME AND A.PWD = @PWD ";
+
             SqlParameter[] sqlParams = new SqlParameter[] {
                 new SqlParameter("@NAME",name),
                 new SqlParameter("@PWD",pwd)

@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ARTICLE_DBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="t_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="cate_id" Type="int" />
+          <Property Name="title" Type="varchar" MaxLength="20" />
+          <Property Name="content" Type="varchar" MaxLength="2000" />
+          <Property Name="update_time" Type="datetime" />
+          <Property Name="create_user" Type="int" />
+        </EntityType>
+        <EntityType Name="t_category">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="t_users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="zh_name" Type="varchar" MaxLength="20" />
+          <Property Name="name" Type="varchar" MaxLength="20" />
+          <Property Name="pwd" Type="varchar" MaxLength="20" />
+          <Property Name="roles" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <!--生成过程中发现错误:
+警告 6002: 表/视图“ARTICLE_DB.dbo.v_get_articles”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
+        <EntityType Name="v_get_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="cate_id" Type="int" />
+          <Property Name="cate_name" Type="varchar" MaxLength="20" />
+          <Property Name="title" Type="varchar" MaxLength="20" />
+          <Property Name="content" Type="varchar" MaxLength="2000" />
+          <Property Name="update_time" Type="datetime" />
+          <Property Name="create_user" Type="int" />
+          <Property Name="user_name" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <Association Name="FK__t_article__cate___173876EA">
+          <End Role="t_category" Type="Self.t_category" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="t_category">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="t_articles">
+              <PropertyRef Name="cate_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__t_article__creat__182C9B23">
+          <End Role="t_users" Type="Self.t_users" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="t_users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="t_articles">
+              <PropertyRef Name="create_user" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ARTICLE_DBModelStoreContainer">
+          <EntitySet Name="t_articles" EntityType="Self.t_articles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="t_category" EntityType="Self.t_category" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="t_users" EntityType="Self.t_users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="v_get_articles" EntityType="Self.v_get_articles" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [v_get_articles].[id] AS [id], 
+    [v_get_articles].[cate_id] AS [cate_id], 
+    [v_get_articles].[cate_name] AS [cate_name], 
+    [v_get_articles].[title] AS [title], 
+    [v_get_articles].[content] AS [content], 
+    [v_get_articles].[update_time] AS [update_time], 
+    [v_get_articles].[create_user] AS [create_user], 
+    [v_get_articles].[user_name] AS [user_name]
+    FROM [dbo].[v_get_articles] AS [v_get_articles]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__t_article__cate___173876EA" Association="Self.FK__t_article__cate___173876EA">
+            <End Role="t_category" EntitySet="t_category" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__t_article__creat__182C9B23" Association="Self.FK__t_article__creat__182C9B23">
+            <End Role="t_users" EntitySet="t_users" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ARTICLE_DBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="t_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="title" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="content" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="update_time" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="t_category" Relationship="Self.FK__t_article__cate___173876EA" FromRole="t_articles" ToRole="t_category" />
+          <NavigationProperty Name="t_users" Relationship="Self.FK__t_article__creat__182C9B23" FromRole="t_articles" ToRole="t_users" />
+        </EntityType>
+        <EntityType Name="t_category">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="t_articles" Relationship="Self.FK__t_article__cate___173876EA" FromRole="t_category" ToRole="t_articles" />
+        </EntityType>
+        <EntityType Name="t_users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="zh_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="pwd" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="roles" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="t_articles" Relationship="Self.FK__t_article__creat__182C9B23" FromRole="t_users" ToRole="t_articles" />
+        </EntityType>
+        <EntityType Name="v_get_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="cate_id" Type="Int32" />
+          <Property Name="cate_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="content" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="update_time" Type="DateTime" Precision="3" />
+          <Property Name="create_user" Type="Int32" />
+          <Property Name="user_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK__t_article__cate___173876EA">
+          <End Role="t_category" Type="Self.t_category" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+        </Association>
+        <Association Name="FK__t_article__creat__182C9B23">
+          <End Role="t_users" Type="Self.t_users" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="ARTICLE_DBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="t_articles" EntityType="Self.t_articles" />
+          <EntitySet Name="t_category" EntityType="Self.t_category" />
+          <EntitySet Name="t_users" EntityType="Self.t_users" />
+          <EntitySet Name="v_get_articles" EntityType="Self.v_get_articles" />
+          <AssociationSet Name="FK__t_article__cate___173876EA" Association="Self.FK__t_article__cate___173876EA">
+            <End Role="t_category" EntitySet="t_category" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__t_article__creat__182C9B23" Association="Self.FK__t_article__creat__182C9B23">
+            <End Role="t_users" EntitySet="t_users" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ARTICLE_DBModelStoreContainer" CdmEntityContainer="ARTICLE_DBEntities">
+          <EntitySetMapping Name="t_articles">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.t_articles">
+              <MappingFragment StoreEntitySet="t_articles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="update_time" ColumnName="update_time" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="t_category">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.t_category">
+              <MappingFragment StoreEntitySet="t_category">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="t_users">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.t_users">
+              <MappingFragment StoreEntitySet="t_users">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="zh_name" ColumnName="zh_name" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="pwd" ColumnName="pwd" />
+                <ScalarProperty Name="roles" ColumnName="roles" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="v_get_articles">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.v_get_articles">
+              <MappingFragment StoreEntitySet="v_get_articles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="cate_id" ColumnName="cate_id" />
+                <ScalarProperty Name="cate_name" ColumnName="cate_name" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="update_time" ColumnName="update_time" />
+                <ScalarProperty Name="create_user" ColumnName="create_user" />
+                <ScalarProperty Name="user_name" ColumnName="user_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK__t_article__cate___173876EA" TypeName="ARTICLE_DBModel.FK__t_article__cate___173876EA" StoreEntitySet="t_articles">
+            <EndProperty Name="t_category">
+              <ScalarProperty Name="id" ColumnName="cate_id" />
+            </EndProperty>
+            <EndProperty Name="t_articles">
+              <ScalarProperty Name="id" ColumnName="id" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="cate_id" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK__t_article__creat__182C9B23" TypeName="ARTICLE_DBModel.FK__t_article__creat__182C9B23" StoreEntitySet="t_articles">
+            <EndProperty Name="t_users">
+              <ScalarProperty Name="id" ColumnName="create_user" />
+            </EndProperty>
+            <EndProperty Name="t_articles">
+              <ScalarProperty Name="id" ColumnName="id" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="create_user" />
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

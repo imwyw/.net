@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 文章管理系统</title>
+    @*<link href="~/Content/Site.css" rel="stylesheet" type="text/css" />*@
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/layer/theme/default/layer.css" rel="stylesheet" />
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/js.cookie-2.2.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/layer/layer.js"></script>
+    <script src="~/Scripts/common.js"></script>
+    <style>
+        body {
+            /*清除bootstrap默认添加的padding*/
+            padding: 0;
+        }
+
+        header {
+            background-image: url("../../Images/top.jpg");
+            background-position: center;
+            background-size: cover;
+            opacity: 0.3;
+            height: 100px;
+        }
+
+        div.log-container {
+            width: 145px;
+            position: absolute;
+            top: 30px;
+            left: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header></header>
+    <div class="log-container">
+        <img src="~/Images/iflyui-logo.png" />
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - 文章管理系统</p>
+        </footer>
+    </div>
+    <script>
+        $("div.log-container").on("click", function () {
+            window.location.href = "/";
+        });
+    </script>
+</body>
+</html>

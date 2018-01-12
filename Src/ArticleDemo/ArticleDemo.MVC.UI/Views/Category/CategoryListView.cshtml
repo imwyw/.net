@@ -1,0 +1,73 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutCommon.cshtml";
+    ViewBag.Title = "CategoryListView";
+}
+<style>
+    table th {
+        text-align: center;
+    }
+
+    table td button {
+        margin: 0 3px;
+    }
+</style>
+
+<h2>类别</h2>
+
+<table id="tbCategory" class="table table-bordered table-hover text-center">
+    <tr>
+        <th>ID</th>
+        <th>名称</th>
+    </tr>
+</table>
+
+@section myScript{
+    <script>
+        $(function () {
+            loadData();
+        });
+
+        function loadData() {
+            $.post("/Category/GetCategoryList", {}, function (data) {
+                var arr = $.getObjFromData(data);
+                var html = "<tr><th>ID</th><th>名称</th><th>操作</th></tr>";
+                for (var i = 0; i < arr.length; i++) {
+                    html += "<tr>";
+                    html += "<td>" + arr[i].id + "</td>";
+                    html += "<td>" + arr[i].name + "</td>";
+                    html += "<td><button type='button' class='tb-btn-edit btn btn-primary'>修改</button><button type='button' class='tb-btn-remove btn btn-warning'>删除</button></td>";
+                    html += "</tr>";
+                }
+
+                $("#tbCategory").html(html);
+                $("#tbCategory button.tb-btn-edit").on("click", editCategory);
+                $("#tbCategory button.tb-btn-remove").on("click", removeCategory);
+            });
+        }
+
+        function editCategory(evt) {
+            //通过触发事件的当前元素 获取当前行tr
+            var tr = $(evt.currentTarget).closest("tr");
+            var cateID = tr.find("td:eq(0)").text();
+
+            window.location.href = "/Category/EditCategoryView?id=" + cateID;
+        }
+
+        function removeCategory(evt) {
+            //通过触发事件的当前元素 获取当前行tr
+            var tr = $(evt.currentTarget).closest("tr");
+            var cateID = tr.find("td:eq(0)").text();
+
+            $.get("/Category/RemoveCategoryByID?id=" + cateID
+                , function (data) {
+                    if (data) {
+                        layer.msg('删除成功', { icon: 1 });
+                        loadData();
+                    } else {
+                        layer.msg('删除失败', { icon: 2 });
+                    }
+                });
+        }
+    </script>
+}

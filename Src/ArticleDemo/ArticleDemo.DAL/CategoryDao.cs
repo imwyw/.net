@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArticleDemo.Model;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -48,6 +49,32 @@ namespace ArticleDemo.DAL
                 new SqlParameter("@ID",id)
             };
             int res = SqlHelper.ExecuteNonQuery(sql, sqlParams);
+            return res;
+        }
+
+        /// <summary>
+        /// 更新一个类别
+        /// </summary>
+        /// <param name="cate"></param>
+        /// <returns></returns>
+        public static int Update(Category cate)
+        {
+            string sql = "UPDATE T_CATEGORY SET NAME = @NAME WHERE ID = @ID";
+            SqlParameter[] sqlParams = new SqlParameter[] {
+                new SqlParameter("@NAME",cate.Name),
+                new SqlParameter("@ID",cate.ID)
+            };
+            int res = SqlHelper.ExecuteNonQuery(sql, sqlParams);
+            return res;
+        }
+
+        public static Category GetCategoryByID(int id)
+        {
+            string sql = "SELECT * FROM T_CATEGORY WHERE ID = @ID";
+            SqlParameter[] sqlParams = new SqlParameter[] {
+                new SqlParameter("@ID",id)
+            };
+            Category res = SqlHelper.ExecuteReaderFirst<Category>(sql, sqlParams);
             return res;
         }
 

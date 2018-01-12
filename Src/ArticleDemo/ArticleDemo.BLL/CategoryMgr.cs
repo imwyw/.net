@@ -1,4 +1,5 @@
 ﻿using ArticleDemo.DAL;
+using ArticleDemo.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,7 +16,7 @@ namespace ArticleDemo.BLL
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private static bool Add(string name)
+        public static bool Add(string name)
         {
             int res = CategoryDao.Add(name);
             return res > 0;
@@ -25,7 +26,7 @@ namespace ArticleDemo.BLL
         /// 获取所有类别
         /// </summary>
         /// <returns></returns>
-        private static DataTable GetCategory()
+        public static DataTable GetCategory()
         {
             DataTable dt = CategoryDao.GetCategory();
             return dt;
@@ -36,10 +37,21 @@ namespace ArticleDemo.BLL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private static bool DeleteCategory(int id)
+        public static bool DeleteCategory(int id)
         {
             int res = CategoryDao.DeleteCategory(id);
             return res > 0;
+        }
+
+        public static bool Update(Category cate)
+        {
+            int res = CategoryDao.Update(cate);
+            return res > 0;
+        }
+
+        public static Category GetCategoryByID(int id)
+        {
+            return CategoryDao.GetCategoryByID(id);
         }
 
         /// <summary>

@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div>
+    <button type="button" class="layui-btn" id="test1">
+        <i class="layui-icon">&#xe67c;</i>上传图片
+    </button>
+    <h3>预览</h3>
+    <img id="img1" src="" />
+</div>
+
+<script>
+    $(function () {
+        layui.use('upload', initUp);
+    })
+
+    function initUp() {
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1', //绑定元素
+            url: '/Home/SaveImages', //上传接口
+            accept: "images",//默认是图片类型 images
+            exts: "",//扩展名的限制
+            done: function (res) {
+                //上传完毕回调
+                if (res.code == 0) {
+                    var url = "/Home/GetImage?imgName=" + res.data + "&_dc=new Date()";
+                    $("#img1").attr("src", url);
+                }
+            },
+            error: function () {
+                //请求异常回调
+            },
+        });
+    }
+</script>

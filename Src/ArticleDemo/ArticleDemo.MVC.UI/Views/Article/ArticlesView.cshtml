@@ -1,0 +1,131 @@
+﻿@*@using ArticleDemo.Model.Article*@
+
+@{
+    Layout = "~/Views/Shared/_LayoutCommon.cshtml";
+    ViewBag.Title = "ArticlesView";
+}
+
+<style>
+    table th {
+        text-align: center;
+    }
+
+    table td button {
+        margin: 0 3px;
+    }
+</style>
+
+<h2>文章列表</h2>
+
+@*使用Razor方式填充table*@
+@*<table id="tableArticle" class="table table-bordered table-hover">
+        <tr>
+            <th>ID</th>
+            <th>类别</th>
+            <th>标题</th>
+            <th>内容</th>
+            <th>更新时间</th>
+            <th>作者</th>
+        </tr>
+        @{
+            foreach (var item in ViewBag.ArticleList)
+            {
+                <tr>
+                    <td>@item.ID</td>
+                    <td>@item.Cate_Name</td>
+                    <td>@item.Title</td>
+                    <td>@item.Content</td>
+                    <td>@item.Update_Time</td>
+                    <td>@item.User_Name</td>
+                </tr>
+            }
+        }
+    </table>*@
+
+<table id="tableAjax" class="table table-bordered table-hover text-center"></table>
+
+@section myScript{
+    <script>
+        $(function () {
+            getArticleData();
+        });
+
+        function getArticleData() {
+            /*
+            ajax
+            js原生的方式：
+            三步：
+            1、创建xhr  xmlhttprequest
+            2、send
+            3、onreadystatechange
+
+            myAjax
+            getAjax
+            postAjax
+
+            $.ajax({})
+            $.get(url,function(response){})
+            $.post(url,data,function(response){})
+
+            */
+
+            $.post("/Article/GetArticles", {}, function (data) {
+                var arr = $.getObjFromData(data).data;// 适配layui table的格式修改
+                var html = "<tr><th>ID</th><th>类别</th><th>标题</th><th>内容</th><th>更新时间</th><th>作者</th><th>操作</th></tr>";
+                for (var i = 0; i < arr.length; i++) {
+                    html += "<tr>";
+                    html += "<td>" + arr[i].ID + "</td>";
+                    html += "<td>" + arr[i].Cate_Name + "</td>";
+                    html += "<td>" + arr[i].Title + "</td>";
+                    html += "<td>" + arr[i].Content + "</td>";
+                    html += "<td>" + arr[i].Update_Time + "</td>";
+                    html += "<td>" + arr[i].User_Name + "</td>";
+                    html += "<td><button type='button' class='tb-btn-edit btn btn-primary'>修改</button><button type='button' class='tb-btn-remove btn btn-warning'>删除</button></td>";
+                    html += "</tr>";
+                }
+
+                $("#tableAjax").html(html);
+                $("#tableAjax button.tb-btn-edit").on("click", editArticle);
+                $("#tableAjax button.tb-btn-remove").on("click", removeArticle);
+            });
+        }
+
+        //编辑
+        function editArticle(evt) {
+            //通过触发事件的当前元素 获取当前行tr
+            var tr = $(evt.currentTarget).closest("tr");
+            //根据tr按照索引找对应的td，取出id
+            var articleID = tr.find("td:eq(0)").text();
+
+            var url = "/Article/EditArticleView?id=" + articleID;
+
+            //以下两种方式均可
+            window.location.href = url;
+            //window.parent.setIframeSrc(url);
+        }
+
+        //删除
+        function removeArticle(evt) {
+            //由于内嵌了iframe 需要从父级进行弹出提示，否则遮罩效果不正确
+            parent.layer.confirm('是否确认删除？', { icon: 3, title: '提示' }, function (index) {
+                //通过触发事件的当前元素 获取当前行tr
+                var tr = $(evt.currentTarget).closest("tr");
+                //根据tr按照索引找对应的td，取出id
+                var articleID = tr.find("td:eq(0)").text();
+                $.post("/Article/RemoveArticle"
+                    , { id: articleID }
+                    , function (resp) {
+                        if (resp) {
+                            layer.msg('删除成功', { icon: 1 });
+                        } else {
+                            layer.msg('删除失败，请联系管理员', { icon: 2 });
+                        }
+                        getArticleData();
+                    });
+
+                layer.close(index);
+            });
+        }
+
+    </script>
+}

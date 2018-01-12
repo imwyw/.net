@@ -1,4 +1,5 @@
-﻿using ArticleDemo.DAL;
+﻿using ArticleDemo.Common;
+using ArticleDemo.DAL;
 using ArticleDemo.Model;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,25 @@ namespace ArticleDemo.BLL
     public class UserMgr : IUserMgr
     {
         /// <summary>
+        /// 单元测试添加的方法
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public double Add(double x, double y)
+        {
+            return x + y;
+        }
+
+        /// <summary>
         /// 添加用户
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
         public bool Add(User user)
         {
+            //添加用户时也做加密处理
+            user.Pwd = EncryptHelper.MD5Encrypt(user.Pwd);
             int res = UserDao.Add(user);
             return res > 0;
         }
@@ -27,9 +41,11 @@ namespace ArticleDemo.BLL
         /// <param name="name"></param>
         /// <param name="pwd"></param>
         /// <returns></returns>
-        public User Login(string name, string pwd)
+        public User Login(string name, string pwd, bool isCipherPwd = false)
         {
-            User user = UserDao.Login(name, pwd);
+            //加密后进行判断。自动登录情况下cookie保存的就是加密后的密码
+            string cipher = isCipherPwd ? pwd : EncryptHelper.MD5Encrypt(pwd);
+            User user = UserDao.Login(name, cipher);
             return user;
         }
 

@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<input type="text" id="txtName" />
+<br />
+<input type="text" id="txtPwd" />
+
+<br />
+<input type="button" id="btn" value="login" />
+
+<hr />
+
+
+
+<script>
+    $(function () {
+        $("#btn").on("click", login);
+        $("#btnGetWeather").on("click",getWeather);
+    });
+
+    function login() {
+        $.ajax({
+            //注意跨域问题，不要进行跨域访问
+            url: "/TestWebService.asmx/PostData",
+            dataType: "json",
+            type: "post",
+            //request contentType必须指明是json格式，否则服务端不知道客户端期望json格式
+            contentType: "application/json; charset=utf-8",
+            //由于request contentType指明为json的关系，传参必须以json字符串的形式传递，而不是通常所写的js对象
+            //data: '{ "name": "杰克马","pwd":"123123" }',
+            data: JSON.stringify({
+                name: $("#txtName").val(), pwd: $("#txtPwd").val()
+            }),
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (err) { }
+        });
+    }
+
+    function getWeather() {
+        $.post("/Default/GetWeatherByCityName",
+            { cityName: $("#txtCityName").val() },
+            function (data) {
+                $("#weatherContent").html(data);
+            });
+    }
+</script>

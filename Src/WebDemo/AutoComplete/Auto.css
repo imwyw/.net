@@ -1,0 +1,24 @@
+.divTextDropdown {
+    border: solid 0px;
+    background-color: #C0C0C0;
+    position: absolute;
+    z-index: 100;
+    left: 0px;
+    top: 0px;
+    display: none;
+}
+
+.divTextDropdown div {
+    border: solid 0px;
+    background-color: #ABC;
+}
+
+.divNormalElement {
+    background: #C0C0C0;
+}
+
+.divHighElement {
+    background: #C0C0C0;
+    /*字体变为红色*/
+    color: red;
+}

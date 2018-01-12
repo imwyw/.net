@@ -1,0 +1,59 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutCommon.cshtml";
+    ViewBag.Title = "EditCategoryView";
+}
+
+<h2 id="hTitle"></h2>
+
+<form role="form">
+    <div class="form-group">
+        <label class="control-label" for="txtName">名称</label>
+        <input type="text" class="form-control" id="txtName" />
+    </div>
+    <div class="form-group">
+        <input type="button" class="btn btn-success" id="btnSave" value="保存" />
+    </div>
+</form>
+
+<input type="hidden" id="hidCateID" value="@ViewBag.CateID" />
+
+
+@section myScript{
+    <script>
+        $(function () {
+            loadData();
+            $("#btnSave").on("click", saveCate);
+        });
+
+        function loadData() {
+            var cateid = $("#hidCateID").val();
+            if (cateid) {
+                $("#hTitle").text("内容修改");
+                //$.get(url,callback);
+                $.get("/Category/GetCategoryByID?id=" + cateid,
+                    function (data) {
+                        $("#txtName").val(data.Name);
+                    });
+            } else {
+                $("#hTitle").text("新增");
+            }
+        }
+
+        function saveCate() {
+            //$.post(url,data,callback);
+            $.post("/Category/SaveCategory"
+                , {
+                    ID: $("#hidCateID").val() == "" ? -1 : $("#hidCateID").val(),
+                    Name: $("#txtName").val()
+                }
+                , function (data) {
+                    if (data) {
+                        layer.msg('保存成功', { icon: 1 });
+                    } else {
+                        layer.msg('保存失败', { icon: 2 });
+                    }
+                });
+        }
+    </script>
+}

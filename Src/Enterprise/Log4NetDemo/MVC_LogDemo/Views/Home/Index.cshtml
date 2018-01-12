@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<input type="text" id="txt" value="hello mvc log4net" />
+<br />
+<input type="button" id="btn" value="日志" />
+
+<hr />
+<input type="text" id="txtErr" value="未将对象的引用设置到对象实例" />
+<input type="button" id="btnErr" value="异常" />
+
+<script>
+    $(function () {
+        $("#btn").on("click", function () {
+            $.post("/Home/SaveLog",
+            { log: $("#txt").val() },
+            function (data) {
+                console.log(data);
+            });
+        });
+
+        $("#btnErr").on("click", function () {
+            $.post("/Home/ErrLog",
+            { err: $("#txtErr").val() },
+            function (data) {
+                console.log(data);
+            });
+        });
+    });
+</script>

@@ -1,0 +1,146 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutCommon.cshtml";
+    ViewBag.Title = "分页列表";
+}
+@* http://www.layui.com/doc/modules/table.html *@
+
+<style>
+    .layui-form-label {
+        width: 100px;
+    }
+</style>
+
+<div class="tb-condition-container layui-form layui-container">
+    <div class="row">
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="selCategory">文章类别</label>
+            <div class="layui-input-inline">
+                <select class="" id="selCategory" lay-search></select>
+            </div>
+            <label class="layui-form-label" for="txtTitle">标题</label>
+            <input type="text" class="layui-input-inline layui-input" id="txtTitle" />
+            <input type="button" class="btn btn-primary" id="btnQuery" value="查询" />
+        </div>
+    </div>
+</div>
+
+<table class="layui-hide" id="test"></table>
+
+<script type="text/html" id="optTpl">
+    <button type='button' class='tb-btn-edit btn btn-primary btn-xs' data-id="{{d.id}}">修改</button>
+    <button type='button' class='tb-btn-remove btn btn-warning btn-xs' data-id="{{d.id}}">删除</button>
+</script>
+
+@section myScript{
+    <script>
+        $(function () {
+            initCategory();
+            layui.use('table', initTable);
+            $("#btnQuery").on("click", bindData);
+        });
+
+        function initTable() {
+            var table = layui.table;
+
+            table.render({
+                id: 'tbArticle',//该table的唯一id，非人性化设置。。。。
+                elem: '#test',
+                method: 'POST',
+                url: '/Article/GetArticleByPager',
+                request: {
+                    pageName: 'PageIndex', //页码的参数名称，默认：page
+                    limitName: 'PageSize' //每页数据量的参数名，默认：limit
+                },
+                cols: [[
+                    { field: 'id', width: 80, title: 'ID 临时显示，其实不需要显示' },//注释该行并不影响 {{}}方式的数据绑定
+                    { field: 'cate_name', title: '类别名称' },
+                    { field: 'title', title: '标题' },
+                    { field: 'content', title: '内容', minWidth: 150 },
+                    { field: 'user_name', title: '更新人' },
+                    { field: 'update_time', title: '更新时间' },
+                    { field: '', title: '操作', templet: '#optTpl' }
+                ]],
+                page: {
+                    //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'], //自定义分页布局
+                    //curr: 5, //设定初始在第 5 页
+                    groups: 1, //只显示 1 个连续页码
+                    first: false, //不显示首页
+                    last: false, //不显示尾页
+                    limit: 10
+                },
+                limits: [10, 20, 50, 100],
+                response: {
+                    countName: "count",
+                    dataName: "data"
+                },
+                done: function (res, curr, count) {
+                    //数据渲染完的回调。你可以借此做一些其它的操作
+                }
+            });
+
+            bindTableEvt();
+        }
+
+        //编辑
+        function editArticle(evt) {
+            var articleID = $(this).attr("data-id");
+
+            var url = "/Article/EditArticleView?id=" + articleID;
+
+            //以下两种方式均可
+            window.location.href = url;
+            //window.parent.setIframeSrc(url);
+        }
+
+        //删除
+        function removeArticle(evt) {
+            var articleID = $(this).attr("data-id");
+            //由于内嵌了iframe 需要从父级进行弹出提示，否则遮罩效果不正确
+            parent.layer.confirm('是否确认删除？', { icon: 3, title: '提示' }, function (index) {
+                $.post("/Article/RemoveArticle"
+                    , { id: articleID }
+                    , function (resp) {
+                        if (resp) {
+                            layer.msg('删除成功', { icon: 1 });
+                        } else {
+                            layer.msg('删除失败，请联系管理员', { icon: 2 });
+                        }
+                        layui.table.reload('tbArticle');
+                        bindTableEvt();
+                        parent.layer.close(index);
+                    });
+
+                parent.layer.close(index);
+            });
+        }
+
+        function bindTableEvt() {
+            $("#test+div").on("click", ".tb-btn-edit", editArticle);
+            $("#test+div").on("click", ".tb-btn-remove", removeArticle);
+        }
+
+        //初始化类别下拉框数据
+        function initCategory() {
+            $.post("/Category/GetCategoryList", {}, function (data) {
+                var arr = $.getObjFromData(data);
+                $("#selCategory").append("<option value=''></option>");
+                $.each(arr, function (i, t) {
+                    $("#selCategory").append("<option value='" + t.id + "'>" + t.name + "</option>");
+                });
+                //加载数据后需要对form进行重新渲染
+                layui.form.render('select');
+            });
+        }
+
+        //查询数据
+        function bindData() {
+            layui.table.reload('tbArticle', {
+                where: {
+                    cateid: $("#selCategory").val(),
+                    title: $("#txtTitle").val()
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 文章管理系统</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/layer/theme/default/layer.css" rel="stylesheet" />
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+
+    <style>
+        /*清除默认的padding样式*/
+        body {
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    @RenderBody()
+
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/js.cookie-2.2.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/layer/layer.js"></script>
+    <script src="~/Scripts/common.js"></script>
+    @RenderSection("myScript", false)
+</body>
+</html>

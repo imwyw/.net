@@ -27,10 +27,10 @@ namespace ArticleDemo.BLL
             return mgr.CheckExist(name);
         }
 
-        public User Login(string name, string pwd)
+        public User Login(string name, string pwd, bool isCipherPwd = false)
         {
             LogHelper.Log("登录", name);
-            return mgr.Login(name, pwd);
+            return mgr.Login(name, pwd, isCipherPwd);
         }
     }
 }

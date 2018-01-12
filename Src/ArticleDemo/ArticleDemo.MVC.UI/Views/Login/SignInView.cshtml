@@ -1,0 +1,125 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutSign.cshtml";
+    ViewBag.Title = "登录";
+}
+
+<style>
+    form input.form-control {
+        margin: 0 auto;
+    }
+
+    #txtValidate {
+        width: 200px;
+        display: inline;
+    }
+
+        #txtValidate + img {
+            cursor: pointer;
+        }
+
+
+    .login-field-width {
+        width: 280px;
+    }
+
+    /*自动登录勾选框样式*/
+    .checkbox-container {
+        margin: 5px auto;
+    }
+
+        .checkbox-container input[type=checkbox] {
+            float: none;
+            position: absolute;
+            cursor: pointer;
+        }
+</style>
+
+<form>
+    <div class="form-group">
+        <label class="sr-only" for="txtUserName">用户名-</label>
+        <input type="text" class="form-control" id="txtUserName" name="username" placeholder="用户名" required
+               data-toggle="tooltip" title="用户名必填" />
+    </div>
+    <div class="form-group">
+        <label class="sr-only" for="txtPwd">密码-</label>
+        <input type="password" class="form-control" id="txtPwd" name="userpwd" placeholder="密码" required />
+    </div>
+    <div class="form-group">
+        <label class="sr-only" for="txtValidate">验证码-</label>
+        <input type="text" class="form-control" id="txtValidate" name="validateCode" placeholder="验证码" maxlength="4" required />
+        <img src="/Login/GetValidateImg" alt="验证码" title="点我刷新" />
+    </div>
+    <div class="form-group">
+        <div class="checkbox login-field-width checkbox-container">
+            <label title="为了您的安全，请不要在网吧或公用电脑上使用此功能">
+                <input type="checkbox" id="chkAutoLogin" />三天内免登录
+            </label>
+        </div>
+        <button type="button" class="btn btn-success login-field-width" id="btnSignIn">登&nbsp;&nbsp;录</button>
+        @*<button type="button" class="btn btn-primary" id="btnSignUp">注册</button>*@
+    </div>
+    <div class="form-group">
+        <span class="login-field-width">没有账号？<a href="/Login/SignUpView">点我注册</a></span>
+    </div>
+</form>
+
+@section myScript{
+    <script>
+        $(function () {
+            //登录、注册事件绑定
+            //$("#btnSignUp").on("click", function () { window.location.href = "/Login/SignUpView"; });
+            $("#btnSignIn").on("click", signIn);
+
+            //验证码刷新
+            $("#txtValidate + img").on("click", function () {
+                $(this).attr("src", "/Login/GetValidateImg?v=" + Math.random());
+            });
+
+            //注册回车提交事件
+            $(document).on("keyup", function (e) {
+                //回车按钮触发 登录事件
+                if (e.keyCode == 13) {
+                    $("#btnSignIn").trigger("click");
+                }
+            });
+        });
+
+        //使用ajax的方式登录，以客户端为主动去请求
+        function signIn() {
+            if ($("#txtUserName").val() == "") {
+                layer.msg('用户名不可为空', { icon: 5 });
+                return;
+            }
+            if ($("#txtPwd").val() == "") {
+                layer.msg('密码不可为空', { icon: 5 });
+                return;
+            }
+            if ($("#txtValidate").val() == "") {
+                layer.msg('验证码不可为空', { icon: 5 });
+                return;
+            }
+            $.post("/Login/SignIn",
+                {
+                    username: $("#txtUserName").val(),
+                    userpwd: $("#txtPwd").val(),
+                    validateCode: $("#txtValidate").val(),
+                    chkAuto: $("#chkAutoLogin").prop("checked")
+                },
+                function (data) {
+                    if (data.Status) {
+                        window.location.href = "/Home/Index";
+                    } else {
+                        $("#txtValidate + img").trigger("click");
+                        $("#txtValidate").focus().val("");
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                }).fail(function () {
+                    $("#txtValidate + img").trigger("click");
+                    $("#txtValidate").focus().val("");
+                    layer.msg("发生异常，请查看控制台消息", { icon: 5 });
+                });
+            return false;
+        }
+
+    </script>
+}

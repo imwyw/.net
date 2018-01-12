@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutCommon.cshtml";
+    ViewBag.Title = "EditArticleView";
+}
+
+<h2 id="hTitle"></h2>
+<form role="form">
+    <div class="form-group">
+        <label class="control-label" for="selCategory">文章类别</label>
+        <select class="form-control" id="selCategory"></select>
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="txtTitle">文章标题</label>
+        <input type="text" class="form-control" id="txtTitle" />
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="txtContent">文章内容</label>
+        <textarea class="form-control" id="txtContent"></textarea>
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="txtUserName">作者</label>
+        <input type="text" class="form-control" id="txtUserName" readonly/>
+    </div>
+    <div class="form-group">
+        <input type="button" class="btn btn-success" id="btnSave" value="保存" />
+    </div>
+</form>
+
+@*隐藏input控件，value保存列表传入的id值*@
+<input type="hidden" id="hidArticleID" value="@ViewBag.ArticleID" />
+
+@section myScript{
+    <script>
+        $(function () {
+            initCategory();
+            loadData();
+            $("#btnSave").on("click", saveArticle);
+        });
+
+        //初始化类别下拉框数据
+        function initCategory() {
+            $.post("/Category/GetCategoryList", {}, function (data) {
+                var arr = $.getObjFromData(data);
+                $.each(arr, function (i, t) {
+                    $("#selCategory").append("<option value='" + t.id + "'>" + t.name + "</option>");
+                });
+            });
+        }
+
+        //加载数据
+        function loadData() {
+            var id = $("#hidArticleID").val();
+            if (id) {
+                $("#hTitle").text("内容修改");
+                $.post("/Article/GetArticleByID", { id: id }, function (data) {
+                    var obj = $.getObjFromData(data);
+                    setObj2Form(obj);
+                });
+            } else {
+                $("#hTitle").text("文章新增");
+            }
+        }
+
+        //将获取到的对象赋值到页面
+        function setObj2Form(data) {
+            $("#txtTitle").val(data.Title);
+            $("#txtContent").val(data.Content);
+            $("#selCategory").val(data.Cate_id);
+            $("#txtUserName").val(data.User_Name);
+        }
+
+        //从页面获取对象值
+        function getArticleObj() {
+            var data = {
+                ID: $("#hidArticleID").val() == "" ? -1 : $("#hidArticleID").val(),
+                Cate_id: $("#selCategory").val(),
+                Title: $("#txtTitle").val(),
+                Content: $("#txtContent").val()
+            };
+            return data;
+        }
+
+        function saveArticle() {
+            var pars = getArticleObj();
+            $.post("/Article/SaveArticle",
+                pars,
+                function (data) {
+                    if (data) {
+                        layer.msg('保存成功', { icon: 1 });
+                    } else {
+                        layer.msg('保存失败', { icon: 2 });
+                    }
+                });
+        }
+    </script>
+}

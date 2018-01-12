@@ -30,8 +30,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,10 +52,72 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Article.cs" />
+    <Compile Include="ArticleDemo.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ArticleDemo.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ArticleDemo.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ArticleDemo.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ArticleDemo.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ArticleDemo.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Category.cs" />
     <Compile Include="GlobalData.cs" />
+    <Compile Include="MenuModel.cs" />
+    <Compile Include="PageParam.cs" />
+    <Compile Include="Pager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TEST.cs">
+      <DependentUpon>ArticleDemo.tt</DependentUpon>
+    </Compile>
+    <Compile Include="t_articles.cs">
+      <DependentUpon>ArticleDemo.tt</DependentUpon>
+    </Compile>
+    <Compile Include="t_category.cs">
+      <DependentUpon>ArticleDemo.tt</DependentUpon>
+    </Compile>
+    <Compile Include="T_ROLES.cs">
+      <DependentUpon>ArticleDemo.tt</DependentUpon>
+    </Compile>
+    <Compile Include="t_users.cs">
+      <DependentUpon>ArticleDemo.tt</DependentUpon>
+    </Compile>
     <Compile Include="User.cs" />
+    <Compile Include="v_get_articles.cs">
+      <DependentUpon>ArticleDemo.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="ArticleDemo.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ArticleDemo.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="App.Config" />
+    <None Include="ArticleDemo.edmx.diagram">
+      <DependentUpon>ArticleDemo.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ArticleDemo.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ArticleDemo.edmx</DependentUpon>
+      <LastGenOutput>ArticleDemo.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="ArticleDemo.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ArticleDemo.edmx</DependentUpon>
+      <LastGenOutput>ArticleDemo.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

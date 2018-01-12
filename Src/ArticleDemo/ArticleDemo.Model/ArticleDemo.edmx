@@ -1,0 +1,380 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ARTICLE_DBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="t_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="cate_id" Type="int" />
+          <Property Name="title" Type="varchar" MaxLength="200" />
+          <Property Name="content" Type="varchar" MaxLength="2000" />
+          <Property Name="update_time" Type="datetime" />
+          <Property Name="create_user" Type="int" />
+        </EntityType>
+        <EntityType Name="t_category">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <!--生成过程中发现错误:
+警告 6013: 表/视图“ARTICLE_DB.dbo.T_MENUS”未定义主键，并且无法推断有效的主键。已排除了此表/视图。若要使用实体，将需要检查您的架构、添加正确的键并取消对实体的注释。
+        <EntityType Name="T_MENUS">
+          <Property Name="ID" Type="varchar" MaxLength="50" />
+          <Property Name="PARENT_ID" Type="varchar" MaxLength="50" />
+          <Property Name="ORDER_IDNEX" Type="int" />
+          <Property Name="NAME" Type="varchar" MaxLength="100" />
+          <Property Name="URL" Type="varchar" MaxLength="100" />
+          <Property Name="VERSION" Type="varchar" MaxLength="100" />
+          <Property Name="DISABLED" Type="bit" />
+        </EntityType>-->
+        <EntityType Name="T_ROLES">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NAME" Type="varchar" MaxLength="100" />
+          <Property Name="REMARK" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <!--生成过程中发现错误:
+警告 6013: 表/视图“ARTICLE_DB.dbo.T_ROLES_MENUS”未定义主键，并且无法推断有效的主键。已排除了此表/视图。若要使用实体，将需要检查您的架构、添加正确的键并取消对实体的注释。
+        <EntityType Name="T_ROLES_MENUS">
+          <Property Name="ROLE_ID" Type="int" />
+          <Property Name="MENU_ID" Type="int" />
+        </EntityType>-->
+        <!--生成过程中发现错误:
+警告 6013: 表/视图“ARTICLE_DB.dbo.T_ROLES_USERS”未定义主键，并且无法推断有效的主键。已排除了此表/视图。若要使用实体，将需要检查您的架构、添加正确的键并取消对实体的注释。
+        <EntityType Name="T_ROLES_USERS">
+          <Property Name="ROLE_ID" Type="int" />
+          <Property Name="USER_ID" Type="int" />
+        </EntityType>-->
+        <EntityType Name="t_users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="zh_name" Type="varchar" MaxLength="20" />
+          <Property Name="name" Type="varchar" MaxLength="20" />
+          <Property Name="pwd" Type="varchar" MaxLength="100" />
+          <Property Name="roles" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="TEST">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NAMES" Type="varchar" MaxLength="64" />
+        </EntityType>
+        <!--生成过程中发现错误:
+警告 6002: 表/视图“ARTICLE_DB.dbo.v_get_articles”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
+        <EntityType Name="v_get_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="cate_id" Type="int" />
+          <Property Name="cate_name" Type="varchar" MaxLength="20" />
+          <Property Name="title" Type="varchar" MaxLength="20" />
+          <Property Name="content" Type="varchar" MaxLength="2000" />
+          <Property Name="update_time" Type="datetime" />
+          <Property Name="create_user" Type="int" />
+          <Property Name="user_name" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <Association Name="FK__t_article__cate___173876EA">
+          <End Role="t_category" Type="Self.t_category" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="t_category">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="t_articles">
+              <PropertyRef Name="cate_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__t_article__creat__182C9B23">
+          <End Role="t_users" Type="Self.t_users" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="t_users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="t_articles">
+              <PropertyRef Name="create_user" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="proc_add_test_data" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_paged_data" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="sqlTable" Type="nvarchar" Mode="In" />
+          <Parameter Name="sqlColumns" Type="nvarchar" Mode="In" />
+          <Parameter Name="sqlWhere" Type="nvarchar" Mode="In" />
+          <Parameter Name="sqlSort" Type="nvarchar" Mode="In" />
+          <Parameter Name="pageIndex" Type="int" Mode="In" />
+          <Parameter Name="pageSize" Type="int" Mode="In" />
+          <Parameter Name="rowTotal" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="SP_PAGING" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="TABLES" Type="nvarchar" Mode="In" />
+          <Parameter Name="PRIMARYKEY" Type="nvarchar" Mode="In" />
+          <Parameter Name="SORT" Type="nvarchar" Mode="In" />
+          <Parameter Name="PAGEINDEX" Type="int" Mode="In" />
+          <Parameter Name="PAGESIZE" Type="int" Mode="In" />
+          <Parameter Name="FIELDS" Type="nvarchar" Mode="In" />
+          <Parameter Name="FILTER" Type="nvarchar" Mode="In" />
+          <Parameter Name="GROUP" Type="nvarchar" Mode="In" />
+          <Parameter Name="TOTALCOUNT" Type="int" Mode="InOut" />
+        </Function>
+        <EntityContainer Name="ARTICLE_DBModelStoreContainer">
+          <EntitySet Name="t_articles" EntityType="Self.t_articles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="t_category" EntityType="Self.t_category" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="T_ROLES" EntityType="Self.T_ROLES" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="t_users" EntityType="Self.t_users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TEST" EntityType="Self.TEST" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="v_get_articles" EntityType="Self.v_get_articles" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [v_get_articles].[id] AS [id], 
+    [v_get_articles].[cate_id] AS [cate_id], 
+    [v_get_articles].[cate_name] AS [cate_name], 
+    [v_get_articles].[title] AS [title], 
+    [v_get_articles].[content] AS [content], 
+    [v_get_articles].[update_time] AS [update_time], 
+    [v_get_articles].[create_user] AS [create_user], 
+    [v_get_articles].[user_name] AS [user_name]
+    FROM [dbo].[v_get_articles] AS [v_get_articles]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__t_article__cate___173876EA" Association="Self.FK__t_article__cate___173876EA">
+            <End Role="t_category" EntitySet="t_category" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__t_article__creat__182C9B23" Association="Self.FK__t_article__creat__182C9B23">
+            <End Role="t_users" EntitySet="t_users" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ARTICLE_DBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="t_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cate_id" Type="Int32" />
+          <Property Name="title" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="content" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="update_time" Type="DateTime" Precision="3" />
+          <Property Name="create_user" Type="Int32" />
+          <NavigationProperty Name="t_category" Relationship="Self.FK__t_article__cate___173876EA" FromRole="t_articles" ToRole="t_category" />
+          <NavigationProperty Name="t_users" Relationship="Self.FK__t_article__creat__182C9B23" FromRole="t_articles" ToRole="t_users" />
+        </EntityType>
+        <EntityType Name="t_category">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="t_articles" Relationship="Self.FK__t_article__cate___173876EA" FromRole="t_category" ToRole="t_articles" />
+        </EntityType>
+        <EntityType Name="T_ROLES">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NAME" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="REMARK" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="t_users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="zh_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="pwd" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="roles" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="t_articles" Relationship="Self.FK__t_article__creat__182C9B23" FromRole="t_users" ToRole="t_articles" />
+        </EntityType>
+        <EntityType Name="TEST">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NAMES" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="v_get_articles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="cate_id" Type="Int32" />
+          <Property Name="cate_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="content" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="update_time" Type="DateTime" Precision="3" />
+          <Property Name="create_user" Type="Int32" />
+          <Property Name="user_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK__t_article__cate___173876EA">
+          <End Role="t_category" Type="Self.t_category" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="t_category">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="t_articles">
+              <PropertyRef Name="cate_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__t_article__creat__182C9B23">
+          <End Role="t_users" Type="Self.t_users" Multiplicity="0..1" />
+          <End Role="t_articles" Type="Self.t_articles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="t_users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="t_articles">
+              <PropertyRef Name="create_user" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ARTICLE_DBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="t_articles" EntityType="Self.t_articles" />
+          <EntitySet Name="t_category" EntityType="Self.t_category" />
+          <EntitySet Name="T_ROLES" EntityType="Self.T_ROLES" />
+          <EntitySet Name="t_users" EntityType="Self.t_users" />
+          <EntitySet Name="TEST" EntityType="Self.TEST" />
+          <EntitySet Name="v_get_articles" EntityType="Self.v_get_articles" />
+          <AssociationSet Name="FK__t_article__cate___173876EA" Association="Self.FK__t_article__cate___173876EA">
+            <End Role="t_category" EntitySet="t_category" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__t_article__creat__182C9B23" Association="Self.FK__t_article__creat__182C9B23">
+            <End Role="t_users" EntitySet="t_users" />
+            <End Role="t_articles" EntitySet="t_articles" />
+          </AssociationSet>
+          <FunctionImport Name="proc_add_test_data" />
+          <FunctionImport Name="sp_paged_data">
+            <Parameter Name="sqlTable" Mode="In" Type="String" />
+            <Parameter Name="sqlColumns" Mode="In" Type="String" />
+            <Parameter Name="sqlWhere" Mode="In" Type="String" />
+            <Parameter Name="sqlSort" Mode="In" Type="String" />
+            <Parameter Name="pageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="pageSize" Mode="In" Type="Int32" />
+            <Parameter Name="rowTotal" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="SP_PAGING">
+            <Parameter Name="TABLES" Mode="In" Type="String" />
+            <Parameter Name="PRIMARYKEY" Mode="In" Type="String" />
+            <Parameter Name="SORT" Mode="In" Type="String" />
+            <Parameter Name="PAGEINDEX" Mode="In" Type="Int32" />
+            <Parameter Name="PAGESIZE" Mode="In" Type="Int32" />
+            <Parameter Name="FIELDS" Mode="In" Type="String" />
+            <Parameter Name="FILTER" Mode="In" Type="String" />
+            <Parameter Name="GROUP" Mode="In" Type="String" />
+            <Parameter Name="TOTALCOUNT" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ARTICLE_DBModelStoreContainer" CdmEntityContainer="ARTICLE_DBEntities">
+          <EntitySetMapping Name="t_articles">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.t_articles">
+              <MappingFragment StoreEntitySet="t_articles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="cate_id" ColumnName="cate_id" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="update_time" ColumnName="update_time" />
+                <ScalarProperty Name="create_user" ColumnName="create_user" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="t_category">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.t_category">
+              <MappingFragment StoreEntitySet="t_category">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="T_ROLES">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.T_ROLES">
+              <MappingFragment StoreEntitySet="T_ROLES">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="NAME" ColumnName="NAME" />
+                <ScalarProperty Name="REMARK" ColumnName="REMARK" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="t_users">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.t_users">
+              <MappingFragment StoreEntitySet="t_users">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="zh_name" ColumnName="zh_name" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="pwd" ColumnName="pwd" />
+                <ScalarProperty Name="roles" ColumnName="roles" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TEST">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.TEST">
+              <MappingFragment StoreEntitySet="TEST">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="NAMES" ColumnName="NAMES" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="v_get_articles">
+            <EntityTypeMapping TypeName="ARTICLE_DBModel.v_get_articles">
+              <MappingFragment StoreEntitySet="v_get_articles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="cate_id" ColumnName="cate_id" />
+                <ScalarProperty Name="cate_name" ColumnName="cate_name" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="update_time" ColumnName="update_time" />
+                <ScalarProperty Name="create_user" ColumnName="create_user" />
+                <ScalarProperty Name="user_name" ColumnName="user_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="proc_add_test_data" FunctionName="ARTICLE_DBModel.Store.proc_add_test_data" />
+          <FunctionImportMapping FunctionImportName="sp_paged_data" FunctionName="ARTICLE_DBModel.Store.sp_paged_data" />
+          <FunctionImportMapping FunctionImportName="SP_PAGING" FunctionName="ARTICLE_DBModel.Store.SP_PAGING" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

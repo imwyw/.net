@@ -1,0 +1,159 @@
+<!DOCTYPE html >
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>AutoComplete</title>
+    <link rel="stylesheet" type="text/css" href="Auto.css">
+</head>
+
+<body>
+    <!--候选词的容器-->
+    <div class="divTextDropdown" id="divOutput"></div>
+    AutoComplete Text Box:
+    <input type="text" name="txtUserInput" id="txtUserInput" oninput="buidDropdownlist()" onkeydown="getPosition(event)" onblur="hideTheBox();"
+    />
+
+    <script>
+        //定义数组，模拟服务器数据
+        var arrOptions = new Array("java0", "java1", "java2", "java3", "java4", "ios1", "ios2", "ios3", "ios4", "ios5",
+            "web1", "web2", "web3", "web4", "web5");
+        var index = -1;
+        // 保存搜索到的内容
+        var findDivs = new Array();
+
+        /*
+        当用户尝试输入时触发
+        1、从全量的数组中筛选，并将结果保存到findDivs数组中；
+        2、将上一步保存的findDivs元素动态的填充到候选词div容器中；
+        */
+        function buidDropdownlist() {
+            getMatch();
+            buildDiv(findDivs, "divOutput");
+        }
+
+        //定义函数，定位div
+        function getPosition(Strevent) {
+            var theTextBox = getId("txtUserInput");
+            var oDivOutput = getId("divOutput");
+            //定位候选词div容器的位置
+            oDivOutput.style.left = (theTextBox.offsetLeft) + "px";
+            oDivOutput.style.top = (theTextBox.offsetTop + theTextBox.offsetHeight) + "px";
+            //样式 宽度、高度、控制显示
+            oDivOutput.style.width = (theTextBox.offsetWidth) + "px";
+            oDivOutput.style.height = (theTextBox.offsetHeight) + "px";
+            oDivOutput.style.display = "block";
+
+            setSelect(Strevent);
+        }
+
+        //定义函数，实现上下键选择
+        function setSelect(key) {
+            var userStr = getId("txtUserInput").value;
+            if (userStr != "") {
+                // 确定 div 在数组中的位置
+                // ↑ 键
+                if (key.keyCode == 38) {
+                    if (index == 0 || index == -1) {
+                        //说明是在第一行,移至最后一行
+                        index = findDivs.length - 1;
+                    } else {
+                        // 不是第一行 ,往上 一行
+                        index -= 1;
+                    }
+                    showSelectd(index);
+                    changeClassName(index);
+                }
+                // ↓ 键
+                else if (key.keyCode == 40) {
+                    if (index == findDivs.length - 1 || index == -1) {
+                        //说明在最后一行，移至第一行
+                        index = 0;
+                    } else {
+                        // 不是最后一行，往下一行
+                        index += 1;
+                    }
+                    showSelectd(index);
+                    changeClassName(index);
+                }
+                // 在此加入enter键判断
+                else if (key.keyCode == 13) {
+                    getId("divOutput").style.display = "none";
+                    getId("txtUserInput").blur();
+                } else {
+                    return 0;
+                }
+            }
+        }
+
+        //定义函数，实现选中内容同步到输入框
+        function showSelectd(index) {
+            //获得遍历出来的信息
+            var theFindDiv = findDivs[index];
+            // 在input框中显示这个Div的内容
+            var showFind = getId("txtUserInput");
+
+            showFind.value = theFindDiv;
+        }
+
+        // 达到选择效果 .....更改选择div的class，达到不同样式的效果
+        function changeClassName(tempIndex) {
+            var DivTypeClass = '';
+            for (var i = 0; i < findDivs.length; i++) {
+                if (i == tempIndex) {
+                    DivTypeClass = 'divHighElement';
+                } else {
+                    DivTypeClass = 'divNormalElement';
+                };
+                var temp_id_1 = 'OptionsList_' + i;
+                var theFindDiv_1 = getId(temp_id_1);
+                theFindDiv_1.className = DivTypeClass;
+            }
+        }
+
+        //封装函数，使用match方法遍历数据，并将结果保存到全局变量findDivs
+        function getMatch() {
+            findDivs = new Array();
+            //获取输入input的值
+            var userStr = getId("txtUserInput").value;
+            if (userStr.length == 0) {
+                //文本框的内容为空，隐藏候选词div
+                getId("divOutput").style.display = "none";
+            } else {
+                //从服务器数据中筛选匹配的元素
+                for (var i = 0; i < arrOptions.length; i++) {
+                    if (arrOptions[i].match(userStr)) {
+                        findDivs.push(arrOptions[i]);
+                    }
+                }
+            }
+        }
+
+        //封装函数，动态创建div，动态的填充候选词div中的候选内容
+        function buildDiv(testArray, id) {
+            var fragment = "";
+            /*
+            循环拼接div元素，最终拼接结果如下：
+            <div id="OptionsList_0" class="divNormalElement">java0</div>........
+            */
+            for (var i = 0; i < testArray.length; i++) {
+                fragment += "<div id='OptionsList_" + i + "' class='divNormalElement'>" 
+                    + testArray[i] + "</div>";
+            }
+            getId(id).innerHTML = fragment;
+        }
+
+        //当选择完成后隐藏提示层
+        function hideTheBox() {
+            //补全代码，完成隐藏下拉框方法
+            getId("divOutput").style.display = "none";
+        }
+
+        //封装函数，获取id
+        function getId(id) {
+            return document.getElementById(id);
+        }
+    </script>
+</body>
+
+</html>

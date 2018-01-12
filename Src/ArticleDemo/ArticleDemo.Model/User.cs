@@ -27,5 +27,22 @@ namespace ArticleDemo.Model
         /// 登录密码
         /// </summary>
         public string Pwd { get; set; }
+        /// <summary>
+        /// 密码是否为密文，当自动登录时即为密文
+        /// </summary>
+        public bool IsCipherPwd { get; set; }
+
+        /// <summary>
+        /// 该用户具有的角色，多个角色用逗号进行分割
+        /// 结合拦截器的控制，简单权限方式 继续保留
+        /// </summary>
+        public string Roles { get; set; }
+
+        /// <summary>
+        /// 角色ID，为实现动态权限添加
+        /// add at 2018-1-2
+        /// </summary>
+        public int ROLE_ID { get; set; }
+
     }
 }

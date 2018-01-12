@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<h1 style="color:red;">@ViewBag.Hi</h1>
+
+<hr />
+<input type="text" id="txtCityName" value="芜湖" />
+<input type="button" id="btnGetWeather" value="查询天气" />
+<p id="weatherContent"></p>
+
+<script>
+    $(function () {
+        $("#btnGetWeather").on("click",getWeather);
+    });
+
+    function getWeather() {
+        $.post("/Default/GetWeatherByCityName",
+            { cityName: $("#txtCityName").val() },
+            function (data) {
+                $("#weatherContent").html(data);
+            });
+    }
+</script>

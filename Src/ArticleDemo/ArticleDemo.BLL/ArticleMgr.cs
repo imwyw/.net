@@ -16,13 +16,13 @@ namespace ArticleDemo.BLL
             return res > 0;
         }
 
-        private static bool Remove(int id)
+        public static bool Remove(int id)
         {
             int res = ArticleDao.Remove(id);
             return res > 0;
         }
 
-        private static bool Update(Article entity)
+        public static bool Update(Article entity)
         {
             int res = ArticleDao.Update(entity);
             return res > 0;
@@ -32,6 +32,11 @@ namespace ArticleDemo.BLL
         {
             List<Article> lstRes = ArticleDao.GetArticles();
             return lstRes;
+        }
+
+        public static Article GetArticleByID(int id)
+        {
+            return ArticleDao.GetAritlceByID(id);
         }
 
         private static Article GetArticleInfoConsole()
@@ -121,5 +126,17 @@ namespace ArticleDemo.BLL
                 Console.WriteLine("删除失败");
             }
         }
+
+        #region
+        public static List<v_get_articles> GetArticlesEF(int cateid, string title)
+        {
+            return ArticleDao.GetArticlesEF(cateid, title);
+        }
+
+        public static Pager<v_get_articles> GetArticlesByPager(int cateid, string title, PageParam page)
+        {
+            return ArticleDao.GetArticlesByPager(cateid, title, page);
+        }
+        #endregion
     }
 }

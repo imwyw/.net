@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutofacDemo", "AutofacDemo\AutofacDemo.csproj", "{12E19E7D-E464-4912-8438-9D265F251AD8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1上层模块", "1上层模块", "{FC8E11D3-84D3-4D76-B423-B14063FB0D19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2抽象服务接口", "2抽象服务接口", "{F7A0A7E1-E1C6-4399-A059-C99BFA231D7F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3底层模块-具体实现", "3底层模块-具体实现", "{EC933DC6-E045-4C79-84B2-6913115282B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Service", "Autofac.Service\Autofac.Service.csproj", "{BD9C74A5-9786-4A9C-9FB9-7082C000F1BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.OracleDal", "Autofac.OracleDal\Autofac.OracleDal.csproj", "{D2AAD7F3-9BD5-45B8-BFA5-D9D7494FCB52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.SqlServerDal", "Autofac.SqlServerDal\Autofac.SqlServerDal.csproj", "{C1CD2BB0-5589-4A56-A92B-FA2FE6D5BA94}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12E19E7D-E464-4912-8438-9D265F251AD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12E19E7D-E464-4912-8438-9D265F251AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12E19E7D-E464-4912-8438-9D265F251AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12E19E7D-E464-4912-8438-9D265F251AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD9C74A5-9786-4A9C-9FB9-7082C000F1BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD9C74A5-9786-4A9C-9FB9-7082C000F1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD9C74A5-9786-4A9C-9FB9-7082C000F1BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD9C74A5-9786-4A9C-9FB9-7082C000F1BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2AAD7F3-9BD5-45B8-BFA5-D9D7494FCB52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2AAD7F3-9BD5-45B8-BFA5-D9D7494FCB52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2AAD7F3-9BD5-45B8-BFA5-D9D7494FCB52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2AAD7F3-9BD5-45B8-BFA5-D9D7494FCB52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1CD2BB0-5589-4A56-A92B-FA2FE6D5BA94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1CD2BB0-5589-4A56-A92B-FA2FE6D5BA94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1CD2BB0-5589-4A56-A92B-FA2FE6D5BA94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1CD2BB0-5589-4A56-A92B-FA2FE6D5BA94}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{12E19E7D-E464-4912-8438-9D265F251AD8} = {FC8E11D3-84D3-4D76-B423-B14063FB0D19}
+		{BD9C74A5-9786-4A9C-9FB9-7082C000F1BA} = {F7A0A7E1-E1C6-4399-A059-C99BFA231D7F}
+		{D2AAD7F3-9BD5-45B8-BFA5-D9D7494FCB52} = {EC933DC6-E045-4C79-84B2-6913115282B2}
+		{C1CD2BB0-5589-4A56-A92B-FA2FE6D5BA94} = {EC933DC6-E045-4C79-84B2-6913115282B2}
+	EndGlobalSection
+EndGlobal

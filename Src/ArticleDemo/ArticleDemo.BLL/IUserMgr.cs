@@ -22,7 +22,7 @@ namespace ArticleDemo.BLL
         /// <param name="name"></param>
         /// <param name="pwd"></param>
         /// <returns></returns>
-        User Login(string name, string pwd);
+        User Login(string name, string pwd, bool isCipherPwd = false);
 
         /// <summary>
         /// 检查该用户名是否存在

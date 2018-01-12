@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,7 +43,9 @@
   <ItemGroup>
     <Compile Include="ArticleMgr.cs" />
     <Compile Include="CategoryMgr.cs" />
+    <Compile Include="ContextObjects.cs" />
     <Compile Include="IUserMgr.cs" />
+    <Compile Include="MenuActionMgr.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserMgr.cs" />
     <Compile Include="UserMgrProxy.cs" />

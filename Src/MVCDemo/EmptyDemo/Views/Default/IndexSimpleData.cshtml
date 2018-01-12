@@ -1,0 +1,30 @@
+﻿@* @model 其实并不是必须的，可以缺省，显示的指明其实是为了智能提示，减少人为错误的干预*@
+@model EmptyDemo.Controllers.Student
+@{
+    ViewBag.Title = "IndexSimpleData";
+}
+
+<h2>IndexSimpleData</h2>
+
+<hr />
+
+<p class="bg-info">
+    <div>@Model.Name</div>
+    <div>@Model.Age</div>
+</p>
+
+@using (Html.BeginForm())
+{
+    @Html.Label("姓名-") @Html.TextBoxFor(m => m.Name)
+    <br />
+    @Html.Label("年龄-") @Html.TextBoxFor(m => m.Age, new { @type = "number" })
+    <br />
+    @Html.Label("密码-") @Html.PasswordFor(m => m.Pwd)
+}
+
+<hr />
+
+用户控件
+@{
+    Html.RenderAction("PartialAutoComplete", "PartialView");
+}
