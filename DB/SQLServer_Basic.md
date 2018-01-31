@@ -22,6 +22,7 @@
             - [SELECT...INTO..](#selectinto)
             - [CASE...WHEN...](#casewhen)
             - [SELECT XXX()](#select-xxx)
+            - [PIVOT和UNPIVOT](#pivot和unpivot)
         - [其他语句](#其他语句)
         - [提高效率Prompt](#提高效率prompt)
     - [索引](#索引)
@@ -367,6 +368,104 @@ SELECT SYSDATETIME();
 --计算表达式的值
 SELECT 1+1 ;
 ```
+
+<a id="markdown-pivot和unpivot" name="pivot和unpivot"></a>
+#### PIVOT和UNPIVOT
+- PIVOT 
+
+通过将表达式某一列中的唯一值转换为输出中的多个列来旋转表值表达式，并在必要时对最终输出中所需的任何其余列值执行聚合。即将列值旋转为列名（即行转列）
+
+一般语法是：`PIVOT(聚合函数(值-列) FOR pivot-列 in (值1,值2,值3...) )AS P`
+
+![](..\assets\SqlServer\pivot_1.png)
+
+以上即行转列的示例，对应的sql脚本如下：
+
+```sql
+-- 构建测试表 用以模拟
+IF OBJECT_ID('T_SCORE') IS NOT NULL DROP TABLE T_SCORE
+
+GO
+
+CREATE TABLE T_SCORE(NAME VARCHAR(10),COURSE VARCHAR(10),SCORE INT)
+
+INSERT INTO T_SCORE VALUES('张三','语文',74)
+
+INSERT INTO T_SCORE VALUES('张三','数学',83)
+
+INSERT INTO T_SCORE VALUES('张三','英语',93)
+
+INSERT INTO T_SCORE VALUES('李四','语文',74)
+
+INSERT INTO T_SCORE VALUES('李四','数学',84)
+
+INSERT INTO T_SCORE VALUES('李四','英语',94)
+
+GO
+```
+
+```sql
+--使用CASE WHEN 的方式进行行转列
+SELECT NAME
+,MAX((CASE WHEN COURSE = '语文' THEN SCORE ELSE NULL END )) AS 语文
+,MAX((CASE WHEN COURSE = '数学' THEN SCORE ELSE NULL END )) AS 数学 
+,MAX((CASE WHEN COURSE = '英语' THEN SCORE ELSE NULL END )) AS 英语 
+FROM T_SCORE GROUP BY NAME; 
+
+--简单的示例，没有包含其他字段的情况下。除去[SCORE]和[COURSE]字段进行GROUP BY 
+SELECT * FROM T_SCORE PIVOT(MAX(SCORE) FOR COURSE IN (语文,数学,英语) ) AS P;
+```
+
+实际生产案例中比上述情况要复杂的多，在使用PIVOT转换前我们需要先进行投影，否则PIVOT进行分组得到的并不是我们需要的结果：
+```sql
+--修改测试表结构，添加测试字段
+ALTER TABLE T_SCORE ADD REMARK VARCHAR(100);
+GO
+
+--更新值，模拟测试
+UPDATE T_SCORE SET REMARK = NAME + COURSE;
+
+--多字段，较复杂情况的处理，需要在投影的基础上进行PIVOT
+SELECT * FROM (SELECT NAME,COURSE,SCORE FROM T_SCORE ) T PIVOT(MAX(SCORE) FOR COURSE IN (语文,数学,英语)) AS P;
+```
+
+- UNPIVOT 
+
+将表值表达式的列转换为列值。
+
+一般语法是：`UNPIVOT(值-列 FOR pivot-列 IN (列1,列2,列3...)) AS P`
+
+![](..\assets\SqlServer\unpivot_1.png)
+
+```sql
+-- 构建测试表 用以模拟
+IF OBJECT_ID('T_SCORE_EX') IS NOT NULL DROP TABLE T_SCORE_EX
+
+GO
+
+CREATE TABLE T_SCORE_EX(NAME VARCHAR(10),[语文] INT,[数学] INT,[英语] INT)
+
+INSERT INTO T_SCORE_EX VALUES('张三',74,83,93)
+
+INSERT INTO T_SCORE_EX VALUES('李四',74,84,94)
+
+GO
+```
+
+```sql
+--采用union的方式进行列转行
+SELECT NAME,'语文' AS [课程],[语文] AS [分数] FROM T_SCORE_EX
+UNION ALL 
+SELECT NAME,'数学',[数学] FROM T_SCORE_EX
+UNION ALL
+SELECT NAME,'英语',[英语] FROM T_SCORE_EX ;
+
+--UNPIVOT 列转换行
+SELECT * FROM T_SCORE_EX T UNPIVOT ([分数] FOR [课程] IN ([语文],[数学],[英语])) AS P ;
+```
+
+ps.对升级到 SQL Server 2005 或更高版本的数据库使用 PIVOT 和 UNPIVOT 时，必须将数据库的兼容级别设置为 90 或更高。
+
 
 <a id="markdown-其他语句" name="其他语句"></a>
 ### 其他语句
