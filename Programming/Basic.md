@@ -13,15 +13,19 @@
         - [分支](#分支)
         - [循环](#循环)
     - [数组](#数组)
-        - [初始化](#初始化)
-        - [Array](#array)
+        - [一维数组](#一维数组)
         - [循环](#循环-1)
-        - [二维数组](#二维数组)
+        - [多维数组](#多维数组)
+        - [Array](#array)
     - [方法](#方法)
-        - [定义、调用、形参、实参](#定义调用形参实参)
+        - [形参实参](#形参实参)
         - [重载](#重载)
-        - [ref、out、params](#refoutparams)
-    - [集合](#集合)
+        - [参数传递](#参数传递)
+            - [值传递](#值传递)
+            - [引用传递](#引用传递)
+            - [输出参数](#输出参数)
+            - [params](#params)
+    - [数据集合DataCollection](#数据集合datacollection)
         - [ArrayList](#arraylist)
         - [Hashtable](#hashtable)
     - [泛型集合](#泛型集合)
@@ -116,9 +120,13 @@ return
 
 <a id="markdown-数组" name="数组"></a>
 ## 数组
-<a id="markdown-初始化" name="初始化"></a>
-### 初始化
-在内存中是顺序连续存储的，所以它的索引速度非常快，赋值与修改元素也很简单
+数组是一个存储相同类型元素的固定大小的顺序集合。数组是用来存储数据的集合，通常认为数组是一个同一类型变量的集合。
+数组中某个指定的元素是通过索引来访问的。所有的数组都是由连续的内存位置组成的。最低的地址对应第一个元素，最高的地址对应最后一个元素。
+这也是为什么在初始化数组的时候就需要指定数组的大小。
+
+<a id="markdown-一维数组" name="一维数组"></a>
+### 一维数组
+在内存中是顺序连续存储的，所以它的索引速度非常快，赋值与修改元素也很简单。数组也是一个引用类型，初始化需要使用new关键字。
 
 ```cs
 //使用字面值
@@ -127,23 +135,6 @@ int[] array = { 1, 2, 3, 4, 5 };
 int[] array = new int[5];
 //两者结合
 int[] array = new int[] { 1, 2, 3, 4, 5 };
-```
-
-<a id="markdown-array" name="array"></a>
-### Array
-Array类是一个抽象类，无法实例化该类。
-
-但可以通过它的一些静态方法来进行数组的创建、遍历、拷贝、排序等操作，下面给出部分示例：
-```cs
-/*
-以下两种初始化的方式是等效的
-*/
-string[] arr = { "a", "b", "c" };
-
-Array arr = Array.CreateInstance(typeof(string), 3);
-arr.SetValue("a", 0);
-arr.SetValue("b", 1);
-arr.SetValue("c", 2);
 ```
 
 <a id="markdown-循环-1" name="循环-1"></a>
@@ -159,24 +150,108 @@ foreach 是自动迭代的，不需要事先获取数组的长度，但是只能
 */
 foreach (int data in array){..data..}
 foreach (var data in array){..data..}
+
+//示例
+int[] array = { 1, 2, 3, 4, 5 };
+for (int i = 0; i < array.Length; i++)
+{
+    Console.WriteLine(i);
+}
+foreach (int item in array)
+{
+    Console.WriteLine(item);
+}
 ```
 
-<a id="markdown-二维数组" name="二维数组"></a>
-### 二维数组
-```cs
-int[,] array1 = { { 1, 2, 3 }, { 4, 5, 6 } };
-int[,] array2 = new int[2, 3];
-int[,] array3 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+<a id="markdown-多维数组" name="多维数组"></a>
+### 多维数组
+多维数组最简单的形式是二维数组。一个二维数组，在本质上，是一个一维数组的列表。
 
-//锯齿数组，同样可以使用for和foreach进行遍历
-int[][] array = new int[2][] { new int[] { 1, 2 }, new int[] { 1, 2, 3 } };
+一个二维数组可以被认为是一个带有 x 行和 y 列的表格。下面是一个二维数组，包含 3 行和 4 列：
+
+![](../assets/Programming/two_dimensional_arrays.jpg)
+
+规则数组，即每行的元素个数都是相同的
+```cs
+//int[,]这样声明的二维数组，需要通过相同索引器进行访问：array1[1,1]
+int[,] array1 = { { 1, 2, 3, 4 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 } };
+int[,] array2 = new int[3, 4];
+int[,] array3 = new int[,] { { 1, 2, 3, 4 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 } };
+
+//循环遍历
+foreach (int item in array1)
+{
+    Console.Write(item + "\t");
+}
+```
+
+锯齿数组，即不规则数组
+```cs
+//锯齿数组，同样可以使用for和foreach进行遍历，通过索引器访问 array[1][1]
+int[][] array = new int[3][] { new int[] { 1, 2, 3, 4 }, new int[] { 5, 6, 7 }, new int[] { 8, 9 } };
 int[][] array = new int[][] { new int[] { 1, 2 }, new int[] { 1, 2, 3 }, new int[] { } };
+
+//循环遍历
+foreach (int[] item in array)
+{
+    foreach (int v in item)
+    {
+        Console.Write(v + "\t");
+    }
+    Console.WriteLine();
+}
+```
+
+<a id="markdown-array" name="array"></a>
+### Array
+Array类是一个抽象类，无法实例化该类。主要作为基类进行扩展，实际使用中很少直接使用Array类。
+
+但可以通过它的一些静态方法来进行数组的创建、遍历、拷贝、排序等操作，下面给出部分示例：
+```cs
+/*
+以下两种初始化的方式是等效的
+*/
+string[] arr = { "a", "b", "c" };
+
+Array arr = Array.CreateInstance(typeof(string), 3);
+arr.SetValue("a", 0);
+arr.SetValue("b", 1);
+arr.SetValue("c", 2);
 ```
 
 <a id="markdown-方法" name="方法"></a>
 ## 方法
-<a id="markdown-定义调用形参实参" name="定义调用形参实参"></a>
-### 定义、调用、形参、实参
+一个方法是把一些相关的语句组织在一起，用来执行一个任务的语句块。每一个 C# 程序至少有一个带有 Main 方法的类。
+
+定义方法：
+```cs
+/*
+<Access Specifier> 访问修饰符
+<Return Type> 返回类型
+<Method Name> 方法名
+Parameter List 形参列表
+*/
+<Access Specifier> <Return Type> <Method Name>(Parameter List)
+{
+   Method Body
+}
+```
+
+调用方法：`MethodName(<parameter>);`
+
+<a id="markdown-形参实参" name="形参实参"></a>
+### 形参实参
+```cs
+//方法的定义，返回类型int，方法名Add，形参列表：int a, int b
+int Add(int a, int b)
+{
+    return a + b;
+}
+
+//方法的调用，传入实参 1和2
+int sum = Add(1, 2);
+```
+
 <a id="markdown-重载" name="重载"></a>
 ### 重载
 ```cs
@@ -188,12 +263,135 @@ public double Calculate(double x, double y) {......}
 2. 参数列表必须不相同
 3. 返回值类型可以不相同
 
-<a id="markdown-refoutparams" name="refoutparams"></a>
-### ref、out、params
+<a id="markdown-参数传递" name="参数传递"></a>
+### 参数传递
+当调用带有参数的方法时，您需要向方法传递参数。在 C# 中，有三种向方法传递参数的方式：
 
+方式 | 描述
+---|---
+值参数 | 这种方式复制参数的实际值给函数的形式参数，实参和形参使用的是两个不同内存中的值。在这种情况下，当形参的值发生改变时，不会影响实参的值，从而保证了实参数据的安全。
+引用参数 | 这种方式复制参数的内存位置的引用给形式参数。这意味着，当形参的值发生改变时，同时也改变实参的值。
+输出参数 | 这种方式可以返回多个值。
 
-<a id="markdown-集合" name="集合"></a>
-## 集合
+<a id="markdown-值传递" name="值传递"></a>
+#### 值传递
+值参数，实际在传递时发生了拷贝，即方法调用时实际改变你的是变量的副本。如下例所示：
+```cs
+static void Swap(int x, int y)
+{
+    int temp = x;
+    x = y;
+    y = temp;
+}
+
+static void Main(string[] args)
+{
+    int a = 1;
+    int b = 2;
+    Swap(a, b);
+    Console.WriteLine("交换后：{0}\t{1}", a, b);
+}
+```
+
+<a id="markdown-引用传递" name="引用传递"></a>
+#### 引用传递
+引用参数是一个对变量的内存位置的引用。当按引用传递参数时，与值参数不同的是，它不会为这些参数创建一个新的存储位置。
+引用参数表示与提供给方法的实际参数具有相同的内存位置。
+
+下面案例中的类Student是一个引用类型，在参数传递时并未发生拷贝，传递的是地址，所以在方法内的改变也会影响到对象本身。
+```cs
+public class Student
+{
+    public string Name { get; set; }
+}
+
+class Program
+{
+    static void ResetStudent(Student stu)
+    {
+        stu.Name = "default name";
+    }
+
+    static void Main(string[] args)
+    {
+        Student stu = new Student();
+        stu.Name = "jack";
+        ResetStudent(stu);
+        Console.WriteLine(stu.Name);
+    }
+}
+```
+
+针对上例中的交换方法Swap难道没有办法进行引用传递吗？即传递是变量本身，而非值的副本。
+
+当然，我们可以使用ref关键字来声明参数是引用传递，需要特别注意方法声明和调用处都需要添加ref关键字，ref是reference的简写。如下示例：
+```cs
+static void Swap(ref int x, ref int y)
+{
+    int temp = x;
+    x = y;
+    y = temp;
+}
+
+static void Main(string[] args)
+{
+    int a = 1;
+    int b = 2;
+    Swap(ref a, ref b);
+    Console.WriteLine("交换后：{0}\t{1}", a, b);
+}
+```
+
+<a id="markdown-输出参数" name="输出参数"></a>
+#### 输出参数
+return 语句可用于只从函数中返回一个值。但是，可以使用 输出参数 来从函数中返回两个值。
+输出参数会把方法输出的数据赋给自己，其他方面与引用参数相似。
+```cs
+static void AddValue(out int val)
+{
+    //模拟返回值，通过out关键字，可以返回多个值
+    val = 5;
+}
+
+static void Main(string[] args)
+{
+    int res;
+    AddValue(out res);
+}
+```
+
+<a id="markdown-params" name="params"></a>
+#### params
+有时，当声明一个方法时，您不能确定要传递给函数作为参数的参数数目。
+在使用数组作为形参时，C# 提供了 params 关键字，使调用数组为形参的方法时，既可以传递数组实参，也可以传递一组数组元素。
+
+params 的使用格式为：`public 返回类型 方法名称( params 类型名称[] 数组名称 )`
+```cs
+static int GetSum(params int[] arr)
+{
+    int sum = 0;
+    foreach (int i in arr)
+    {
+        sum += i;
+    }
+    return sum;
+}
+
+static void Main(string[] args)
+{
+    int sum = GetSum(1, 2, 3, 4, 5);
+    Console.WriteLine("总和是： {0}", sum);
+}
+```
+需要注意的是：
+1. 带 params 关键字的参数类型必须是一维数组，不能使用在多维数组上；
+2. 不允许和 ref、out 同时使用；
+3. 带 params 关键字的参数必须是最后一个参数，并且在方法声明中只允许一个 params 关键字。
+4. 不能仅使用 params 来使用重载方法。
+5. 没有 params 关键字的方法的优先级高于带有params关键字的方法的优先级
+
+<a id="markdown-数据集合datacollection" name="数据集合datacollection"></a>
+## 数据集合DataCollection
 <a id="markdown-arraylist" name="arraylist"></a>
 ### ArrayList
 在System.Collections命名空间下，同时继承了IList接口。
