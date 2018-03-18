@@ -8,6 +8,8 @@
         - [常量](#常量)
         - [类型转换](#类型转换)
         - [装箱(boxing)、拆箱(unboxing)](#装箱boxing拆箱unboxing)
+        - [结构体](#结构体)
+            - [结构体和类](#结构体和类)
     - [流程控制](#流程控制)
         - [顺序](#顺序)
         - [分支](#分支)
@@ -28,8 +30,12 @@
     - [数据集合DataCollection](#数据集合datacollection)
         - [ArrayList](#arraylist)
         - [Hashtable](#hashtable)
-    - [泛型集合](#泛型集合)
-        - [List<T> 很重要！！！](#listt-很重要)
+        - [排序列表SortedList](#排序列表sortedlist)
+        - [堆栈Stack](#堆栈stack)
+        - [队列Queue](#队列queue)
+    - [泛型](#泛型)
+        - [泛型使用](#泛型使用)
+        - [泛型集合List<T>](#泛型集合listt)
         - [Dictionay<Tkey,Tvalue>](#dictionaytkeytvalue)
 
 <!-- /TOC -->
@@ -94,6 +100,82 @@ L3行，(int)obj对obj对象进行拆箱转换为值类型，1次拆箱；
 L3行，(int)obj的结果为值类型，控制台打印输出需要又一次的装箱为string类型，3次装箱；
 
 频繁的装拆箱会造成性能的损耗
+
+<a id="markdown-结构体" name="结构体"></a>
+### 结构体
+结构体是值类型数据结构。它使得一个单一变量可以存储各种数据类型的相关数据。struct 关键字用于创建结构体。
+
+结构存放在栈中并按值传递，和存放在堆中的类对象相比，它们具有性能上的优势。
+1. 值类型的分配优于引用类型。
+2. 存放在栈中的值一离开作用域就立即被收回。不用等待垃圾回收器来完成工作。
+
+```cs
+//定义结构体
+public struct Books
+{
+    //定义字段
+    public string _field;
+    
+    //定义属性
+    public string PropertyName { get; set;}
+    
+    //定义方法
+    public void Say(){ }
+};  
+```
+
+<a id="markdown-结构体和类" name="结构体和类"></a>
+#### 结构体和类
+类和结构有以下几个基本的不同点：
+* 类是引用类型，结构是值类型。
+* 结构不支持继承。
+* 结构不能声明默认的构造函数。
+
+以下代码体现了，结构体在参数传递时实际传递的是副本，而不是像类一样传递引用。
+```cs
+//定义Student类
+public class Student
+{
+    public string Name { get; set; }
+}
+
+//定义StructStu结构体
+public struct StructStu
+{
+    public string Name { get; set; }
+}
+
+class Program
+{
+    static void ResetName(StructStu stu)
+    {
+        stu.Name = "default";
+    }
+
+    static void ResetName(Student stu)
+    {
+        stu.Name = "default";
+    }
+
+    static void Main(string[] args)
+    {
+        Student stu1 = new Student();
+        stu1.Name = "jack";
+
+        StructStu stu2 = new StructStu();
+        stu2.Name = "jack";
+
+        ResetName(stu1);
+        ResetName(stu2);
+
+        Console.WriteLine("修改后的值：" + stu1.Name);
+        Console.WriteLine("修改后的值：" + stu2.Name);
+    }
+}
+```
+
+和引用类型相比，结构越复杂，复制造成的性能开销越大。因此，结构应该只用来表示小的数据结构。
+
 
 <a id="markdown-流程控制" name="流程控制"></a>
 ## 流程控制
@@ -392,6 +474,7 @@ static void Main(string[] args)
 
 <a id="markdown-数据集合datacollection" name="数据集合datacollection"></a>
 ## 数据集合DataCollection
+
 <a id="markdown-arraylist" name="arraylist"></a>
 ### ArrayList
 在System.Collections命名空间下，同时继承了IList接口。
@@ -410,11 +493,12 @@ arrList.Add(1);//装箱 int->object
 arrList.Add("abc");//装箱 string->object
 arrList.Add(true);//装箱 bool->object
 ```
+
 <a id="markdown-hashtable" name="hashtable"></a>
 ### Hashtable
-Hashtable也并非类型安全的，用于处理和表现类似keyvalue的键值对，其中key通常可用来快速查找，同时key是区分大小写；
+Hashtable也并非类型安全的，用于处理和表现类似key-value的键值对，其中key通常可用来快速查找，同时key是区分大小写；
 
-value用于存储对应于key的值。Hashtable中keyvalue键值对均为object类型，所以Hashtable可以支持任何类型的keyvalue键值对.
+value用于存储对应于key的值。Hashtable中key-value键值对均为object类型，所以Hashtable可以支持任何类型的key-value键值对.
 
 ```cs
 Hashtable ht = new Hashtable();
@@ -423,16 +507,16 @@ ht.Add("key", "name");
 ht.Add(1.23, true);
 
 //添加一个keyvalue键值对：
-HashtableObject.Add(key,value);
+ht.Add(key,value);
 
 //移除某个keyvalue键值对：
-HashtableObject.Remove(key);
+ht.Remove(key);
 
 //移除所有元素：           
-HashtableObject.Clear(); 
+ht.Clear(); 
 
 // 判断是否包含特定键key：
-HashtableObject.Contains(key);
+ht.Contains(key);
 ```
 
 什么情况下应该使用Hashtable：
@@ -441,10 +525,153 @@ HashtableObject.Contains(key);
 3. 查询字段包含字符串类型
 4. 数据类型不唯一
 
-<a id="markdown-泛型集合" name="泛型集合"></a>
-## 泛型集合
-<a id="markdown-listt-很重要" name="listt-很重要"></a>
-### List<T> 很重要！！！
+<a id="markdown-排序列表sortedlist" name="排序列表sortedlist"></a>
+### 排序列表SortedList
+SortedList 类代表了一系列按照键来排序的键/值对，这些键值对可以通过键和索引来访问。
+
+排序列表是数组和哈希表的组合。它包含一个可使用键或索引访问各项的列表。
+如果您使用索引访问各项，则它是一个动态数组（ArrayList）；
+如果您使用键访问各项，则它是一个哈希表（Hashtable）。
+集合中的各项总是按键值排序。
+
+```cs
+//需要添加 using System.Collections;
+SortedList sl = new SortedList();
+sl.Add("002", "钱二");
+sl.Add("001", "赵一");
+sl.Add("003", "孙三");
+sl.Add("004", "李四");
+
+//通过key值进行访问
+Console.WriteLine(sl["001"]);
+
+//虽然添加时并未排序，但遍历时会按照key进行排序
+foreach (var item in sl.Keys)
+{
+    Console.WriteLine("遍历：" + sl[item]);
+}
+```
+
+<a id="markdown-堆栈stack" name="堆栈stack"></a>
+### 堆栈Stack
+堆栈（Stack）代表了一个后进先出LIFO的对象集合。当您需要对各项进行后进先出的访问时，则使用堆栈。
+当您在列表中添加一项，称为推入元素，当您从列表中移除一项时，称为弹出元素。
+
+* Count：返回栈中所包含的元素个数
+* Clear：删除所有的项
+* Peek：返回一个处于调用栈顶端的对象的引用，但不删除它。
+* Pop：返回并删除顶端的对象
+* Push：向栈中添加指定的对象
+
+```cs
+//需要添加 using System.Collections;
+Stack st = new Stack();
+st.Push(1);
+st.Push("abc");
+st.Push(true);
+st.Push(new object());
+
+Console.WriteLine("长度：" + st.Count);
+
+Console.WriteLine(st.Peek());
+Console.WriteLine("长度：" + st.Count);
+
+Console.WriteLine(st.Pop());
+Console.WriteLine("长度：" + st.Count);
+```
+
+<a id="markdown-队列queue" name="队列queue"></a>
+### 队列Queue
+队列（Queue）代表了一个先进先出的对象集合。
+当您需要对各项进行先进先出的访问时，则使用队列。
+当您在列表中添加一项，称为入队，当您从列表中移除一项时，称为出队。类似排队的效果。
+
+```cs
+//需要添加 using System.Collections;
+Queue qu = new Queue();
+qu.Enqueue("赵一");
+qu.Enqueue("钱二");
+qu.Enqueue("孙三");
+qu.Enqueue("李四");
+
+foreach (var item in qu)
+{
+    Console.WriteLine("入队后：" + item);
+}
+qu.Dequeue();
+foreach (var item in qu)
+{
+    Console.WriteLine("出队：" + item);
+}
+```
+
+<a id="markdown-泛型" name="泛型"></a>
+## 泛型
+泛型可以定义类型安全的数据结构，而无须使用实际的数据类型。有助于最大限度地重用代码、保护类型的安全以及提高性能。
+泛型（Generic）允许您延迟编写类或方法中的编程元素的数据类型的规范，直到实际在程序中使用它的时候。
+换句话说，泛型允许您编写一个可以与任何数据类型一起工作的类或方法。
+
+您可以通过数据类型的替代参数编写类或方法的规范。
+当编译器遇到类的构造函数或方法的函数调用时，它会生成代码来处理指定的数据类型。
+
+<a id="markdown-泛型使用" name="泛型使用"></a>
+### 泛型使用
+泛型类：
+```cs
+/// <summary>
+/// 泛型数组类
+/// 数组类型由调用者决定
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class MyGenericArray<T>
+{
+    private T[] array;
+    public MyGenericArray(int size)
+    {
+        array = new T[size + 1];
+    }
+    public T getItem(int index)
+    {
+        return array[index];
+    }
+    public void setItem(int index, T value)
+    {
+        array[index] = value;
+    }
+}
+```
+
+泛型方法：
+```cs
+/// <summary>
+/// 泛型方法
+/// 同样的交换逻辑，不同数据类型的交换不需要重复的定义方法，调用的时候决定类型即可
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="t1"></param>
+/// <param name="t2"></param>
+static void Swap<T>(ref T t1, ref T t2)
+{
+    T temp = t1;
+    t1 = t2;
+    t2 = temp;
+}
+
+static void Main()
+{
+    int a = 1, b = 2;
+    string str1 = "hello", str2 = "world";
+
+    Swap<int>(ref a, ref b);
+    Swap<string>(ref str1, ref str2);
+
+    Console.WriteLine("交换后a:{0}\t b:{1}", a, b);
+    Console.WriteLine("交换后str1:{0}\t str2:{1}", str1, str2);
+}
+```
+
+<a id="markdown-泛型集合listt" name="泛型集合listt"></a>
+### 泛型集合List<T>
 List<T>类是 ArrayList 类的泛型等效类。
 
 不会强行对值类型进行装箱和拆箱，或对引用类型进行向下强制类型转换，所以性能得到提高。
@@ -477,3 +704,5 @@ Dictionary<string, string> dicRes = new Dictionary<string, string>();
 dicRes.Add("zhangsan","张三");
 dicRes.Add("zhaofugui", "赵富贵");
 ```
+
+
