@@ -265,6 +265,7 @@ foreach (int item in array1)
 {
     Console.Write(item + "\t");
 }
+Console.WriteLine();
 ```
 
 锯齿数组，即不规则数组
