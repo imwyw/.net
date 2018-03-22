@@ -3,6 +3,8 @@
 - [DB](#db)
     - [SqlServer2012的安装](#sqlserver2012的安装)
     - [配置](#配置)
+        - [SQL Server ManagementStudio](#sql-server-managementstudio)
+        - [配置管理器](#配置管理器)
     - [常见问题](#常见问题)
         - [无法登陆](#无法登陆)
         - [已安装vs2010无法安装sqlserver2012](#已安装vs2010无法安装sqlserver2012)
@@ -89,19 +91,49 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 
 <a id="markdown-配置" name="配置"></a>
 ## 配置
+
+<a id="markdown-sql-server-managementstudio" name="sql-server-managementstudio"></a>
+### SQL Server ManagementStudio
+SQL Server Management Studio 是一个集成环境，用于访问、配置、管理和开发 SQL Server 的所有组件。SQL Server Management Studio 组合了大量图形工具和丰富的脚本编辑器，使各种技术水平的开发人员和管理员都能访问 SQL Server。
+
 安装完成后打开【SQL Server ManagementStudio】连接工具，显示如下登录窗口，使用windows身份验证登录或者使用第13步安装配置的密码进行登录。
 
 ![](..\assets\SqlServer\Config_1.png)
 
 ![](..\assets\SqlServer\Config_2.png)
 
+<a id="markdown-配置管理器" name="配置管理器"></a>
+### 配置管理器
+SQL Server 配置管理器是一种工具，用于管理与 SQL Server相关联的服务、配置 SQL Server使用的网络协议以及从 SQL Server 客户端计算机管理网络连接配置。 
+
+SQL Server 配置管理器是一种可以通过“开始”菜单访问的 Microsoft 管理控制台管理单元，也可以将其添加到任何其他 Microsoft 管理控制台的显示界面中。 
+
+Microsoft 管理控制台 (mmc.exe) 使用 SQLServerManager<version>.msc 文件（例如 SQL Server 2016 的 SQLServerManager13.msc）打开配置管理器。 
+
+以下是在 C 盘安装 Windows 的情况下最新的四个版本的路径。
+
+版本 | 路径
+---|---
+SQL Server 2017 | C:\Windows\SysWOW64\SQLServerManager14.msc
+SQL Server 2016 | C:\Windows\SysWOW64\SQLServerManager13.msc
+SQL Server 2014 | C:\Windows\SysWOW64\SQLServerManager12.msc
+SQL Server 2012 | C:\Windows\SysWOW64\SQLServerManager11.msc
+
+![](..\assets\SqlServer\SqlServerConfigurationManager_1.png)
+
+详见：[SQL Server 配置管理器](https://docs.microsoft.com/zh-cn/sql/relational-databases/sql-server-configuration-manager)
+
 <a id="markdown-常见问题" name="常见问题"></a>
 ## 常见问题
+
 <a id="markdown-无法登陆" name="无法登陆"></a>
 ### 无法登陆
 - 检查数据库服务是否开启  运行 services.msc查看SQL Server服务是否正在运行；或通过SQL Server配置管理器查看服务是否正在运行；
 
 ![](..\assets\SqlServer\sql_server_1.png)
+
+- SqlServerConfigurationManager配置管理工具，可以在[C:\Windows\System32\SQLServerManager11.msc]或[C:\Windows\SysWOW64\SQLServerManager11.msc]找到
+
 ![](..\assets\SqlServer\sql_server_2.png)
 
 - 是否启用TCP/IP协议
