@@ -147,11 +147,11 @@ HTML标记不区分大小写，它则大小敏感，即区分大小写。
 
 实体定义 | 字符 | 说明
 -----|----|---
-&lt; | < | 小于
-&gt; | > | 大于
-&amp; | & | 与
-&apos; | ' | 单引号
-&quot; | " | 引号
+`&lt;` | < | 小于
+`&gt;` | > | 大于
+`&amp;` | & | 与
+`&apos;` | ' | 单引号
+`&quot;` | " | 引号
 
 _ps:在 XML 中，只有字符 "<" 和 "&" 确实是非法的。大于号是合法的，但是用实体引用来代替它是一个好习惯。_
 
@@ -471,78 +471,74 @@ doc.Save(xmlPath);
 
 <a id="markdown-创建" name="创建"></a>
 #### 创建
-使用XmlDocument添加xml文档：
+同样，我们以前面所说的bookstore为例，使用XmlDocument添加文档：
 ```cs
-XmlDocument xdocNew = new XmlDocument();
+XmlDocument doc = new XmlDocument();
 
-////创建Xml声明部分，即<?xml version="1.0" encoding="utf-8" ?>
-XmlDeclaration decNode = xdocNew.CreateXmlDeclaration("1.0", "utf-8", null);
-xdocNew.AppendChild(decNode);
+//创建Xml声明部分，并添加到文档，即<?xml version="1.0" encoding="utf-8" ?>
+XmlDeclaration xmlDecl = doc.CreateXmlDeclaration("1.0", "utf-8", null);
+doc.AppendChild(xmlDecl);
 
-//创建根节点
-XmlNode rootNode = xdocNew.CreateElement("heros");
-xdocNew.AppendChild(rootNode);
+//创建根元素，并添加到文档
+XmlNode rootNode = doc.CreateElement("bookstore");
+doc.AppendChild(rootNode);
 
-//创建子节点
-XmlNode hrNode = xdocNew.CreateElement("hero");
-//创建一个属性
-XmlAttribute skillAttr = xdocNew.CreateAttribute("skill");
-skillAttr.Value = "fly";
-hrNode.Attributes.Append(skillAttr);
-hrNode.InnerText = "超人";
-//将子节点添加到根节点上
-rootNode.AppendChild(hrNode);
+//创建 book 元素，添加到 根元素 
+XmlNode book = doc.CreateElement("book");
+XmlAttribute attr = doc.CreateAttribute("category");
+attr.Value = "COOKING";
+book.Attributes.Append(attr);
+rootNode.AppendChild(book);
 
-hrNode = xdocNew.CreateElement("hero");
-skillAttr = xdocNew.CreateAttribute("skill");
-skillAttr.Value = "run fast";
-hrNode.Attributes.Append(skillAttr);
-hrNode.InnerText = "快银";
-//将子节点添加到根节点上
-rootNode.AppendChild(hrNode);
+//创建 title 元素，添加到 book 元素
+XmlNode title = doc.CreateElement("title");
+attr = doc.CreateAttribute("lang");
+attr.Value = "en";
+title.Attributes.Append(attr);
+title.InnerText = "Everyday Italian";
+book.AppendChild(title);
 
-//使用XmlElement实例操作也可以，类XmlElement派生自XmlNode
-XmlElement xmlEm = xdocNew.CreateElement("hero");
-skillAttr = xdocNew.CreateAttribute("skill");
-skillAttr.Value = "talk much";
-xmlEm.InnerText = "Deadpool";
-xmlEm.Attributes.Append(skillAttr);
-rootNode.AppendChild(xmlEm);
+//创建 author 元素，添加到book元素
+XmlNode author = doc.CreateElement("author");
+author.InnerText = "Giada De Laurentiis";
+book.AppendChild(author);
 
-xdocNew.Save(@"E:\Attachment\maven.xml");
-```
+//创建 year 元素，添加到book元素
+XmlNode year = doc.CreateElement("year");
+year.InnerText = "2005";
+book.AppendChild(year);
 
-生成的maven.xml文档内容如下所示：
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<heros>
-  <hero skill="fly">超人</hero>
-  <hero skill="run fast">快银</hero>
-  <hero skill="talk much">Deadpool</hero>
-</heros>
+//创建 price 元素，添加到book元素
+XmlNode price = doc.CreateElement("price");
+price.InnerText = "30.00";
+book.AppendChild(price);
+
+//最后进行保存
+doc.Save(@".\booksNew.xml");
 ```
 
 <a id="markdown-删除" name="删除"></a>
 #### 删除
-使用XmlDocument进行修改、删除xml节点，以上面的maven.xml为例：
+使用XmlDocument进行修改、删除xml节点，以上面bookstore为例，删除其中category为WEB的元素
 ```cs
-string mavenXmlPath = @"E:\Attachment\maven.xml";
-XmlDocument docMaven = new XmlDocument();
-docMaven.Load(mavenXmlPath);
+string xmlPath = @"..\..\bookstore.xml";
+XmlDocument doc = new XmlDocument();
+doc.Load(xmlPath);
 
-XmlNodeList herosList = docMaven.SelectNodes("/heros/hero");
-foreach (XmlNode item in herosList)
+//所有的book元素
+XmlNodeList nodeList = doc.SelectNodes("/bookstore/book");
+
+//book的父元素，删除category="WEB"的book元素需要使用父级元素
+XmlNode bookstore = doc.SelectSingleNode("/bookstore");
+foreach (XmlNode node in nodeList)
 {
-    item.Attributes["skill"].Value = "new " + item.Attributes["skill"].Value;
-
-    if (item.InnerText.Trim() == "快银")
+    if (node.Attributes["category"].Value == "WEB")
     {
-        //移除快银节点
-        docMaven.SelectSingleNode("/heros").RemoveChild(item);
+        //从父级元素的角度进行删除该book元素及其子元素
+        bookstore.RemoveChild(node);
     }
 }
-docMaven.Save(mavenXmlPath);
-
+doc.Save(xmlPath);
 ```
 
 <a id="markdown-xmldocument和xmlreader" name="xmldocument和xmlreader"></a>
@@ -567,16 +563,34 @@ LINQ to XML API
 
 使用XDocument进行创建xml文件，和上面XmlDocument创建xml文档一致，但是代码要精简很多，如下所示：
 ```cs
-//using System.Xml.Linq;
-XDocument document = new XDocument(new XDeclaration("1.0", "utf-8", null));
+string xmlPath = @"..\..\bookstore.xml";
 
-XElement root = new XElement("heros"
-    , new XElement("hero", "超人", new XAttribute("skill", "fly"))
-    , new XElement("hero", "快银", new XAttribute("skill", "run fast"))
-    , new XElement("hero", "Deadpool", new XAttribute("skill", "talk much")));
-document.Add(root);
+//XDocument 需要 using System.Xml.Linq;
+XDocument xdoc = new XDocument(new XDeclaration("1.0", "utf-8", null));
 
-document.Save(@"E:\Attachment\xMaven.xml");
+XElement root = new XElement("bookstore");
+xdoc.Add(root);
+
+/*
+new XElement("标记名称","元素内容",new XAttribute(),子元素)
+*/
+XElement book1 = new XElement("book", new XAttribute("category", "COOKING")
+    , new XElement("title", "Everyday Italian", new XAttribute("lang", "en"))
+    , new XElement("author", "Giada De Laurentiis")
+    , new XElement("year", "2005")
+    , new XElement("price", "30.00"));
+//记得要进行保存
+root.Add(book1);
+
+XElement book2 = new XElement("book", new XAttribute("category", "CHILDREN")
+    , new XElement("title", "Harry Potter", new XAttribute("lang", "en"))
+    , new XElement("author", "J K. Rowling")
+    , new XElement("year", "2005")
+    , new XElement("price", "29.99"));
+//记得要进行保存
+root.Add(book2);
+
+xdoc.Save(xmlPath);
 ```
 
 拓展参考：
