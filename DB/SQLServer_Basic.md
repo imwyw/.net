@@ -1,6 +1,10 @@
 <!-- TOC -->
 
 - [SQLServer基础](#sqlserver基础)
+    - [范式(NF)](#范式nf)
+        - [1NF一范式](#1nf一范式)
+        - [2NF二范式](#2nf二范式)
+        - [3NF三范式](#3nf三范式)
     - [语句](#语句)
         - [创建测试库](#创建测试库)
         - [DDL-数据定义语言(Data Definition Language)](#ddl-数据定义语言data-definition-language)
@@ -22,6 +26,7 @@
             - [SELECT...INTO..](#selectinto)
             - [CASE...WHEN...](#casewhen)
             - [SELECT XXX()](#select-xxx)
+            - [开窗函数](#开窗函数)
             - [PIVOT和UNPIVOT](#pivot和unpivot)
         - [其他语句](#其他语句)
         - [提高效率Prompt](#提高效率prompt)
@@ -31,11 +36,80 @@
         - [非聚集索引](#非聚集索引)
         - [索引设计原则](#索引设计原则)
         - [创建索引](#创建索引)
-    - [范式(NF)](#范式nf)
 
 <!-- /TOC -->
 <a id="markdown-sqlserver基础" name="sqlserver基础"></a>
 # SQLServer基础
+
+关键字：
+* 属性：表中的列也称为数据表的属性。
+* 主属性：又称主键或主关键字。所谓主键是指能够唯一标识表中每一行的列或者列的组合。主键中不允许输入重复值和空值，它能使表中不产生重复记录。
+* 非主属性：表中除了主属性之外的其他属性。
+* 公共关键字：两张数据表共有的字段被称为公共关键字。
+
+<a id="markdown-范式nf" name="范式nf"></a>
+## 范式(NF)
+范式是“符合某一种级别的关系模式的集合，表示一个关系内部各属性之间的联系的合理化程度”。
+
+晦涩难懂，暂且简单理解成"一张数据表的表结构所符合的某种设计标准的级别。"
+
+<a id="markdown-1nf一范式" name="1nf一范式"></a>
+### 1NF一范式
+定义为：符合1NF的关系中的每个属性都不可再分。
+
+现在使用的关系型数据库管理系统都已在创建数据表是要求满足一范式。不符合1NF的表也无法录入到数据库，如果不符合这个最基本的要求那么操作是无法成功的。
+
+对于下表中的进货和销售还可以继续拆分，对于这样的记录是无法录入到关系型数据库的。
+
+![](..\assets\SqlServer\1nf.jpg)
+
+数据库中正确的反应应该如下：
+
+![](..\assets\SqlServer\1nf-1.jpg)
+
+<a id="markdown-2nf二范式" name="2nf二范式"></a>
+### 2NF二范式
+2NF在1NF的基础之上，消除了非主属性对于码的部分函数依赖。
+
+但是仅仅符合1NF的设计，仍然会存在数据冗余过大，插入异常，删除异常，修改异常的问题等。
+
+![](..\assets\SqlServer\2nf-1.jpg)
+
+针对上表中的数据，存在以下问题：
+1. 每一名学生的学号、姓名、系名、系主任这些数据重复多次。每个系与对应的系主任的数据也重复多次。**数据冗余**
+2. 假如学校新建了一个系，但是暂时还没有招收任何学生（比如3月份就新建了，但要等到8月份才招生），那么是无法将系名与系主任的数据单独地添加到数据表中去的。 **插入异常**
+3. 假如将某个系中所有学生相关的记录都删除，那么所有系与系主任的数据也就随之消失了（一个系所有学生都没有了，并不表示这个系就没有了）。 **删除异常**
+4. 假如李小明转系到法律系，那么为了保证数据库中数据的一致性，需要修改三条记录中系与系主任的数据。**修改异常**
+
+为了可以区分上表中每一条记录，我们需要结合两个字段才能确定唯一一条记录，即【学号+课名】，在这里【学号+课名】是上表的码/主属性。
+
+关于部分依赖，比如非主属性【姓名】完全依赖于【学号】，与【课名】并无直接关系，即【姓名】与码是部分依赖。
+
+按照2NF进行拆分，解决非主属性部分依赖主属性的问题，如下两张表是符合2NF的：
+
+![](..\assets\SqlServer\2nf-2.jpg)
+
+<a id="markdown-3nf三范式" name="3nf三范式"></a>
+### 3NF三范式
+3NF在2NF的基础之上，消除了非主属性对于码的传递函数依赖。
+
+![](..\assets\SqlServer\3nf-1.jpg)
+
+对于上面2NF案例中的学生表，还存在一些问题，【系主任】是完全依赖于【系名】，但在表中【系主任】还依赖于学生【学号】。
+
+存在非主属性【系主任】对于【学号】的传递依赖，上表并不符合3NF的设计。
+
+进一步修改，得到如下依赖关系：
+
+![](..\assets\SqlServer\3nf-2.jpg)
+
+符合3NF的表结构：
+
+![](..\assets\SqlServer\3nf-3.jpg)
+
+参考引用：
+[解释一下关系数据库的第一第二第三范式？ - 刘慰的回答 - 知乎](https://www.zhihu.com/question/24696366/answer/29189700)
+
 <a id="markdown-语句" name="语句"></a>
 ## 语句
 <a id="markdown-创建测试库" name="创建测试库"></a>
@@ -74,6 +148,17 @@ bit |   | 0，1或NULL | System.Boolean | bit | 一般用来表示是和否两�
 datetime | 8字节 | 1753 年 1 月 1 日到 9999 年 12 月 31 日 | System.DateTime | datetime | 表示日期和时间
 time |   |   | System.TimeSpan | time(7) | 表示时间间隔，比如计时和耗時
 varbinary |   |   | System.Byte | varbinary(max) | 表示二进制数据
+
+
+**CHAR、VARCHAR、NVARCHAR、TEXT区别**
+
+相同的是，这四种类型都可以保存字符串。
+
+- CHAR：适合存储固定长度数据，CHAR字段索引效率极高，但是比如定义CHAR(10)，那么不论你存储的数据是否达到了10个字节，都要占去10个字节的空间。
+- VARCHAR：适合存储变长数据，但存储效率没有CHAR高。从空间上考虑，用VARCHAR合适；从效率上考虑，用char合适。
+- NCHAR、NVARCHAR、NTEXT：前面的N表示存储的是Unicode数据类型的字符，也就是英文字符也占用两个字节，在存储英文时数量上有损失。中英文混存可以保证长度不超过4k。
+- TEXT：TEXT存储可变长度的非Unicode数据，最大长度为2^31-1(2,147,483,647)个字符。
+
 
 <a id="markdown-常见数据约束" name="常见数据约束"></a>
 #### 常见数据约束
@@ -369,6 +454,22 @@ SELECT SYSDATETIME();
 SELECT 1+1 ;
 ```
 
+<a id="markdown-开窗函数" name="开窗函数"></a>
+#### 开窗函数
+
+OVER 子句定义查询结果集内的窗口或用户指定的行集。 然后，开窗函数将计算窗口中每一行的值。
+
+在ISO SQL规定了这样的函数为开窗函数，在Oracle中则被称为分析函数，而在DB2中则被称为OLAP函数。
+
+开窗函数与聚合函数一样，都是对行的集合组进行聚合计算。它用于为行定义一个窗口（这里的窗口是指运算将要操作的行的集合），它对一组值进行操作，不需要使用GROUP BY子句对数据进行分组，能够在同一行中同时返回基础行的列和聚合列。
+
+调用格式为：`函数名(列) OVER(选项)`
+
+语法：`OVER ( [ PARTITION BY value_expression ] [ order_by_clause ] )  `
+
+
+> https://www.cnblogs.com/Leo_wl/p/3509860.html
+
 <a id="markdown-pivot和unpivot" name="pivot和unpivot"></a>
 #### PIVOT和UNPIVOT
 - PIVOT 
@@ -408,9 +509,9 @@ GO
 --使用CASE WHEN 的方式进行行转列
 SELECT NAME
 ,MAX((CASE WHEN COURSE = '语文' THEN SCORE ELSE NULL END )) AS 语文
-,MAX((CASE WHEN COURSE = '数学' THEN SCORE ELSE NULL END )) AS 数学 
-,MAX((CASE WHEN COURSE = '英语' THEN SCORE ELSE NULL END )) AS 英语 
-FROM T_SCORE GROUP BY NAME; 
+,MAX((CASE WHEN COURSE = '数学' THEN SCORE ELSE NULL END )) AS 数学
+,MAX((CASE WHEN COURSE = '英语' THEN SCORE ELSE NULL END )) AS 英语
+FROM T_SCORE GROUP BY NAME;
 
 --简单的示例，没有包含其他字段的情况下。除去[SCORE]和[COURSE]字段进行GROUP BY 
 SELECT * FROM T_SCORE PIVOT(MAX(SCORE) FOR COURSE IN (语文,数学,英语) ) AS P;
@@ -553,21 +654,6 @@ DROP INDEX TABLE_NAME.IDX_NAME;
 
 ```
 
-<a id="markdown-范式nf" name="范式nf"></a>
-## 范式(NF)
-范式是“符合某一种级别的关系模式的集合，表示一个关系内部各属性之间的联系的合理化程度”。晦涩难懂，暂且简单理解成"一张数据表的表结构所符合的某种设计标准的级别。"
 
-- 1NF
-定义为：符合1NF的关系中的每个属性都不可再分。不符合1NF的表也无法录入到数据库，如果不符合这个最基本的要求那么操作是无法成功的。
-
-- 2NF
-2NF在1NF的基础之上，消除了非主属性对于码的部分函数依赖。
-
-比如员工管理系统中员工表的部门电话等，就属于部分依赖。
-
-- 3NF
-3NF在2NF的基础之上，消除了非主属性对于码的传递函数依赖。
-
-比如员工管理系统中，有关部门的信息，只需要部分编号即可，其余信息均可以通过关联查询得到。
 
 
