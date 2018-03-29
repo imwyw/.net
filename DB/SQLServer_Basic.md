@@ -26,14 +26,15 @@
             - [SELECT...INTO..](#selectinto)
             - [CASE...WHEN...](#casewhen)
             - [SELECT XXX()](#select-xxx)
+            - [强类型转换](#强类型转换)
             - [开窗函数](#开窗函数)
             - [PIVOT和UNPIVOT](#pivot和unpivot)
         - [其他语句](#其他语句)
         - [提高效率Prompt](#提高效率prompt)
     - [索引](#索引)
         - [什么是索引？](#什么是索引)
-        - [聚集索引](#聚集索引)
-        - [非聚集索引](#非聚集索引)
+        - [聚集索引(CLUSTERED)](#聚集索引clustered)
+        - [非聚集索引(NONCLUSTERED)](#非聚集索引nonclustered)
         - [索引设计原则](#索引设计原则)
         - [创建索引](#创建索引)
 
@@ -389,6 +390,7 @@ SELECT DISTINCT FIELD1, FIELD2 FROM [TABLE_NAME];
 -- 也可以搭配聚合函数使用，统计不同FIELD1字段值的数目
 SELECT COUNT(DISTINCT FIELD1) FROM [TABLE_NAME];
 ```
+
 <a id="markdown-top" name="top"></a>
 #### TOP
 TOP 子句用于规定要返回的记录的数目。
@@ -452,6 +454,46 @@ SELECT SYSDATETIME();
 
 --计算表达式的值
 SELECT 1+1 ;
+```
+
+<a id="markdown-强类型转换" name="强类型转换"></a>
+#### 强类型转换
+在SQL SERVER中,cast和convert函数都可用于类型转换,其功能是相同的,只是语法不同。
+
+```sql
+CAST ( expression AS data_type [ ( length ) ] ) 
+CONVERT ( data_type [ ( length ) ] , expression [ , style ] ) 
+```
+
+cast一般更容易使用,convert的优点是可以格式化日期和数值，如下案例：
+```sql
+select CAST('123' as int)   -- 123
+select CONVERT(int, '123')  -- 123
+
+select CAST(123.4 as int)   -- 123
+select CONVERT(int, 123.4)  -- 123 
+
+select CAST('123.4' as int)
+select CONVERT(int, '123.4')
+-- Conversion failed when converting the varchar value '123.4' to data type int.
+
+select CAST('123.4' as decimal)  -- 123
+select CONVERT(decimal, '123.4') -- 123 
+
+select CAST('123.4' as decimal(9,2))  -- 123.40
+select CONVERT(decimal(9,2), '123.4') -- 123.40
+
+declare @Num money
+set @Num = 1234.56
+select CONVERT(varchar(20), @Num, 0)  -- 1234.56
+select CONVERT(varchar(20), @Num, 1)  -- 1,234.56
+select CONVERT(varchar(20), @Num, 2)  -- 1234.5600
+
+-- 时间格式，还有很多其他格式
+SELECT CONVERT(VARCHAR,GETDATE(),120); -- 2018-03-29 23:18:23
+SELECT CONVERT(VARCHAR,GETDATE(),121); -- 2018-03-29 23:18:23.810
+SELECT CONVERT(VARCHAR,GETDATE(),111); -- 2018/03/29
+SELECT CONVERT(VARCHAR,GETDATE(),112); -- 20180329
 ```
 
 <a id="markdown-开窗函数" name="开窗函数"></a>
@@ -610,16 +652,16 @@ SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提�
 2. 索引需要占磁盘空间，除了数据表占数据空间之外，每一个索引还要占一定的物理空间，如果有大量的索引，索引文件可能比数据文件更快达到做大文件尺寸。
 3. 当对表中的数据进行增加，删除和修改的时候，索引也要动态地维护，这样就就降低了数据的维护速度。
 
-<a id="markdown-聚集索引" name="聚集索引"></a>
-### 聚集索引
+<a id="markdown-聚集索引clustered" name="聚集索引clustered"></a>
+### 聚集索引(CLUSTERED)
 聚集索引基于数据行的键值，在表内排序和存储这些数据行。每个表只能有一个聚集索引，因为数据行本身只能按一个顺序存储。
 1. 每个表只能有一个聚集索引；
 2. 表中的物理顺序和索引中行的物理顺序是相同的，创建任何非聚集索引之前要首先创建聚集索引，这是因为非聚集索引改变了表中行的物理顺序；
 3. 关键值的唯一性使用UNIQUE关键字或者由内部的唯一标识符明确维护。
 4. 在索引的创建过程中，SQL Server临时使用当前数据库的磁盘空间，所以要保证有足够的空间创建索引。
 
-<a id="markdown-非聚集索引" name="非聚集索引"></a>
-### 非聚集索引
+<a id="markdown-非聚集索引nonclustered" name="非聚集索引nonclustered"></a>
+### 非聚集索引(NONCLUSTERED)
 非聚集索引具有完全独立于数据行的结构，使用非聚集索引不用将物理数据页中的数据按列排序，非聚集索引包含索引键值和指向表数据存储位置的行定位器。
 
 可以对表或索引视图创建多个非聚集索引。通常，设计非聚集索引是为了改善经常使用的、没有建立聚集索引的查询的性能。
@@ -645,13 +687,19 @@ SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提�
 ### 创建索引
 例如员工表EMP中需要经常按照[NAME]进行查询的话，则需要针对[NAME]添加索引
 ```sql
-CREATE [UNIQUE] [CLUSTERED|NONCLUSTERRED] INDEX IDX_TABLE_FIELD1 ON TABLE(FIELD1);
+-- UNIQUE表示唯一索引，可选
+-- CLUSTERED、NONCLUSTERED表示聚集索引还是非聚集索引，可选
+-- FILLFACTOR表示填充因子，指定一个0到100之间的值，该值指示索引页填满的空间所占的百分比
+CREATE [UNIQUE] [CLUSTERED|NONCLUSTERED] 
+    INDEX   index_name
+     ON table_name (column_name…)
+      [WITH FILLFACTOR=x]
+
 
 --查看对应表有什么索引
 EXEC sp_helpindex 'TABLE_NAME';
 --删除对应的索引
 DROP INDEX TABLE_NAME.IDX_NAME;
-
 ```
 
 
