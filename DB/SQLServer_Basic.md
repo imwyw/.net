@@ -167,7 +167,7 @@ constraint_name | 说明
 NOT NULL | 指示某列不能存储 NULL 值。
 UNIQUE | 保证某列的每行必须有唯一的值。
 PRIMARY KEY | NOT NULL 和 UNIQUE 的结合。确保某列（或两个列多个列的结合）有唯一标识，有助于更容易更快速地找到表中的一个特定的记录。
-FOREIGN KEY | 保证一个表中的数据匹配另一个表中的值的参照完整性。 `FOREIGN KEY([本表字段]) REFERENCES [主键表](主键字段])`
+FOREIGN KEY | 保证一个表中的数据匹配另一个表中的值的参照完整性。 `FOREIGN KEY([本表字段]) REFERENCES [主键表](主键字段)`
 CHECK | 保证列中的值符合指定的条件。
 DEFAULT | 规定没有给列赋值时的默认值。
 
