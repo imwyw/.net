@@ -258,7 +258,7 @@ END
 SELECT COUNT(1) FROM dbo.TEST;
 ```
 
-下面我们以每页10条数据，查询第3w页数据为例，即查询第300001~3000010条数据( `index > 30000*10 and index <= (30000+1)*10` )
+下面我们以每页10条数据，在ID升序的情况下查询第3w页数据为例，即查询第300001~3000010条数据( `index > 30000*10 and index <= (30000+1)*10` )
 
 ```sql
 -- 即实现以下SQL查询结果，此示例为极端情况(ID为有序递增)，实际应用情况下是无法使用 某字段直接进行大小比较得出结果的
@@ -329,9 +329,9 @@ CREATE PROCEDURE [dbo].[sp_paged_data]
     )
 AS
     BEGIN
-        --不返回计数(表示受 Transact-SQL 语句影响的行数)
+        -- 设置不返回计数(受Transact-SQL语句影响的行数)
         SET NOCOUNT ON;
-        -- 获取记录总数的查询SQL语句
+        -- 定义查询记录总数的SQL语句
         DECLARE @sqlcount NVARCHAR(1000);
 
         SET @sqlcount = N' select @rowTotal=count(*) from ' + @sqlTable

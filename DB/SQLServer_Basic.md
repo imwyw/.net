@@ -19,6 +19,7 @@
         - [多表查询](#多表查询)
             - [连接JOIN](#连接join)
             - [合并UNION](#合并union)
+            - [EXCEPT 和 INTERSECT](#except-和-intersect)
         - [用法拓展](#用法拓展)
             - [DISTINCT](#distinct)
             - [TOP](#top)
@@ -27,6 +28,8 @@
             - [CASE...WHEN...](#casewhen)
             - [SELECT XXX()](#select-xxx)
             - [强类型转换](#强类型转换)
+            - [IN和Exists](#in和exists)
+            - [WITH AS](#with-as)
             - [开窗函数](#开窗函数)
             - [PIVOT和UNPIVOT](#pivot和unpivot)
         - [其他语句](#其他语句)
@@ -375,6 +378,20 @@ VALUES  ( 1, 'BigData'),(2,'AI'),(5,'SINGING')
 1. 两个结果集的数据列数量和数据类型必须保持一致；
 2. 如果有ALL则不会移除重复的行，也不会自动排序，仅仅做合并操作；
 
+<a id="markdown-except-和-intersect" name="except-和-intersect"></a>
+#### EXCEPT 和 INTERSECT
+EXCEPT 从左查询中返回右查询没有找到的所有非重复值。
+
+INTERSECT 返回 INTERSECT 操作数左右两边的两个查询都返回的所有非重复值，交集去重。
+
+以下是将使用 EXCEPT 或 INTERSECT 的两个查询的结果集组合起来的基本规则：
+
+* 所有查询中的列数和列的顺序必须相同。 
+* 数据类型必须兼容。 
+
+> http://www.cnblogs.com/dyufei/archive/2009/11/11/2573976.html
+
+
 <a id="markdown-用法拓展" name="用法拓展"></a>
 ### 用法拓展
 <a id="markdown-distinct" name="distinct"></a>
@@ -495,6 +512,59 @@ SELECT CONVERT(VARCHAR,GETDATE(),121); -- 2018-03-29 23:18:23.810
 SELECT CONVERT(VARCHAR,GETDATE(),111); -- 2018/03/29
 SELECT CONVERT(VARCHAR,GETDATE(),112); -- 20180329
 ```
+
+<a id="markdown-in和exists" name="in和exists"></a>
+#### IN和Exists
+
+总结：
+```sql
+SELECT * FROM 大表 WHERE FIELD_X IN (SELECT FIELD_X FROM 小表);
+SELECT * FROM 小表 WHERE EXISTS (SELECT * FROM 大表 WHERE 大表.xx = 小表.xx);
+```
+
+> https://www.cnblogs.com/liyasong/p/sql_in_exists.html
+
+<a id="markdown-with-as" name="with-as"></a>
+#### WITH AS
+WITH AS短语，也叫做子查询部分（subquery factoring），可以定义一个SQL片断，该SQL片断会被整个SQL语句用到。
+
+下例为经典案例的查询学生成绩SQL：
+```sql
+SELECT  *
+FROM    dbo.SC
+WHERE   Sno IN ( SELECT sno
+                 FROM   dbo.Student
+                 WHERE  Sname LIKE '%李%' );
+```
+
+虽然上例中子查询部分的SQL很简单，仅做了一次模糊查询，但是如果嵌套层次过多，条件复杂的情况，会使SQL语句非常难以阅读和维护。
+
+为此，在SQL Server 2005中提供了另外一种解决方案，这就是公用表表达式（CTE），使用CTE，可以使SQL语句的可维护性，同时，CTE要比表变量的效率高得多。
+
+语法如下：
+```sql
+[ WITH <common_table_expression> [ ,n ] ]
+<common_table_expression>::=
+        expression_name [ ( column_name [ ,n ] ) ]
+    AS
+        ( CTE_query_definition )
+```
+
+针对上述示例查询学生成绩可以进行优化(此案例虽然看上去使用CTE更复杂，但是在复杂场景下使用CTE能很大程度的使SQL结构清晰)：
+```sql
+WITH    temp
+          AS ( SELECT   sno
+               FROM     dbo.Student
+               WHERE    Sname LIKE '%李%'
+             )
+    SELECT  *
+    FROM    dbo.SC
+    WHERE   Sno IN ( SELECT *
+                     FROM   temp );
+```
+
+> http://www.cnblogs.com/fightLonely/archive/2011/02/24/1963907.html
+
 
 <a id="markdown-开窗函数" name="开窗函数"></a>
 #### 开窗函数
@@ -701,6 +771,74 @@ EXEC sp_helpindex 'TABLE_NAME';
 --删除对应的索引
 DROP INDEX TABLE_NAME.IDX_NAME;
 ```
+
+示例中不太容易模拟出巨大的查询差异，我们以实际查询计划作为参考观察有无索引的区别。
+
+如下是一个插入模拟数据的SQL,数据量在500w，存储执行大概在10min多，视机器环境不同而有所区别。
+```sql
+CREATE PROCEDURE [dbo].[SP_BATCH_INSERT]
+AS
+    DECLARE @NUM INT
+    SET @NUM = 1
+
+    IF OBJECT_ID('T_INDEX_TEST') IS NOT NULL
+        DROP TABLE T_INDEX_TEST
+
+	--模拟大数据量表
+    CREATE TABLE T_INDEX_TEST
+        (
+          guid VARCHAR(40) ,
+          name0 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name1 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name2 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name3 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name4 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name5 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name6 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name7 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name8 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          name9 VARCHAR(40) DEFAULT ( NEWID() ) ,
+          update_time DATETIME DEFAULT ( GETDATE() )
+        )
+
+    --500w条记录
+    WHILE ( @NUM <= 5000000 )
+        BEGIN 
+            SET @NUM = @NUM + 1
+
+    --插入测试数据，NEWID()产生随机值
+            INSERT  INTO T_INDEX_TEST
+                    ( guid )
+            VALUES  ( NEWID() )
+        END
+```
+
+执行完上面的存储后，进行测试：
+```sql
+-- 检测数据量
+SELECT count(1) FROM T_INDEX_TEST;
+
+-- 创建副本表，并添加聚集索引，用以对比
+SELECT * INTO T_INDEX_TEST_NEW FROM T_INDEX_TEST;
+
+-- 创建副本表的聚集索引 T_INDEX_TEST_NEW
+CREATE UNIQUE CLUSTERED INDEX idx_t_index_test_new ON dbo.T_INDEX_TEST(GUID)
+
+-- 取其中一个数据的guid进行查询示例
+SELECT * FROM dbo.T_INDEX_TEST WHERE guid ='003EE909-FE1F-432A-AAAA-33A310849745';
+SELECT * FROM dbo.T_INDEX_TEST_NEW WHERE guid ='003EE909-FE1F-432A-AAAA-33A310849745';
+```
+上面案例中，有误索引的直观感受可能并不明显，我们可以通过查看执行计划来对比。
+
+首先，勾选菜单【查询】-【包括实际的执行计划】，然后再进行查询。
+
+下图是针对`T_INDEX_TEST`无索引的查询：
+
+![](..\assets\SqlServer\index-demo-1.jpg)
+
+针对GUID有聚集索引的`T_INDEX_TEST_NEW`查询计划如下：
+
+![](..\assets\SqlServer\index-demo-2.jpg)
 
 
 
