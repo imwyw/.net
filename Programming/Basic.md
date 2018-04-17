@@ -705,5 +705,3 @@ Dictionary<string, string> dicRes = new Dictionary<string, string>();
 dicRes.Add("zhangsan","张三");
 dicRes.Add("zhaofugui", "赵富贵");
 ```
-
-
