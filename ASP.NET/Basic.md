@@ -1,6 +1,7 @@
 <!-- TOC -->
 
 - [ASP.NET基础](#aspnet基础)
+    - [ASP.NET静态网页实现简单登录跳转](#aspnet静态网页实现简单登录跳转)
     - [状态管理](#状态管理)
         - [数据缓存](#数据缓存)
             - [Session](#session)
@@ -11,7 +12,6 @@
         - [数据传递问题](#数据传递问题)
             - [Request](#request)
             - [Response](#response)
-    - [ASP.NET静态网页实现简单登录跳转](#aspnet静态网页实现简单登录跳转)
     - [Ajax](#ajax)
         - [同步异步](#同步异步)
         - [通过js请求](#通过js请求)
@@ -25,6 +25,172 @@
 <!-- /TOC -->
 <a id="markdown-aspnet基础" name="aspnet基础"></a>
 # ASP.NET基础
+
+<a id="markdown-aspnet静态网页实现简单登录跳转" name="aspnet静态网页实现简单登录跳转"></a>
+## ASP.NET静态网页实现简单登录跳转
+新建Web应用程序，如下图：
+
+![](..\assets\asp.net\HtmlLoginDemo1.png)
+
+选择Empty空模板，如下图：
+
+![](..\assets\asp.net\HtmlLoginDemo2.png)
+
+添加Login.html文件并设为起始页，如下图：
+
+![](..\assets\asp.net\HtmlLoginDemo1.gif)
+
+Login.html内容如下：
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>登录</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <h1>欢迎使用xxxx</h1>
+    <form>
+        <table>
+            <tr>
+                <td><label for="txtName">用户名：</label></td>
+                <td><input type="text" id="txtName" name="name"/></td>
+            </tr>
+            <tr>
+                <td><label for="txtPwd">密码：</label></td>
+                <td><input type="password" id="txtPwd" name="pwd"/></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+```
+
+以上，即可以通过开始执行(ctrl+f5)通过浏览器查看该页面。
+
+实现后台的验证功能，通过一般处理程序，接收form表单的提交。新建一般处理程序(HomeHandler.ashx)，结构如下：
+```cs
+/// <summary>
+/// HomeHandler 的摘要说明
+/// </summary>
+public class HomeHandler : IHttpHandler
+{
+	/// <summary>
+	/// 处理http请求
+	/// </summary>
+	/// <param name="context"></param>
+	public void ProcessRequest(HttpContext context)
+	{
+		context.Response.ContentType = "text/plain";
+		context.Response.Write("Hello World");
+	}
+
+	/// <summary>
+	/// 是否重用该处理程序，即多个请求是否访问的一个实例
+	/// 获取一个值，该值指示其他请求是否可以使用 IHttpHandler 实例。
+	/// 如果 IHttpHandler 实例可再次使用，则为 true；否则为 false。 
+	/// 默认为false即可
+	/// </summary>
+	public bool IsReusable
+	{
+		get
+		{
+			return false;
+		}
+	}
+}
+```
+
+修改上述Login.html中form的action为对应的处理程序，如下：
+```html
+<form id="form1" action="/HomeHandler.ashx" method="post">
+```
+
+修改HomeHandler.ashx一般处理程序的ProcessRequest方法，内容如下：
+```cs
+/// <summary>
+/// 处理http请求
+/// </summary>
+/// <param name="context"></param>
+public void ProcessRequest(HttpContext context)
+{
+	//修改返回响应的类型，按照html进行解析
+	context.Response.ContentType = "text/html";
+
+	//Request["xxx"]中的xxx对应表单中元素的name属性，而不是id属性！
+	string name = context.Request["name"];
+	string pwd = context.Request["pwd"];
+
+	if (name == "admin" && pwd == "1")
+	{
+		context.Response.Write("<script>alert('登录成功！');</script>");
+	}
+	else
+	{
+		context.Response.Write("<script>alert('用户名或密码错误！');</script>");
+	}
+}
+```
+
+通过表单提交，即可进行再后台进行验证登录是否成功。以上，就是一个简单的登录demo。
+
+拓展，可以添加另外一个页面Index.html，实现验证成功后跳转到另一个静态页面，在验证成功后添加如下跳转代码：
+```cs
+context.Server.Transfer("Index.html");
+```
+
+对于一个一般处理程序，可能需要处理多个请求，比如登录请求，注册请求等，为了方便方法的调用，我们采用反射的方式进行方法的调用
+
+针对上面的案例，修改如下：
+```cs
+public void ProcessRequest(HttpContext context)
+{
+	//获取方法名称，需要在form表单action属性同步进行修改
+	string method = context.Request.PathInfo.Substring(1);
+
+	//根据前端方法名称反射获取当前Handler类的方法
+	MethodInfo methodInfo = this.GetType().GetMethod(method);
+
+	//手动进行调用
+	methodInfo.Invoke(this, new object[] { context });
+}
+
+/// <summary>
+/// 方法名和form表单action拼接的方法名保持一致
+/// 反射进行调用
+/// </summary>
+/// <param name="context"></param>
+public void Login(HttpContext context)
+{
+	context.Response.ContentType = "text/html";
+	string name = context.Request["name"];
+	string pwd = context.Request["pwd"];
+
+	if (name == "admin" && pwd == "1")
+	{
+		context.Server.Transfer("Home.html");
+	}
+	else
+	{
+		context.Response.Write("<script>alert('用户名或密码错误');</script>");
+		context.Server.Transfer("Login.html");
+	}
+}
+```
+
+并修改上述Login.html中form的action为对应的处理程序增加/Login方法名，如下：
+```html
+<form id="form1" action="/HomeHandler.ashx/Login" method="post">
+```
+
+但是上面这种方案会有一个问题，表单提交就会发生跳转，无论验证成功与否。这个问题后面会讲到。。。
+
 <a id="markdown-状态管理" name="状态管理"></a>
 ## 状态管理
 在开发互联网程序时，不可避免的几个问题需要解决：
@@ -84,7 +250,11 @@ IReadOnlySessionState,为只读的session 不可以修改
 
 IRequiresSessionState ，可以修改。
 
-单用户数据独享时使用，属于会话级别对象；允许通过将对象存储在 Web 服务器的内存中在整个用户会话过程中保持任何对象；每个用户的Session对象是通过SessionID来识别的，该SessionID默认是由客户端的Cookie来存储并传输的。
+单用户数据独享时使用，属于会话级别对象；
+
+允许通过将对象存储在 Web 服务器的内存中在整个用户会话过程中保持任何对象；
+
+每个用户的Session对象是通过SessionID来识别的，该SessionID默认是由客户端的Cookie来存储并传输的。
 
 Session可以保存任何类型的值，包括类的实例：`Session["UserName"] = " jack ";`
 ```cs
@@ -99,11 +269,25 @@ context.Session["FirstName"] = firstName;
 firstName = (string)(context.Session["FirstName"]);
 ```
 
+设置session过期时间
+```xml
+<configuration>
+    <system.web>
+	  <!--设置会话过期时间，timeout单位为分钟-->
+      <sessionState timeout="1"></sessionState>
+      <compilation debug="true" targetFramework="4.5" />
+      <httpRuntime targetFramework="4.5" />
+    </system.web>
+</configuration>
+```
+
 <a id="markdown-application" name="application"></a>
 #### Application
-多用户数据共享时使用，属于应用程序级别对象；用它保存的数据会在一个应用内多个用户信息共享，并在服务器运行期间持久保存该数据。服务器一关闭，Application对象就自动消失。允许共享 ASP.NET 应用程序内多个会话和请求之间的全局信息。
+多用户数据共享时使用，属于应用程序级别对象；用它保存的数据会在一个应用内多个用户信息共享，并在服务器运行期间持久保存该数据。
 
-在服务器内存中存储数量较少又独立于用户请求的数据：`Application[“key"] = value ;`
+服务器一关闭，Application对象就自动消失。允许共享 ASP.NET 应用程序内多个会话和请求之间的全局信息。
+
+在服务器内存中存储数量较少又独立于用户请求的数据：`Application["key"] = value ;`
 
 ```cs
 Application.Lock();//同步,避免同时写入
@@ -113,6 +297,70 @@ Application["AllGuests"] =(int)Application["AllGuests"]+ 1;//访问网站的总�
 
 Application.UnLock();//同步结束
 ```
+
+考虑多用户的情况，我们使用Application进行记录在线用户数，需要处理所有的客户端请求，所以需要有一个全局的请求处理，对应如下操作：
+
+![](..\assets\asp.net\Global.asax.jpg)
+
+```cs
+public class Global : System.Web.HttpApplication
+{
+	/// <summary>
+	/// 网站启动的时候会被调用
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	protected void Application_Start(object sender, EventArgs e) { }
+
+	/// <summary>
+	/// 某一个session启动的时候会被调用
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	protected void Session_Start(object sender, EventArgs e) { }
+
+	/// <summary>
+	/// 当一个请求过来的时候会被调用,html静态文件是iis直接把文件给到浏览器
+	/// 不经过asp.net引擎处理,所以不会调用Application_BeginRequest方法
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	protected void Application_BeginRequest(object sender, EventArgs e) { }
+
+	/// <summary>
+	/// 当安全模块已经建立了当前用户的标识后执行。
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	protected void Application_AuthenticateRequest(object sender, EventArgs e) { }
+
+	/// <summary>
+	/// 当web应用程序发生错误的时候会被调用
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	protected void Application_Error(object sender, EventArgs e) { }
+
+	/// <summary>
+	/// 当session结束的时候会被调用,如session超时,设置session 20分钟过期,到了这时间就被调用
+	/// 只有进程内session,也就是InProc(默认模式)过期的时候才会调用Session_End,进程外session不会调用此方法
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	protected void Session_End(object sender, EventArgs e) { }
+
+	/// <summary>
+	/// 当web应用程序退出的时候会被调用
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	protected void Application_End(object sender, EventArgs e) { }
+}
+```
+
+前面说到的记录在线用户数，就需要使用`Application_BeginRequest`事件，`Session_Start`事件和`Session_End`事件
+
+在`Application_BeginRequest`程序启动时将计数归零，`Session_Start`和`Session_End`会话开始和结束的时候分别做加减。
 
 <a id="markdown-cache" name="cache"></a>
 #### Cache
@@ -133,13 +381,16 @@ Cookie 提供了一种在 Web 应用程序中存储用户特定信息的方法�
 
 ```cs
 /*
-cookie的设置
+cookie的设置方式一
 */
 context.Response.Cookies["CurUser"]["name"] = name;
 context.Response.Cookies["CurUser"]["pwd"] = pwd;
 //设置过期时间为1小时
 context.Response.Cookies["CurUser"].Expires = DateTime.Now.AddHours(1);
 
+/*
+cookie的设置方式二
+*/
 HttpCookie hcookie = new HttpCookie("CurAdmin");
 hcookie["uid"] = name;
 hcookie["pass"] = pwd;
@@ -169,8 +420,8 @@ if (context.Request.Cookies["CurUser"] != null)
     myCookie.Expires = DateTime.Now.AddDays(-1d);
     context.Response.Cookies.Add(myCookie);
 }
-
 ```
+
 ```js
 //js读取cookie
 document.cookie;
@@ -257,125 +508,9 @@ Cookies.getJSON(); // => { name: { foo: 'bar' } }
 2. 重定向浏览器到另一个URL：Response.Redirect(“url”, true);
 3. 设置Cookie的值：Response.Cookies.Add(cookie);
 
-<a id="markdown-aspnet静态网页实现简单登录跳转" name="aspnet静态网页实现简单登录跳转"></a>
-## ASP.NET静态网页实现简单登录跳转
-新建Web应用程序，如下图：
-![](..\assets\asp.net\HtmlLoginDemo1.png)
-
-选择Empty空模板，如下图：
-![](..\assets\asp.net\HtmlLoginDemo2.png)
-
-添加Login.html文件并设为起始页，如下图：
-
-![](..\assets\asp.net\HtmlLoginDemo1.gif)
-
-Login.html内容如下：
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>登录</title>
-    <meta charset="utf-8" />
-</head>
-<body>
-    <h1>欢迎使用xxxx</h1>
-    <form>
-        <table>
-            <tr>
-                <td><label for="txtName">用户名：</label></td>
-                <td><input type="text" id="txtName" name="name"/></td>
-            </tr>
-            <tr>
-                <td><label for="txtPwd">密码：</label></td>
-                <td><input type="password" id="txtPwd" name="pwd"/></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" />
-                </td>
-            </tr>
-        </table>
-    </form>
-</body>
-</html>
-```
-
-以上，即可以通过开始执行(ctrl+f5)通过浏览器查看该页面。
-
-实现后台的验证功能，通过一般处理程序，接收form表单的提交。新建一般处理程序(HomeHandler.ashx)，结构如下：
-```cs
-/// <summary>
-/// HomeHandler 的摘要说明
-/// </summary>
-public class HomeHandler : IHttpHandler
-{
-	/// <summary>
-	/// 处理http请求
-	/// </summary>
-	/// <param name="context"></param>
-	public void ProcessRequest(HttpContext context)
-	{
-		context.Response.ContentType = "text/plain";
-		context.Response.Write("Hello World");
-	}
-
-	/// <summary>
-	/// 获取一个值，该值指示其他请求是否可以使用 IHttpHandler 实例。
-	/// 如果 IHttpHandler 实例可再次使用，则为 true；否则为 false。 
-	/// 默认为false即可
-	/// </summary>
-	public bool IsReusable
-	{
-		get
-		{
-			return false;
-		}
-	}
-}
-```
-
-修改上述Login.html中form的action为对应的处理程序，如下：
-```html
-<form id="form1" action="/HomeHandler.ashx" method="post">
-```
-
-修改HomeHandler.ashx一般处理程序的ProcessRequest方法，内容如下：
-```cs
-/// <summary>
-/// 处理http请求
-/// </summary>
-/// <param name="context"></param>
-public void ProcessRequest(HttpContext context)
-{
-	context.Response.ContentType = "text/html";
-
-	//Request["xxx"]中的xxx对应表单中元素的name属性，而不是id属性！
-	string name = context.Request["name"];
-	string pwd = context.Request["pwd"];
-
-	if (name == "admin" && pwd == "1")
-	{
-		context.Response.Write("<script>alert('登录成功！');</script>");
-	}
-	else
-	{
-		context.Response.Write("<script>alert('不存在该用户！');</script>");
-	}
-}
-```
-
-通过表单提交，即可进行再后台进行验证登录是否成功。以上，就是一个简单的登录demo。
-
-拓展，可以添加另外一个页面Index.html，实现验证成功后跳转到另一个静态页面，在验证成功后添加如下跳转代码：
-```cs
-context.Server.Transfer("Index.html");
-```
-
-这种方式的弊端是表单提交即发生跳转，无论验证成功与否。这个问题后面会讲到。。。
-
 <a id="markdown-ajax" name="ajax"></a>
 ## Ajax
+
 <a id="markdown-同步异步" name="同步异步"></a>
 ### 同步异步
 同步：发送方发出请求后，等接收方发回响应后，才会发送下一个请求。
