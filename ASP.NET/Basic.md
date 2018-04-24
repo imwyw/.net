@@ -377,7 +377,9 @@ string NameID = context.Cache["nameID"].ToString();
 
 <a id="markdown-cookie" name="cookie"></a>
 #### Cookie
-Cookie 提供了一种在 Web 应用程序中存储用户特定信息的方法。例如，当用户访问您的站点时，您可以使用 Cookie 存储用户首选项或其他信息。当该用户再次访问您的网站时，应用程序便可以检索以前存储的信息。
+Cookie 提供了一种在 Web 应用程序中存储用户特定信息的方法。例如，当用户访问您的站点时，您可以使用 Cookie 存储用户首选项或其他信息。
+
+当该用户再次访问您的网站时，应用程序便可以检索以前存储的信息。
 
 ```cs
 /*
