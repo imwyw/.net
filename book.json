@@ -52,8 +52,8 @@
             }
         },
         "page-footer-ex": {
-            "copyright":"imwyw ",
-            "update_label":"modified at:",
+            "copyright":"<em>imwyw</em>",
+            "update_label":"<i>updated</i>",
             "update_format":"YYYY-MM-DD"
         }
     }
