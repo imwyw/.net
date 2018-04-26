@@ -16,6 +16,7 @@
         "sectionx",
         "anchor-navigation-ex",
         "3-ba",
+        "page-footer-ex",
         "copy-code-button"
     ],
     "pluginsConfig": {
@@ -49,6 +50,11 @@
                 "level2Icon": "fa fa-hand-o-right",
                 "level3Icon": "fa fa-hand-o-right"
             }
+        },
+        "page-footer-ex": {
+            "copyright":"imwyw ",
+            "update_label":"modified at:",
+            "update_format":"YYYY-MM-DD"
         }
     }
 }
