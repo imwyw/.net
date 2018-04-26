@@ -14,6 +14,8 @@
         - [基本封装](#基本封装)
         - [分页查询封装](#分页查询封装)
         - [SqlDataReader转换为实体类优化](#sqldatareader转换为实体类优化)
+    - [Guid的应用](#guid的应用)
+        - [Unique Int64](#unique-int64)
 
 <!-- /TOC -->
 <a id="markdown-adonet" name="adonet"></a>
@@ -980,5 +982,63 @@ public static object CheckType(object value, Type conversionType)
         conversionType = nullableConverter.UnderlyingType;
     }
     return Convert.ChangeType(value, conversionType);
+}
+```
+
+<a id="markdown-guid的应用" name="guid的应用"></a>
+## Guid的应用
+<a id="markdown-unique-int64" name="unique-int64"></a>
+### Unique Int64
+TODO待测试重复性，目前仅测试百万级别，更大数据量有待测试是否会产生重复ID
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        List<long> list = new List<long>();
+        Test(100000, list);
+        Console.WriteLine(list.GroupBy(t => t).Count());
+    }
+
+    static void Test(int cnt, List<long> list)
+    {
+        int i = 0;
+        while (i < cnt)
+        {
+            i++;
+            string text = Guid.NewGuid().ToString();
+
+            list.Add(GetInt64HashCode(text));
+        }
+    }
+
+    /// <summary>
+    /// Return unique Int64 value for input string
+    /// </summary>
+    /// <param name="strText"></param>
+    /// <returns></returns>
+    static Int64 GetInt64HashCode(string strText)
+    {
+        Int64 hashCode = 0;
+        if (!string.IsNullOrEmpty(strText))
+        {
+            //Unicode Encode Covering all characterset
+            byte[] byteContents = Encoding.Unicode.GetBytes(strText);
+            System.Security.Cryptography.SHA256 hash =
+            new System.Security.Cryptography.SHA256CryptoServiceProvider();
+            byte[] hashText = hash.ComputeHash(byteContents);
+            //32Byte hashText separate
+            //hashCodeStart = 0~7  8Byte
+            //hashCodeMedium = 8~23  8Byte
+            //hashCodeEnd = 24~31  8Byte
+            //and Fold
+            Int64 hashCodeStart = BitConverter.ToInt64(hashText, 0);
+            Int64 hashCodeMedium = BitConverter.ToInt64(hashText, 8);
+            Int64 hashCodeEnd = BitConverter.ToInt64(hashText, 24);
+            hashCode = hashCodeStart ^ hashCodeMedium ^ hashCodeEnd;
+        }
+        return (hashCode);
+    }
 }
 ```

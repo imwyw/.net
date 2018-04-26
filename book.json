@@ -16,7 +16,6 @@
         "sectionx",
         "anchor-navigation-ex",
         "3-ba",
-        "tbfed-pagefooter",
         "copy-code-button"
     ],
     "pluginsConfig": {
@@ -50,11 +49,6 @@
                 "level2Icon": "fa fa-hand-o-right",
                 "level3Icon": "fa fa-hand-o-right"
             }
-        },
-        "tbfed-pagefooter": {
-            "copyright": "Copyright &copy imwyw",
-            "modify_label": "最后修改时间：",
-            "modify_format": "YYYY-MM-DD HH:mm:ss"
         }
     }
 }
