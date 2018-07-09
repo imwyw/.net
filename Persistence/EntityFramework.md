@@ -17,25 +17,23 @@
         - [ExecuteSqlCommand](#executesqlcommand)
         - [SqlQuery](#sqlquery)
         - [DbSet下的SqlQuery](#dbset下的sqlquery)
+    - [其他](#其他)
+        - [命令更新](#命令更新)
 
 <!-- /TOC -->
 
-<a id="markdown-entityframework" name="entityframework"></a>
 # EntityFramework
 ADO.NET EntityFramework框架是一组内建于ADO.NET的用于支持开发基于数据软件应用的技术。它使得开发人员通过特定的领域对象及属性来使用数据，而不需要关心他们存储在底层数据库时用的表以及列的信息。
 
 EF是一种ORM（Object-relational mapping）框架，它能把我们在编程时使用对象映射到底层的数据库结构。比如，你可以在数据库中建立一个Order表，让它与程序中的Order类建立映射关系，这样一来，程序中的每个Order对象都对应着Order表中的一条记录，ORM框架负责把从数据库传回的记录集转换为对象，也可以依据对象当前所处的具体状态生成相应的SQL命令发给数据库，完成数据的存取工作（常见的数据存取操作可简称为CRUD：Create、Read、Update、Delete）。
 
-<a id="markdown-三种开发方式" name="三种开发方式"></a>
 ## 三种开发方式
 * Code First 先设计实体类，执行后既有底层库表。即先有代码再有数据库。
 * Database First 先设计并建好数据库，然后使用VS的向导创建EF数据模型并生成实体类代码。 实用，推荐！！！
 * Model First 在可视化设计器中创建实体和它们间的关联，再生成SQL脚本，然后执行SQL脚本完成数据库的创建。不推荐
 
-<a id="markdown-database-first" name="database-first"></a>
 ## Database First
 
-<a id="markdown-ef创建" name="ef创建"></a>
 ### EF创建
 以我们数据库中现存的数据库为例，创建实体数据模型的步骤如下：
 
@@ -63,7 +61,6 @@ EF是一种ORM（Object-relational mapping）框架，它能把我们在编程�
 
 **有一点需要特别注意，EF只能映射具有主键的表，无主键的表是无法映射的。**
 
-<a id="markdown-更新模型" name="更新模型"></a>
 ## 更新模型
 
 以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，在Diagram界面右键选择【从数据库更新模型...】即可，如下：
@@ -72,10 +69,8 @@ EF是一种ORM（Object-relational mapping）框架，它能把我们在编程�
 
 完成更新后，就会将底层最新的库表结构转换为实体类。
 
-<a id="markdown-ef应用" name="ef应用"></a>
 ## EF应用
 
-<a id="markdown-entity-client-方式" name="entity-client-方式"></a>
 ### Entity Client 方式
 它是 ADO.NET Entity Framework 中的本地用户端 (Native Client)，它的对象模型和 ADO.NET 的其他用户端非常相似：
 
@@ -116,7 +111,6 @@ conn.Close();
 
 EF的重点和精华都不在Entity Client 方式，当然也不推荐这种用法，不如封装ADO.NET操作来的畅快自在。
 
-<a id="markdown-object-context-方式" name="object-context-方式"></a>
 ### Object Context 方式
 它是微软在 Entity Client 的上层加上了一个供编程语言直接访问的界面。实质上，是把 EDM 当成对象集合的访问。
 
@@ -173,7 +167,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
     }
 ```
 
-<a id="markdown-linq-to-entities-方式" name="linq-to-entities-方式"></a>
 ### Linq to Entities 方式
 因为EDM 的访问改变为一种对对象集合的访问方式，所以可以利用 LINQ 来访问 EDM。
 
@@ -195,7 +188,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-<a id="markdown-添加数据" name="添加数据"></a>
 ### 添加数据
 向数据库中添加数据就跟往List<>集合添加数据一样，不过最后需要调用SaveChanges()向数据库保存一下数据。
 
@@ -212,7 +204,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-<a id="markdown-修改数据" name="修改数据"></a>
 ### 修改数据
 先查询出你要修改的那条数据，之后直接更改其中的值就可以了。以上一节中新添加的数据为示例修改，如下：
 
@@ -229,7 +220,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-<a id="markdown-删除数据" name="删除数据"></a>
 ### 删除数据
 使用EF删除数据就和在List<>集合中删除元素一样
 
@@ -246,7 +236,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-<a id="markdown-事务" name="事务"></a>
 ### 事务
 在EF使用事务有两种方案，一种是EF自带的.BeginTransaction()方法，另一种是使用TransactionScope类。
 
@@ -295,7 +284,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-<a id="markdown-在entityframework6中执行sql语句" name="在entityframework6中执行sql语句"></a>
 ## 在EntityFramework6中执行SQL语句
 前面的内容除了Entity Client 方式我们了SQL脚本，其余方式我们都没有写任何SQL脚本。
 
@@ -305,7 +293,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 
 在数据上下文DBModel的实例中有个Database属性，其中有两组方法.ExecuteSqlCommand()和.SqlQuery()。它们都可以执行SQL语句。
 
-<a id="markdown-executesqlcommand" name="executesqlcommand"></a>
 ### ExecuteSqlCommand
 ExecuteSqlCommand()是不返回结果的，只返回受影响的行数，所以.ExecuteSqlCommand()更适合执行创建、更新、删除操作。
 
@@ -334,7 +321,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 
 如果需要创建或删除当前数据库，Database属性中还存在.Create() 和.Delete()方法，它们不接受参数，返回一个bool值表示执行成功或失败。
 
-<a id="markdown-sqlquery" name="sqlquery"></a>
 ### SqlQuery
 SqlQuery()返回查询到的结果，并将结果保存在数据实体中，所以更适合执行查询操作。
 
@@ -382,7 +368,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-<a id="markdown-dbset下的sqlquery" name="dbset下的sqlquery"></a>
 ### DbSet下的SqlQuery
 在每个数据实体集合DbSet<T>下也有一个.SqlQuery()，功能与上面介绍的一样，只不过DbSet<T>下的.SqlQuery()只能返回DbSet<T>中包含的类型。
 
@@ -405,6 +390,16 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
     }
 }
 ```
+
+
+## 其他
+### 命令更新
+> https://github.com/aspnetboilerplate/aspnetboilerplate-samples/tree/master/PlugInDemo
+
+git上ABP项目PlugInDemo为例，运行前需要执行Update-Database迁移Entity Framework。如下图
+
+![](..\assets\adonet\EF-update.jpg)
+
 
 ---
 
