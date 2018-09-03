@@ -52,7 +52,7 @@
 
 * CLR 是.NET Framework 的虚拟机器元件(virtual machine component)，用来管理执行中的.NET 程序。
 * CLR有个重要的流程是JIT编译 (just-in-time compilation)机制，可以将.NET程式编译过的中继语言 (Intermediate language)编译为当前CPU架构可执行的机器码 (machine instructions)。
-* CLR提供记忆体管理、型别安全、例外处理、垃圾回收机制 (GC)、安全性、执行绪管理等服务。
+* CLR提供记忆体管理、类型安全、例外处理、垃圾回收机制 (GC)、安全性、执行绪管理等服务。
 * 无论什么程式语言，只要是基于.NET 框架的程式，都必须执行于CLR 提供的执行环境(虚拟机器)中。
 * CLR包含一系列基础类别函式库 ( BCL ) ( Base Class Libraries )，用来提供.NET执行时期需要的程式基础。
 * 在该函式库中含有一堆组件 (Assembly)与型别 (Type)定义，如命名空间、类别、介面、列举、…等等。
