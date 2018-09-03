@@ -5,8 +5,16 @@
         - [变量](#变量)
             - [值类型](#值类型)
             - [引用类型](#引用类型)
+            - [类型系统](#类型系统)
         - [常量](#常量)
+            - [const](#const)
+            - [枚举](#枚举)
+            - [const/readonly](#constreadonly)
         - [类型转换](#类型转换)
+            - [隐式转换](#隐式转换)
+            - [显式转换](#显式转换)
+            - [用户定义的转换](#用户定义的转换)
+            - [使用帮助程序类进行转换](#使用帮助程序类进行转换)
         - [装箱(boxing)、拆箱(unboxing)](#装箱boxing拆箱unboxing)
         - [结构体](#结构体)
             - [结构体和类](#结构体和类)
@@ -44,30 +52,196 @@
 
 <a id="markdown-数据类型" name="数据类型"></a>
 ## 数据类型
+
 <a id="markdown-变量" name="变量"></a>
 ### 变量
+一个变量只不过是一个供程序操作的存储区的名字。
+
+在 C# 中，每个变量都有一个特定的类型，类型决定了变量的内存大小和布局。
+
+例如字符串的定义：
+```cs
+string str  = "Hello iflytek";
+```
+
 <a id="markdown-值类型" name="值类型"></a>
 #### 值类型
 原类型（Sbyte、Byte、Short、Ushort、Int、Uint、Long、Ulong、Char、Float、Double、Bool、Decimal）、枚举(enum)、结构(struct)
 
-值型就是在栈中分配内存，在申明的同时就初始化，以确保数据不为NULL；
+**整形类型**，下表描述的是常见的整型类型：byte、short、int、long
+
+C#类型 | 位数 | CTS类型 | 取值范围
+-----|----|-------|-----
+byte | 8 | System.Byte | 0~255
+short | 16 | System.Int16 | -32768~32767
+int | 32 | System.Int32 | -2147483648~2147483647
+long | 64 | System.Int64 | -9223372036854775808~9223372036854775807
+
+**浮点类型**
+
+C#类型 | 位数 | CTS类型 | 取值范围
+-----|----|-------|-----
+float | 32 | System.Single | 1.5E-45~3.4E+38，以 f 结束
+double | 64 | System.Double | 5E-324~1.7E+308，默认不写或以 d 结束
+decimal | 128 | System.Decimal | 1E-28~7.9E+28，以 m 结束
+
+**其它类型**
+
+C#类型 | 位数 | CTS类型 | 取值范围
+-----|----|-------|-----
+char | 16 | System.Char | 0~65535
+**string** | 16 | System.String | 可变大小的内存，因此没有字符数上限
+bool | 32 | System.Boolean | true、false
+
+值类型就是在栈中分配内存，在申明的同时就初始化，以确保数据不为NULL；
 
 <a id="markdown-引用类型" name="引用类型"></a>
 #### 引用类型
 类、数组、接口、委托、字符串等。
 
-引用型是在堆中分配内存，初始化为null，引用型是需要GARBAGE COLLECTION来回收内存的，值型不用，超出了作用范围，系统就会自动释放！
+引用型是在堆中分配内存，初始化为null，引用型是需要GC(GARBAGE COLLECTION)来回收内存的，值型不用，超出了作用范围，系统就会自动释放！
 
-
-
+<a id="markdown-类型系统" name="类型系统"></a>
+#### 类型系统
+![](../assets/Programming/类型系统.jpg)
 
 <a id="markdown-常量" name="常量"></a>
 ### 常量
-**const和static readonly**
 
+<a id="markdown-const" name="const"></a>
+#### const
+常量就是值不可被更改的一种数据，常量一经声明和初始化之后，就不能再对其进行赋值操作，也不可以更改它的内容。
+
+区别于变量，在类型前加了关键字`const`
+
+常量定义方式：`const <type> <varName> = <initialValue>;`
+
+```cs
+const double pi = 3.14;
+const 
+```
+
+<a id="markdown-枚举" name="枚举"></a>
+#### 枚举
+枚举是一组命名整型常量。枚举类型是使用 enum 关键字声明的。
+
+C# 枚举是值类型。换句话说，枚举包含自己的值，且不能继承或传递继承。
+
+语法如下：
+```cs
+//enum_name 指定枚举的类型名称。
+enum <enum_name>
+{ 
+    //enumeration list 是一个用逗号分隔的标识符列表。
+    enumeration list 
+};
+```
+
+枚举列表中的每个符号代表一个整数值，一个比它前面的符号大的整数值。
+
+默认情况下，第一个枚举符号的值是 0.例如：
+
+```cs
+enum Week
+{
+    Sunday,
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday
+}
+
+static void Main(string[] args)
+{
+    Console.WriteLine(Week.Monday);//Monday
+    Console.WriteLine((int)Week.Monday);//1
+
+    Week today = Week.Tuesday;
+    //1、枚举类型转换为数值
+    int today1 = (int)today;
+    //2、数值转换为枚举类型
+    Week resWeek = (Week)Enum.Parse(typeof(Week), "5");//resWeek为5对应的Friday
+    //3、数值转换为枚举字符串
+    string str = Enum.GetName(typeof(Week), 6);//Saturday
+}
+```
+
+<a id="markdown-constreadonly" name="constreadonly"></a>
+#### const/readonly
+readonly为运行时常量，程序运行时进行赋值，赋值完成后便无法更改，因此也有人称其为只读变量。
+
+const为编译时常量，程序编译时将对常量值进行解析，并将所有常量引用替换为相应值。
+
+下面声明两个常量：
+```cs
+public static readonly int A = 2; //A为运行时常量
+public const int B = 3; //B为编译时常量
+```
+
+下面的表达式：
+```cs
+int C = A + B;
+```
+
+经过编译后与下面的形式等价：
+```cs
+int C = A + 3;
+```
+其中的const常量B被替换成字面量3，而readonly常量A则保持引用方式。
+
+readonly常量只能声明为类字段，支持实例类型或静态类型，可以在声明的同时初始化或者在构造函数中进行初始化，初始化完成后便无法更改。
+
+const常量除了可以声明为类字段之外，还可以声明为方法中的局部常量，默认为静态类型(无需用static修饰，否则将导致编译错误)，但必须在声明的同时完成初始化。
+
+性能上来说：const直接以字面量形式参与运算，性能要略高于readonly，但对于一般应用而言，这种性能上的差别可以说是微乎其微。
+
+在下面两种情况下可以使用const常量，除此之外的其他情况都应该优先采用readonly常量：
+1. 取值永久不变(比如圆周率、一天包含的小时数、地球的半径等)
+2. 对程序性能要求非常苛刻
 
 <a id="markdown-类型转换" name="类型转换"></a>
 ### 类型转换
+
+由于 C# 是在编译时静态类型化的，因此变量在声明后就无法再次声明，或无法分配另一种类型的值，除非该类型可以隐式转换为变量的类型。 
+
+例如，string 无法隐式转换为 int。 因此，在将 i 声明为 int 后，无法将字符串“Hello”分配给它，如以下代码所示：
+```cs
+int i;  
+i = "Hello"; // error CS0029: Cannot implicitly convert type 'string' to 'int'
+```
+在 C# 中，可以执行以下几种类型的转换：隐式转换、显式转换（强制转换）、用户定义的转换、使用帮助程序类进行转换
+
+<a id="markdown-隐式转换" name="隐式转换"></a>
+#### 隐式转换
+对于内置数值类型，如果要存储的值无需截断或四舍五入即可适应变量，则可以进行隐式转换。 
+
+例如，long 类型的变量（64 位整数）能够存储 int（32 位整数）可存储的任何值。
+```cs
+int num = 2147483647;
+long bigNum = num;
+```
+
+<a id="markdown-显式转换" name="显式转换"></a>
+#### 显式转换
+如果进行转换可能会导致信息丢失，则编译器会要求执行显式转换，显式转换也称为强制转换。
+```cs
+//下面的程序将 double 强制转换为 int
+double x = 1234.7;
+int a;
+// Cast double to int.
+a = (int)x;
+Console.WriteLine(a);// Output: 1234
+```
+
+<a id="markdown-用户定义的转换" name="用户定义的转换"></a>
+#### 用户定义的转换
+可以定义一些特殊的方法来执行用户定义的转换，使不具有基类和派生类关系的自定义类型之间可以显式和隐式转换。
+
+<a id="markdown-使用帮助程序类进行转换" name="使用帮助程序类进行转换"></a>
+#### 使用帮助程序类进行转换
+int、bool、DateTime类型提供的Parse方法，以及System.Convert 类提供的标准转换方法。
 
 <a id="markdown-装箱boxing拆箱unboxing" name="装箱boxing拆箱unboxing"></a>
 ### 装箱(boxing)、拆箱(unboxing)
@@ -85,15 +259,15 @@ int res = (int)obj;
 ```
 
 ```cs
-int i=0;//L1
-object obj=i;//L2
-Console.WriteLine(i+","+(int)obj);//L3
+int i = 0;//L1
+object obj = i;//L2
+Console.WriteLine(i + "," + (int)obj);//L3
 ```
 上述代码实际进行了三次装箱、一次拆箱
 
 L2行，i装箱为obj，1次装箱；
 
-L3行，writeline参数应该为字符串，即i又进行一次装箱，变为string引用类型，2次装箱；
+L3行，WriteLine参数应该为字符串，即i又进行一次装箱，变为string引用类型，2次装箱；
 
 L3行，(int)obj对obj对象进行拆箱转换为值类型，1次拆箱；
 
@@ -176,7 +350,6 @@ class Program
 
 和引用类型相比，结构越复杂，复制造成的性能开销越大。因此，结构应该只用来表示小的数据结构。
 
-
 <a id="markdown-流程控制" name="流程控制"></a>
 ## 流程控制
 <a id="markdown-顺序" name="顺序"></a>
@@ -198,7 +371,6 @@ if...else...
 break
 continue
 return
-
 
 <a id="markdown-数组" name="数组"></a>
 ## 数组
@@ -705,3 +877,10 @@ Dictionary<string, string> dicRes = new Dictionary<string, string>();
 dicRes.Add("zhangsan","张三");
 dicRes.Add("zhaofugui", "赵富贵");
 ```
+
+---
+
+参考引用：
+
+[类型和变量](https://docs.microsoft.com/zh-cn/dotnet/csharp/tour-of-csharp/types-and-variables)
+

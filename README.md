@@ -167,6 +167,10 @@ Ctrl + F5 ： 运行不调试
 
 F5 ：启动调试
 
+Ctrl + U ： 改成小写
+
+Ctrl + Shift + U ： 改成大写
+
 <a id="markdown-疑难解答" name="疑难解答"></a>
 ### 疑难解答
 
