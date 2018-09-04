@@ -2,6 +2,7 @@
 
 - [面向对象](#面向对象)
     - [抽象](#抽象)
+    - [面向对象编程](#面向对象编程)
     - [类和对象](#类和对象)
         - [类成员](#类成员)
             - [字段](#字段)
@@ -27,9 +28,12 @@
         - [多态](#多态)
     - [类之间的关系](#类之间的关系)
         - [依赖](#依赖)
-        - [关联](#关联)
-        - [关联和依赖的区别](#关联和依赖的区别)
         - [泛化](#泛化)
+        - [关联](#关联)
+            - [双向关联](#双向关联)
+            - [单向关联](#单向关联)
+            - [自关联](#自关联)
+        - [关联和依赖的区别](#关联和依赖的区别)
         - [实现](#实现)
         - [聚合](#聚合)
         - [组合](#组合)
@@ -38,6 +42,9 @@
 <!-- /TOC -->
 <a id="markdown-面向对象" name="面向对象"></a>
 # 面向对象
+
+
+
 <a id="markdown-抽象" name="抽象"></a>
 ## 抽象
 世间万物皆对象，面向对象的设计也是基于现实世界的。
@@ -72,6 +79,21 @@ public class 冰箱{}
 public class 人{}
 //todo...
 ```
+
+<a id="markdown-面向对象编程" name="面向对象编程"></a>
+## 面向对象编程
+
+面向对象编程——Object Oriented Programming，简称OOP，是一种程序设计思想。
+
+OOP把对象作为程序的基本单元，一个对象包含了数据和操作数据的函数。
+
+面向过程的程序设计把计算机程序视为一系列的命令集合，即一组函数的顺序执行。
+
+为了简化程序设计，面向过程把函数继续切分为子函数，即把大块函数通过切割成小块函数来降低系统的复杂度。
+
+而面向对象的程序设计把计算机程序视为一组对象的集合，而每个对象都可以接收其他对象发过来的消息，并处理这些消息，计算机程序的执行就是一系列消息在各个对象之间传递。
+
+![](../assets/oop/面向对象编程-搞笑1.jpg)
 
 <a id="markdown-类和对象" name="类和对象"></a>
 ## 类和对象
@@ -388,60 +410,125 @@ static void Main(string[] args)
 
 <a id="markdown-类之间的关系" name="类之间的关系"></a>
 ## 类之间的关系
+有一个很好的UML图可以很显然的展示类之间的关系
 
-关系名称 | 描述 | 示例
------|----|---
-依赖(Dependency) | 使用关系，一个类的实现需要另一个类的协助 | 人使用计算机
-关联(Association) | 拥有关系，一个类知道另一个类的属性和方法 | 水和气候的关联
-泛化(Generalization) | 继承关系，指定子类如何特殊化父类的所有特征和行为 | 动物和植物均派生自生物
-实现(Implementation) | 类与接口的关系，表示类是接口所有特征和行为的实现 | 鸟会飞，飞机也会飞
+![](../assets/oop/uml-rela.png)
 
 <a id="markdown-依赖" name="依赖"></a>
 ### 依赖
-人编码的模型作为示例,UML图中使用虚线箭头，由依赖的一方指向被依赖的一方：
+依赖关系(Dependency) 是一种使用关系，特定事物的改变有可能会影响到使用该事物的其他事物，在需要表示一个事物使用另一个事物时使用依赖关系。
 
-![](../assets/oop/dependency.png)
+大多数情况下，依赖关系体现在某个类的方法使用另一个类的对象作为参数。
 
-1. A类是B类中的(某方法的)局部变量，如Computer类是Person类中某个方法的局部变量，则Person类可以调用它
+在UML中，依赖关系用带箭头的虚线表示，由依赖的一方指向被依赖的一方。如上图【UML综合案例】中学生和自行车的关系；
+
+
+1、A类是B类中的(某方法的)局部变量，如Bike类是Student类中某个方法的局部变量，则Student类可以调用它
 ```cs
-public class Person
+public class Student
 {
-    public void Coding()
+    public void Ride()
     {
-        Computer pc = new Computer();
+        Bike giant = new Bike();
     }
 }
-public class Computer {}
+public class Bike {}
 ```
 
-2. A类是B类方法当中的一个参数，如Computer类作为Person类中某个方法的参数或返回值
+2、A类是B类方法当中的一个参数，如Bike类作为Student类中某个方法的参数或返回值
 ```cs
-public class Person
+public class Student
 {
-    public Computer Coding(Computer pc) {}
+    public Bike Ride(Bike bk) {}
 }
-public class Computer {}
+public class Bike {}
 ```
 
-3. A类向B类发送消息，从而影响B类发生变化；
+该案例与面向对象课程中人使用船过河案例同理。
+
+3、A类向B类发送消息，从而影响B类发生变化；
+
+<a id="markdown-泛化" name="泛化"></a>
+### 泛化
+泛化关系(Generalization)也就是继承关系，也称为"is-a-kind-of"关系，泛化关系用于描述父类与子类之间的关系，父类又称作基类或超类，子类又称作派生类。
+
+在UML中，泛化关系用带空心三角形的直线来表示。如上图【UML综合案例】中Suv类继承自小汽车类
+
+```cs
+public class Car
+{
+    public string Name {get;set;}
+}
+
+//Suv 继承 Car
+public class Suv : Car
+{
+    //燃烧汽油
+    public void BurnOil(){}
+}
+
+//Jeep 继承 Suv
+public class Jeep : Suv
+{
+    //爬山
+    public void ClimbMountain(){}
+}
+```
 
 <a id="markdown-关联" name="关联"></a>
 ### 关联
-水和气候的关联关系，UML图中使用实线箭头表示：
 
-![](../assets/oop/association.png)
+关联关系(Association) 是类与类之间最常用的一种关系，它是一种结构化关系，用于表示一类对象与另一类对象之间有联系。
 
+在UML类图中，用实线连接有关联的对象所对应的类，在使用Java、C#和C++等编程语言实现关联关系时，通常将一个类的对象作为另一个类的属性。
+
+如上图【UML综合案例】中，学生和身份证之间的单向关联关系。
+
+
+<a id="markdown-双向关联" name="双向关联"></a>
+#### 双向关联
+默认情况下，关联是双向的。
+
+![](../assets/oop/association-two.png)
 ```cs
-public class Water
+public class Customer
 {
-    //气候作为一个属性
-    public Climate climate {get;set;}
+    private Product[] products;
 }
-
-public class Climate {}
+public class Product
+{
+    private Customer customer;
+}
 ```
 
-以上示例是一个单向关联，还有双向关联、自身关联、多维关联
+<a id="markdown-单向关联" name="单向关联"></a>
+#### 单向关联
+类的关联关系也可以是单向的，单向关联用带箭头的实线表示.
+
+![](../assets/oop/association-1.png)
+
+```cs
+public class Customer
+{
+    private Address address;
+}
+ 
+public class Address
+{ }
+```
+
+<a id="markdown-自关联" name="自关联"></a>
+#### 自关联
+在系统中可能会存在一些类的属性对象类型为该类本身，这种特殊的关联关系称为自关联。
+
+![](../assets/oop/association-self.png)
+
+```cs
+public class Node
+{
+    private Node subNode;
+}
+```
 
 <a id="markdown-关联和依赖的区别" name="关联和依赖的区别"></a>
 ### 关联和依赖的区别
@@ -456,32 +543,6 @@ public class Climate {}
 依赖关系是仅当类的方法被调用时而产生，伴随着方法的结束而结束了。
 
 关联关系是当类实例化的时候即产生，当类销毁的时候，关系结束。相比依赖讲，关联关系的生存期更长。
-
-<a id="markdown-泛化" name="泛化"></a>
-### 泛化
-泛化关系(Generalization)也就是继承关系，也称为“is-a-kind-of”关系，泛化关系用于描述父类与子类之间的关系，父类又称作基类或超类，子类又称作派生类。在UML中，泛化关系用带空心三角形的直线来表示。
-
-```cs
-//生物
-public class Biology
-{
-    public string Name {get;set;}
-}
-
-//动物 继承生物
-public class Animal : Biology
-{
-    //进食
-    public void Eat(){}
-}
-
-//植物 继承生物
-public class Plant : Biology
-{
-    //光合作用
-    public void Photosynthetic(){}
-}
-```
 
 <a id="markdown-实现" name="实现"></a>
 ### 实现
@@ -531,7 +592,11 @@ public class Bird : IFly
 - 聚合关系(Aggregation) 表示一个整体与部分的关系。通常在定义一个整体类后，再去分析这个整体类的组成结构，从而找出一些成员类，该整体类和成员类之间就形成了聚合关系。
 - 在聚合关系中，成员类是整体类的一部分，即成员对象是整体对象的一部分，但是成员对象可以脱离整体对象独立存在。
 
-在UML中，聚合关系用带空心菱形的直线表示。 
+在UML中，聚合关系用带空心菱形的直线表示。如上图【UML综合案例】中，学生和班级的聚合关系。
+
+班级生命周期结束（解散了），学生仍然存在。
+
+同样的，下面案例中大雁群没有了，但是每个个体大雁仍然存在。
 
 ```cs
 /// <summary>
@@ -555,7 +620,11 @@ public class Goose { }
 - 组合关系(Composition)也表示类之间整体和部分的关系，但是组合关系中部分和整体具有统一的生存期。一旦整体对象不存在，部分对象也将不存在，部分对象与整体对象之间具有同生共死的关系。
 - 在组合关系中，成员类是整体类的一部分，而且整体类可以控制成员类的生命周期，即成员类的存在依赖于整体类。
 
-在UML中，组合关系用带实心菱形的直线表示。
+在UML中，组合关系用带实心菱形的直线表示。如上图【UML综合案例】中，汽车和轮胎、发动机是组合关系。
+
+通常来说，汽车没有了，轮胎和发动机也就没有了。
+
+同样的，下面案例中大雁没有了，雁翅也就不复存在了。
 
 ```cs
 /// <summary>
@@ -586,12 +655,15 @@ public class Wings { }
 
 有此可见：
 
-聚合的关系明显没有组合紧密，大雁不会因为它们的群主将雁群解散而无法生存；
+聚合的关系明显没有组合紧密，大雁不会因为它们的群主将雁群解散而无法生存,也就是雁群没有，而大雁不会消失；
 
-而雁翅就无法脱离大雁而单独生存——组合关系的类具有相同的生命周期。
+而大雁没有了则雁翅也将不复存在，组合关系的类具有相同的生命周期。
 
-以上类之间关系部分引用自：
+---
 
-[浅谈UML中类之间的五种关系及其在代码中的表现形式](http://www.cnblogs.com/DebugLZQ/archive/2013/05/13/3066715.html)
+参考引用：
 
 [UML图中类之间的关系:依赖,泛化,关联,聚合,组合,实现](http://blog.csdn.net/hguisu/article/details/7609483/)
+
+[看懂UML类图和时序图](https://design-patterns.readthedocs.io/zh_CN/latest/read_uml.html)
+

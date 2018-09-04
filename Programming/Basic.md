@@ -66,7 +66,7 @@ string str  = "Hello iflytek";
 
 <a id="markdown-值类型" name="值类型"></a>
 #### 值类型
-原类型（Sbyte、Byte、Short、Ushort、Int、Uint、Long、Ulong、Char、Float、Double、Bool、Decimal）、枚举(enum)、结构(struct)
+原类型（sbyte、byte、short、ushort、int、uint、long、ulong、char、float、double、bool、decimal）、枚举(enum)、结构(struct)
 
 **整形类型**，下表描述的是常见的整型类型：byte、short、int、long
 
@@ -95,6 +95,22 @@ bool | 32 | System.Boolean | true、false
 
 值类型就是在栈中分配内存，在申明的同时就初始化，以确保数据不为NULL；
 
+```cs
+int a;
+Console.WriteLine(a);//会报错，a未进行赋值
+
+//在类属性中的应用，既是不赋值也是有初始值的
+class Student
+{
+    public int Age {get;set;}
+    public bool IsMarry {get;set;}
+}
+//实例化一个对象，不进行任何的赋值操作，对象属性会有初始值
+Student s1 = new Student();
+Console.WriteLine(s1.Age);
+Console.WriteLine(s1.IsMarry);
+```
+
 <a id="markdown-引用类型" name="引用类型"></a>
 #### 引用类型
 类、数组、接口、委托、字符串等。
@@ -117,8 +133,7 @@ bool | 32 | System.Boolean | true、false
 常量定义方式：`const <type> <varName> = <initialValue>;`
 
 ```cs
-const double pi = 3.14;
-const 
+const double PI = 3.14;
 ```
 
 <a id="markdown-枚举" name="枚举"></a>
@@ -248,8 +263,8 @@ int、bool、DateTime类型提供的Parse方法，以及System.Convert 类提供
 装箱就是隐式的将一个值型转换为引用型对象。
 ```cs
 //将i进行装箱操作
-int i=0;
-object obj=i;
+int i = 0;
+object obj = i;
 ```
 
 拆箱就是将一个引用型对象转换成任意值型
@@ -273,7 +288,7 @@ L3行，(int)obj对obj对象进行拆箱转换为值类型，1次拆箱；
 
 L3行，(int)obj的结果为值类型，控制台打印输出需要又一次的装箱为string类型，3次装箱；
 
-频繁的装拆箱会造成性能的损耗
+频繁的装拆箱会造成性能的损耗！！！
 
 <a id="markdown-结构体" name="结构体"></a>
 ### 结构体
