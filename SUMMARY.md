@@ -6,6 +6,7 @@
 * [C#程序设计](./Programming/README.md)
     * [编程基础](./Programming/Basic.md)
     * [面向对象](./Programming/OOP.md)
+    * [常用类库](./Programming/ComUsedLib.md)
     * [高级](./Programming/Professional.md)
     * [桌面编程](./Programming/Form.md)
     * [LINQ](./Programming/LINQ.md)
