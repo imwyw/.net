@@ -105,7 +105,7 @@ Console.WriteLine(s1.IsMarry);
 #### 引用类型
 类、数组、接口、委托、字符串等。
 
-引用型是在堆中分配内存，初始化为null，引用型是需要GC(GARBAGE COLLECTION)来回收内存的，值型不用，超出了作用范围，系统就会自动释放！
+引用型是在堆中分配内存，初始化为null，引用型是需要GC(GARBAGE COLLECTION)来回收内存的。值类型不需要GC，超出了作用范围，系统就会自动释放！
 
 <a id="markdown-类型系统" name="类型系统"></a>
 #### 类型系统

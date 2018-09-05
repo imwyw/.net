@@ -146,6 +146,17 @@ File.AppendAllText(path, "how do u do", Encoding.UTF8);
 - FileStream(文件流)，这个类主要用于在二进制文件中读写二进制，也可以使用读写任何文件。
 - StreamReader(流读取器)和StreamWriter(流写入器)，这两个专门用于读写文本文件。
 
+在文件流的操作过程中，我们经常需要使用到字符串与字节数组之间的互相转换：
+```cs
+//string->byte[]
+string msg = "helloworld";
+//使用UTF8国际编码
+byte[] bytes = System.Text.Encoding.UTF8.GetByte(msg);
+
+//byte[]->string
+string resMsg = System.Text.Encoding.UTF8.GetString(bytes);
+```
+
 <a id="markdown-filestream" name="filestream"></a>
 ### FileStream
 读写通过字节序列的方式

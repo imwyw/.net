@@ -3,10 +3,12 @@
 - [常用类库](#常用类库)
     - [字符串](#字符串)
         - [成员方法和属性](#成员方法和属性)
+        - [静态方法](#静态方法)
         - [不可变性](#不可变性)
         - [字符串池（只针对字符串常量）](#字符串池只针对字符串常量)
         - [StringBuilder](#stringbuilder)
         - [String和string](#string和string)
+    - [DateTime](#datetime)
     - [数据集合DataCollection](#数据集合datacollection)
         - [ArrayList](#arraylist)
         - [Hashtable](#hashtable)
@@ -43,6 +45,15 @@ Replace(string oldStr,string newStr) | 用新的字符串，替换对象字符�
 Trim()/TrimStart()/TrimEnd() | 去掉对象字符串两端/开始/结尾的空格
 Split() | 把对象字符串，按照指定字符分割成一个字符串数组！
 
+<a id="markdown-静态方法" name="静态方法"></a>
+### 静态方法
+
+方法名 | 说明
+----|---
+string.IsNullOrEmpty(string) | 判断某字符串是否为null，或者为空字符串，为null或空时返回真值
+string.Equals(string,string,StringComparison.OrdianlIgnore) | 忽略大小写比较两个字符串是否相同。
+string.Join(string,string[]) | 把一个数组按照指定字符串，拼接成一个字符串。
+
 <a id="markdown-不可变性" name="不可变性"></a>
 ### 不可变性
 string，首先是引用类型，由于字符串是不可变的的，每次修改字符串，都是创建了一个单独字符串副本（拷贝了一个字符串副本）。
@@ -70,6 +81,70 @@ String是.NET  Framework里面的String，小写的string是C#语言中的string
 用C#编写代码的情况下尽量使用小写的string，比较符合规范，如果在追求效率的情况下可以使用大写的String，因为最终通过编译后，小写的string会变成大写的String，可以给编译减少负荷，从而运行效率提高。
 
 MSDN中对string的说明：string is an alias for String in the .NET Framework
+
+<a id="markdown-datetime" name="datetime"></a>
+## DateTime
+DateTime是.NET中的时间类型，可以通过DateTime完成诸如获取当前的系统时间等操作。
+
+需要注意的是，DateTime在.NET中是一个结构体，而并不是一个类。
+
+方法/属性 | 说明
+------|---
+Now | 获取当前系统时间。格式：2018/9/5 8:27:02
+Today | 获取今天的日期。格式：2018/9/5 0:00:00
+Now.Year | 获取年
+Now.Month | 获取月
+Now.Day | 获取日
+Now.Hour | 获取小时
+Now.Minute | 获取分钟
+Now.Second | 获取秒
+DayOfWeek | 获取当前日期是星期几
+DayOfYear | 以及获取当前日期是一年中的第几天
+Parse() | 转换为DateTime对象
+TryParse() | 判断是否是时间类型，参数中有一个out可以输出一个DateTime对象。
+AddDays()、AddHours() | 在当前时间基础上加几天/几个小时，返回一个DateTime
+Subtract(DateTime.Now) | 比较两个时间的 时间差 | 返回一个TimeSpan
+
+DateTime.ToString()的各种日期格式
+```cs
+//常用的预定义模式
+DateTime.Now.ToString("d");// ShortDatePattern  2018/9/5
+DateTime.Now.ToString("D");// LongDatePattern  2018年9月5日
+DateTime.Now.ToString("f");// 完整日期和时间（长日期和短时间） 2018年9月5日 9:03
+DateTime.Now.ToString("F");// FullDateTimePattern（长日期和长时间）  2018年9月5日 9:05:15
+DateTime.Now.ToString("g");// 常规（短日期和短时间） 2018/9/5 9:05
+DateTime.Now.ToString("G");// 常规（短日期和长时间） 2018/9/5 9:05:54
+DateTime.Now.ToString("m");//DateTime.Now.ToString("M");  9月5日
+```
+
+DateTime的字符串格式除了预定义还有自定义的模式，如下：
+自定义模式
+d 月中的某一天。一位数的日期没有前导零。 
+dd 月中的某一天。一位数的日期有一个前导零。 
+ddd 周中某天的缩写名称，在 AbbreviatedDayNames 中定义。 
+dddd 周中某天的完整名称，在 DayNames 中定义。 
+M 月份数字。一位数的月份没有前导零。 
+MM 月份数字。一位数的月份有一个前导零。 
+MMM 月份的缩写名称，在 AbbreviatedMonthNames 中定义。 
+MMMM 月份的完整名称，在 MonthNames 中定义。 
+y 不包含纪元的年份。如果不包含纪元的年份小于 10，则显示不具有前导零的年份。 
+yy 不包含纪元的年份。如果不包含纪元的年份小于 10，则显示具有前导零的年份。 
+yyyy 包括纪元的四位数的年份。 
+gg 时期或纪元。如果要设置格式的日期不具有关联的时期或纪元字符串，则忽略该模式。 
+h 12 小时制的小时。一位数的小时数没有前导零。 
+hh 12 小时制的小时。一位数的小时数有前导零。 
+H 24 小时制的小时。一位数的小时数没有前导零。 
+HH 24 小时制的小时。一位数的小时数有前导零。 
+m 分钟。一位数的分钟数没有前导零。 
+mm 分钟。一位数的分钟数有一个前导零。 
+s 秒。一位数的秒数没有前导零。 
+ss 秒。一位数的秒数有一个前导零。
+
+例如：
+```cs
+DateTime.Now.ToString("yyyy-MM-dd");//2018-09-05
+DateTime.Now.ToString("yyyy-MM-dd HH");//2018-09-05 09
+```
 
 <a id="markdown-数据集合datacollection" name="数据集合datacollection"></a>
 ## 数据集合DataCollection
