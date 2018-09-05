@@ -38,7 +38,7 @@ Subversion(SVN) 是一个开源的版本控制系統, 也就是说 Subversion �
 
 <a id="markdown-svn-pre-commit" name="svn-pre-commit"></a>
 ## svn pre-commit
-强制写提交消息：
+在仓库右键选中Properties->Hooks->pre-commit，设置提交前验证，必须填写提交日志：
 ```bat
 
  setlocal 
