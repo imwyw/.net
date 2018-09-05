@@ -5,6 +5,12 @@
         - [简介](#简介)
         - [概念](#概念)
         - [控制图标](#控制图标)
+        - [Checkout同步代码](#checkout同步代码)
+        - [Update更新代码](#update更新代码)
+        - [Commit提交代码](#commit提交代码)
+        - [忽略文件](#忽略文件)
+        - [撤销本地修改](#撤销本地修改)
+        - [撤销已经提交的代码](#撤销已经提交的代码)
         - [svn pre-commit](#svn-pre-commit)
     - [Visual Studio Code](#visual-studio-code)
         - [列模式](#列模式)
@@ -42,9 +48,56 @@ Subversion(SVN) 是一个开源的版本控制系統, 也就是说 Subversion �
 
 ![](../assets/SVN/1.png)
 
+<a id="markdown-checkout同步代码" name="checkout同步代码"></a>
+### Checkout同步代码
+在你需要保存代码的地方右键选择“SVN Chekout...”
+
+填写仓库地址，例如：svn://svnbucket.com/nate/hello/trunk。
+
+点击确定就能同步代码到本地了。
+
+<a id="markdown-update更新代码" name="update更新代码"></a>
+### Update更新代码
+右键“SVN Update”就能更新到别人提交的代码了。
+
+<a id="markdown-commit提交代码" name="commit提交代码"></a>
+### Commit提交代码
+在提交代码前我们应该update下代码，这是个好习惯，可以避免覆盖别人代码和代码冲突。
+
+提交代码也很简单，右键“SVN Commit...”，填入提交描述，就可以把本地提交的代码提交到服务器了。
+
+<a id="markdown-忽略文件" name="忽略文件"></a>
+### 忽略文件
+有时候某些目录或者文件我们不想提交到SVN服务器，这时我们可以忽略这些文件。
+
+比如我们需要忽略hello这个目录，选中需要忽略的文件夹或者文件，右键，依次选择下面的菜单，就添加一条忽略了，recursively表示递归忽略，会忽略掉这个目录下的所有东西
+
+![](../assets/SVN/svn-ignore1.png)
+
+<a id="markdown-撤销本地修改" name="撤销本地修改"></a>
+### 撤销本地修改
+有时候我们本地修改了一些文件，但是突然又不需要了，想丢弃本地的修改回去SVN上最新的版本怎么操作呢？
+
+右键选中需要撤销的文件，TortoiseSVN->Revert就可以丢弃本地修改了。
+
+<a id="markdown-撤销已经提交的代码" name="撤销已经提交的代码"></a>
+### 撤销已经提交的代码
+已经提交到SVN仓库的代码发现改错了，还能后悔撤回吗？
+
+1.TortoiseSVN==>show log查看提交记录
+
+2.选择我们需要回去的版本，假设版本号2是我们的错误提交，这里选择提交1，右键选择"Revert to this version"，这样就回去了版本号1的版本，版本号2的提交就被撤销了
+
+3.最后你还需要commit下撤销后的代码到SVN仓库，才是真正的丢弃了版本号2的提交
+
+![](../assets/SVN/svn-back-reversion.png)
+
 <a id="markdown-svn-pre-commit" name="svn-pre-commit"></a>
 ### svn pre-commit
+提交前预处理，在服务端进行设置，一般用来限定提交必须要写入提交日志，禁止空提交！
+
 在仓库右键选中Properties->Hooks->pre-commit，设置提交前验证，必须填写提交日志：
+
 ```bat
 
  setlocal 

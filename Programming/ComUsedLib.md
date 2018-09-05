@@ -10,6 +10,7 @@
         - [String和string](#string和string)
     - [DateTime](#datetime)
     - [数据集合DataCollection](#数据集合datacollection)
+        - [Array](#array)
         - [ArrayList](#arraylist)
         - [Hashtable](#hashtable)
         - [排序列表SortedList](#排序列表sortedlist)
@@ -148,6 +149,23 @@ DateTime.Now.ToString("yyyy-MM-dd HH");//2018-09-05 09
 
 <a id="markdown-数据集合datacollection" name="数据集合datacollection"></a>
 ## 数据集合DataCollection
+
+<a id="markdown-array" name="array"></a>
+### Array
+Array类是一个抽象类，无法实例化该类。主要作为基类进行扩展，实际使用中很少直接使用Array类。
+
+但可以通过它的一些静态方法来进行数组的创建、遍历、拷贝、排序等操作，下面给出部分示例：
+```cs
+/*
+以下两种初始化的方式是等效的
+*/
+string[] arr = { "a", "b", "c" };
+
+Array arr = Array.CreateInstance(typeof(string), 3);
+arr.SetValue("a", 0);
+arr.SetValue("b", 1);
+arr.SetValue("c", 2);
+```
 
 <a id="markdown-arraylist" name="arraylist"></a>
 ### ArrayList

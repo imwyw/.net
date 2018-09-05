@@ -26,7 +26,6 @@
         - [一维数组](#一维数组)
         - [循环](#循环-1)
         - [多维数组](#多维数组)
-        - [Array](#array)
     - [方法](#方法)
         - [形参实参](#形参实参)
         - [重载](#重载)
@@ -365,6 +364,21 @@ class Program
 ### 分支
 if...else...
 
+switch
+
+if语句每执行一次都要先判断条件表达式是true还是false，为true时执行相应语句，若为false则继续判断下一个表达式，直到最后一个else结束。线性执行。 
+
+switch语句只需在入口时计算表达式的值，然后查找跳转表，执行对应语句，否则default。类似二叉树。
+
+需要注意的几点：
+1. switch…case…只能用于case值为常量的分支结构，而if…else…更加灵活。
+2. if判断条件为逻辑表达式，可以是布尔类型的合法表达式、可以是常量、枚举等。而switch 通常处理算术表达式，或字符。。
+3. switch 进行一次条件判断后直接执行到程序的条件语句。而if…else 有几种条件，就得判断多少次。
+4. 相比if语句，switch语句是以空间换时间的分支结构。因为它要生成跳转表，所以占用较多的代码空间。当case常量分布范围很大但实际有效值又比较少的情况，switch…case的空间利用率将变得很低。
+5. 分支较多时，使用switch的效率高于if，除非第一个if条件就为真。。
+
+最终，当分支较多时，使用if…else…代码可读性不如switch…case…高
+
 <a id="markdown-循环" name="循环"></a>
 ### 循环
 - do{}while()
@@ -373,9 +387,9 @@ if...else...
 
 跳出循环：
 
-break
-continue
-return
+* continue
+* break
+* return
 
 <a id="markdown-数组" name="数组"></a>
 ## 数组
@@ -460,23 +474,6 @@ foreach (int[] item in array)
     }
     Console.WriteLine();
 }
-```
-
-<a id="markdown-array" name="array"></a>
-### Array
-Array类是一个抽象类，无法实例化该类。主要作为基类进行扩展，实际使用中很少直接使用Array类。
-
-但可以通过它的一些静态方法来进行数组的创建、遍历、拷贝、排序等操作，下面给出部分示例：
-```cs
-/*
-以下两种初始化的方式是等效的
-*/
-string[] arr = { "a", "b", "c" };
-
-Array arr = Array.CreateInstance(typeof(string), 3);
-arr.SetValue("a", 0);
-arr.SetValue("b", 1);
-arr.SetValue("c", 2);
 ```
 
 <a id="markdown-方法" name="方法"></a>
