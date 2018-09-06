@@ -129,3 +129,102 @@ static void Solution3()
     Console.WriteLine("{0}对调后为：{1}", input, (arr[1] + arr[0]));
 }
 ```
+
+## 循环
+### 解密字符串
+题：给出一段加密的小写字符串“tbizljbqlfcivqbh”，请问它是什么意思（加密规则如下：小写26字母向后循环递进N位（N不确定），如果N=2则a->c,b->d,z->b等）
+```cs
+static void Decrypt()
+{
+    //26个字母字符串
+    string abc = "abcdefghijklmnopqrstuvwxyz";
+
+    //密文
+    string cipher = "tbizljbqlfcivqbh";
+
+    //解密后的明文
+    string result = "";
+
+    //递进的位数
+    int step = 1;
+
+    //总共有26个字符，则递进结果有25种，需要进行25次循环
+    for (int i = 0; i < 24; i++, step++)
+    {
+        //每次循环需要将上次循环得到的结果清空
+        result = "";
+
+        //依次找寻密文中的每一个字符
+        for (int j = 0; j < cipher.Length; j++)
+        {
+            //利用Substring方法得到当前索引的字符
+            string curChar = cipher.Substring(j, 1);
+
+            //找到密文中每个字符在abc字符串中出现的位置
+            int index = abc.IndexOf(curChar);
+
+            //考虑循环递进的关系，需要对总数26进行取余，例如递进2，z字符得到的其实是b
+            int resIndex = (index + step) % 26;
+
+            //将本次解密得到的字符添加到结果字符串result中
+            result += abc.Substring(resIndex, 1);
+        }
+        Console.WriteLine("递进" + step + "位的结果是：" + result);
+    }
+}
+```
+
+## 方法
+### 计算第几日
+题：编写函数，给出年月日，计算该日是本年的第几天
+
+公历闰年判定遵循的规律为:四年一闰,百年不闰,四百年再闰.
+
+公历闰年的简单计算方法如下：（符合以下条件之一的年份即为闰年）
+a)能被4整除而不能被100整除。
+b)能被100整除也能被400整除。
+```cs
+/// <summary>
+/// 返回指定日期是该年第多少天
+/// </summary>
+/// <param name="date"></param>
+/// <returns></returns>
+static int DayInTheYear(DateTime date)
+{
+    //每个月的天数，以非闰年为例，2月份当28天处理
+    int[] daysInMon = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+    int year = date.Year;
+    bool isLoop = IsLeapYear(year);
+    int res = 0;
+    for (int i = 0; i < date.Month - 1; i++)
+    {
+        res += daysInMon[i];
+    }
+    res += date.Day;
+    if (isLoop && date.Month > 2)
+    {
+        res++;
+    }
+    return res;
+}
+
+/// <summary>
+/// 判断您是否为闰年
+/// </summary>
+/// <param name="year"></param>
+/// <returns></returns>
+static bool IsLeapYear(int year)
+{
+    if (year % 4 == 0 && year % 100 != 0)
+    {
+        return true;
+    }
+    if (year % 400 == 0)
+    {
+        return true;
+    }
+    return false;
+}
+```
+
