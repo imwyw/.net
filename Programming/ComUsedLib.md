@@ -79,7 +79,9 @@ string，首先是引用类型，由于字符串是不可变的的，每次修�
 ### String和string
 String是.NET  Framework里面的String，小写的string是C#语言中的string。
 
-用C#编写代码的情况下尽量使用小写的string，比较符合规范，如果在追求效率的情况下可以使用大写的String，因为最终通过编译后，小写的string会变成大写的String，可以给编译减少负荷，从而运行效率提高。
+用C#编写代码的情况下尽量使用小写的string，比较符合规范，
+
+如果在追求效率的情况下可以使用大写的String，因为最终通过编译后，小写的string会变成大写的String，可以给编译减少负荷，从而运行效率提高。
 
 MSDN中对string的说明：string is an alias for String in the .NET Framework
 
@@ -221,8 +223,11 @@ ht.Contains(key);
 SortedList 类代表了一系列按照键来排序的键/值对，这些键值对可以通过键和索引来访问。
 
 排序列表是数组和哈希表的组合。它包含一个可使用键或索引访问各项的列表。
+
 如果您使用索引访问各项，则它是一个动态数组（ArrayList）；
+
 如果您使用键访问各项，则它是一个哈希表（Hashtable）。
+
 集合中的各项总是按键值排序。
 
 ```cs
@@ -246,6 +251,7 @@ foreach (var item in sl.Keys)
 <a id="markdown-堆栈stack" name="堆栈stack"></a>
 ### 堆栈Stack
 堆栈（Stack）代表了一个后进先出LIFO的对象集合。当您需要对各项进行后进先出的访问时，则使用堆栈。
+
 当您在列表中添加一项，称为推入元素，当您从列表中移除一项时，称为弹出元素。
 
 * Count：返回栈中所包含的元素个数
@@ -274,7 +280,9 @@ Console.WriteLine("长度：" + st.Count);
 <a id="markdown-队列queue" name="队列queue"></a>
 ### 队列Queue
 队列（Queue）代表了一个先进先出的对象集合。
+
 当您需要对各项进行先进先出的访问时，则使用队列。
+
 当您在列表中添加一项，称为入队，当您从列表中移除一项时，称为出队。类似排队的效果。
 
 ```cs
@@ -299,10 +307,13 @@ foreach (var item in qu)
 <a id="markdown-泛型" name="泛型"></a>
 ## 泛型
 泛型可以定义类型安全的数据结构，而无须使用实际的数据类型。有助于最大限度地重用代码、保护类型的安全以及提高性能。
+
 泛型（Generic）允许您延迟编写类或方法中的编程元素的数据类型的规范，直到实际在程序中使用它的时候。
+
 换句话说，泛型允许您编写一个可以与任何数据类型一起工作的类或方法。
 
-您可以通过数据类型的替代参数编写类或方法的规范。
+我们可以通过数据类型的替代参数编写类或方法的规范。
+
 当编译器遇到类的构造函数或方法的函数调用时，它会生成代码来处理指定的数据类型。
 
 <a id="markdown-泛型使用" name="泛型使用"></a>
@@ -388,7 +399,11 @@ lstRes.Contains("a");
 
 <a id="markdown-dictionaytkeytvalue" name="dictionaytkeytvalue"></a>
 ### Dictionay<Tkey,Tvalue>
-在初始化的时候也必须指定其类型，而且他还需要指定一个Key,并且这个Key是唯一的。正因为这样，Dictionary的索引速度非常快。但是也因为他增加了一个Key,Dictionary占用的内存空间比其他类型要大。他是通过Key来查找元素的，元素的顺序是不定的。
+在初始化的时候也必须指定其类型，而且他还需要指定一个Key,并且这个Key是唯一的。
+
+正因为这样，Dictionary的索引速度非常快。但是也因为他增加了一个Key,Dictionary占用的内存空间比其他类型要大。
+
+他是通过Key来查找元素的，元素的顺序是不定的。
 
 ```cs
 Dictionary<string, string> dicRes = new Dictionary<string, string>();
