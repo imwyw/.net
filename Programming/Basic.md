@@ -553,28 +553,27 @@ static void Main(string[] args)
 <a id="markdown-引用传递" name="引用传递"></a>
 #### 引用传递
 引用参数是一个对变量的内存位置的引用。当按引用传递参数时，与值参数不同的是，它不会为这些参数创建一个新的存储位置。
+
 引用参数表示与提供给方法的实际参数具有相同的内存位置。
 
-下面案例中的类Student是一个引用类型，在参数传递时并未发生拷贝，传递的是地址，所以在方法内的改变也会影响到对象本身。
+下面案例中的数组`arr1`是一个引用类型，在参数传递时并未发生拷贝，传递的是地址，所以在方法内的改变也会影响到对象本身。
+
 ```cs
-public class Student
+static void Main(string[] args)
 {
-    public string Name { get; set; }
+    int[] arr1 = { 1, 2, 3 };
+    Change(arr1);
+    foreach (int item in arr1)
+    {
+        Console.WriteLine(item);
+    }
 }
 
-class Program
+static void Change(int[] arr)
 {
-    static void ResetStudent(Student stu)
+    for (int i = 0; i < arr.Length; i++)
     {
-        stu.Name = "default name";
-    }
-
-    static void Main(string[] args)
-    {
-        Student stu = new Student();
-        stu.Name = "jack";
-        ResetStudent(stu);
-        Console.WriteLine(stu.Name);
+        arr[i] = 666;
     }
 }
 ```
@@ -617,6 +616,10 @@ static void Main(string[] args)
 }
 ```
 
+综合前面说到的ref，和out都会将传参强制传递引用，区别如下：
+1. ref传参时，传入的参数必须是初始化之后的数据；而out，必须在方法中对其完成初始化；
+2. 使用out可以返回一个值
+
 <a id="markdown-params" name="params"></a>
 #### params
 有时，当声明一个方法时，您不能确定要传递给函数作为参数的参数数目。
@@ -646,8 +649,6 @@ static void Main(string[] args)
 3. 带 params 关键字的参数必须是最后一个参数，并且在方法声明中只允许一个 params 关键字。
 4. 不能仅使用 params 来使用重载方法。
 5. 没有 params 关键字的方法的优先级高于带有params关键字的方法的优先级
-
-
 
 ---
 
