@@ -18,6 +18,7 @@
     * [EntityFramework](./Persistence/EntityFramework.md)
 
 * [数据库](./DB/README.md)
+    * [SqlServer环境](./DB/SqlServerInstall.md)
     * [SqlServer基础](./DB/SQLServer_Basic.md)
     * [SqlServer编程](./DB/SQLServer_Program.md)
 
