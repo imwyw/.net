@@ -10,6 +10,7 @@
     * [高级](./Programming/Professional.md)
     * [桌面编程](./Programming/Form.md)
     * [LINQ](./Programming/LINQ.md)
+    * [编码规范](./Programming/CodeStyle.md)
 
 * [持久化](./Persistence/README.md)
     * [文件](./Persistence/File.md)
