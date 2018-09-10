@@ -1,12 +1,14 @@
 <!-- TOC -->
 
 - [文件、流](#文件流)
-    - [路径](#路径)
+    - [文件相关类](#文件相关类)
+    - [路径Path](#路径path)
     - [文件File](#文件file)
-    - [目录](#目录)
+    - [目录Directory](#目录directory)
     - [文件读写](#文件读写)
         - [文本文件](#文本文件)
-    - [流](#流)
+    - [文件流](#文件流)
+        - [文件流和字符串的转换](#文件流和字符串的转换)
         - [FileStream](#filestream)
         - [StreamReader/StreamWriter](#streamreaderstreamwriter)
         - [BinaryWriter/BinaryReader](#binarywriterbinaryreader)
@@ -15,9 +17,29 @@
 <!-- /TOC -->
 <a id="markdown-文件流" name="文件流"></a>
 # 文件、流
-<a id="markdown-路径" name="路径"></a>
-## 路径
-用户在磁盘上寻找文件时，所历经的文件夹线路叫路径。Windows 约定使用反斜线 (\\) 作为路径中的分隔符。UNIX 系统使用正斜线 (/)。
+
+<a id="markdown-文件相关类" name="文件相关类"></a>
+## 文件相关类
+
+文件操作常用相关类:
+
+类名 | 说明
+---|---
+File | 操作文件,静态类，对文件整体操作。拷贝、删除、剪切等。
+Directory | 操作目录（文件夹），静态类。
+DirectoryInfo | 文件夹的一个“类”，用来描述一个文件夹对象（获取指定目录下的所有目录时返回一个DirectoryInfo数组。）
+FileInfo | 文件类，用来描述一个文件对象。获取指定目录下的所有文件时，返回一个FileInfo数组。
+Path | /对文件或目录的路径进行操作（很方便）【字符串】
+Stream | 文件流，抽象类。
+FileStream | 文件流,MemoryStream(内存流),NetworkStream(网络流)
+StreamReader | 快速读取文本文件
+StreamWriter | 快速写入文本文件
+
+<a id="markdown-路径path" name="路径path"></a>
+## 路径Path
+用户在磁盘上寻找文件时，所历经的文件夹线路叫路径。
+
+Windows 约定使用反斜线 (\\) 作为路径中的分隔符。UNIX 系统使用正斜线 (/)。
 
 - 绝对路径：从根文件夹开始的路径，对于windows文件系统来说，从盘符开始。
 ```cs
@@ -26,7 +48,11 @@ string filePath = @"E:\Attachment\iflytek.txt";
 string filePath = "E:\\Attachment\\iflytek.txt";
 ```
 
-- 相对路径：相对路径是指相对于当前目录的位置。相对路径使用两种特殊符号，单点 (.) 和双点 (..)，通过它们可以转换到当前目录或父目录。双点用于在目录等级中上移。单点表示当前目录本身。
+- 相对路径：相对路径是指相对于当前目录的位置。
+
+相对路径使用两种特殊符号，单点 (.) 和双点 (..)，通过它们可以转换到当前目录或父目录。
+
+双点用于在目录等级中上移。单点表示当前目录本身。
 
 `.\iflytek.txt`
 
@@ -80,8 +106,8 @@ else
 }
 ```
 
-<a id="markdown-目录" name="目录"></a>
-## 目录
+<a id="markdown-目录directory" name="目录directory"></a>
+## 目录Directory
 目录仅指定到文件夹，而非文件。
 
 - Directory:静态类，提供了操作目录的静态方法。
@@ -134,8 +160,23 @@ File.WriteAllText(path, "hello world", Encoding.UTF8);
 File.AppendAllText(path, "how do u do", Encoding.UTF8);
 ```
 
-<a id="markdown-流" name="流"></a>
-## 流
+<a id="markdown-文件流" name="文件流"></a>
+## 文件流
+
+文件和流是有区别的，文件是存储在磁盘上的数据集，它具有名称和相应的路径。
+
+当打开一个文件并对其进行读/写时，该文件就称为流（stream）。但是，流不仅仅是指打开的磁盘文件，还可以是网络数据。
+
+.Net Framework允许在内存中创建流。此外，在控制台应用程序中，键盘输入和文本显示都是流。
+
+通俗的来讲，读一点处理一点(以及相反的生成一点, 写入一点)的数据类型(或操作)抽象出来, 这就是流。
+
+流包括以下基本操作：
+
+* 读取（read）：把数据从流传输到某种数据结构中，如输出到字符数组中。
+* 写入（write）：把数据从某种数据结构传输到流中，如把字节数组中的数据传输到流中。
+* 定位（seek）：在流中查找或重新定位当前位置。
+
 **流** 是一个用于传输数据的对象，按照传输方向分为读取流/写入流：
 - 读取流，从外部源到程序中，即从硬盘到内存。
 - 写入流，从程序传输到外部源中，即从内存到硬盘。
@@ -143,8 +184,15 @@ File.AppendAllText(path, "how do u do", Encoding.UTF8);
 在这里外部源通常指硬盘中的文件，但也不完全是文件，还可以是网络上的传输数据等等。
 
 对于文件的读写，最常用的类如下：
+- Stream类， Stream类是所有流的抽象基类。
 - FileStream(文件流)，这个类主要用于在二进制文件中读写二进制，也可以使用读写任何文件。
-- StreamReader(流读取器)和StreamWriter(流写入器)，这两个专门用于读写文本文件。
+- MemoryStream（内存流），在内存中创建流，以暂时保持数据，因此有了它就无须在硬盘上创建临时文件。它将数据封装为无符号的字节序列，可以直接进行读、写、查找操作。
+- BufferedStream（缓冲流），把流先添加到缓冲区，再进行数据的读/写操作。缓冲区是存储区中用来缓存数据的字节块。使用缓冲区可以减少访问数据时对操作系统的调用次数，增强系统的读/写功能。
+- StreamReader(流读取器)和StreamWriter(流写入器)，以一种特定的编码（如：UTF-8）从字节流中读取字符，流写入器StreamWriter类用来以一种特定的编码（如：UTF-8）向流中写入字符。StreamReader和StreamWriter类一般用来操作文本文件。
+- BinaryReader和BinaryWriter，用特定的编码将基元数据类型读作二进制或以二进制形式将基元类型写入流，并支持用特定的编码写入字符串。
+
+<a id="markdown-文件流和字符串的转换" name="文件流和字符串的转换"></a>
+### 文件流和字符串的转换
 
 在文件流的操作过程中，我们经常需要使用到字符串与字节数组之间的互相转换：
 ```cs
@@ -326,3 +374,8 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
 }
 ```
 
+---
+
+参考引用：
+
+[C# 文件操作（摘抄）](https://www.cnblogs.com/hellowzl/p/6797556.html)
