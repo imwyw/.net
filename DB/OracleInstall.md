@@ -4,8 +4,11 @@
     - [Oracle Server安装](#oracle-server安装)
     - [新建实例](#新建实例)
     - [配置监听](#配置监听)
+    - [用户操作](#用户操作)
     - [客户端的安装](#客户端的安装)
     - [PL/SQL developer](#plsql-developer)
+    - [疑难解答](#疑难解答)
+        - [ORA-12541](#ora-12541)
 
 <!-- /TOC -->
 
@@ -69,13 +72,56 @@
 
 <a id="markdown-配置监听" name="配置监听"></a>
 ## 配置监听
-开始菜单中打开【Oracle-OraDb11g_home1】-【配置和移植工具】-【Net Manager】网络配置
+开始菜单中打开【Oracle-OraDb11g_home1】-【配置和移植工具】-【Net Configuration Assistant】网络配置
 
-![](..\assets\Oracle\oracle-net-manager.png)
+![](..\assets\Oracle\oracle-net-config-assistant.png)
+
+选择【监听程序】进行配置
+
+![](..\assets\Oracle\oracle-net-listen-1.png)
+
+![](..\assets\Oracle\oracle-net-listen-2.png)
+
+![](..\assets\Oracle\oracle-net-listen-3.png)
+
+![](..\assets\Oracle\oracle-net-listen-4.png)
+
+![](..\assets\Oracle\oracle-net-listen-5.png)
+
+![](..\assets\Oracle\oracle-net-listen-6.png)
+
+![](..\assets\Oracle\oracle-net-listen-7.png)
+
+![](..\assets\Oracle\oracle-net-listen-8.png)
+
+再进行【本地网络服务名】的配置
+
+![](..\assets\Oracle\oracle-net-listen-srv-1.png)
+
+![](..\assets\Oracle\oracle-net-listen-srv-2.png)
+
+![](..\assets\Oracle\oracle-net-listen-srv-3.png)
+
+![](..\assets\Oracle\oracle-net-listen-srv-4.png)
+
+![](..\assets\Oracle\oracle-net-listen-srv-5.png)
+
+![](..\assets\Oracle\oracle-net-listen-srv-6.png)
+
+![](..\assets\Oracle\oracle-net-listen-srv-7.png)
+
+![](..\assets\Oracle\oracle-net-listen-srv-8.png)
+
+<a id="markdown-用户操作" name="用户操作"></a>
+## 用户操作
+
+> https://blog.csdn.net/love_legain/article/details/54291400
 
 <a id="markdown-客户端的安装" name="客户端的安装"></a>
 ## 客户端的安装
-【win64_11gR2_client.zip】在win10安装会有此提示，可以忽略
+客户端这里推荐安装32位的版本：【win32_11gR2_client.zip】
+
+在win10安装会有此提示，可以忽略
 
 ![](..\assets\Oracle\oracle-client-win10.png)
 
@@ -112,3 +158,11 @@ orcl =
     )
   )
 ```
+
+<a id="markdown-疑难解答" name="疑难解答"></a>
+## 疑难解答
+<a id="markdown-ora-12541" name="ora-12541"></a>
+### ORA-12541
+连接Oracle时报错ORA-12541: TNS: 无监听程序
+
+需要检查服务端的监听程序配置

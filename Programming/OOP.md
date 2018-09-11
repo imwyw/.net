@@ -20,7 +20,8 @@
             - [继承中的构造函数](#继承中的构造函数)
             - [父类与子类转换](#父类与子类转换)
             - [类继承修饰符](#类继承修饰符)
-            - [类成员继承修饰符](#类成员继承修饰符)
+            - [基类修饰virtual和abstract](#基类修饰virtual和abstract)
+            - [派生类修饰override和new](#派生类修饰override和new)
             - [接口继承](#接口继承)
         - [多态](#多态)
     - [类之间的关系](#类之间的关系)
@@ -368,27 +369,143 @@ abstract：抽象的，不能实例化，只能被继承，可以有抽象成员
 
 sealed：密封的，不能被继承
 
-<a id="markdown-类成员继承修饰符" name="类成员继承修饰符"></a>
-#### 类成员继承修饰符
-
-- 基类中：
+<a id="markdown-基类修饰virtual和abstract" name="基类修饰virtual和abstract"></a>
+#### 基类修饰virtual和abstract
 
 virtual：虚拟，可以被派生类重写，也可以不进行重写；
 
 abstract：抽象，不需要方法实现，必须被派生类重写，只要一个成员为抽象成员，该类也就必须声明为抽象类
 
-- 派生类中：
+virtual和abstract都是用来修饰父类的，通过覆盖父类的定义，让子类重新定义。
+
+如果用来修饰方法，前面必须添加public，要不然就会出现编译错误：
+
+虚拟方法或抽象方法是不能私有的。毕竟加上virtual或abstract就是让子类重新定义的，而private成员是不能被子类访问的。
+
+```cs
+/// <summary>
+/// 有抽象方法，则类必须声明为抽象类。只有抽象类才能有抽象方法
+/// 反之，抽象类可以有普通方法
+/// </summary>
+public abstract class Person
+{
+    /// <summary>
+    /// abstract 抽象方法
+    /// 不能有实现！！！
+    /// 必须由子类实现
+    /// </summary>
+    public abstract void SayHi();
+
+    /// <summary>
+    /// virtual 虚方法
+    /// 必须要有实现，可以被子类重写/覆盖
+    /// </summary>
+    public virtual void Talk()
+    {
+        Console.WriteLine("person talk");
+    }
+
+    /// <summary>
+    /// 普通方法
+    /// </summary>
+    public void Chat()
+    {
+        Console.WriteLine("person chat");
+    }
+}
+
+/// <summary>
+/// 继承抽象类Person
+/// </summary>
+public class Student : Person
+{
+    /// <summary>
+    /// 必须实现父类抽象类里的抽象方法
+    /// </summary>
+    public override void SayHi()
+    {
+        Console.WriteLine("student sayhi");
+    }
+}
+```
+
+<a id="markdown-派生类修饰override和new" name="派生类修饰override和new"></a>
+#### 派生类修饰override和new
 
 override：重写，派生类重写基类成员
 
 new：隐藏，隐藏基类同名成员，使两成员均不出现彼此覆盖的影响，可不写，但会出现警告
 
+```cs
+public class Animal
+{
+    public virtual void Say()
+    {
+        Console.WriteLine("animal say...");
+    }
+
+    public void Talk()
+    {
+        Console.WriteLine("animal talk...");
+    }
+}
+
+public class Dog : Animal
+{
+    /// <summary>
+    /// 方法重写，重写父类中的虚方法
+    /// 当父类引用指向子类对象时，通过引用调用的为子类的方法实现
+    /// </summary>
+    public override void Say()
+    {
+        Console.WriteLine("dog say...");
+    }
+
+    /// <summary>
+    /// 覆盖父类中同名方法，但不会改变父类引用的调用
+    /// 可以覆盖普通方法，即父类中不需要设置为虚方法
+    /// </summary>
+    public new void Talk()
+    {
+        Console.WriteLine("dog talk...");
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Animal a = new Dog();
+
+        a.Say();//dog say...
+        a.Talk();//animal talk...
+    }
+}
+```
+
+**总结：**
+1. 不管是重写还是覆盖都不会影响父类自身的功能（废话，肯定的嘛，除非代码被改）。
+2. 当用子类创建父类的时候，如 C1 c3 = new C2()，重写会改变父类的功能，即调用子类的功能；而覆盖不会，仍然调用父类功能。
+3. 虚方法、实方法都可以被覆盖（new），抽象方法，接口 不可以。
+4. 抽象方法，接口，标记为virtual的方法可以被重写（override），实方法不可以。
+5. 重写使用的频率比较高，实现多态；覆盖用的频率比较低，用于对以前无法修改的类进行继承的时候。
+
+
 <a id="markdown-接口继承" name="接口继承"></a>
 #### 接口继承
+
+什么是接口？其实，接口简单理解就是一种约定，使得实现接口的类或结构在形式上保持一致。
 
 所有接口成员都是公共 public 的，可以定义属性、方法，**但不能定义字段**
 
 不能被static、virtual、abstract和sealed修饰，但可以有new来隐藏基接口成员
+
+**总结：**
+1. C#中的接口是独立于类来定义的。这与 C++模型是对立的，在 C++中接口实际上就是抽象基类。
+2. 接口和类都可以继承多个接口。
+3. 类可以继承一个基类，接口根本不能继承类。这种模型避免了 C++的多继承问题，C++中不同基类中的实现可能出现冲突。
+4. 一个接口定义一个只有抽象成员的引用类型。C#中一个接口实际所做的，仅仅只存在着方法标志，但根本就没有执行代码。这就暗示了不能实例化一个接口，只能实例化一个派生自该接口的对象。
+5. 接口可以定义方法、属性和索引。所以，对比一个类，接口的特殊性是：当定义一个类时，可以派生自多重接口，而你只能可以从仅有的一个类派生。
 
 <a id="markdown-多态" name="多态"></a>
 ### 多态
