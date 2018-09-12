@@ -24,6 +24,7 @@
             - [删除](#删除)
         - [XmlDocument和XmlReader](#xmldocument和xmlreader)
         - [XDocument(方便、快捷)](#xdocument方便快捷)
+    - [增加对配置文件操作示例](#增加对配置文件操作示例)
 
 <!-- /TOC -->
 <a id="markdown-xml" name="xml"></a>
@@ -592,6 +593,10 @@ root.Add(book2);
 
 xdoc.Save(xmlPath);
 ```
+
+<a id="markdown-增加对配置文件操作示例" name="增加对配置文件操作示例"></a>
+## 增加对配置文件操作示例
+//todo...
 
 拓展参考：
 

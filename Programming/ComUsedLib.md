@@ -8,6 +8,9 @@
         - [字符串池（只针对字符串常量）](#字符串池只针对字符串常量)
         - [StringBuilder](#stringbuilder)
         - [String和string](#string和string)
+    - [特殊字符](#特殊字符)
+        - [$字符串内插](#字符串内插)
+        - [@逐字字符串标识符](#逐字字符串标识符)
     - [DateTime](#datetime)
     - [数据集合DataCollection](#数据集合datacollection)
         - [Array](#array)
@@ -46,6 +49,7 @@ Replace(string oldStr,string newStr) | 用新的字符串，替换对象字符�
 Trim()/TrimStart()/TrimEnd() | 去掉对象字符串两端/开始/结尾的空格
 Split() | 把对象字符串，按照指定字符分割成一个字符串数组！
 
+
 <a id="markdown-静态方法" name="静态方法"></a>
 ### 静态方法
 
@@ -53,7 +57,8 @@ Split() | 把对象字符串，按照指定字符分割成一个字符串数组�
 ----|---
 string.IsNullOrEmpty(string) | 判断某字符串是否为null，或者为空字符串，为null或空时返回真值
 string.Equals(string,string,StringComparison.OrdianlIgnore) | 忽略大小写比较两个字符串是否相同。
-string.Join(string,string[]) | 把一个数组按照指定字符串，拼接成一个字符串。
+string.Join(string,string[]) | 把一个数组按照指定字符串，拼接成一个字符串。、
+string.Format()  |  将指定字符串中的格式项替换为指定数组中相应对象的字符串表示形式。
 
 <a id="markdown-不可变性" name="不可变性"></a>
 ### 不可变性
@@ -84,6 +89,39 @@ String是.NET  Framework里面的String，小写的string是C#语言中的string
 如果在追求效率的情况下可以使用大写的String，因为最终通过编译后，小写的string会变成大写的String，可以给编译减少负荷，从而运行效率提高。
 
 MSDN中对string的说明：string is an alias for String in the .NET Framework
+
+<a id="markdown-特殊字符" name="特殊字符"></a>
+## 特殊字符
+
+<a id="markdown-字符串内插" name="字符串内插"></a>
+### $字符串内插
+`$` 特殊字符将字符串文本标识为内插字符串。 此功能在 C# 6 及该语言的更高版本中可用。
+
+与使用string.Format()中`{0}`占位方式相比，字符串内插提供的语法更具可读性，且更加方便。
+
+```cs
+string name = "jack";
+//需要在字符串前加 $ 符号
+Console.WriteLine($"hello {name}");// hello jack
+```
+
+<a id="markdown-逐字字符串标识符" name="逐字字符串标识符"></a>
+### @逐字字符串标识符
+1、@ 字符可作为代码元素的前缀，编译器将把此代码元素解释为标识符而非 C# 关键字。
+
+下面的示例使用 @ 字符定义其在 for 循环中使用的名为 for 的标识符。
+
+```cs
+int @for = 1;
+```
+
+但通常来说都不会这样使用
+
+2、指示将原义解释字符串。
+```cs
+string filename1 = @"c:\documents\files\u0066.txt";
+string filename2 = "c:\\documents\\files\\u0066.txt";
+```
 
 <a id="markdown-datetime" name="datetime"></a>
 ## DateTime

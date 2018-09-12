@@ -114,6 +114,34 @@
 
 <a id="markdown-用户操作" name="用户操作"></a>
 ## 用户操作
+做好以上准备后，我们可以针对数据添加用户并授权，以下操作均在服务端进行
+
+![](..\assets\Oracle\create-user-1.png)
+
+打开sqlplus，使用安装Oracle时设置的密码进行登录：
+
+![](..\assets\Oracle\create-user-login.png)
+
+上图中system为默认系统用户，可以用来进行用户的相关操作
+
+以下脚本是用户相关的操作：
+```sql
+-- 查看数据库中所有用户的名称;
+select username from dba_users;
+
+-- 新建用户 用户名为【new_user_name】，密码为【new_password】
+create user new_user_name identified by new_password;
+
+-- 修改用户密码 将用户【new_user_name】重置为【new_password】
+alter user new_user_name identified by new_password;
+
+-- 删除用户
+drop user new_user_name;
+
+-- 同时删除与【new_user_name】相关的表;
+drop user new_user_name cascade;
+```
+
 
 > https://blog.csdn.net/love_legain/article/details/54291400
 
