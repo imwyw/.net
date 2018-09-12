@@ -354,7 +354,7 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
 {
     Student stu = new Student("王富贵", 123);
 
-    //需要引用using System.Runtime.Serialization.Formatters.Binary;
+    //创建二进制序列化器，需要引用using System.Runtime.Serialization.Formatters.Binary;
     BinaryFormatter bf = new BinaryFormatter();
 
     //进行序列化保存，需要进行序列化的类必须有Serializable特性
@@ -373,6 +373,12 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
     }
 }
 ```
+
+使用二进制格式序列化时，它不仅是将对象的字段数据进行持久化，
+
+也持久化每个类型的完全限定名称和定义程序集的完整名称（包括包称、版本、公钥标记、区域性），这些数据使得在进行二进制格式反序列化时亦会进行类型检查。
+
+所以反序列化时的运行环境要与序列化时的运行环境要相同，否者可能会无法反序列化成功。
 
 ---
 
