@@ -23,6 +23,7 @@
         - [泛型使用](#泛型使用)
         - [泛型集合List<T>](#泛型集合listt)
         - [Dictionay<Tkey,Tvalue>](#dictionaytkeytvalue)
+    - [异常处理](#异常处理)
 
 <!-- /TOC -->
 
@@ -447,6 +448,66 @@ lstRes.Contains("a");
 Dictionary<string, string> dicRes = new Dictionary<string, string>();
 dicRes.Add("zhangsan","张三");
 dicRes.Add("zhaofugui", "赵富贵");
+```
+
+<a id="markdown-异常处理" name="异常处理"></a>
+## 异常处理
+异常是在程序执行期间出现的问题。C# 中的异常是对程序运行时出现的特殊情况的一种响应，比如尝试除以零。
+
+异常提供了一种把程序控制权从某个部分转移到另一个部分的方式。
+
+C# 异常处理时建立在四个关键词之上的：try、catch、finally 和 throw。
+
+* try：一个 try 块标识了一个将被激活的特定的异常的代码块。后跟一个或多个 catch 块。
+* catch：程序通过异常处理程序捕获异常。catch 关键字表示异常的捕获。
+* finally：finally 块用于执行给定的语句，不管异常是否被抛出都会执行。例如，如果您打开一个文件，不管是否出现异常文件都要被关闭。
+* throw：当问题出现时，程序抛出一个异常。使用 throw 关键字来完成。
+
+```cs
+try
+{
+   // 引起异常的语句
+}
+catch( ExceptionName e1 )
+{
+   // 错误处理代码
+}
+catch( ExceptionName e2 )
+{
+   // 错误处理代码
+}
+catch( ExceptionName eN )
+{
+   // 错误处理代码
+}
+finally
+{
+   // 要执行的语句
+}
+```
+
+可以列出多个 catch 语句捕获不同类型的异常，以防 try 块在不同的情况下生成多个异常。
+
+异常的作用：
+* 从异常中恢复-比如遇到数据库连接错误，不能让程序崩溃，而是截获这个异常，提示用户并回到正常的运行轨道上来。
+* 事务回滚-比如进行一系列的数据操作，突然其中某一个数据操作发生错误，应该能让此系列操作全部撤销。
+
+在try语句块中的语句throw出来的异常，会被它外围的catch捕获。
+
+**如果你不知道发生了异常怎么处理，那就不要进行try...catch...处理！**
+
+```cs
+try
+{
+    int[] arr = { 1, 2, 3 };
+    Console.WriteLine(arr[3]);
+}
+catch (Exception ex)
+{
+    Console.WriteLine("发生异常：" + ex);
+    //throw new Exception("索引超出数组界限");
+}
+Console.WriteLine("运行完毕");
 ```
 
 ---
