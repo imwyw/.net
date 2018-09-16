@@ -24,7 +24,7 @@
             - [删除](#删除)
         - [XmlDocument和XmlReader](#xmldocument和xmlreader)
         - [XDocument(方便、快捷)](#xdocument方便快捷)
-    - [增加对配置文件操作示例](#增加对配置文件操作示例)
+    - [配置文件的读写](#配置文件的读写)
 
 <!-- /TOC -->
 <a id="markdown-xml" name="xml"></a>
@@ -77,7 +77,7 @@ HTML标记不区分大小写，它则大小敏感，即区分大小写。
 
 <!-- 合法的表示 -->
 <p>This is a paragraph</p>
-<p>This is another paragraph</p>  
+<p>This is another paragraph</p>
 ```
 
 <a id="markdown-标签对大小写敏感" name="标签对大小写敏感"></a>
@@ -384,7 +384,7 @@ public class TagPropInfo
 static void WriteLeafNode(XmlWriter xw, string tagName, string text, List<TagPropInfo> lstProps)
 {
     xw.WriteStartElement(tagName);
-    if (lstProps != null && lstProps.Count > 0)
+    if (lstProps != null)
     {
         foreach (TagPropInfo item in lstProps)
         {
@@ -594,9 +594,43 @@ root.Add(book2);
 xdoc.Save(xmlPath);
 ```
 
-<a id="markdown-增加对配置文件操作示例" name="增加对配置文件操作示例"></a>
-## 增加对配置文件操作示例
-//todo...
+<a id="markdown-配置文件的读写" name="配置文件的读写"></a>
+## 配置文件的读写
+配置文件在很多情况下都使用到, 配置文件分为两种，一种是应用程序的配置文件, 一种是web的配置文件。
+
+两种配置文件最大的区别是web的配置文件更新之后会实时更新,应用程序的配置文件不会实时更新.
+
+```xml
+<configuration> 
+  <appSettings> 
+    <add key="name" value="我是远程服务器"/> 
+  </appSettings> 
+</configuration>
+```
+
+读写需要使用【ConfigurationManager】类，则必须在工程添加【System.Configuration.dll】程序集的引用
+
+读取：
+```cs
+// 需要 using System.Configuration;
+string str = ConfigurationManager.AppSettings["Name"];
+```
+
+新建和修改：
+```cs
+Configuration cfg = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+cfg.AppSettings.Settings.Add("Version", "1.0");
+
+cfg.AppSettings.Settings["Version"].Value = "2.0";
+
+//修改后要进行保存，并且此处添加修改的是/bin/debug中同程序名的config配置
+cfg.Save();
+
+//需要进行RefreshSection刷新节，否则无法更新到内存中！
+ConfigurationManager.RefreshSection("appSettings");
+Console.WriteLine(ConfigurationManager.AppSettings["Version"]);
+```
+
 
 拓展参考：
 
