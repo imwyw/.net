@@ -22,6 +22,9 @@
         - [线程创建](#线程创建)
         - [线程阻塞](#线程阻塞)
         - [lock](#lock)
+    - [邮件发送](#邮件发送)
+        - [协议](#协议)
+        - [邮件发送](#邮件发送-1)
 
 <!-- /TOC -->
 <a id="markdown-高级编程" name="高级编程"></a>
@@ -633,3 +636,66 @@ static void BuyTicket()
 推荐阅读：
 
 [5天不再惧怕多线程系列](http://www.cnblogs.com/huangxincheng/archive/2012/03/14/2395279.html)
+
+<a id="markdown-邮件发送" name="邮件发送"></a>
+## 邮件发送
+Internet电子邮件系统是基于客户机/服务器方式：
+1. 客户端，即用户代理，负责邮件的编写、发送和接收。
+2. 服务器端，即传输代理，负责邮件的传输。
+
+<a id="markdown-协议" name="协议"></a>
+### 协议
+电子邮件在发送和接收的过程中还要遵循一些基本协议和标准，这些协议主要有SMTP、POP3、IMAP、MIME等。
+
+SMTP（Simple Mail Transfer Protocol，简单邮件传输协议）用于主机与主机之间的电子邮件交换。
+
+如果想要从邮件服务器读取或下载邮件时必须要有邮件读取协议。现在常用的邮件读取协议有两个：
+
+1. POP3协议（Post Office Protocol 3，邮局协议的第三版本），但是在客户端的操作（如移动邮件、标记已读等），不会反馈到服务器上。
+2. IMAP协议（Internet Mail Access Protocol，交互式邮件访问协议），客户端的操作都会反馈到服务器上，对邮件进行的操作，服务器上的邮件也会做相应的动作。
+
+![](../assets/Programming/mail-pop3和imap对比.gif)
+
+<a id="markdown-邮件发送-1" name="邮件发送-1"></a>
+### 邮件发送
+首先需要添加引用【using System.Net.Mail;】
+
+```cs
+// 创建一封邮件对象
+MailMessage mail = new MailMessage();
+// 发件人地址，用于显示
+mail.From = new MailAddress("now_way@126.com", "王五");
+// 邮件主题
+mail.Subject = "C#发送";
+// 邮件正文
+mail.Body = @"
+        using System;
+        using System.Collections.Generic;
+        using System.Configuration;
+        using System.IO;
+        using System.Linq;
+        using System.Net.Mail;
+        using System.Runtime.Serialization.Formatters.Binary;
+        using System.Text;
+        using System.Threading;
+        using System.Threading.Tasks;
+        using System.Xml;
+        using System.Xml.Linq;
+        ";
+// 添加接收人，接收人是一个列表
+mail.To.Add(new MailAddress("ywwang5@iflytek.com"));
+
+using (SmtpClient client = new SmtpClient())
+{
+    // 设置用于 SMTP 事务的主机的名称，此处为126邮箱。qq邮箱则为 smtp.qq.com
+    client.Host = "smtp.126.com";
+    // 这里才是真正的邮箱登陆名和密码，比如我的邮箱地址是 now_way@126.com， 我的用户名为 now_way ，我的密码是 xxxx
+    client.Credentials = new System.Net.NetworkCredential("now_way", "nowway1019");
+    // 邮件处理方式
+    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+    client.Send(mail);
+
+    Console.WriteLine("发送成功！");
+}
+```
