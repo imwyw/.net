@@ -53,7 +53,7 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 
 ![](..\assets\SqlServer\Install_7.png)
 
-8.点击全选，安装所有功能，点击下一步：
+8.选中数据库引擎服务、客户端工具连接和管理工具，点击下一步：
 
 ![](..\assets\SqlServer\Install_8.png)
 
