@@ -66,6 +66,12 @@ SQLite | 开源 | 轻量级，但性能非常强悍
 
 ![](..\assets\SqlServer\Install_10.png)
 
+如果有实例名称被占用的情况，可以选择命名实例，只要名称不重复都可以。
+
+![](..\assets\SqlServer\实例名称冲突.png)
+
+ps.实例名称被占用一般是以前安装过或者存在多个版本sqlserver服务导致的。
+
 11.默认设置，点击下一步：
 
 ![](..\assets\SqlServer\Install_11.png)
