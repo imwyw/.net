@@ -25,6 +25,11 @@
     - [邮件发送](#邮件发送)
         - [协议](#协议)
         - [邮件发送](#邮件发送-1)
+    - [Socket编程](#socket编程)
+        - [网络通讯协议](#网络通讯协议)
+        - [TCP和UDP](#tcp和udp)
+            - [TCP](#tcp)
+            - [UDP](#udp)
 
 <!-- /TOC -->
 <a id="markdown-高级编程" name="高级编程"></a>
@@ -37,7 +42,7 @@
 ### 委托
 委托是安全封装方法的类型，类似于 C 和 C++ 中的函数指针。 与 C 函数指针不同的是，委托是面向对象的、类型安全的和可靠的。
 
-说白了，委托是一个类，字面理解就是托人干事。将方法作为实参传递，实际传递的是方法地址/引用。
+说白了，委托是一个类，将方法作为实参传递，实际传递的是方法地址/引用。
 
 ```cs
 //委托调用的方法和委托的定义必须保持一致，如下面的几个示例
@@ -78,7 +83,7 @@ static void BuyTicket()
 
 static void Subway()
 {
-    Console.WriteLine("再换乘地铁");
+    Console.WriteLine("换乘地铁");
 }
 ```
 
@@ -98,14 +103,16 @@ static void Main(string[] args)
 <a id="markdown-泛型委托-predicate" name="泛型委托-predicate"></a>
 #### 泛型委托-Predicate
 
-表示定义一组条件并确定指定对象是否符合这些条件的方法。此委托由 Array 和 List 类的几种方法使用，用于在集合中搜索元素。
+表示定义一组条件并确定指定对象是否符合这些条件的方法。
+
+此委托由 Array 和 List 类的几种方法使用，用于在集合中搜索元素。
 
 `public delegate bool Predicate<T>(T obj);`
 
 类型参数介绍：
-   T： 要比较的对象的类型。
-   obj： 要按照由此委托表示的方法中定义的条件进行比较的对象。
-   返回值：bool，如果 obj 符合由此委托表示的方法中定义的条件，则为 true；否则为 false。
+* T： 要比较的对象的类型。
+* obj： 要按照由此委托表示的方法中定义的条件进行比较的对象。
+* 返回值：bool，如果 obj 符合由此委托表示的方法中定义的条件，则为 true；否则为 false。
 
 ```cs
 List<string> listStr = new List<string>() { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten" };
@@ -142,6 +149,7 @@ Console.WriteLine(string.Join(",", arr1));
 <a id="markdown-泛型委托-action" name="泛型委托-action"></a>
 #### 泛型委托-Action
 Action泛型委托代表了一类方法：可以有0个到16个输入参数，输入参数的类型是不确定的，但不能有返回值。
+
 ```cs
 //Action 等效
 delegate void Delegate1();
@@ -169,18 +177,54 @@ delegate int Delegate3(string str, bool isa, object obj);
 
 <a id="markdown-lambda表达式" name="lambda表达式"></a>
 ### Lambda表达式
-Lambda 表达式是一种可用于创建 委托 或 表达式目录树 类型的 匿名函数 。 通过使用 lambda 表达式，可以写入可作为参数传递或作为函数调用值返回的本地函数。 
+Lambda 表达式是一种可用于创建 委托 或 表达式目录树 类型的 匿名函数 。 
+
+通过使用 lambda 表达式，可以写入可作为参数传递或作为函数调用值返回的本地函数。 
 
 Lambda 表达式对于编写 LINQ 查询表达式特别有用。
 
 [Lambda 表达式(C# 编程指南)](https://docs.microsoft.com/zh-cn/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions)
 
-在 2.0 之前的 C# 版本中，声明委托的唯一方法是使用命名方法。  C# 2.0 引入了匿名方法，而在 C# 3.0 及更高版本中，Lambda 表达式取代了匿名方法，作为编写内联代码的首选方式。
+在 2.0 之前的 C# 版本中，声明委托的唯一方法是使用命名方法。  C# 2.0 引入了匿名方法，而在 C# 3.0 及更高版本中。
 
-在C#2.0之前就有委托了，在2.0之后又引入了匿名方法，C#3.0之后，又引入了Lambda表达式，他们三者之间的顺序是：委托->匿名表达式->Lambda表达式。
+Lambda 表达式取代了匿名方法，作为编写内联代码的首选方式。
+
+在C#2.0之前就有委托了，在2.0之后又引入了匿名方法，C#3.0之后，又引入了Lambda表达式。
+
+他们三者之间的顺序是：委托->匿名表达式->Lambda表达式。
 
 以下分别是三种对应不同的实现：
 ```cs
+/// <summary>
+/// 计算委托的类型
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <returns></returns>
+delegate int Calculate(int x, int y);
+
+/// <summary>
+/// 执行计算方法
+/// </summary>
+/// <param name="fun">委托传入的方法</param>
+/// <param name="x">操作数1</param>
+/// <param name="y">操作数2</param>
+static void DoCalc(Calculate fun, int x, int y)
+{
+    fun.Invoke(x, y);
+}
+
+/// <summary>
+/// 加法
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <returns></returns>
+static int Add(int x, int y)
+{
+    return x + y;
+}
+
 static void Main(string[] args)
 {
     /*
@@ -211,39 +255,17 @@ static void Main(string[] args)
     //上述乘法运算也可以简写为：
     DoCalc((x, y) => x * y, 2, 3);
 }
-
-/// <summary>
-/// 计算委托的类型
-/// </summary>
-/// <param name="x"></param>
-/// <param name="y"></param>
-/// <returns></returns>
-delegate int Calculate(int x, int y);
-
-/// <summary>
-/// 执行计算方法
-/// </summary>
-/// <param name="fun">委托传入的方法</param>
-/// <param name="x">操作数1</param>
-/// <param name="y">操作数2</param>
-static void DoCalc(Calculate fun, int x, int y)
-{
-    fun.Invoke(x, y);
-}
-
-/// <summary>
-/// 加法
-/// </summary>
-/// <param name="x"></param>
-/// <param name="y"></param>
-/// <returns></returns>
-static int Add(int x, int y)
-{
-    return x + y;
-}
 ```
 
-"Lambda表达式"是一个特殊的匿名函数，是一种高效的类似于函数式编程的表达式，Lambda简化了开发中需要编写的代码量。它可以包含表达式和语句，并且可用于创建委托或表达式目录树类型，支持带有可绑定到委托或表达式树的输入参数的内联表达式。所有Lambda表达式都使用Lambda运算符=>，该运算符读作"goes to"。Lambda运算符的左边是输入参数(如果有)，右边是表达式或语句块。Lambda表达式x => x * x读作"x goes to x times x"。
+Lambda表达式"是一个特殊的匿名函数，是一种高效的类似于函数式编程的表达式，Lambda简化了开发中需要编写的代码量。
+
+它可以包含表达式和语句，并且可用于创建委托或表达式目录树类型，支持带有可绑定到委托或表达式树的输入参数的内联表达式。
+
+所有Lambda表达式都使用Lambda运算符=>，该运算符读作"goes to"。
+
+Lambda运算符的左边是输入参数(如果有)，右边是表达式或语句块。
+
+Lambda表达式x => x * x读作"x goes to x times x"。
 
 上述示例也可以使用.NET预定义的委托Func<>进行替代，不需要新定义Calculate委托，如下：
 ```cs
@@ -282,13 +304,76 @@ x=> x*x
 
 <a id="markdown-事件" name="事件"></a>
 ### 事件
-事件(Event) 基本上说是一个用户操作，如按键、点击、鼠标移动等等，或者是一些出现，如系统生成的通知。应用程序需要在事件发生时响应事件。例如，中断。事件是用于进程间通信。
+事件(Event) 基本上说是一个用户操作，如按键、点击、鼠标移动等等，或者是一些出现，如系统生成的通知。
 
-事件在类中声明且生成，且通过使用同一个类或其他类中的委托与事件处理程序关联。包含事件的类用于发布事件。这被称为 **发布器(publisher) 类**。其他接受该事件的类被称为 **订阅器(subscriber) 类**。事件使用 **发布-订阅(publisher-subscriber) 模型**。
+应用程序需要在事件发生时响应事件。例如，中断。事件是用于进程间通信。
+
+事件在类中声明且生成，且通过使用同一个类或其他类中的委托与事件处理程序关联。
+
+包含事件的类用于发布事件。这被称为 **发布器(publisher) 类**。
+
+其他接受该事件的类被称为 **订阅器(subscriber) 类**。
+
+事件使用 **发布-订阅(publisher-subscriber) 模型**。
 
 **发布器(publisher)** 是一个包含事件和委托定义的对象。事件和委托之间的联系也定义在这个对象中。发布器(publisher)类的对象调用这个事件，并通知其他的对象。
 
 **订阅器(subscriber)** 是一个接受事件并提供事件处理程序的对象。在发布器(publisher)类中的委托调用订阅器(subscriber)类中的方法(事件处理程序)。
+
+```cs
+/// <summary>
+/// 定义一个无返回值有参委托
+/// </summary>
+/// <param name="name"></param>
+public delegate void MyEventHandler(string name);
+
+public class Student
+{
+    /*
+    定义委托实例(事件)
+    使用event关键字为了避免直接在对象上进行委托实例的调用，如【stu1.Introduce("xxx");】
+    */
+    public event MyEventHandler Introduce;
+    public string Name { get; set; }
+    public Student(string name)
+    {
+        Name = name;
+    }
+    public void Say()
+    {
+        Console.WriteLine($"{Name}的自我介绍...");
+        if (null != Introduce)
+        {
+            Introduce.Invoke(Name);
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Student stu1 = new Student("jack");
+
+        // lambda表达式方式，注册事件
+        stu1.Introduce += (v) =>
+        {
+            Console.WriteLine("hello,i'm " + v);
+        };
+
+        // 注册方法到事件
+        stu1.Introduce += SayByChn;
+
+        // 调用，触发对象上注册的所有方法
+        stu1.Say();
+    }
+
+    static void SayByChn(string name)
+    {
+        Console.WriteLine("中文版，你好!" + name);
+    }
+}
+```
 
 <a id="markdown-扩展方法" name="扩展方法"></a>
 ## 扩展方法
@@ -722,4 +807,173 @@ using (SmtpClient client = new SmtpClient())
 网易邮箱的SMTP发送校验较为严格，关于发送邮件的相关帮助如下：
 
 > http://help.163.com/09/1224/17/5RAJ4LMH00753VB8.html
+
+<a id="markdown-socket编程" name="socket编程"></a>
+## Socket编程
+
+网络上的两个程序通过一个双向的通信连接实现数据的交换，这个连接的一端称为一个socket。
+
+建立网络通信连接至少要一对端口号(socket)。
+
+socket本质是编程接口(API)，对TCP/IP的封装，TCP/IP也要提供可供程序员做网络开发所用的接口，这就是Socket编程接口；
+
+HTTP是轿车，提供了封装或者显示数据的具体形式；Socket是发动机，提供了网络通信的能力。
+
+<a id="markdown-网络通讯协议" name="网络通讯协议"></a>
+### 网络通讯协议
+关于网络通讯协议模型，通常会说到两种：OSI和TCP/IP
+
+开放式系统互联通信参考模型（英语：Open System Interconnection Reference Model，缩写为OSI），简称为OSI模型（OSI model），一种概念模型，由国际标准化组织（ISO）提出，一个试图使各种计算机在世界范围内互连为网络的标准框架。被TCP/IP淘汰，没有大规模应用。
+
+Transmission Control Protocol/Internet Protocol的简写，中译名为传输控制协议/因特网互联协议，又名网络通讯协议，是Internet最基本的协议、Internet国际互联网络的基础，由网络层的IP协议和传输层的TCP协议组成。
+
+OSI七层和TCP/IP四层的关系：
+1. OSI引入了服务、接口、协议、分层的概念，TCP/IP借鉴了OSI的这些概念建立TCP/IP模型。
+2. OSI先有模型，后有协议，先有标准，后进行实践；而TCP/IP则相反，先有协议和应用再提出了模型，且是参照的OSI模型。
+3. OSI是一种理论下的模型，而TCP/IP已被广泛使用，成为网络互联事实上的标准。
+
+![](../assets/Programming/osi-tcpip.png)
+
+![](../assets/Programming/tcpip.png)
+
+
+<a id="markdown-tcp和udp" name="tcp和udp"></a>
+### TCP和UDP
+TCP与UDP基本区别:
+1. TCP面向连接（如打电话要先拨号建立连接）;UDP是无连接的，即发送数据之前不需要建立连接
+2. TCP提供可靠的服务。也就是说，通过TCP连接传送的数据，无差错，不丢失，不重复，且按序到达;UDP尽最大努力交付，即不保   证可靠交付
+3. TCP面向字节流，实际上是TCP把数据看成一连串无结构的字节流;UDP是面向报文的UDP没有拥塞控制，因此网络出现拥塞不会使源主机的发送速率降低（对实时应用很有用，如IP电话，实时视频会议等）
+4. 每一条TCP连接只能是点到点的;UDP支持一对一，一对多，多对一和多对多的交互通信
+5. TCP首部开销20字节;UDP的首部开销小，只有8个字节
+6. TCP的逻辑通信信道是全双工的可靠信道，UDP则是不可靠信道
+
+UDP应用场景：
+1. 面向数据报方式
+2. 网络数据大多为短消息 
+3. 拥有大量Client
+4. 对数据安全性无特殊要求
+5. 网络负担非常重，但对响应速度要求高
+
+具体编程时的区别:
+1. socket()的参数不同 
+2. UDP Server不需要调用listen和accept 
+3. UDP收发数据用sendto/recvfrom函数 
+4. TCP：地址信息在connect/accept时确定 
+5. UDP：在sendto/recvfrom函数中每次均 需指定地址信息 
+6. UDP：shutdown函数无效
+
+```cs
+// TCP协议，创建基于流的tcp协议套接字对象
+Socket tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+// UDP协议，创建基于数据报的udp套接字对象
+Socket udpClient = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+```
+
+相关类及方法：
+
+类/方法 | 说明
+-----|-----
+IPAddress类 | 包含了一个IP地址
+IPEndPoint类 | 包含了一对IP地址和端口号
+socket.Bind() | 绑定一个本地的IP和端口号(IPEndPoint)
+socket.Listen() | 让 Socket侦听传入的连接尝试，并指定侦听队列容量
+socket.Connect() | 初始化与另一个Socket的连接
+socket.Accept() | 接收连接并返回一个新的socket
+socket.Send() | 输出数据到Socket
+socket.Receive() | 从Socket中读取数据
+socket.Close() | 关闭Socket
+
+
+<a id="markdown-tcp" name="tcp"></a>
+#### TCP
+服务器端的步骤如下：
+1. 建立服务器端的Socket，开始侦听整个网络中的连接请求。
+2. 当检测到来自客户端的连接请求时，向客户端发送收到连接请求的信息，并建立与客户端之间的连接。
+3. 当完成通信后，服务器关闭与客户端的Socket连接。
+
+客户端的步骤如下：
+1. 建立客户端的Socket，确定要连接的服务器的主机名和端口。
+2. 发送连接请求到服务器，并等待服务器的回馈信息。
+3. 连接成功后，与服务器进行数据的交互。
+4. 数据处理完毕后，关闭自身的Socket连接。
+
+<a id="markdown-udp" name="udp"></a>
+#### UDP
+客户端代码：
+```cs
+static void Main(string[] args)
+{
+    // 创建客户端基于数据报的UDP套接字对象。
+    using (Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+    {
+        // 建立远程服务端的地址，用于将消息发送到该地址上（端口要和服务端监听的端口保持一致，此例中假设端口号为10050）。
+        // 172.16.123.250为服务端（监听端）的ip地址
+        IPAddress serverIp = IPAddress.Parse("172.16.123.250");
+        IPEndPoint serverEp = new IPEndPoint(serverIp, 10050);
+
+        while (true)
+        {
+            Console.WriteLine("发送消息：");
+            string msg = Console.ReadLine();
+
+            if (msg.ToLower() == "exit")
+            {
+                break;
+            }
+
+            // 发送消息给远程服务端。
+            byte[] buffer = Encoding.UTF8.GetBytes(msg);
+            client.SendTo(buffer, serverEp);
+        }
+    }
+}
+```
+
+服务端代码：
+```cs
+static void Main(string[] args)
+{
+    Thread thReceive = new Thread(new ThreadStart(Receive));
+    thReceive.IsBackground = true;
+    thReceive.Start();
+
+    Console.ReadLine();
+}
+
+static void Receive()
+{
+    // 创建服务端基于数据报的UDP套接字对象。
+    using (Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+    {
+        // 将该套接字对象绑定到本机端口上。服务端ip为172.16.123.250，注意此处写127.0.0.1无法监听
+        IPEndPoint serverEp = new IPEndPoint(IPAddress.Parse("172.16.123.250"), 10050);
+        server.Bind(serverEp);
+
+        while (true)
+        {
+            // 创建空的IP节点，用于保存发给本机消息的远程客户端
+            EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
+
+            // 循环监听该端口，如果有客户端发来的消息则直接显示，关键代码见下面。
+            byte[] buffer = new byte[1024];
+            int count = server.ReceiveFrom(buffer, ref clientEp);
+            string msg = Encoding.UTF8.GetString(buffer, 0, count);
+
+            // 消息输出
+            Console.WriteLine((clientEp as IPEndPoint).Address.ToString() + ">>" + msg);
+        }
+    }
+}
+```
+
+将服务端程序拷贝至另外一台机器进行模拟测试，使用远程登录查看通讯，结果如下：
+
+![](../assets/Programming/socket-udp.gif)
+
+以上只需设置好本地和远程的IP和端口号，很容易就实现了UDP的通信,同理，双向通讯也是一样的。
+
+虽然UDP数据包不能保证可靠传输，网络繁忙、拥塞等因素，都有可能阻止数据包到达指定的目的地。
+
+在即时通信上常有应用，如QQ就是是利用UDP进行即时通信的。
 
