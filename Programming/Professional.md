@@ -656,6 +656,8 @@ SMTP（Simple Mail Transfer Protocol，简单邮件传输协议）用于主机�
 
 ![](../assets/Programming/mail-pop3和imap对比.gif)
 
+简单来说，SMTP协议主要是用于发邮件，POP和IMAP协议用于读取、删除、下载邮件。
+
 <a id="markdown-邮件发送-1" name="邮件发送-1"></a>
 ### 邮件发送
 首先需要添加引用【using System.Net.Mail;】
@@ -663,34 +665,43 @@ SMTP（Simple Mail Transfer Protocol，简单邮件传输协议）用于主机�
 ```cs
 // 创建一封邮件对象
 MailMessage mail = new MailMessage();
-// 发件人地址，用于显示
-mail.From = new MailAddress("now_way@126.com", "王五");
+// 发件人地址，发件人需要与设置的邮件发送服务器的邮箱一致
+mail.From = new MailAddress("flycoder@126.com", "飞翔的代码");
 // 邮件主题
-mail.Subject = "C#发送";
+mail.Subject = "C# smtp 发送邮件测试";
 // 邮件正文
-mail.Body = @"
-        using System;
-        using System.Collections.Generic;
-        using System.Configuration;
-        using System.IO;
-        using System.Linq;
-        using System.Net.Mail;
-        using System.Runtime.Serialization.Formatters.Binary;
-        using System.Text;
-        using System.Threading;
-        using System.Threading.Tasks;
-        using System.Xml;
-        using System.Xml.Linq;
-        ";
-// 添加接收人，接收人是一个列表
+mail.Body = $@"
+    {DateTime.Now.ToString()}
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Mail;
+    using System.Runtime.Serialization.Formatters.Binary;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Xml;
+    using System.Xml.Linq;
+    ";
+
+// 添加接收人，接收人是一个列表 （收件人：你邮件里的话就是直接讲给这个人听的）
 mail.To.Add(new MailAddress("ywwang5@iflytek.com"));
+
+// 添加抄送人，接收人是一个列表 （抄送人：只是让被抄送人知悉这件事情，但被抄送人无需做任何动作）
+mail.CC.Add(new MailAddress("now_way@126.com"));
+
+// 网易的SMTP校验很严格，有时候会报 DT:SPM 发送的邮件内容包含了未被许可的信息，或被系统识别为垃圾邮件。
+// 添加对自己的抄送即可
+mail.CC.Add(new MailAddress("flycoder@126.com"));
 
 using (SmtpClient client = new SmtpClient())
 {
     // 设置用于 SMTP 事务的主机的名称，此处为126邮箱。qq邮箱则为 smtp.qq.com
     client.Host = "smtp.126.com";
-    // 这里才是真正的邮箱登陆名和密码，比如我的邮箱地址是 now_way@126.com， 我的用户名为 now_way ，我的密码是 xxxx
-    client.Credentials = new System.Net.NetworkCredential("now_way", "nowway1019");
+    // 这里才是真正的邮箱登陆名和密码，比如我的邮箱地址是 flycoder@126.com， 我的用户名为 flycoder ，客户端授权密码为 flycoder666
+    client.Credentials = new System.Net.NetworkCredential("flycoder", "flycoder666");
     // 邮件处理方式
     client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
@@ -699,3 +710,16 @@ using (SmtpClient client = new SmtpClient())
     Console.WriteLine("发送成功！");
 }
 ```
+
+使用网易邮箱smtp发送邮件，需要开启【客户端授权密码】，这里设置的授权码即发送邮件验证【Credentials】的密码，如下：
+
+![](../assets/Programming/126-smtp-open1.png)
+
+同时，不要忘记开启服务，如下：
+
+![](../assets/Programming/126-smtp-open2.png)
+
+网易邮箱的SMTP发送校验较为严格，关于发送邮件的相关帮助如下：
+
+> http://help.163.com/09/1224/17/5RAJ4LMH00753VB8.html
+
