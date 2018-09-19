@@ -11,6 +11,8 @@
     - [扩展方法](#扩展方法)
     - [反射](#反射)
         - [反射(Reflection)](#反射reflection)
+            - [加载同程序集](#加载同程序集)
+            - [加载不同程序集](#加载不同程序集)
         - [自定义特性(Attribute)](#自定义特性attribute)
             - [特性是什么](#特性是什么)
             - [作用](#作用)
@@ -408,10 +410,13 @@ static class Program
 
 程序集包含模块，而模块包含类型，类型又包含成员。反射则提供了封装程序集、模块和类型的对象。
 
-您可以使用反射动态地创建类型的实例，将类型绑定到现有对象，或从现有对象中获取类型。然后，可以调用类型的方法或访问其字段和属性。
+使用反射动态地创建类型的实例，将类型绑定到现有对象，或从现有对象中获取类型。然后，可以调用类型的方法或访问其字段和属性。
 
 <a id="markdown-反射reflection" name="反射reflection"></a>
 ### 反射(Reflection)
+<a id="markdown-加载同程序集" name="加载同程序集"></a>
+#### 加载同程序集
+
 ```cs
 public class Student
 {
@@ -479,6 +484,50 @@ static void Main(string[] args)
 看了上面的代码，也许会有疑问，既然在开发时就能够写好代码，干嘛还放到运行期去做，不光繁琐，而且效率也受影响。
 
 很多设计模式是基于反射实现的，设计模式的好处是复用解决方案，可靠性高等。如何取舍是一个见仁见智的问题。。。
+
+<a id="markdown-加载不同程序集" name="加载不同程序集"></a>
+#### 加载不同程序集
+通过加载其他程序集中的类，进行实例化对象和调用方法：
+
+新建类库项目，默认命名【ClassLibrary1】，然后创建【Teacher】类，结构内容如下：
+
+![](../assets/Programming/Assembly-Teacher.png)
+```cs
+namespace ClassLibrary1
+{
+    public class Teacher
+    {
+        public string Name { get; set; }
+        public Teacher(string name) { Name = name; }
+        public void Say(string msg)
+        {
+            Console.WriteLine($"hello {msg},i'm {Name}");
+        }
+    }
+}
+```
+
+新增控制台应用程序项目，编译上一步中的类库项目，并拷贝【ClassLibrary1.dll】文件至控制台应用程序的【debug】目录
+
+![](../assets/Programming/AssemblyLoad-1.png)
+
+在控制台应用程序的【Main】方法中进行加载程序集并调用，代码如下：
+```cs
+// 装载程序集 ClassLibrary1.dll，在当前目录中
+Assembly ass = Assembly.LoadFrom("ClassLibrary1.dll");
+
+// 获取该程序集中定义的 Teacher类，注意要写全名FullName，如 ClassLibrary1.Teacher
+Type t = ass.GetType("ClassLibrary1.Teacher");
+
+// 需要考虑找不到该类型的情况
+if (null != t)
+{
+    object jack = Activator.CreateInstance(t, "宋小宝");
+    MethodInfo method = t.GetMethod("Say");
+    method.Invoke(jack, new object[] { "这是通过assembly反射进行调用的方法" });
+}
+```
+
 
 <a id="markdown-自定义特性attribute" name="自定义特性attribute"></a>
 ### 自定义特性(Attribute)
