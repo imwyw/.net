@@ -18,12 +18,16 @@
             - [作用](#作用)
             - [Attribute 与注释的区别](#attribute-与注释的区别)
             - [使用](#使用)
+    - [同步异步](#同步异步)
     - [多线程](#多线程)
         - [什么是进程？](#什么是进程)
         - [什么是线程？](#什么是线程)
         - [线程创建](#线程创建)
-        - [线程阻塞](#线程阻塞)
-        - [lock](#lock)
+        - [线程状态及属性](#线程状态及属性)
+            - [Sleep()](#sleep)
+            - [Join()](#join)
+        - [前台线程与后台线程](#前台线程与后台线程)
+        - [线程安全](#线程安全)
     - [邮件发送](#邮件发送)
         - [协议](#协议)
         - [邮件发送](#邮件发送-1)
@@ -528,7 +532,6 @@ if (null != t)
 }
 ```
 
-
 <a id="markdown-自定义特性attribute" name="自定义特性attribute"></a>
 ### 自定义特性(Attribute)
 <a id="markdown-特性是什么" name="特性是什么"></a>
@@ -585,38 +588,36 @@ static void Main(string[] args)
 {
     Type type = typeof(Student);
 
-    //获取Student类上自定义特性
-    Attribute stuAttr = type.GetCustomAttribute(typeof(FieldChNameAttribute), false);
+    // 获取Student类上自定义特性
+    FieldChNameAttribute attr = type.GetCustomAttribute(typeof(FieldChNameAttribute), false) as FieldChNameAttribute;
 
     //该类有FieldChaNameAttribute自定义特性，则获取设置的属性值ChName
-    if (null != stuAttr)
+    if (null != attr)
     {
-        FieldChNameAttribute stuChAttr = stuAttr as FieldChNameAttribute;
-        Console.WriteLine(stuChAttr.ChName);//学生实体
+        // 学生类上的标签注解
+        Console.WriteLine(attr.ChName);
     }
 
-    //获取类型的所有公开属性
+    // 获取类型的所有公开属性
     PropertyInfo[] props = type.GetProperties();
-    //遍历公开属性
+    
+    // 遍历公开属性
     foreach (PropertyInfo pp in props)
     {
-        //获取属性上的自定义特性
-        Attribute ppAttr = pp.GetCustomAttribute(typeof(FieldChNameAttribute), false);
-        //如属性有自定义特性，则获取设置的属性值ChName
+        // 获取属性上的自定义特性
+        FieldChNameAttribute ppAttr = pp.GetCustomAttribute(typeof(FieldChNameAttribute), false) as FieldChNameAttribute;
+        // 如属性有自定义特性，则获取设置的属性值ChName
         if (null != ppAttr)
         {
-            FieldChNameAttribute ppChAttr = ppAttr as FieldChNameAttribute;
-            Console.WriteLine(ppChAttr.ChName);
+            Console.WriteLine(ppAttr.ChName);
         }
     }
 }
 ```
 
-参考以下文章：
-
-[C# 中自定义Attribute值的获取与优化](http://kb.cnblogs.com/page/87531/)
-
-[关于C# 中的Attribute 特性](http://blog.csdn.net/hegx2001/article/details/50352225)
+<a id="markdown-同步异步" name="同步异步"></a>
+## 同步异步
+//todo...
 
 <a id="markdown-多线程" name="多线程"></a>
 ## 多线程
@@ -638,6 +639,19 @@ static void Main(string[] args)
     Console.WriteLine(Thread.CurrentThread.ThreadState);//打印当前线程状态
 }
 ```
+
+多线程的优点：
+* 可以同时完成多个任务；
+* 可以使程序的响应速度更快；
+* 可以让占用大量处理时间的任务或当前没有进行处理的任务定期将处理时间让给别的任务；
+* 可以随时停止任务；
+* 可以设置每个任务的优先级以优化程序性能。
+
+然而，多线程虽然有很多优点，但是也必须认识到多线程可能存在影响系统性能的不利方面，才能正确使用线程。弊端主要有如下几点：
+* 线程也是程序，所以线程需要占用内存，线程越多，占用内存也越多。
+* 多线程需要协调和管理，所以需要占用CPU时间以便跟踪线程[时间空间转换，简称时空转换]。
+* 线程之间对共享资源的访问会相互影响，必须解决争用共享资源的问题。
+* 线程太多会导致控制太复杂，最终可能造成很多程序缺陷。
 
 <a id="markdown-线程创建" name="线程创建"></a>
 ### 线程创建
@@ -680,37 +694,159 @@ static void Talk(object obj)
 }
 ```
 
-<a id="markdown-线程阻塞" name="线程阻塞"></a>
-### 线程阻塞
-Thread.Sleep()和实例方法Join()，Sleep(int xxx)没有重载，而Join()方法有多个重载：
+上述线程的执行结果反映了线程的无序性质。
+
+通过执行结果我们会看到，主线程和子线程不是一味的执行，是兼续的。也就是说主线程和子线程在执行过程中是互相抢CPU资源进行计算的。
+
+一旦开始，一个线程的IsAlive属性返回true,直到这个线程结束。
+
+当传递给线程的构造函数的委托完成执行时，这个线程结束。一旦结束，该线程无法重新启动。
+
+<a id="markdown-线程状态及属性" name="线程状态及属性"></a>
+### 线程状态及属性
+线程常用属性：
+
+属性名称 | 说明
+-----|---
+CurrentContext | 获取线程正在其中执行的当前上下文。
+CurrentThread | 获取当前正在运行的线程。
+ExecutionContext | 获取一个 ExecutionContext 对象，该对象包含有关当前线程的各种上下文的信息。
+IsAlive | 获取一个值，该值指示当前线程的执行状态。
+IsBackground | 获取或设置一个值，该值指示某个线程是否为后台线程。
+IsThreadPoolThread | 获取一个值，该值指示线程是否属于托管线程池。
+ManagedThreadId | 获取当前托管线程的唯一标识符。
+Name | 获取或设置线程的名称。
+Priority | 获取或设置一个值，该值指示线程的调度优先级。
+ThreadState | 获取一个值，该值包含当前线程的状态。
+
+Thread 中包括了多个方法来控制线程的创建、挂起、停止、销毁
+
+方法名称 | 说明
+-----|---
+Abort()　　　　 | 终止本线程。
+GetDomain() | 返回当前线程正在其中运行的当前域。
+GetDomainId() | 返回当前线程正在其中运行的当前域Id。
+Interrupt() | 中断处于 WaitSleepJoin 线程状态的线程。
+Join() | 已重载。 阻塞调用线程，直到某个线程终止时为止。
+Resume() | 继续运行已挂起的线程。
+Start()　　 | 执行本线程。
+Suspend() | 挂起当前线程，如果当前线程已属于挂起状态则此不起作用
+Sleep()　　 | 把正在运行的线程挂起一段时间。
+
+<a id="markdown-sleep" name="sleep"></a>
+#### Sleep()
+Thread.Sleep暂停当前线程一段指定的时间：
+
+```cs
+static void Main()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        Console.WriteLine("Sleep for 2 seconds.");
+        Thread.Sleep(2000);
+    }
+
+    Console.WriteLine("Main thread exits.");
+}
+
+/* This example produces the following output:
+
+Sleep for 2 seconds.
+Sleep for 2 seconds.
+Sleep for 2 seconds.
+Sleep for 2 seconds.
+Sleep for 2 seconds.
+Main thread exits.
+ */
+```
+
+<a id="markdown-join" name="join"></a>
+#### Join()
+Join() 实例方法，阻塞调用线程，直到某个线程终止时为止。
+
 ```cs
 static void Main(string[] args)
 {
-    Thread worker = new Thread(delegate ()
+    Thread th1 = new Thread(new ThreadStart(HearBeat));
+    Console.WriteLine("Start...");
+    th1.Start();
+
+    // 调用Join()方法，阻塞调用线程，直到子线程执行完成
+    th1.Join();
+
+    Console.WriteLine("Done!");
+    Console.ReadLine();
+}
+
+static void HearBeat()
+{
+    int index = 0;
+    while (index < 10)
     {
-        Thread.Sleep(100);
-        Console.WriteLine("new");
-    });
-    worker.Start();
-    Console.WriteLine("main1");
-    /*
-    Join方法不传参数的时候，默认等待子线程执行完
-    子线程的join会阻塞主线程，直到子线程终止。结果如下：
-    main1
-    new
-    main2
-    注释下面这行，如果没有子线程阻塞的话，则是：
-    main1
-    main2
-    new
-    */
-    worker.Join();
-    Console.WriteLine("main2");
+        Thread.Sleep(500);
+        Console.WriteLine(index + "我还活着。。。");
+        index++;
+    }
 }
 ```
 
-<a id="markdown-lock" name="lock"></a>
-### lock
+结果如图所示：
+
+![](../assets/Programming/thread-join-1.png)
+
+主线程会被阻塞， 直到子线程执行完成。如果去掉Join()方法，主线程则不会阻塞，如图：
+
+![](../assets/Programming/thread-unjoin.png)
+
+<a id="markdown-前台线程与后台线程" name="前台线程与后台线程"></a>
+### 前台线程与后台线程
+线程本身并不是任何高级语言的概念，本身是计算机的概念，只是高级语言给予封装了一层。
+
+前台线程：窗体Ui主线程退出（销毁）以后，子线程必须计算完成才能退出。
+
+后台线程：窗体Ui主线程退出（销毁）以后，子线程就会退出。
+
+新建一个Windows窗体应用程序，打开项目中【Properties】属性窗口，将项目的输出类型修改为【控制台应用程序】，如下图示例：
+
+![](../assets/Programming/thread-background-1.png)
+
+Form1中添加一个按钮，并且新增处理事件，代码如下：
+```cs
+private void button1_Click(object sender, EventArgs e)
+{
+    Console.WriteLine("开始心跳...");
+    Thread th1 = new Thread(new ThreadStart(HeartBeat));
+    /* 
+    是否设置为后台线程
+    默认为false，即主线程退出后会等待子线程执行结束
+    为true时，关闭主线程则子线程也会退出
+    */
+    th1.IsBackground = true;
+    th1.Start();
+}
+
+void HeartBeat()
+{
+    int index = 0;
+    while (index < 10)
+    {
+        Thread.Sleep(1000);
+        Console.WriteLine(index + "我还活着。。。");
+        index++;
+    }
+}
+```
+
+是否设置为后台线程，如下图所示：
+
+![](../assets/Programming/thread-background-run.gif)
+
+后台线程一般用于处理不重要的事情，应用程序结束时，后台线程是否执行完成对整个应用程序没有影响。
+
+如果要执行的事情很重要，需要将线程设置为前台线程。
+
+<a id="markdown-线程安全" name="线程安全"></a>
+### 线程安全
 ```cs
 /// <summary>
 /// 用于多线程操作时锁，火车票有余票100张，多个线程同时进行买票操作，如何保证同时操作的时候余票的显示正确的
@@ -735,7 +871,6 @@ static void Main(string[] args)
     buyWork2.Start();
     buyWork3.Start();
 }
-
 
 /// <summary>
 /// 买票操作，用于多线程委托
@@ -765,11 +900,7 @@ static void BuyTicket()
 }
 ```
 
-[Microsoft-“锁定”语句(C# 参考)](https://docs.microsoft.com/zh-cn/dotnet/csharp/language-reference/keywords/lock-statement)
-
-推荐阅读：
-
-[5天不再惧怕多线程系列](http://www.cnblogs.com/huangxincheng/archive/2012/03/14/2395279.html)
+注意：在多线程中，共享数据是造成复杂原因的主要，而且会产生让人费解的错误。尽管很基本但还是要尽可能保持简单。
 
 <a id="markdown-邮件发送" name="邮件发送"></a>
 ## 邮件发送
@@ -1025,4 +1156,20 @@ static void Receive()
 虽然UDP数据包不能保证可靠传输，网络繁忙、拥塞等因素，都有可能阻止数据包到达指定的目的地。
 
 在即时通信上常有应用，如QQ就是是利用UDP进行即时通信的。
+
+---
+
+参考引用：
+
+[C# 中自定义Attribute值的获取与优化](http://kb.cnblogs.com/page/87531/)
+
+[关于C# 中的Attribute 特性](http://blog.csdn.net/hegx2001/article/details/50352225)
+
+[Microsoft-“锁定”语句(C# 参考)](https://docs.microsoft.com/zh-cn/dotnet/csharp/language-reference/keywords/lock-statement)
+
+[5天不再惧怕多线程系列](http://www.cnblogs.com/huangxincheng/archive/2012/03/14/2395279.html)
+
+[.net 多线程的使用（Thread）](https://www.cnblogs.com/wangbaicheng1477865665/p/async2.html)
+
+[C#多线程之旅](http://www.cnblogs.com/jackson0714/p/5100372.html#_label0)
 
