@@ -361,17 +361,30 @@ class Program
     {
         Student stu1 = new Student("jack");
 
-        // lambda表达式方式，注册事件
+        // 1、注册方法到事件
+        stu1.Introduce += SayByChn;
+
+        // 2、匿名方法
+        stu1.Introduce += delegate (string s)
+        {
+            Console.WriteLine("ni hao, wo shi " + s);
+        };
+
+        // 3、lambda表达式方式，注册事件
         stu1.Introduce += (v) =>
         {
             Console.WriteLine("hello,i'm " + v);
         };
 
-        // 注册方法到事件
-        stu1.Introduce += SayByChn;
-
         // 调用，触发对象上注册的所有方法
         stu1.Say();
+
+        Console.WriteLine("==============移除SayByChn方法的注册==============");
+        stu1.Introduce -= SayByChn;
+        stu1.Say();
+
+        // 因为 Introduce 定义为event，不允许直接进行调用
+        //stu1.Introduce("xxx");
     }
 
     static void SayByChn(string name)
