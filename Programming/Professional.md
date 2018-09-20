@@ -34,8 +34,8 @@
     - [Socket编程](#socket编程)
         - [网络通讯协议](#网络通讯协议)
         - [TCP和UDP](#tcp和udp)
-            - [TCP](#tcp)
             - [UDP](#udp)
+            - [TCP](#tcp)
 
 <!-- /TOC -->
 <a id="markdown-高级编程" name="高级编程"></a>
@@ -1077,47 +1077,39 @@ socket.Send() | 输出数据到Socket
 socket.Receive() | 从Socket中读取数据
 socket.Close() | 关闭Socket
 
-
-<a id="markdown-tcp" name="tcp"></a>
-#### TCP
-服务器端的步骤如下：
-1. 建立服务器端的Socket，开始侦听整个网络中的连接请求。
-2. 当检测到来自客户端的连接请求时，向客户端发送收到连接请求的信息，并建立与客户端之间的连接。
-3. 当完成通信后，服务器关闭与客户端的Socket连接。
-
-客户端的步骤如下：
-1. 建立客户端的Socket，确定要连接的服务器的主机名和端口。
-2. 发送连接请求到服务器，并等待服务器的回馈信息。
-3. 连接成功后，与服务器进行数据的交互。
-4. 数据处理完毕后，关闭自身的Socket连接。
-
 <a id="markdown-udp" name="udp"></a>
 #### UDP
 客户端代码：
 ```cs
-static void Main(string[] args)
+class Program
 {
-    // 创建客户端基于数据报的UDP套接字对象。
-    using (Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+    // 服务端 ip地址
+    static IPAddress ipServer = IPAddress.Parse("127.0.0.1");
+    // 服务端 监听端口
+    static int port = 10050;
+
+    static void Main(string[] args)
     {
-        // 建立远程服务端的地址，用于将消息发送到该地址上（端口要和服务端监听的端口保持一致，此例中假设端口号为10050）。
-        // 172.16.123.250为服务端（监听端）的ip地址
-        IPAddress serverIp = IPAddress.Parse("172.16.123.250");
-        IPEndPoint serverEp = new IPEndPoint(serverIp, 10050);
-
-        while (true)
+        // 创建客户端基于数据报的UDP套接字对象。
+        using (Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
         {
-            Console.WriteLine("发送消息：");
-            string msg = Console.ReadLine();
+            // 建立远程服务端的地址，用于将消息发送到该地址上（端口要和服务端监听的端口保持一致，此例中端口号为10050）。
+            IPEndPoint serverEp = new IPEndPoint(ipServer, port);
 
-            if (msg.ToLower() == "exit")
+            while (true)
             {
-                break;
-            }
+                Console.WriteLine("发送消息：");
+                string msg = Console.ReadLine();
 
-            // 发送消息给远程服务端。
-            byte[] buffer = Encoding.UTF8.GetBytes(msg);
-            client.SendTo(buffer, serverEp);
+                if (msg.ToLower() == "exit")
+                {
+                    break;
+                }
+
+                // 发送消息给远程服务端。
+                byte[] buffer = Encoding.UTF8.GetBytes(msg);
+                client.SendTo(buffer, serverEp);
+            }
         }
     }
 }
@@ -1125,36 +1117,44 @@ static void Main(string[] args)
 
 服务端代码：
 ```cs
-static void Main(string[] args)
+class Program
 {
-    Thread thReceive = new Thread(new ThreadStart(Receive));
-    thReceive.IsBackground = true;
-    thReceive.Start();
+    // 服务端 ip地址
+    static IPAddress ipServer = IPAddress.Any;
+    // 服务端 监听端口
+    static int port = 10050;
 
-    Console.ReadLine();
-}
-
-static void Receive()
-{
-    // 创建服务端基于数据报的UDP套接字对象。
-    using (Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+    static void Main(string[] args)
     {
-        // 将该套接字对象绑定到本机端口上。服务端ip为172.16.123.250，注意此处写127.0.0.1无法监听
-        IPEndPoint serverEp = new IPEndPoint(IPAddress.Parse("172.16.123.250"), 10050);
-        server.Bind(serverEp);
+        Thread thReceive = new Thread(new ThreadStart(Receive));
+        thReceive.IsBackground = true;
+        thReceive.Start();
 
-        while (true)
+        Console.ReadLine();
+    }
+
+    static void Receive()
+    {
+        // 创建服务端基于数据报的UDP套接字对象。
+        using (Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
         {
-            // 创建空的IP节点，用于保存发给本机消息的远程客户端
-            EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
+            // 将该套接字对象绑定到本机端口上。
+            IPEndPoint serverEp = new IPEndPoint(ipServer, port);
+            server.Bind(serverEp);
 
-            // 循环监听该端口，如果有客户端发来的消息则直接显示，关键代码见下面。
-            byte[] buffer = new byte[1024];
-            int count = server.ReceiveFrom(buffer, ref clientEp);
-            string msg = Encoding.UTF8.GetString(buffer, 0, count);
+            while (true)
+            {
+                // 创建空的IP节点，用于保存发给本机消息的远程客户端
+                EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
 
-            // 消息输出
-            Console.WriteLine((clientEp as IPEndPoint).Address.ToString() + ">>" + msg);
+                // 循环监听该端口，如果有客户端发来的消息则直接显示，关键代码见下面。
+                byte[] buffer = new byte[1024];
+                int count = server.ReceiveFrom(buffer, ref clientEp);
+                string msg = Encoding.UTF8.GetString(buffer, 0, count);
+
+                // 消息输出
+                Console.WriteLine((clientEp as IPEndPoint).Address.ToString() + ">>" + msg);
+            }
         }
     }
 }
@@ -1169,6 +1169,167 @@ static void Receive()
 虽然UDP数据包不能保证可靠传输，网络繁忙、拥塞等因素，都有可能阻止数据包到达指定的目的地。
 
 在即时通信上常有应用，如QQ就是是利用UDP进行即时通信的。
+
+<a id="markdown-tcp" name="tcp"></a>
+#### TCP
+服务器端的步骤如下：
+1. 建立服务器端的Socket，开始侦听整个网络中的连接请求。
+2. 当检测到来自客户端的连接请求时，向客户端发送收到连接请求的信息，并建立与客户端之间的连接。
+3. 当完成通信后，服务器关闭与客户端的Socket连接。
+
+客户端的步骤如下：
+1. 建立客户端的Socket，确定要连接的服务器的主机名和端口。
+2. 发送连接请求到服务器，并等待服务器的回馈信息。
+3. 连接成功后，与服务器进行数据的交互。
+4. 数据处理完毕后，关闭自身的Socket连接。
+
+服务端代码如下：
+```cs
+class Program
+{
+    // 服务端ip地址，或者设置为一个固定的ip地址
+    /*
+    static string ip = "127.0.0.1";
+    static IPAddress ipServer = IPAddress.Parse(ip);
+    */
+
+    // 指示服务器必须侦听所有网络接口上的客户端活动。
+    static IPAddress ipServer = IPAddress.Any;
+    // 服务端监听端口
+    static int port = 10050;
+    // 字节数据 1KB大小 1024字节
+    static byte[] buffer = new byte[1024];
+    // 服务端socket，用于监听是否有客户端连接
+    static Socket serverSocket;
+
+    static void Main(string[] args)
+    {
+        // 实例化tcp socket连接
+        serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        // 绑定IP地址：端口
+        serverSocket.Bind(new IPEndPoint(ipServer, port));
+        //设定最多32个排队连接请求
+        serverSocket.Listen(32);
+
+        Console.WriteLine($"启动监听{serverSocket.LocalEndPoint}成功");
+
+        Thread thListen = new Thread(new ThreadStart(ListenClientConnect));
+        thListen.Start();
+
+        Console.ReadLine();
+    }
+
+    /// <summary>
+    /// 监听客户端是否有连接请求
+    /// </summary>
+    static void ListenClientConnect()
+    {
+        while (true)
+        {
+            // 一旦发现有客户端连接，实例化一个该通信的套接字
+            Socket clientSocket = serverSocket.Accept();
+            // 向连接的客户端问好
+            clientSocket.Send(Encoding.UTF8.GetBytes("Server Say Hello To U"));
+            // 开辟线程，循环监听接受数据
+            Thread receiveThread = new Thread(ReceiveMessage);
+            receiveThread.Start(clientSocket);
+
+            // 每500ms监听一次是否有客户端请求
+            Thread.Sleep(500);
+        }
+    }
+
+    static void ReceiveMessage(object clientSocket)
+    {
+        Socket myClientSocket = (Socket)clientSocket;
+        while (myClientSocket.Connected)
+        {
+            try
+            {
+                //通过myClientSocket接收数据
+                int length = myClientSocket.Receive(buffer);
+                if (length > 0)
+                {
+                    Console.WriteLine($"接收客户端{myClientSocket.RemoteEndPoint}消息{Encoding.UTF8.GetString(buffer, 0, length)}");
+                }
+                else
+                {
+                    //  当length为0时，为关闭连接
+                    Console.WriteLine($"客户端{myClientSocket.RemoteEndPoint}已断开连接。。。");
+                    myClientSocket.Shutdown(SocketShutdown.Both);
+                    myClientSocket.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                myClientSocket.Shutdown(SocketShutdown.Both);
+                myClientSocket.Close();
+            }
+        }
+    }
+}
+```
+
+客户端代码：
+```cs
+class Program
+{
+    // 服务端ip地址
+    static IPAddress ipServer = IPAddress.Parse("127.0.0.1");
+
+    // 服务端监听端口
+    static int port = 10050;
+    // 字节数据 1KB大小 1024字节
+    static byte[] buffer = new byte[1024];
+
+    static void Main(string[] args)
+    {
+        Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        try
+        {
+            clientSocket.Connect(new IPEndPoint(ipServer, port));
+            Console.WriteLine("连接服务器成功");
+        }
+        catch (SocketException ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+        //通过clientSocket接收数据
+        int receiveLength = clientSocket.Receive(buffer);
+        Console.WriteLine("接收服务器消息：{0}", Encoding.UTF8.GetString(buffer, 0, receiveLength));
+
+        try
+        {
+            while (true)
+            {
+                Console.Write("发送消息：");
+                string message = Console.ReadLine();
+                if (message == "exit")
+                {
+                    break;
+                }
+                clientSocket.Send(Encoding.UTF8.GetBytes(message));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            // 关闭连接
+            clientSocket.Shutdown(SocketShutdown.Both);
+            clientSocket.Close();
+        }
+    }
+}
+```
+
+运行效果如下：
+
+![](../assets/Programming/socket-tcp-run1.gif)
 
 ---
 
@@ -1186,3 +1347,8 @@ static void Receive()
 
 [C#多线程之旅](http://www.cnblogs.com/jackson0714/p/5100372.html#_label0)
 
+[c#Socket Tcp服务端编程](https://www.cnblogs.com/kellen451/p/7127670.html)
+
+[C#使用Socket实现服务器与多个客户端通信(简单的聊天系统)](https://blog.csdn.net/luming666/article/details/79125453)
+
+[C# socket连接断开问题](https://blog.csdn.net/u014722754/article/details/51318583)
