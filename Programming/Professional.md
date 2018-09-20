@@ -19,6 +19,10 @@
             - [Attribute 与注释的区别](#attribute-与注释的区别)
             - [使用](#使用)
     - [同步异步](#同步异步)
+        - [概念](#概念)
+        - [区别体现](#区别体现)
+        - [同步案例](#同步案例)
+        - [异步案例](#异步案例)
     - [多线程](#多线程)
         - [什么是进程？](#什么是进程)
         - [什么是线程？](#什么是线程)
@@ -630,7 +634,82 @@ static void Main(string[] args)
 
 <a id="markdown-同步异步" name="同步异步"></a>
 ## 同步异步
-//todo...
+<a id="markdown-概念" name="概念"></a>
+### 概念
+
+**同步方法**调用一旦开始，调用者必须等到方法调用返回后，才能继续后续的行为。
+
+**异步方法**调用更像一个消息传递，一旦开始，方法调用就会立即返回，调用者就可以继续后续的操作。而，异步方法通常会在另外一个线程中，“真实”地执行着。整个过程，不会阻碍调用者的工作。
+
+举个生活中烧开水的案例，用普通铁锅和用电热水壶的区别体现：
+
+用铁锅进行烧水，我们在锅前坐等水烧开，这种方式就是同步通信方式。
+
+用电热水壶烧水，按下开关后则不会管了，等水烧开会有提示并自动断电，这体现了异步通信方式。
+
+<a id="markdown-区别体现" name="区别体现"></a>
+### 区别体现
+了体现同步和异步的区别，准备一本10MB的小说，以文件流的方式进行读取并打印在控制台显示
+
+<a id="markdown-同步案例" name="同步案例"></a>
+### 同步案例
+
+新建【Windows窗体应用程序】，并修改属性输出类型为【控制台应用程序】，在窗体【Form1.cs】中添加按钮，如下：
+
+![](../assets/Programming/同步读小说.png)
+
+```cs
+private void button1_Click(object sender, EventArgs e)
+{
+    // 同步方式调用
+    ReadBook();
+}
+
+void ReadBook()
+{
+    using (StreamReader sr = new StreamReader(@"..\..\斗破苍穹.txt", Encoding.Default))
+    {
+        string content;
+        while ((content = sr.ReadLine()) != null)
+        {
+            Console.WriteLine(content);
+        }
+        Console.WriteLine("读完了！！！");
+    }
+}
+```
+
+运行程序，点击【开始读取】按钮，在小说打印显示完成之前，窗体是无法进行拖动和操作的。
+
+这种方式体现了同步通信的方式，前台线程会一直在【button1_Click】方法中执行等待。。。
+
+<a id="markdown-异步案例" name="异步案例"></a>
+### 异步案例
+在上述案例中，修改【button1_Click】方法中执行【ReadBook】的方式，如下：
+
+```cs
+private void button1_Click(object sender, EventArgs e)
+{
+    // 多线程方式进行异步调用
+    Thread thBook = new Thread(new ThreadStart(ReadBook));
+    thBook.Start();
+}
+
+void ReadBook()
+{
+    using (StreamReader sr = new StreamReader(@"..\..\斗破苍穹.txt", Encoding.Default))
+    {
+        string content;
+        while ((content = sr.ReadLine()) != null)
+        {
+            Console.WriteLine(content);
+        }
+        Console.WriteLine("读完了！！！");
+    }
+}
+```
+
+以异步的方式进行执行耗时的操作时，UI主线程并不会因为执行耗时操作而卡死，可以带来更好的体验。
 
 <a id="markdown-多线程" name="多线程"></a>
 ## 多线程
@@ -641,6 +720,10 @@ static void Main(string[] args)
 <a id="markdown-什么是线程" name="什么是线程"></a>
 ### 什么是线程？
 线程是程序中的一个执行流，每个线程都有自己的专有寄存器(栈指针、程序计数器等)，但代码区是共享的，即不同的线程可以执行同样的函数。
+
+在【任务管理器】中我们可以明显的看到：
+
+![](../assets/Programming/进程和线程.png)
 
 线程初体验：
 ```cs
