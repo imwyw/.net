@@ -2,18 +2,18 @@
 
 - [Oracle环境](#oracle环境)
     - [Oracle Server安装](#oracle-server安装)
+    - [OEM](#oem)
+        - [新建用户](#新建用户)
     - [新建实例](#新建实例)
     - [配置监听](#配置监听)
-    - [OEM](#oem)
-        - [未注册监听](#未注册监听)
-        - [EM相关账户解锁](#em相关账户解锁)
-        - [实例化OC4J配置文件是出错](#实例化oc4j配置文件是出错)
     - [用户操作](#用户操作)
-    - [Enterprise Manager (EM) Database Control](#enterprise-manager-em-database-control)
     - [客户端的安装](#客户端的安装)
     - [PL/SQL developer](#plsql-developer)
     - [疑难解答](#疑难解答)
         - [ORA-12541](#ora-12541)
+        - [未注册监听](#未注册监听)
+        - [EM相关账户解锁](#em相关账户解锁)
+        - [实例化OC4J配置文件时出错](#实例化oc4j配置文件时出错)
 
 <!-- /TOC -->
 
@@ -35,9 +35,38 @@
 
 ![](..\assets\Oracle\oracle-install-6.png)
 
-在安装过程中会出现一些异常信息，暂时不用管，直接【继续】即可。
+![](..\assets\Oracle\安装完成.png)
 
-![](..\assets\Oracle\oracle-client-install-6-errinfo.png)
+<a id="markdown-oem" name="oem"></a>
+## OEM
+Oracle Enterprise Manager (EM) Database Control
+
+Enterprise Manager Database Control 提供了一个基于 Web 的界面，您可以使用这个界面来管理 Oracle 实例和数据库。
+
+要从客户端浏览器访问 Oracle Enterprise Manager Database Control，必须启动 dbconsole 进程。
+
+一定要检查OracleDbConsole有没有启动。
+
+![](..\assets\Oracle\orcl-console.png)
+
+OEM的默认管理地址为：https://localhost:1158/em，点击【高级】并继续访问
+
+![](..\assets\Oracle\oem-login1.png)
+
+![](..\assets\Oracle\oem-login2.png)
+
+登录的账号和口令为安装oracle时设置的，连接身份选择【SYSDBA】选项，如下：
+
+![](..\assets\Oracle\oem-login3.png)
+
+登录成功后首页显示如下：
+
+![](..\assets\Oracle\oem-main.png)
+
+<a id="markdown-新建用户" name="新建用户"></a>
+### 新建用户
+
+
 
 <a id="markdown-新建实例" name="新建实例"></a>
 ## 新建实例
@@ -121,9 +150,131 @@
 
 ![](..\assets\Oracle\oracle-net-listen-srv-8.png)
 
-<a id="markdown-oem" name="oem"></a>
-## OEM
-OEM是啥。。。。。
+
+
+<a id="markdown-用户操作" name="用户操作"></a>
+## 用户操作
+做好以上准备后，我们可以针对数据添加用户并授权，以下操作均在服务端进行
+
+![](..\assets\Oracle\create-user-1.png)
+
+打开sqlplus，使用安装Oracle时设置的密码进行登录：
+
+![](..\assets\Oracle\create-user-login.png)
+
+上图中system为默认系统用户，可以用来进行用户的相关操作
+
+以下脚本是用户相关的操作：
+```sql
+-- 查看数据库中所有用户的名称;
+select username from dba_users;
+
+-- 新建用户 用户名为【new_user_name】，密码为【new_password】
+create user new_user_name identified by new_password;
+
+-- 修改用户密码 将用户【new_user_name】重置为【new_password】
+alter user new_user_name identified by new_password;
+
+-- 删除用户
+drop user new_user_name;
+
+-- 同时删除与【new_user_name】相关的表;
+drop user new_user_name cascade;
+
+//授权 
+-- 登录授权;
+grant connect to new_user_name;
+
+-- scott用户为new_user_name赋予表emp的select权限;
+grant select on emp to new_user_name;
+
+-- sys用户为new_user_name赋予表emp的select权限;
+grant select on scott.emp to new_user_name;
+
+-- 授予增删改查权限
+grant select,insert,delete,update on scott.emp to new_user_name;
+
+-- 授予 CONNECT角色和RESOURCE角色
+grant connect,resource to new_user_name;
+```
+
+CONNECT角色： --是授予最终用户的典型权利，最基本的
+  * ALTER SESSION --修改会话
+  * CREATE CLUSTER --建立聚簇
+  * CREATE DATABASE LINK --建立数据库链接
+  * CREATE SEQUENCE --建立序列
+  * CREATE SESSION --建立会话
+  * CREATE SYNONYM --建立同义词
+  * CREATE VIEW --建立视图
+  
+RESOURCE角色： --是授予开发人员的
+  * CREATE CLUSTER --建立聚簇
+  * CREATE PROCEDURE --建立过程
+  * CREATE SEQUENCE --建立序列
+  * CREATE TABLE --建表
+  * CREATE TRIGGER --建立触发器
+  * CREATE TYPE --建立类型
+
+创建用户【fly】，密码为【1】,并授予connect和resource权限
+```sql
+CREATE USER FLY IDENTIFIED BY 1;
+
+GRANT CONNECT,RESOURCE TO FLY;
+```
+
+以上，即基本的用户创建和权限授予操作。
+
+> https://blog.csdn.net/love_legain/article/details/54291400
+
+<a id="markdown-客户端的安装" name="客户端的安装"></a>
+## 客户端的安装
+客户端这里推荐安装32位的版本：【win32_11gR2_client.zip】
+
+在win10安装会有此提示，可以忽略
+
+![](..\assets\Oracle\oracle-client-win10.png)
+
+进行客户端的默认安装
+
+![](..\assets\Oracle\oracle-client-install-1.png)
+
+![](..\assets\Oracle\oracle-client-install-2.png)
+
+![](..\assets\Oracle\oracle-client-install-4.png)
+
+![](..\assets\Oracle\oracle-client-install-5.png)
+
+<a id="markdown-plsql-developer" name="plsql-developer"></a>
+## PL/SQL developer 
+
+打开PLSQL Developer，选择Tools -> perference -> Connection，配置其中的Oracle Home和OCI Library项，如下图所示：
+
+Oracle Home：E:\app\Administrator\product\11.2.0\client_1
+
+OCI Library：E:\app\Administrator\product\11.2.0\client_1\oci.dll
+
+tsname.ora配置：
+
+```sql
+orcl =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.60)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = orcl)
+    )
+  )
+```
+
+<a id="markdown-疑难解答" name="疑难解答"></a>
+## 疑难解答
+<a id="markdown-ora-12541" name="ora-12541"></a>
+### ORA-12541
+连接Oracle时报错ORA-12541: TNS: 无监听程序
+
+需要检查服务端的监听程序配置，【Net Configuration Assistant】检查本地网络服务名的配置。
 
 <a id="markdown-未注册监听" name="未注册监听"></a>
 ### 未注册监听
@@ -269,143 +420,9 @@ c:>emca -config dbcontrol db
 ```
 > http://snkcxy.iteye.com/blog/1930506
 
-<a id="markdown-实例化oc4j配置文件是出错" name="实例化oc4j配置文件是出错"></a>
-### 实例化OC4J配置文件是出错
+<a id="markdown-实例化oc4j配置文件时出错" name="实例化oc4j配置文件时出错"></a>
+### 实例化OC4J配置文件时出错
 
 ![](..\assets\Oracle\dbca-emca-em实例化OC4J配置出错.png)
 
-<a id="markdown-用户操作" name="用户操作"></a>
-## 用户操作
-做好以上准备后，我们可以针对数据添加用户并授权，以下操作均在服务端进行
-
-![](..\assets\Oracle\create-user-1.png)
-
-打开sqlplus，使用安装Oracle时设置的密码进行登录：
-
-![](..\assets\Oracle\create-user-login.png)
-
-上图中system为默认系统用户，可以用来进行用户的相关操作
-
-以下脚本是用户相关的操作：
-```sql
--- 查看数据库中所有用户的名称;
-select username from dba_users;
-
--- 新建用户 用户名为【new_user_name】，密码为【new_password】
-create user new_user_name identified by new_password;
-
--- 修改用户密码 将用户【new_user_name】重置为【new_password】
-alter user new_user_name identified by new_password;
-
--- 删除用户
-drop user new_user_name;
-
--- 同时删除与【new_user_name】相关的表;
-drop user new_user_name cascade;
-
-//授权 
--- 登录授权;
-grant connect to new_user_name;
-
--- scott用户为new_user_name赋予表emp的select权限;
-grant select on emp to new_user_name;
-
--- sys用户为new_user_name赋予表emp的select权限;
-grant select on scott.emp to new_user_name;
-
--- 授予增删改查权限
-grant select,insert,delete,update on scott.emp to new_user_name;
-
--- 授予 CONNECT角色和RESOURCE角色
-grant connect,resource to new_user_name;
-```
-
-CONNECT角色： --是授予最终用户的典型权利，最基本的
-  * ALTER SESSION --修改会话
-  * CREATE CLUSTER --建立聚簇
-  * CREATE DATABASE LINK --建立数据库链接
-  * CREATE SEQUENCE --建立序列
-  * CREATE SESSION --建立会话
-  * CREATE SYNONYM --建立同义词
-  * CREATE VIEW --建立视图
-  
-RESOURCE角色： --是授予开发人员的
-  * CREATE CLUSTER --建立聚簇
-  * CREATE PROCEDURE --建立过程
-  * CREATE SEQUENCE --建立序列
-  * CREATE TABLE --建表
-  * CREATE TRIGGER --建立触发器
-  * CREATE TYPE --建立类型
-
-创建用户【fly】，密码为【1】,并授予connect和resource权限
-```sql
-CREATE USER FLY IDENTIFIED BY 1;
-
-GRANT CONNECT,RESOURCE TO FLY;
-```
-
-以上，即基本的用户创建和权限授予操作。
-
-> https://blog.csdn.net/love_legain/article/details/54291400
-
-<a id="markdown-enterprise-manager-em-database-control" name="enterprise-manager-em-database-control"></a>
-##  Enterprise Manager (EM) Database Control
-Enterprise Manager Database Control 提供了一个基于 Web 的界面，您可以使用这个界面来管理 Oracle 实例和数据库。
-
-要从客户端浏览器访问 Oracle Enterprise Manager Database Control，必须启动 dbconsole 进程。
-
-首先检查OracleDbConsole有没有，
-
-设置ORACLE 11g的ORACLE_HOSTNAME，命令为：C:\Windows\system32>set ORACLE_HOSTNAME=localhost
-
-设置ORACLE 11g的ORACLE_UNQNAME，命令为：C:\Windows\system32>set ORACLE_UNQNAME=orcl
-
-<a id="markdown-客户端的安装" name="客户端的安装"></a>
-## 客户端的安装
-客户端这里推荐安装32位的版本：【win32_11gR2_client.zip】
-
-在win10安装会有此提示，可以忽略
-
-![](..\assets\Oracle\oracle-client-win10.png)
-
-进行客户端的默认安装
-
-![](..\assets\Oracle\oracle-client-install-1.png)
-
-![](..\assets\Oracle\oracle-client-install-2.png)
-
-![](..\assets\Oracle\oracle-client-install-4.png)
-
-![](..\assets\Oracle\oracle-client-install-5.png)
-
-<a id="markdown-plsql-developer" name="plsql-developer"></a>
-## PL/SQL developer 
-
-打开PLSQL Developer，选择Tools -> perference -> Connection，配置其中的Oracle Home和OCI Library项，如下图所示：
-
-Oracle Home：E:\app\Administrator\product\11.2.0\client_1
-
-OCI Library：E:\app\Administrator\product\11.2.0\client_1\oci.dll
-
-tsname.ora配置：
-
-```sql
-orcl =
-  (DESCRIPTION =
-    (ADDRESS_LIST =
-      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.60)(PORT = 1521))
-    )
-    (CONNECT_DATA =
-      (SERVER = DEDICATED)
-      (SERVICE_NAME = orcl)
-    )
-  )
-```
-
-<a id="markdown-疑难解答" name="疑难解答"></a>
-## 疑难解答
-<a id="markdown-ora-12541" name="ora-12541"></a>
-### ORA-12541
-连接Oracle时报错ORA-12541: TNS: 无监听程序
-
-需要检查服务端的监听程序配置，【Net Configuration Assistant】检查本地网络服务名的配置。
+由于安装包不完整，从官网下载需要解压两个压缩包，完整安装即解决该问题。
