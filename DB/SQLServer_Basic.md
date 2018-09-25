@@ -6,7 +6,7 @@
         - [2NF二范式](#2nf二范式)
         - [3NF三范式](#3nf三范式)
     - [语句](#语句)
-        - [创建测试库](#创建测试库)
+        - [创建数据库](#创建数据库)
         - [DDL-数据定义语言(Data Definition Language)](#ddl-数据定义语言data-definition-language)
             - [常见数据类型](#常见数据类型)
             - [常见数据约束](#常见数据约束)
@@ -116,8 +116,8 @@
 
 <a id="markdown-语句" name="语句"></a>
 ## 语句
-<a id="markdown-创建测试库" name="创建测试库"></a>
-### 创建测试库
+<a id="markdown-创建数据库" name="创建数据库"></a>
+### 创建数据库
 ```sql
 CREATE DATABASE [TEST_DB]
 ```
@@ -153,7 +153,6 @@ datetime | 8字节 | 1753 年 1 月 1 日到 9999 年 12 月 31 日 | System.Dat
 time |   |   | System.TimeSpan | time(7) | 表示时间间隔，比如计时和耗時
 varbinary |   |   | System.Byte | varbinary(max) | 表示二进制数据
 
-
 **CHAR、VARCHAR、NVARCHAR、TEXT区别**
 
 相同的是，这四种类型都可以保存字符串。
@@ -182,7 +181,7 @@ DEFAULT | 规定没有给列赋值时的默认值。
 CREATE TABLE EMP
 (
 	[ID] INT IDENTITY(1,1),--自增长列，是标识，标识种子、增量均为1
-	[DEPT_ID] INT NULL,--默认运行为null，也可显式写出
+	[DEPT_ID] INT NULL,--默认约束为null，也可显式写出
 	[DEPT_NUMBER] VARCHAR(20) UNIQUE,--唯一值约束 varchar(20)最多20个字符，10个汉字
 	[EMP_DATE] DATETIME NULL,
 	[PASSWORD] VARCHAR(50) NOT NULL,--非空值约束
@@ -197,7 +196,7 @@ CREATE TABLE EMP
 CREATE TABLE EMP
 (
 	[ID] INT IDENTITY(1,1) PRIMARY KEY,--自增长列，是标识，标识种子、增量均为1
-	[DEPT_ID] INT NULL FOREIGN KEY([DEPT_ID]) REFERENCES [DEPT]([ID]),--默认运行为null，也可显式写出
+	[DEPT_ID] INT NULL FOREIGN KEY REFERENCES [DEPT]([ID]),--默认约束为null，也可显式写出
 	[DEPT_NUMBER] VARCHAR(20) UNIQUE,--唯一值约束 varchar(20)最多20个字符，10个汉字
 	[EMP_DATE] DATETIME NULL,
 	[PASSWORD] VARCHAR(50) NOT NULL,--非空值约束
@@ -209,8 +208,18 @@ CREATE TABLE EMP
 
 --删除表，一定要注意，尽量做备份后再删除
 DROP TABLE [EMP];
+
 --可以简单备份，只备份基本表结构和数据
 SELECT * INTO EMP_20170925 FROM EMP;
+```
+
+针对已经存在的表进行表结构的变更：
+```sql
+-- 在表中添加列
+ALTER TABLE table_name ADD column_name datatype;
+
+-- 从表中删除列
+ALTER TABLE table_name DROP COLUMN column_name;
 ```
 
 <a id="markdown-dml-数据操作语言data-manipulation-language" name="dml-数据操作语言data-manipulation-language"></a>
@@ -296,7 +305,7 @@ SELECT MIN(FIELD1) FROM [TABLE_NAME];
 
 **特别注意**：
 
-`COUNT(*),COUNT(1),COUNT(0)` : 数据行中是否有NULL值，返回统计均一样。仅当COUNT(列名)会判断属性值是否为NULL。
+`COUNT(*),COUNT(1),COUNT(0)` : 无论数据行中是否有NULL值，返回统计均一样。仅当COUNT(列名)时会判断属性值是否为NULL。
 
 ```sql
 CREATE TABLE TABLE_1
@@ -828,7 +837,7 @@ CREATE UNIQUE CLUSTERED INDEX idx_t_index_test_new ON dbo.T_INDEX_TEST(GUID)
 SELECT * FROM dbo.T_INDEX_TEST WHERE guid ='003EE909-FE1F-432A-AAAA-33A310849745';
 SELECT * FROM dbo.T_INDEX_TEST_NEW WHERE guid ='003EE909-FE1F-432A-AAAA-33A310849745';
 ```
-上面案例中，有误索引的直观感受可能并不明显，我们可以通过查看执行计划来对比。
+上面案例中，有无索引的直观感受可能并不明显，我们可以通过查看执行计划来对比。
 
 首先，勾选菜单【查询】-【包括实际的执行计划】，然后再进行查询。
 
