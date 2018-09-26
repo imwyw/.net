@@ -358,7 +358,7 @@ CREATE TABLE T_COURSE ( ID INT, NAME VARCHAR(20) );
 
 INSERT INTO dbo.T_STUDENT
         ( ID, C_ID, NAME )
-VALUES  ( 1, 1, '赵一'),(2,2,'钱二'),(2,2,'孙三'),(3,3,'周四');
+VALUES  ( 1, 1, '赵一'),(2,2,'钱二'),(3,2,'孙三'),(4,3,'周四');
 
 INSERT INTO dbo.T_COURSE
         ( ID, NAME )
