@@ -227,7 +227,8 @@ ALTER TABLE table_name DROP COLUMN column_name;
 
 包括动词INSERT，UPDATE和DELETE。它们分别用于添加，修改和删除表中的行。
 
-```sql
+**插入数据**
+```SQL
 --插入数据
 INSERT INTO [表名](字段1,字段2,字段3...) VALUES (值1,值2,值3...);
 INSERT INTO [表名](字段1,字段2,字段3...) VALUES 
@@ -235,10 +236,19 @@ INSERT INTO [表名](字段1,字段2,字段3...) VALUES
 (值1a,值2a,值3a...);
 --不指定列名也可以，即VALUES后写明所有字段，但不推荐此方式，否则表结构变动时很容易导致bug
 INSERT INTO [表名] VALUES (值1,值2,值3...);
+```
 
---更新数据
+**更新数据**
+```SQL
+-- 更新数据
 UPDATE [表名] SET 字段1 = 值1, 字段2 = 值2... WHERE 1 = 1 AND 其他条件...;
 
+-- ms sql 中还提供了 UPDATE...SET...FROM...WHERE... 的写法，在UPDATE中使用JOIN
+UPDATE A  SET A1 = B1, A2 = B2, A3 = B3  FROM A LEFT JOIN B ON A.ID = B.ID;
+```
+
+**删除数据**
+```sql
 --删除数据
 DELETE FROM [表名] WHERE 1 = 0 OR 其他条件...;
 TRUNCATE TABLE [表名];
