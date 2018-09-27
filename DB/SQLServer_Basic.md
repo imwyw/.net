@@ -246,6 +246,8 @@ UPDATE [表名] SET 字段1 = 值1, 字段2 = 值2... WHERE 1 = 1 AND 其他条�
 -- ms sql 中还提供了 UPDATE...SET...FROM...WHERE... 的写法，在UPDATE中使用JOIN
 UPDATE A  SET A1 = B1, A2 = B2, A3 = B3  FROM A LEFT JOIN B ON A.ID = B.ID;
 ```
+关于Oracle和MySql中对应的写法，参考：
+> https://blog.csdn.net/xcbsdu/article/details/6736503
 
 **删除数据**
 ```sql
