@@ -342,22 +342,13 @@ AS
         
 		-- 返回数据的查询SQL语句
         DECLARE @sqldata NVARCHAR(1000);
-        IF ( @pageIndex = 0 )
-            BEGIN
-                SET @sqldata = ' select top ' + CAST(@pageSize AS VARCHAR(10))
-                    + ' ' + @sqlColumns + ' from ' + @sqlTable + ' where 1=1 '
-                    + @sqlWhere + ' order by ' + @sqlSort;
-				
-            END
-        ELSE
-            BEGIN
-                SET @sqldata = ' select ' + @sqlColumns
-                    + ' from (select *,Row_number() over(order by ' + @sqlSort
-                    + ' ) as RN from ' + @sqlTable + ' where 1=1 ' + @sqlWhere
-                    + ') as TR where RN>'
-                    + CAST(@pageSize * @pageIndex AS VARCHAR(20)) + ' and RN<'
-                    + CAST(( @pageSize * ( @pageIndex + 1 ) + 1 ) AS VARCHAR(20));
-            END
+        SET @sqldata = ' select ' + @sqlColumns
+            + ' from (select *,Row_number() over(order by ' + @sqlSort
+            + ' ) as RN from ' + @sqlTable + ' where 1=1 ' + @sqlWhere
+            + ') as TR where RN>'
+            + CAST(@pageSize * @pageIndex AS VARCHAR(20)) + ' and RN<'
+            + CAST(( @pageSize * ( @pageIndex + 1 ) + 1 ) AS VARCHAR(20));
+        
 		--debug
         --PRINT @sqldata;
         EXEC sp_executesql @sqldata;
