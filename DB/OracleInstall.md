@@ -21,6 +21,7 @@
         - [重装OEM](#重装oem)
         - [OEM管理地址](#oem管理地址)
         - [实例化OC4J配置文件时出错](#实例化oc4j配置文件时出错)
+        - [中文乱码](#中文乱码)
 
 <!-- /TOC -->
 
@@ -538,3 +539,26 @@ Enterprise Manager 代理端口 (orcl) = 3938
 ![](..\assets\Oracle\dbca-emca-em实例化OC4J配置出错.png)
 
 由于安装包不完整，从官网下载需要解压两个压缩包，完整安装即解决该问题。
+
+<a id="markdown-中文乱码" name="中文乱码"></a>
+### 中文乱码
+在PLSQL中插入数据时，出现一个问题，PLSQL中的表里无法显示中文，中文无法保存、无法输出，中文在表中显示问号。
+
+可以使用以下语句查看字符编码的设置：
+```sql
+-- 服务端编码
+SELECT * FROM SYS.NLS_DATABASE_PARAMETERS;
+
+-- 客户端编码
+SELECT * FROM SYS.NLS_SESSION_PARAMETERS;
+
+SELECT USERENV('language') FROM DUAL;
+```
+
+第一步：修改注册表。
+
+开始-运行-输入regedit-回车进入注册表，依次单击HKEY_LOCAL_MACHINE--->SOFTWARE ---> ORACLE--->KEY_OraDb11g_home1（不同版本的Oracle显示的都不太一样，但都会包含home这个单词），找到“NLS_LANG”，查看数值数据是否为：“SIMPLIFIED CHINESE_CHINA.ZHS16GBK”，如果不是就将它设置为“SIMPLIFIED CHINESE_CHINA.ZHS16GBK。”
+
+第二步：修改环境变量。
+
+设置完注册表后，接下来设置我们的环境变量，计算机（右键） --->属性--->高级系统设置--->高级--->环境变量--->新建，个人建议新建用户变量，变量名输入：“NLS_LANG”，变量值输入：“SIMPLIFIED CHINESE_CHINA.ZHS16GBK”。点击确定即可，到此我们就设置完了。
