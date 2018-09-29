@@ -17,6 +17,7 @@
             - [扩展后千万级分页](#扩展后千万级分页)
     - [事务](#事务)
         - [编码示例](#编码示例)
+        - [表被锁](#表被锁)
 
 <!-- /TOC -->
 <a id="markdown-sqlserver编程" name="sqlserver编程"></a>
@@ -528,24 +529,50 @@ SELECT  @total;
 <a id="markdown-编码示例" name="编码示例"></a>
 ### 编码示例
 简单示例：
-```sql
---开始事务
-BEGIN TRANSACTION;
---定义变量，记录是否发生异常
-DECLARE @ERR_SUM INT;
-SET @ERR_SUM = 0;
+```sql 
+-- 开始try，可以捕获异常
+BEGIN TRY
+    -- 开始事务
+    BEGIN TRANSACTION
 
-/*业务操作1 DELETE FROM ..............*/
---记录当前业务是否发生异常
-SET @ERR_SUM = @ERR_SUM + @@ERROR;
+    /*业务操作1 ..............*/
 
-/*业务操作2 UPDATE XXX SET XXX................*/
---记录当前业务是否发生异常
-SET @ERR_SUM = @ERR_SUM + @@ERROR;
+    /*业务操作2 ................*/
 
---如前面业务操作发生异常则回滚操作，否则进行提交
-IF ( @ERR_SUM > 0 )
-    ROLLBACK TRANSACTION;
-ELSE
+    /*业务操作3 ................ 故意写错语句 INSERT  INTO xxx VALUES  ( 1 ); */
+    
+    -- 如果try内未发生异常则进行提交
     COMMIT TRANSACTION;
+END TRY
+
+-- 捕获到异常的情况，回滚并打印相应的消息
+BEGIN CATCH
+    PRINT '错误码：' + CAST(@@ERROR AS VARCHAR);
+    PRINT '异常在：' + CAST(ERROR_LINE() AS VARCHAR) + '行';
+    PRINT '异常消息为：' + CAST(ERROR_MESSAGE() AS VARCHAR);
+    ROLLBACK TRANSACTION;
+END CATCH
+```
+
+<a id="markdown-表被锁" name="表被锁"></a>
+### 表被锁
+某些情况下，sqlserver的表会被锁住，比如某个会话窗口有数据一直没提交，窗口又没关闭，这时表就会被锁住
+
+其他任何连接查询表数据时都不会返回
+
+这时需要手工杀掉产生死锁的会话ID，才能恢复正常
+
+例如在上一节事务案例中，如果仅仅开始事务【BEGIN TRANSACTION】并未进行任何回滚或者提交操作来结束，则该事务会一直锁住该表，查询不会有返回。
+
+处理很简单，查询死锁会话ID以及被锁的表名，然后kill掉
+
+```sql
+-- 找出session_id
+SELECT  request_session_id spid ,
+        OBJECT_NAME(resource_associated_entity_id) tableName
+FROM    sys.dm_tran_locks
+WHERE   resource_type = 'OBJECT';
+
+-- 按照session_id进行kill操作
+KILL XXX;
 ```
