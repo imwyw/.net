@@ -23,7 +23,7 @@
     * [SqlServer基础](./DB/SQLServer_Basic.md)
     * [SqlServer编程](./DB/SQLServer_Program.md)
     * [Oracle环境](./DB/OracleInstall.md)
-    * [PL/SQL](./DB/Oracle-PLSQL.md)
+    * [Oracle基础](./DB/OracleBasic.md)
 
 * [设计]()
     * [三层架构](./Design/UIBLLDAL.md)
