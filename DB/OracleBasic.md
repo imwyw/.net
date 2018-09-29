@@ -5,7 +5,6 @@
     - [表（主键、外键、CHECK、UNIQUE、DEFAULT、INDEX）](#表主键外键checkuniquedefaultindex)
     - [存储过程](#存储过程)
     - [变量和赋值](#变量和赋值)
-    - [常用函数](#常用函数)
 
 <!-- /TOC -->
 
@@ -111,10 +110,6 @@ END;
 /
 ```
 
-<a id="markdown-常用函数" name="常用函数"></a>
-## 常用函数
-
-SqlServer       Oracle
 
 ---
 
