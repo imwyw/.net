@@ -16,6 +16,8 @@
         - [SqlDataReader转换为实体类优化](#sqldatareader转换为实体类优化)
     - [Guid的应用](#guid的应用)
         - [Unique Int64](#unique-int64)
+    - [ADO.NET Oracle](#adonet-oracle)
+        - [OracleConnection 对象](#oracleconnection-对象)
 
 <!-- /TOC -->
 <a id="markdown-adonet" name="adonet"></a>
@@ -495,7 +497,7 @@ SqlHelper文件最初起源于微软，它是一个基于 .NET Framework 的数�
 
 微软SqlHelper链接：http://pan.baidu.com/s/1jIMN38M 密码：c17o
 
-微软还提欧了企业开发库[Enterprise Library](https://www.microsoft.com/en-us/download/details.aspx?id=38789)，
+微软还提供了企业开发库[Enterprise Library](https://www.microsoft.com/en-us/download/details.aspx?id=38789)，
 官网下载很慢的可以从百度云下载链接：http://pan.baidu.com/s/1nvspnaL 密码：kfwd
 
 <a id="markdown-基本封装" name="基本封装"></a>
@@ -1039,6 +1041,66 @@ class Program
             hashCode = hashCodeStart ^ hashCodeMedium ^ hashCodeEnd;
         }
         return (hashCode);
+    }
+}
+```
+
+
+<a id="markdown-adonet-oracle" name="adonet-oracle"></a>
+## ADO.NET Oracle
+<a id="markdown-oracleconnection-对象" name="oracleconnection-对象"></a>
+### OracleConnection 对象
+要访问一个数据源，你必须先建立一个到它的连接。这个连接里描述了数据库服务器类型、数据库名字、用户名、密码，和连接数据库所需要的其它参数。
+
+command对象通过使用connection对象来知道是在哪个数据库上面执行ORACLE命令。
+
+```cs
+// oracle 连接字符串 server指明服务器，data source为oracle实例名称，uid为用户名，pwd为密码
+string connStr = "server=172.16.123.250;data source=orcl;uid=hero;pwd=123456;";
+// 需要添加 using System.Data.OracleClient;
+OracleConnection connOrcl = new OracleConnection(connStr);
+
+try
+{
+    connOrcl.Open();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex);
+}
+finally
+{
+    if (connOrcl.State != ConnectionState.Closed)
+    {
+        connOrcl.Close();
+    }
+}
+```
+
+在上述代码中会提示OracleConnection已过时，可以使用oracle官方推荐dll解决。
+
+在oracle安装路径【X:\app\Administrator\product\11.2.0\client_1\ODP.NET\bin\2.x】找到dll文件【Oracle.DataAccess.dll】，使用oracle推荐的类库进行操作。
+
+```cs
+// oracle 连接字符串 Data Source为本机oracle客户端配置的tns连接，user id为用户名，password为密码
+string connStr = "Data Source=ORCL;Persist Security Info=True;User ID=hero;Password=123456;";
+
+// 推荐使用oracle推荐的odp.net方式
+Oracle.DataAccess.Client.OracleConnection connOrcl = new Oracle.DataAccess.Client.OracleConnection(connStr);
+
+try
+{
+    connOrcl.Open();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex);
+}
+finally
+{
+    if (connOrcl.State != ConnectionState.Closed)
+    {
+        connOrcl.Close();
     }
 }
 ```

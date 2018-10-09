@@ -56,7 +56,7 @@ BIRTH_DATE DATE NOT NULL DEFAULT SYSDATE
 SqlServer:
 ```plsql
 CREATE PROCEDURE procedure_name
-    /*输入、输出参数的声明部分*/
+    (  /*输入、输出参数的声明部分*/  )
 AS
     DECLARE
     /*局部变量的声明部分*/
