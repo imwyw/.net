@@ -18,6 +18,7 @@
         - [Unique Int64](#unique-int64)
     - [ADO.NET Oracle](#adonet-oracle)
         - [OracleConnection 对象](#oracleconnection-对象)
+        - [OracleCommand](#oraclecommand)
 
 <!-- /TOC -->
 <a id="markdown-adonet" name="adonet"></a>
@@ -1082,15 +1083,15 @@ finally
 在oracle安装路径【X:\app\Administrator\product\11.2.0\client_1\ODP.NET\bin\2.x】找到dll文件【Oracle.DataAccess.dll】，使用oracle推荐的类库进行操作。
 
 ```cs
-// oracle 连接字符串 Data Source为本机oracle客户端配置的tns连接，user id为用户名，password为密码
-string connStr = "Data Source=ORCL;Persist Security Info=True;User ID=hero;Password=123456;";
+// oracle 连接字符串 Data Source为本机oracle客户端配置的tns连接，User Id为用户名，password为密码
+string oraDb = "Data Source=ORCL;Persist Security Info=True;User Id=hero;Password=123456;";
 
-// 推荐使用oracle推荐的odp.net方式
-Oracle.DataAccess.Client.OracleConnection connOrcl = new Oracle.DataAccess.Client.OracleConnection(connStr);
+// OracleConnection类为Oracle.DataAccess.Client命名空间下
+OracleConnection conn = new OracleConnection(oraDb);
 
 try
 {
-    connOrcl.Open();
+    conn.Open();
 }
 catch (Exception ex)
 {
@@ -1098,9 +1099,89 @@ catch (Exception ex)
 }
 finally
 {
-    if (connOrcl.State != ConnectionState.Closed)
+    if (conn.State != ConnectionState.Closed)
     {
-        connOrcl.Close();
+        conn.Close();
+    }
+}
+```
+
+<a id="markdown-oraclecommand" name="oraclecommand"></a>
+### OracleCommand
+以下示例为新增数据的脚本，更新和删除的操作也是类似
+
+```cs
+// oracle 连接字符串 Data Source为本机oracle客户端配置的tns连接，User Id为用户名，password为密码
+string oraDb = "Data Source=ORCL;Persist Security Info=True;User Id=hero;Password=123456;";
+
+// OracleConnection类为Oracle.DataAccess.Client命名空间下
+OracleConnection conn = new OracleConnection(oraDb);
+
+try
+{
+    conn.Open();
+    OracleCommand cmd = conn.CreateCommand();
+
+    // 参数化SQL与SqlParameter有不同的地方！ 参数名要以:开头，不允许包含@等特殊字符
+    cmd.CommandText = "INSERT INTO T_STUDENT (ID,NAME) VALUES(:ID,:NAME)";
+    cmd.Parameters.Add(new OracleParameter("ID", "11"));
+    cmd.Parameters.Add(new OracleParameter("NAME", "马云"));
+
+    cmd.ExecuteNonQuery();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex);
+}
+finally
+{
+    if (conn.State != ConnectionState.Closed)
+    {
+        conn.Close();
+    }
+}
+```
+
+使用Oracle进行模糊匹配查询得到table
+```cs
+// oracle 连接字符串 Data Source为本机oracle客户端配置的tns连接，User Id为用户名，password为密码
+string oraDb = "Data Source=ORCL;Persist Security Info=True;User Id=hero;Password=123456;";
+
+// OracleConnection类为Oracle.DataAccess.Client命名空间下
+OracleConnection conn = new OracleConnection(oraDb);
+
+try
+{
+    conn.Open();
+    OracleCommand cmd = conn.CreateCommand();
+
+    // oracle 中拼接字符串使用 || 而不是sqlserver中的 +
+    cmd.CommandText = "SELECT * FROM T_STUDENT WHERE NAME LIKE '%'||:NAME||'%'";
+    cmd.Parameters.Add(new OracleParameter("NAME", "马"));
+
+    DataTable dt = new DataTable();
+    OracleDataAdapter adapter = new OracleDataAdapter(cmd);
+    adapter.Fill(dt);
+
+    int colCount = dt.Columns.Count;
+    foreach (DataRow dr in dt.Rows)
+    {
+        for (int i = 0; i < colCount; i++)
+        {
+            Console.Write(dr[i] + "\t");
+        }
+        Console.WriteLine();
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex);
+}
+finally
+{
+    if (conn.State != ConnectionState.Closed)
+    {
+        conn.Close();
     }
 }
 ```
