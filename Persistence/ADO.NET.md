@@ -19,6 +19,7 @@
     - [ADO.NET Oracle](#adonet-oracle)
         - [OracleConnection 对象](#oracleconnection-对象)
         - [OracleCommand](#oraclecommand)
+        - [OracleDataAdapter](#oracledataadapter)
 
 <!-- /TOC -->
 <a id="markdown-adonet" name="adonet"></a>
@@ -1176,6 +1177,9 @@ finally
 }
 ```
 
+<a id="markdown-oracledataadapter" name="oracledataadapter"></a>
+### OracleDataAdapter
+
 使用Oracle进行模糊匹配查询得到table
 ```cs
 // oracle 连接字符串 Data Source为本机oracle客户端配置的tns连接，User Id为用户名，password为密码
@@ -1219,3 +1223,10 @@ finally
     }
 }
 ```
+
+其余查询也是类似，暂略。
+
+---
+
+oracle官方sample： https://github.com/oracle/dotnet-db-samples
+
