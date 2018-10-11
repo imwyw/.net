@@ -1189,7 +1189,7 @@ try
     conn.Open();
     OracleCommand cmd = conn.CreateCommand();
 
-    // oracle 中拼接字符串使用 || 而不是sqlserver中的 +
+    // oracle 中拼接字符串使用 || 而不是sqlserver中的 +  此处较为特殊！或者也可以使用concat函数
     cmd.CommandText = "SELECT * FROM T_STUDENT WHERE NAME LIKE '%'||:NAME||'%'";
     cmd.Parameters.Add(new OracleParameter("NAME", "马"));
 
