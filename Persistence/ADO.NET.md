@@ -677,6 +677,40 @@ public class SqlHelper
     }
 
     #endregion
+
+    /// <summary>
+    /// 查询，第一行第一列的值
+    /// </summary>
+    /// <param name="cmdText">SQL语句</param>
+    /// <param name="sqlParams">SQL参数</param>
+    /// <returns>第一行第一列的值</returns>
+    public static object ExecuteScalar(string cmdText, SqlParameter[] sqlParams)
+    {
+        SqlConnection conn = new SqlConnection(connStr);
+        try
+        {
+            conn.Open();
+
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = cmdText;
+            if (sqlParams != null && sqlParams.Length > 0)
+            {
+                cmd.Parameters.AddRange(sqlParams);
+            }
+
+            object obj = cmd.ExecuteScalar();
+            return obj;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("发生异常：" + ex);
+            return null;
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
 }
 ```
 
