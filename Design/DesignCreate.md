@@ -3,7 +3,8 @@
 - [创建型设计模式](#创建型设计模式)
     - [Singleton单例模式-只有一个实例](#singleton单例模式-只有一个实例)
         - [应用场景](#应用场景)
-            - [拓展-关于static方法和单例模式：](#拓展-关于static方法和单例模式)
+        - [练习-单例改造](#练习-单例改造)
+        - [拓展-关于static方法和单例模式：](#拓展-关于static方法和单例模式)
     - [Factory Method工厂方法](#factory-method工厂方法)
         - [Simple Factory简单工厂](#simple-factory简单工厂)
         - [Factory Method工厂方法-将实例的生成交给子类](#factory-method工厂方法-将实例的生成交给子类)
@@ -157,8 +158,114 @@ public class Singleton
 * 资源共享的情况下，避免由于资源操作时导致的性能或损耗等。如上述中的日志文件，应用配置。
 * 控制资源的情况下，方便资源之间的互相通信。如线程池等。
 
+<a id="markdown-练习-单例改造" name="练习-单例改造"></a>
+### 练习-单例改造
+在下面的TicketMaker类中，每次调用GetNextTicketNumber方法都会返回1000，1001，1002...的数列。
+
+我们可以用它生成票的编号或是其他序列号。在现在该类的实现方式下，我们可以生成多个该类的实例。请修改代码，运用Singleton模式确保只能生成一个该类的实例。
+
+【非单例模式的TicketMaker.cs】
+```cs
+public class TicketMaker 
+{
+    private int ticket = 1000;
+    public int GetNextTicketNumber()
+    {
+        return ticket++;
+    }
+}
+```
+
+【进行单例的改造】
+```cs
+public class TicketMaker
+{
+    private TicketMaker(){}
+    private int ticket = 1000;
+    static TicketMaker ticker;
+    static readonly object lockObj = new object();
+    public static TicketMaker Ticket
+    {
+        get
+        {
+            if (ticker == null)
+            {
+                ticker = new TicketMaker();
+            }
+            return ticker;
+        }
+    }
+
+    public int GetNextTicketNumber()
+    {
+        return ticket++;
+    }
+}
+```
+
+但是上述代码仍然存在问题，在多线程的情况，仍会有多个实例对象，获取得到的ticket值并不能保证唯一
+
+【多线程的调用】
+```cs
+static void Main(string[] args)
+{
+    Thread th1 = new Thread(Test);
+    th1.Start();
+    Test();
+}
+
+/// <summary>
+/// 测试调用
+/// </summary>
+static void Test()
+{
+    for (int i = 0; i < 10; i++)
+    {
+        Thread.Sleep(10);
+        Console.WriteLine(TicketMaker.Ticket.GetNextTicketNumber());
+    }
+}
+```
+
+上述演示中并不能保证每次结果都是一致的，所以需要进一步修改单例的实现。
+
+【TicketMaker.cs多线程的考虑】
+```cs
+public class TicketMaker
+{
+    private TicketMaker(){}
+    private int ticket = 1000;
+    static TicketMaker ticker;
+    static readonly object lockObj = new object();
+    public static TicketMaker Ticket
+    {
+        get
+        {
+            考虑多线程，在多线程的情况下仍为单例
+            if (ticker == null)
+            {
+               lock (lockObj)
+               {
+                   if (ticker == null)
+                   {
+                       ticker = new TicketMaker();
+                   }
+               }
+            }
+            return ticker;
+        }
+    }
+
+    public int GetNextTicketNumber()
+    {
+        return ticket++;
+    }
+
+}
+```
+
 <a id="markdown-拓展-关于static方法和单例模式" name="拓展-关于static方法和单例模式"></a>
-#### 拓展-关于static方法和单例模式：
+### 拓展-关于static方法和单例模式：
 [静态方法和实例化方法的区别](http://www.cnblogs.com/chinhr/archive/2008/04/03/1135561.html)
 
 <a id="markdown-factory-method工厂方法" name="factory-method工厂方法"></a>
