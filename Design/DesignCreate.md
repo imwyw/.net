@@ -221,7 +221,7 @@ static void Test()
 {
     for (int i = 0; i < 10; i++)
     {
-        Thread.Sleep(10);
+        //Thread.Sleep(10);
         Console.WriteLine(TicketMaker.Ticket.GetNextTicketNumber());
     }
 }
@@ -258,9 +258,11 @@ public class TicketMaker
 
     public int GetNextTicketNumber()
     {
-        // 需要保证多个线程访问过程中不出现重复编号，但编号顺序无法保证 TODO
+        // 需要保证多个线程访问过程中不出现重复编号
         lock(lockObj)
         {
+            // 将线程挂起模拟过程，先lock后挂起，否则无法保证编号顺序
+            Thread.Sleep(10);
             return ticket++;
         }
     }
