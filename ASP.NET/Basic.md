@@ -151,14 +151,17 @@ context.Server.Transfer("Index.html");
 ```cs
 public void ProcessRequest(HttpContext context)
 {
-	//获取方法名称，需要在form表单action属性同步进行修改
+	// 获取方法名称，需要在form表单action属性同步进行修改
 	string method = context.Request.PathInfo.Substring(1);
 
 	//根据前端方法名称反射获取当前Handler类的方法
 	MethodInfo methodInfo = this.GetType().GetMethod(method);
 
-	//手动进行调用
-	methodInfo.Invoke(this, new object[] { context });
+	// 手动进行调用
+	if(methodInfo != null)
+	{
+		methodInfo.Invoke(this, new object[] { context });
+	}
 }
 
 /// <summary>
@@ -364,7 +367,13 @@ public class Global : System.Web.HttpApplication
 
 <a id="markdown-cache" name="cache"></a>
 #### Cache
-Cache对象用于在HTTP请求间保存页面或数据。该对象的使用可以极大地提高整个应用程序的效率。常用于将频繁访问的大量服务器资源存储在内存中，当用户发出相同的请求后服务器不再次处理而是将Cache中保存的信息返回给用户，节省了服务器处理请求的时间。其生存期依赖于该应用程序的生存期。当重新启动应用程序时，将重新创建其Cache对象的实例。使用Cache对象保存信息的代码如下。
+Cache对象用于在HTTP请求间保存页面或数据。该对象的使用可以极大地提高整个应用程序的效率。
+
+常用于将频繁访问的大量服务器资源存储在内存中，当用户发出相同的请求后服务器不再次处理而是将Cache中保存的信息返回给用户，节省了服务器处理请求的时间。
+
+其生存期依赖于该应用程序的生存期。
+
+当重新启动应用程序时，将重新创建其Cache对象的实例。使用Cache对象保存信息的代码如下。
 
 ```cs
 //存放信息
@@ -526,7 +535,9 @@ Cookies.getJSON(); // => { name: { foo: 'bar' } }
 
 ```js
 1）创建XMLHttpRequest对象
-        var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+	//其中`new ActiveXObject("Microsoft.XMLHTTP")`是为旧版本的IE考虑
+	var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+
 
 2）发送AJAX请求
 	GET请求：
