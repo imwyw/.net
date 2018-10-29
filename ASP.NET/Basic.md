@@ -642,12 +642,15 @@ function myAjax(option) {
 function formatParams(data) {
 	var arr = [];
 	for (var name in data) {
+		// encodeURIComponent方法在编码单个URIComponent（指请求参数）应当是最常用的，它可以讲参数中的中文、特殊字符进行转义，而不会影响整个URL。
 		arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
 	}
 	arr.push(("v=" + Math.random()).replace(".", ""));
 	return arr.join("&");
 }
 ```
+
+[escape()、encodeURI()、encodeURIComponent()区别详解](http://www.cnblogs.com/qiantuwuliang/archive/2009/07/19/1526687.html)
 
 <a id="markdown-json" name="json"></a>
 ## JSON
