@@ -21,7 +21,10 @@ namespace ArticleDemo.WebUI.Handlers
 
             string methodName = context.Request.PathInfo.Substring(1);
             MethodInfo method = GetType().GetMethod(methodName);
-            method.Invoke(this, new object[] { context });
+            if (null != method)
+            {
+                method.Invoke(this, new object[] { context });
+            }
         }
 
         public bool IsReusable
