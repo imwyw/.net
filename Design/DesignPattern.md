@@ -65,4 +65,4 @@ Liskov Substitution Principle,LSP（里氏代替原则）指的是子类必须�
 
 [C#设计模式总结](http://www.cnblogs.com/zhili/p/DesignPatternSummery.html)
 
-
+[图说设计模式](https://design-patterns.readthedocs.io/zh_CN/latest/index.html)

@@ -297,99 +297,255 @@ class Program
 {
     static void Main(string[] args)
     {
-        //实例化具体对象
+        // 被装饰物，具体对象
         Component c1 = new ConcreteComponent();
-
-        //实例化两个装饰器
-        Decorator d1 = new ConcreteDecoratorA();
-        Decorator d2 = new ConcreteDecoratorB();
+        
+        // 装饰器A
+        DecoratorA d1 = new DecoratorA(c1);
+        // 装饰器B
+        DecoratorB d2 = new DecoratorB(d1);
 
         c1.Operation();
 
-        d1.SetComponent(c1);
         d1.Operation();
 
-        d2.SetComponent(d1);
         d2.Operation();
-
     }
 }
 
 /// <summary>
-/// 核心对象
+/// 核心角色，定义抽象类
 /// </summary>
 public abstract class Component
 {
+    /// <summary>
+    /// 定义抽象方法
+    /// 规范 被装饰物和装饰器
+    /// </summary>
     public abstract void Operation();
 }
 
+/// <summary>
+/// 具体组件，被装饰物
+/// </summary>
 public class ConcreteComponent : Component
 {
     public override void Operation()
     {
-        Console.WriteLine("被装饰对象，具体对象的操作");
+        Console.WriteLine("【Subject】");
     }
 }
 
-public abstract class Decorator : Component
+/// <summary>
+/// 装饰父类，相对抽象组件新增了保护成员
+/// </summary>
+public class Decorator : Component
 {
     protected Component component;
-
     /// <summary>
-    /// 设置component
+    /// 自定义构造函数覆盖component组件
+    /// 装饰器实际会调用父类中的组件
     /// </summary>
-    /// <param name="component"></param>
-    public void SetComponent(Component component)
+    /// <param name="comp"></param>
+    public Decorator(Component comp)
     {
-        this.component = component;
+        component = comp;
     }
-
-    /// <summary>
-    /// 重写Operation，实际执行component的Operation
-    /// 这一步重写很重要！！！
-    /// </summary>
     public override void Operation()
     {
-        if (component != null)
-        {
-            component.Operation();
-        }
+        component.Operation();
     }
-
 }
 
 /// <summary>
 /// 装饰器A
 /// </summary>
-public class ConcreteDecoratorA : Decorator
+public class DecoratorA : Decorator
 {
+    public DecoratorA(Component comp) : base(comp) { }
     public override void Operation()
     {
+        Console.WriteLine("DecoratorA start");
         base.Operation();
-        Console.WriteLine("ConcreteDecoratorA进行装饰");
+        Console.WriteLine("DecoratorA end");
     }
 }
 
 /// <summary>
 /// 装饰器B
 /// </summary>
-public class ConcreteDecoratorB : Decorator
+public class DecoratorB : Decorator
 {
+    public DecoratorB(Component comp) : base(comp) { }
     public override void Operation()
     {
+        Console.WriteLine("DecoratorB start");
         base.Operation();
-        AddedBehavior();
-        Console.WriteLine("ConcreteDecoratorB进行装饰");
-    }
-
-    private void AddedBehavior()
-    {
-        Console.WriteLine("ConcreteDecoratorB独有方法");
+        Console.WriteLine("DecoratorB end");
     }
 }
 ```
 
 利用SetComponent对对象进行包装，这样每个装饰对象的实现就和如何使用对象分离，每个装饰对象只关心自己的功能，不需要关心如何被添加到对象链中。
+
+上面的案例可能较为抽象，以生活中面包和蛋糕为例，假设存在多种口味，并需要支持客户自定义进行搭配，如不使用装饰模式，很难做到灵活的自由搭配。
+
+定义抽象类【Food】，派生出【Cake】蛋糕和【Bread】面包类，并派生出【FoodDecorator】食品装饰器父类
+
+在【FoodDecorator】基础上再派生出对应的不同口味装饰，类图如下所示：
+
+![](..\assets\Design\food-decorator.png)
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        // 构造默认蛋糕
+        Food food1 = new Cake();
+        Console.WriteLine(food1);
+
+        // 巧克力装饰，装饰默认蛋糕
+        ChocolateDecorator cakeChocolate = new ChocolateDecorator(food1);
+        Console.WriteLine(cakeChocolate);
+
+        // 草莓装饰，针对前一步结果进行装饰
+        StrawberryDecorator cakeStraw = new StrawberryDecorator(cakeChocolate);
+        Console.WriteLine(cakeStraw);
+
+        // 构造默认面包
+        Food food2 = new Bread();
+        // 草莓装饰，装饰面包
+        StrawberryDecorator breadStraw = new StrawberryDecorator(food2);
+        ChocolateDecorator breadChocolate = new ChocolateDecorator(breadStraw);
+        Console.WriteLine(breadChocolate);
+    }
+}
+
+public abstract class Food
+{
+    /// <summary>
+    /// 食品价格，虚属性
+    /// </summary>
+    public virtual double Price { get; set; }
+    /// <summary>
+    /// 食品名称，虚属性
+    /// </summary>
+    public virtual string Name { get; set; }
+    /// <summary>
+    /// 重写ToString方法，方便打印消息使用
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return string.Format($"美食：【{Name}】，价格：【{Price}】");
+    }
+}
+
+public class Cake : Food
+{
+    public Cake()
+    {
+        Name = "蛋糕";
+        Price = 50;
+    }
+}
+
+public class Bread : Food
+{
+    public Bread()
+    {
+        Name = "面包";
+        Price = 5;
+    }
+}
+
+/// <summary>
+/// 食品装饰父类，同样由抽象Food类派生
+/// </summary>
+public class FoodDecorator : Food
+{
+    /// <summary>
+    /// 保护成员，被装饰对象
+    /// </summary>
+    protected Food component;
+    /// <summary>
+    /// 被装饰对象赋值给保护成员component
+    /// 以便后续属性重写时调用
+    /// </summary>
+    /// <param name="food"></param>
+    public FoodDecorator(Food food)
+    {
+        component = food;
+    }
+    /// <summary>
+    /// 重写属性，核心步骤
+    /// 实际调用为被装饰物的属性或方法
+    /// </summary>
+    public override string Name
+    {
+        get
+        {
+            return component.Name;
+        }
+    }
+    /// <summary>
+    /// 重写属性，核心步骤
+    /// 实际调用为被装饰物的属性或方法
+    /// </summary>
+    public override double Price
+    {
+        get
+        {
+            return component.Price;
+        }
+    }
+}
+
+/// <summary>
+/// 巧克力口味
+/// </summary>
+public class ChocolateDecorator : FoodDecorator
+{
+    public ChocolateDecorator(Food food) : base(food) { }
+    public override string Name
+    {
+        get
+        {
+            return "巧克力 " + base.Name;
+        }
+    }
+    public override double Price
+    {
+        get
+        {
+            return base.Price + 5;
+        }
+    }
+}
+
+/// <summary>
+/// 草莓口味
+/// </summary>
+public class StrawberryDecorator : FoodDecorator
+{
+    public StrawberryDecorator(Food food) : base(food) { }
+    public override string Name
+    {
+        get
+        {
+            return "草莓味 " + base.Name;
+        }
+    }
+    public override double Price
+    {
+        get
+        {
+            return base.Price + 2;
+        }
+    }
+}
+```
 
 《图解设计模式》中关于Decorator的示例如下：
 
