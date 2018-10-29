@@ -662,6 +662,8 @@ JSON在大多数的情况下作为AJAX的数据交换格式而不是XML。因为
 1. 语法更简单，数据传输量更少
 2. Javascript解码JSON数据容易并且效率高
 
+[JSON标准](http://www.json.org.cn/)
+
 关于JSON格式：
 1. key值必须由引号包含；例如推荐使用`{"name":"jack"}`格式，不要使用`{name:"jack"}`
 2. value部分，除数值和布尔值必须也要用引号包含；
