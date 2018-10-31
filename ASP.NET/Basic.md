@@ -719,6 +719,35 @@ public static string ToJson(object item)
 }
 ```
 
+如需将对象进行序列化操作，需要针对类添加特性标记。
+
+无法序列化类型“xxxxx”。
+
+请考虑将其标以 DataContractAttribute 特性，并将其所有要序列化的成员标以 DataMemberAttribute 特性。
+
+如果类型为集合，则请考虑将其标以 CollectionDataContractAttribute 特性。
+
+```cs
+/// <summary>
+/// 后端处理返回前端数据的封装
+/// 包含操作成功标记，以及相应的文本信息
+/// </summary>
+[DataContract]
+public class ResultState
+{
+	public ResultState(bool status, string msg)
+	{
+
+		Status = status;
+		Message = msg;
+	}
+	[DataMember]
+	public bool Status { get; set; }
+	[DataMember]
+	public string Message { get; set; }
+}
+```
+
 <a id="markdown-newtonsoftjson" name="newtonsoftjson"></a>
 #### Newtonsoft.Json
 使用第三方 Newtonsoft.Json.net进行序列化和反序列化：
