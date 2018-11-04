@@ -20,7 +20,9 @@
 
 <a id="markdown-实现" name="实现"></a>
 ### 实现
-既然，迭代器模式承担了遍历集合对象的职责，则该模式自然存在2个类，一个是聚合类，一个是迭代器类。在面向对象涉及原则中还有一条是针对接口编程，所以，在迭代器模式中，抽象了2个接口，一个是聚合接口，另一个是迭代器接口，这样迭代器模式中就四个角色了，具体的类图如下所示：
+既然，迭代器模式承担了遍历集合对象的职责，则该模式自然存在2个类，一个是聚合类，一个是迭代器类。
+
+在面向对象涉及原则中还有一条是针对接口编程，所以，在迭代器模式中，抽象了2个接口，一个是聚合接口，另一个是迭代器接口，这样迭代器模式中就四个角色了，具体的类图如下所示：
 
 ![](..\assets\Design\Iterator.png)
 
@@ -29,12 +31,12 @@ class Program
 {
     static void Main(string[] args)
     {
-        IAggregate c1 = new ConcreteAggregate();
-        IIterator ite = c1.CreateIterator();
+        ConcreteAggregate agg = new ConcreteAggregate();
+        Iterator it = agg.CreateIterator();
 
-        while (ite.HasNext())
+        while (it.HasNext())
         {
-            Console.Write(ite.Next());
+            Console.WriteLine(it.Next());
         }
     }
 }
@@ -42,14 +44,13 @@ class Program
 /// <summary>
 /// 迭代器接口
 /// </summary>
-public interface IIterator
+public interface Iterator
 {
     /// <summary>
     /// 是否有下一个元素
     /// </summary>
     /// <returns></returns>
     bool HasNext();
-
     /// <summary>
     /// 返回下一个元素
     /// </summary>
@@ -58,88 +59,94 @@ public interface IIterator
 }
 
 /// <summary>
-/// 集合类接口
+/// 抽象聚合类
 /// </summary>
-public interface IAggregate
+public abstract class Aggregate
 {
     /// <summary>
-    /// 构造迭代器返回
+    /// 聚合对象拥有元素个数
+    /// </summary>
+    public abstract int Length { get; }
+    /// <summary>
+    /// 创建迭代器
     /// </summary>
     /// <returns></returns>
-    IIterator CreateIterator();
+    public abstract Iterator CreateIterator();
+}
+
+/// <summary>
+/// 具体迭代器类
+/// </summary>
+public class ConcreteIterator : Iterator
+{
+    /// <summary>
+    /// 迭代器中具体聚合对象
+    /// </summary>
+    ConcreteAggregate aggregate;
+    /// <summary>
+    /// 当前索引
+    /// </summary>
+    int index = 0;
+    /// <summary>
+    /// 通过构造函数将聚合对象传入
+    /// </summary>
+    /// <param name="agg"></param>
+    public ConcreteIterator(ConcreteAggregate agg)
+    {
+        aggregate = agg;
+    }
+    public bool HasNext()
+    {
+        return index < aggregate.Length;
+    }
+    public object Next()
+    {
+        return aggregate[index++];
+    }
 }
 
 /// <summary>
 /// 具体集合类
 /// </summary>
-public class ConcreteAggregate : IAggregate
+public class ConcreteAggregate : Aggregate
 {
-    string[] collections;
-
+    string[] array;
     public ConcreteAggregate()
     {
-        collections = new string[] { "h", "e", "l", "l", "o" };
+        array = new string[] { "h", "e", "l", "l", "o" };
     }
 
-    /// <summary>
-    /// 构造一个迭代器
-    /// </summary>
-    /// <returns></returns>
-    public IIterator CreateIterator()
+    public override int Length
+    {
+        get
+        {
+            return array.Length;
+        }
+    }
+
+    public override Iterator CreateIterator()
     {
         return new ConcreteIterator(this);
     }
 
     /// <summary>
-    /// 返回集合的长度
+    /// 具体集合类中定义一个索引器
     /// </summary>
+    /// <param name="i"></param>
     /// <returns></returns>
-    public int GetLength()
+    public string this[int i]
     {
-        return collections.Length;
-    }
-
-    /// <summary>
-    /// 返回指定索引位置的元素
-    /// </summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public string ElementAt(int index)
-    {
-        return collections[index];
-    }
-
-}
-
-/// <summary>
-/// 具体迭代器
-/// </summary>
-public class ConcreteIterator : IIterator
-{
-    int index;
-    ConcreteAggregate aggregate;
-
-    public ConcreteIterator(ConcreteAggregate agg)
-    {
-        aggregate = agg;
-    }
-
-    public bool HasNext()
-    {
-        return index < aggregate.GetLength();
-    }
-
-    public object Next()
-    {
-        string element = aggregate.ElementAt(index++);
-        return element;
+        get { return array[i]; }
+        set { array[i] = value; }
     }
 }
 ```
 
 <a id="markdown-net中迭代器模式的应用" name="net中迭代器模式的应用"></a>
 ### .NET中迭代器模式的应用
-在.NET下，迭代器模式中的聚集接口和迭代器接口都已经存在了，其中IEnumerator接口扮演的就是迭代器角色，IEnumberable接口则扮演的就是抽象聚集的角色，只有一个GetEnumerator()方法，关于这两个接口的定义可以自行参考MSDN。在.NET 1.0中，.NET 类库中很多集合都已经实现了迭代器模式，大家可以用反编译工具Reflector来查看下mscorlib程序集下的System.Collections命名空间下的类，这里给出ArrayList的定义代码，具体实现代码可以自行用反编译工具查看，具体代码如下所示：
+在.NET下，迭代器模式中的聚集接口和迭代器接口都已经存在了，其中IEnumerator接口扮演的就是迭代器角色，IEnumberable接口则扮演的就是抽象聚集的角色，只有一个GetEnumerator()方法，关于这两个接口的定义可以自行参考MSDN。
+
+在.NET 1.0中，.NET 类库中很多集合都已经实现了迭代器模式，大家可以用反编译工具Reflector来查看下mscorlib程序集下的System.Collections命名空间下的类，这里给出ArrayList的定义代码，具体实现代码可以自行用反编译工具查看，具体代码如下所示：
 
 ```cs
 public class ArrayList : IList, ICollection, IEnumerable, ICloneable
@@ -167,60 +174,54 @@ public class ArrayList : IList, ICollection, IEnumerable, ICloneable
 ### IEnumerator接口
 使用IEnumerator接口方式实现一个迭代器：
 
+![](..\assets\Design\Iterator-1.png)
+
 ```cs
 class Program
 {
     static void Main(string[] args)
     {
-        ConcreteAggregate agg = new ConcreteAggregate();
-        StrIterator ite = new StrIterator(agg);
+        StrCollection stc = new StrCollection();
+        StrIterator ite = new StrIterator(stc);
         while (ite.MoveNext())
         {
-            Console.Write(ite.Current);
+            Console.WriteLine(ite.Current);
         }
-        Console.WriteLine();
-        
-        //foreach迭代
-        foreach (var item in agg)
+
+        //等同于上面的while循环进行遍历元素
+        foreach (var item in stc)
         {
-            Console.Write(item);
+            Console.WriteLine(item);
         }
     }
 }
 
 /// <summary>
-/// 具体集合类
+/// 具体的集合类
 /// 实现IEnumerable接口可以用foreach进行遍历
 /// 依靠MoveNext和Current来达到Foreach的遍历，返回自定义的一个迭代器
 /// </summary>
-public class ConcreteAggregate : IEnumerable
+public class StrCollection : IEnumerable
 {
     string[] collections;
-
-    public ConcreteAggregate()
+    public StrCollection()
     {
         collections = new string[] { "h", "e", "l", "l", "o" };
     }
-
-    /// <summary>
-    /// 返回集合的长度
-    /// </summary>
-    /// <returns></returns>
     public int GetLength()
     {
         return collections.Length;
     }
-
     /// <summary>
-    /// 返回指定索引位置的元素
+    /// 通过索引器返回指定索引位置的元素
     /// </summary>
-    /// <param name="index"></param>
+    /// <param name="i"></param>
     /// <returns></returns>
-    public string ElementAt(int index)
+    public string this[int i]
     {
-        return collections[index];
+        get { return collections[i]; }
+        set { collections[i] = value; }
     }
-
     /// <summary>
     /// 构造一个自定义迭代器
     /// </summary>
@@ -237,40 +238,133 @@ public class ConcreteAggregate : IEnumerable
 /// </summary>
 public class StrIterator : IEnumerator
 {
-    ConcreteAggregate aggregate;
-    int index;
-    string current;
-
-    public StrIterator(ConcreteAggregate agg)
+    StrCollection aggregate;
+    int index = 0;
+    public StrIterator(StrCollection agg)
     {
         aggregate = agg;
     }
-
     public object Current
     {
         get
         {
-            return current;
+            return aggregate[index - 1];
         }
     }
 
     public bool MoveNext()
     {
-        if (index + 1 > aggregate.GetLength())
+        if (index < aggregate.GetLength())
         {
-            return false;
-        }
-        else
-        {
-            current = aggregate.ElementAt(index);
             index++;
             return true;
         }
+        return false;
     }
 
     public void Reset()
     {
         index = 0;
+    }
+}
+
+/// <summary>
+/// 迭代器接口
+/// </summary>
+public interface Iterator
+{
+    /// <summary>
+    /// 是否有下一个元素
+    /// </summary>
+    /// <returns></returns>
+    bool HasNext();
+    /// <summary>
+    /// 返回下一个元素
+    /// </summary>
+    /// <returns></returns>
+    object Next();
+}
+
+/// <summary>
+/// 抽象聚合类
+/// </summary>
+public abstract class Aggregate
+{
+    /// <summary>
+    /// 聚合对象拥有元素个数
+    /// </summary>
+    public abstract int Length { get; }
+    /// <summary>
+    /// 创建迭代器
+    /// </summary>
+    /// <returns></returns>
+    public abstract Iterator CreateIterator();
+}
+
+/// <summary>
+/// 具体迭代器类
+/// </summary>
+public class ConcreteIterator : Iterator
+{
+    /// <summary>
+    /// 迭代器中具体聚合对象
+    /// </summary>
+    ConcreteAggregate aggregate;
+    /// <summary>
+    /// 当前索引
+    /// </summary>
+    int index = 0;
+    /// <summary>
+    /// 通过构造函数将聚合对象传入
+    /// </summary>
+    /// <param name="agg"></param>
+    public ConcreteIterator(ConcreteAggregate agg)
+    {
+        aggregate = agg;
+    }
+    public bool HasNext()
+    {
+        return index < aggregate.Length;
+    }
+    public object Next()
+    {
+        return aggregate[index++];
+    }
+}
+
+/// <summary>
+/// 具体集合类
+/// </summary>
+public class ConcreteAggregate : Aggregate
+{
+    string[] array;
+    public ConcreteAggregate()
+    {
+        array = new string[] { "h", "e", "l", "l", "o" };
+    }
+
+    public override int Length
+    {
+        get
+        {
+            return array.Length;
+        }
+    }
+
+    public override Iterator CreateIterator()
+    {
+        return new ConcreteIterator(this);
+    }
+
+    /// <summary>
+    /// 具体集合类中定义一个索引器
+    /// </summary>
+    /// <param name="i"></param>
+    /// <returns></returns>
+    public string this[int i]
+    {
+        get { return array[i]; }
+        set { array[i] = value; }
     }
 }
 ```
