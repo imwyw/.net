@@ -240,6 +240,7 @@ public class StrIterator : IEnumerator
 {
     StrCollection aggregate;
     int index = 0;
+    string current;
     public StrIterator(StrCollection agg)
     {
         aggregate = agg;
@@ -248,7 +249,7 @@ public class StrIterator : IEnumerator
     {
         get
         {
-            return aggregate[index - 1];
+            return current;
         }
     }
 
@@ -256,7 +257,7 @@ public class StrIterator : IEnumerator
     {
         if (index < aggregate.GetLength())
         {
-            index++;
+            current = aggregate[index++];
             return true;
         }
         return false;
@@ -371,7 +372,9 @@ public class ConcreteAggregate : Aggregate
 
 <a id="markdown-新特性简化迭代器的实现" name="新特性简化迭代器的实现"></a>
 ### 新特性简化迭代器的实现
-在C# 2.0后可以通过yield return语句简化迭代器的实现。yield是C#为了简化遍历操作实现的语法糖，我们知道如果要某个类型支持遍历就必须要实现系统接口IEnumerable，这个接口后续实现比较繁琐要写一大堆代码才能支持真正的遍历功能。如下：
+在C# 2.0后可以通过yield return语句简化迭代器的实现。
+
+yield是C#为了简化遍历操作实现的语法糖，我们知道如果要某个类型支持遍历就必须要实现系统接口IEnumerable，这个接口后续实现比较繁琐要写一大堆代码才能支持真正的遍历功能。如下：
 
 ```cs
 class Program
@@ -402,6 +405,22 @@ public class ConcreteAggregate : IEnumerable
         {
             yield return collections[i];
         }
+    }
+}
+```
+
+如果需要控制调用者只能遍历前3个数据，可使用【yield break】做如下修改:
+```cs
+public IEnumerator GetEnumerator()
+{
+    for (int i = 0; i < stus.Length; i++)
+    {
+        if (i >= 3)
+        {
+            // 终止迭代 
+            yield break;
+        }
+        yield return stus[i];
     }
 }
 ```
