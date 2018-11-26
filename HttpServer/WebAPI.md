@@ -34,7 +34,9 @@ Web API是一个比较宽泛的概念。这里我们提到Web API特指ASP.NET W
 > ASP.NET Web API is a framework that makes it easy to build HTTP services that reach a broad range of clients, including browsers and mobile devices. ASP.NET Web API is an ideal platform for building RESTful applications on the .NET Framework.
 
 
-Web API在ASP.NET完整框架中地位如下图，与SignalR一起同为构建Service的框架。Web API负责构建http常规服务，而SingalR主要负责的是构建实时服务，例如股票，聊天室，在线游戏等实时性要求比较高的服务。
+Web API在ASP.NET完整框架中地位如下图，与SignalR一起同为构建Service的框架。
+
+Web API负责构建http常规服务，而SingalR主要负责的是构建实时服务，例如股票，聊天室，在线游戏等实时性要求比较高的服务。
 
 <a id="markdown-为什么用webapi" name="为什么用webapi"></a>
 ### 为什么用WebAPI
