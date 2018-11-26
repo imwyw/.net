@@ -40,7 +40,6 @@
     * [ASP.NET基础](./ASP.NET/Basic.md)
 
 * [ASP.NET MVC](./ASP.NET-MVC/README.md)
-    * [HelloWorld](./ASP.NET-MVC/HelloWorld.md)
     * [路由](./ASP.NET-MVC/URL.md)
     * [MVC概述](./ASP.NET-MVC/mvc.md)
     * [筛选器Filter](./ASP.NET-MVC/Filter.md)
