@@ -2,6 +2,9 @@
 
 - [MVC概述](#mvc概述)
     - [执行的生命周期](#执行的生命周期)
+    - [路由](#路由)
+        - [默认路由](#默认路由)
+        - [URL的写法](#url的写法)
     - [控制器Controller-核心](#控制器controller-核心)
         - [Controller-View传值](#controller-view传值)
             - [强类型传值](#强类型传值)
@@ -47,9 +50,56 @@ ASP.NET MVC 执行生命周期大致如下 ：
 7. Action执行中产生相应的Model(可能没有)
 8. ASP.NET MVC框架执行 View 并返回HTTP结果
 
+<a id="markdown-路由" name="路由"></a>
+## 路由
+<a id="markdown-默认路由" name="默认路由"></a>
+### 默认路由
+
+默认的路由在RegisterRoutes 方法中定义（/App_Start/RouteConfig.cs）
+
+Web应用程序启动时调用Application_Start 方法，该方法会调用RegisterRoutes 方法
+``` cs
+public static void RegisterRoutes(RouteCollection routes)
+    {
+        routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+        
+        //添加默认路由  在这里是 /Home/Main
+        routes.MapRoute(
+            name: "Default",
+            url: "{controller}/{action}/{id}",
+            defaults: new { controller = "Home", action = "Main", id = UrlParameter.Optional }
+        );
+    }
+```
+
+<a id="markdown-url的写法" name="url的写法"></a>
+### URL的写法
+{controller}/{action}/{id}
+``` cs
+public class HomeController : Controller
+{
+	//对于的请求Url为 /Home/Index
+	public ActionResult Index()
+	{
+		//默认寻找路径【/Views/Home/Index.cshtml】文件
+		return View();
+	}
+}
+```
+
+项目结构：
+
+![](../assets/asp.net-mvc/路由结构.png)
+
 <a id="markdown-控制器controller-核心" name="控制器controller-核心"></a>
 ## 控制器Controller-核心
-ASP.NET MVC 的核心就是Controller，它负责处理浏览器传送过来的所有请求，并决定要将什么内容响应给浏览器，但 Controller 并不负责决定内容应该如何显示，而是仅将特定形态的内容响应(ActionResult)给 ASP.NET MVC 框架，最后由 ASP.NET MVC 架构依据响应的形态(HTML，JSON，XML)来决定如何将内容响应给浏览器。
+ASP.NET MVC 的核心就是Controller，它负责处理浏览器传送过来的所有请求，并决定要将什么内容响应给浏览器，
+
+但 Controller 并不负责决定内容应该如何显示，而是仅将特定形态的内容响应(ActionResult)给 ASP.NET MVC 框架，
+
+最后由 ASP.NET MVC 架构依据响应的形态(HTML，JSON，XML)来决定如何将内容响应给浏览器。
+
+![](../assets/asp.net-mvc/MVC生命周期.png)
 
 <a id="markdown-controller-view传值" name="controller-view传值"></a>
 ### Controller-View传值
@@ -117,7 +167,10 @@ public ActionResult IndexComplexData()
     viewModel.FirstName = "妲己";
     viewModel.LastName = "斯温";
     viewModel.ZhName = "路西法";
-
+    
+    // 下面这种动态对象的定义虽然没有问题，但是在前端无法解析识别属性名称，后期可以通过Json方法进行返回数据
+    //object viewModel = new { FirstName = "Alan", LastName = "Waker" };
+    
     return View(viewModel);
 }
 ```
@@ -142,11 +195,12 @@ public ActionResult IndexComplexData()
 <a id="markdown-viewdata和viewbag" name="viewdata和viewbag"></a>
 #### ViewData和ViewBag
 ```cs
-public dynamic ViewBag { get; }  
-public ViewDataDictionary ViewData { get; set; }  
+public dynamic ViewBag { get; }
+public ViewDataDictionary ViewData { get; set; }
 ```
 
 ViewData 是一个 ViewDataDictionary 类，可用于存储任意对象的数据，但存储的键值必须为字符串。
+
 ViewData 只会存在于当前的 HTTP请求中，可以当做当前视图View中可以访问。
 
 ViewBag 是 dynamic 类型对象，基于.NET4.0，在查询数据时不需要类型转换，可读性更好。
@@ -187,8 +241,8 @@ ViewBag示例：
 ```cs
 public ActionResult Index()
 {
-    ViewData["name"] = "jack";
-    ViewData["obj"] = new { a = 1, b = 2 };
+    ViewBag.Name = "jack";
+    ViewBag.Obj = new { a = 1, b = 2 };
     return View();
 }
 ```
@@ -203,8 +257,12 @@ public ActionResult Index()
 
 <a id="markdown-tempdata" name="tempdata"></a>
 #### TempData
-TempData 数据结构与 ViewData 一样，但它是 TempDataDictionary 类。内部是用 Session 来存储数据，也就是说TempData只保存到下一个请求中，下一个请求完了之后，TempData就会被删除了。
+TempData 数据结构与 ViewData 一样，但它是 TempDataDictionary 类。
+
+内部是用 Session 来存储数据，也就是说TempData只保存到下一次请求中，下一次请求完了之后，TempData就会被删除了。
+
 我们可以通过Redirect视图来测试TempData的效果，示例如下：
+
 ```cs
 public ActionResult Index()
 {
@@ -228,7 +286,7 @@ IndexByName.cshtml中
 ```
 针对上例，访问url：http://localhost:11115/Home/Index
 
-会自动跳转至http://localhost:11115/Home/IndexByName
+会自动跳转至 http://localhost:11115/Home/IndexByName
 
 并且视图中的TempData值仅在首次加载时有显示。
 
@@ -258,6 +316,7 @@ public ActionResult GetTempDataView()
 
 ```
 效果：
+
 ![](../assets/asp.net-mvc/TempData.gif)
 
 <a id="markdown-总结" name="总结"></a>
@@ -386,9 +445,9 @@ public class SimpleParams
 
 Action返回类型 | Controller辅助方法 return xxx(); | 用途
 --|----------------|---
-ActionResult |  | 所有Result类型的抽象基类
+ActionResult | &nbsp;&nbsp; | 所有Result类型的抽象基类
 ContentResult | Content | 返回一段用户自定义的文字内容
-EmptyResult |  | 不返回任何数据，即不响应任何数据
+EmptyResult | &nbsp;&nbsp; | 不返回任何数据，即不响应任何数据
 JsonResult | Json | 将数据序列转化成 JSON 格式返回
 RedirectResult | Redirect | 重定向到指定的 URL
 RedirectToRouteResult | RedirectToAction、RedirectToRoute | 与 RedirectResult 类似，但它将新定向到一个 Action 或 Route
@@ -408,7 +467,10 @@ Razor是ASP.NET MVC内置的引擎，也是我们推荐使用的引擎
 
 <a id="markdown-符号" name="符号"></a>
 #### @符号
-所有以 @开头 或 @{ /* 代码体 */ }  (在@与{之间不得添加任何空格) 的部分代码都会被ASP.NET引擎进行处理.在 @{ /*代码体*/ } 内的代码每一行都必须以";"结束,如
+所有以 `@开头` 或 `@{ /* 代码体 */ }`  (在@与{之间不得添加任何空格) 的部分代码都会被ASP.NET引擎进行处理.
+
+在 `@{ /*代码体*/ }` 内的代码每一行都必须以";"结束,如
+
 ```cs
 @{
     var i = 10;
@@ -422,11 +484,11 @@ Razor是ASP.NET MVC内置的引擎，也是我们推荐使用的引擎
 @y; 输出 20;
 
 **总的来说，可以归纳为以下几点：**
-1. @{ ... } 中，@ 和 { 之间不得添加空格
-2. @{ ... } 内的代码每一行C#代码都必须以 ; 号结束，而@xxx则不需要；符合
-3. @{ ... } 内可以包含HTML标记
-4. @{ ... } 内输出文本的话，需要在文本前加上 @: 前缀，或使用<text/>进行多行输出
-5. @xxx的前一个字符若是非空白字符，则ASP.NET不会对其进行处理
+1. `@{ ... }` 中，`@ 和 {` 之间不得添加空格
+2. `@{ ... }` 内的代码每一行C#代码都必须以 `;` 号结束，而`@xxx`则不需要`；`符合
+3. `@{ ... }` 内可以包含HTML标记
+4. `@{ ... }` 内输出文本的话，需要在文本前加上 `@:` 前缀，或使用`<textarea/>`进行多行输出
+5. `@xxx`的前一个字符若是非空白字符，则ASP.NET不会对其进行处理
 
 <a id="markdown-选择视图" name="选择视图"></a>
 ### 选择视图
