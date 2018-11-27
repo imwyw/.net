@@ -5,6 +5,9 @@
     - [路由](#路由)
         - [默认路由](#默认路由)
         - [URL的写法](#url的写法)
+    - [Razor](#razor)
+        - [@符号](#符号)
+        - [@变量](#变量)
     - [控制器Controller-核心](#控制器controller-核心)
         - [Controller-View传值](#controller-view传值)
             - [强类型传值](#强类型传值)
@@ -14,8 +17,6 @@
             - [总结](#总结)
         - [View-Controller传值](#view-controller传值)
     - [视图View](#视图view)
-        - [视图引擎Razor](#视图引擎razor)
-            - [@符号](#符号)
         - [选择视图](#选择视图)
         - [公共模板@RenderBody()](#公共模板renderbody)
         - [@Section](#section)
@@ -90,6 +91,97 @@ public class HomeController : Controller
 项目结构：
 
 ![](../assets/asp.net-mvc/路由结构.png)
+
+<a id="markdown-razor" name="razor"></a>
+## Razor
+Razor 是一种允许您向网页中嵌入基于服务器的代码（Visual Basic 和 C#）的标记语法。
+
+Razor是ASP.NET MVC内置的引擎，也是我们推荐使用的引擎
+
+具有以下特点：
+1. 精简、表达性强、
+2. 容易学习
+3. VS 提供很好的智能提示
+
+<a id="markdown-符号" name="符号"></a>
+### @符号
+
+所有以 `@开头` 或 `@{ /* 代码体 */ }`  (在@与{之间不得添加任何空格) 的部分代码都会被ASP.NET引擎进行处理.
+
+在 `@{ /*代码体*/ }` 内的代码每一行都必须以";"结束,如
+
+```cs
+@{
+    var i = 10;
+    var y = 20;
+}
+```
+而 @xxx 则不需要以";"作为结束符,如
+
+@i 输出 10
+
+@y; 输出 20;
+
+<a id="markdown-变量" name="变量"></a>
+### @变量
+
+```cs
+<!-- 单行代码块 -->
+@{ var myMessage =	"Hello World"; }
+
+<!-- 行内表达式或变量 -->
+<p>The value of myMessage is: @myMessage</p> 
+
+<!-- 多行语句代码块 -->
+@{
+var greeting = "Welcome to our site!";
+var weekDay = DateTime.Now.DayOfWeek;
+var greetingMessage = greeting + " Here in Huston it is: " + weekDay;
+}
+<p>The greeting is: @greetingMessage</p>
+```
+
+
+```cshtml
+<ul>
+    @{ 
+        for (int i = 0; i < 10; i++)
+        {
+            <li>@i</li>
+        }
+    }
+</ul>
+```
+
+其他`foreach、while`循环类似
+```html
+<div>
+    @{ var num = 0;}
+</div>
+<div>
+    @{
+        if (num > 0)
+        {
+            @:大于0
+        }
+        else if (num < 0)
+        {
+            @:小于0
+        }
+        else
+        {
+            @:等于0
+        }
+    }
+</div>
+```
+
+**总的来说，可以归纳为以下几点：**
+1. `@{ ... }` 中，`@ 和 {` 之间不得添加空格
+2. `@{ ... }` 内的代码每一行C#代码都必须以 `;` 号结束，而`@xxx`则不需要`；`符合
+3. `@{ ... }` 内可以包含HTML标记
+4. `@{ ... }` 内输出文本的话，需要在文本前加上 `@:` 前缀，或使用`<textarea/>`进行多行输出
+5. `@xxx`的前一个字符若是非空白字符，则ASP.NET不会对其进行处理
 
 <a id="markdown-控制器controller-核心" name="控制器controller-核心"></a>
 ## 控制器Controller-核心
@@ -455,40 +547,6 @@ ViewResult | View | 使用 IViewInstance 接口和 IViewEngine 接口，实际�
 PartialViewResult | PartialView | 与 ViewResult 类相似，返回的是“部分显示”，即“UserControls”目录下的 View
 FileResult | File | 以二进制串流的方式返回一个文件数据
 JavaScriptResult | JavaScript | 返回的是 JavaScript 指令码
-
-<a id="markdown-视图引擎razor" name="视图引擎razor"></a>
-### 视图引擎Razor
-Razor是ASP.NET MVC内置的引擎，也是我们推荐使用的引擎
-
-具有以下特点：
-1. 精简、表达性强、
-2. 容易学习
-3. VS 提供很好的智能提示
-
-<a id="markdown-符号" name="符号"></a>
-#### @符号
-所有以 `@开头` 或 `@{ /* 代码体 */ }`  (在@与{之间不得添加任何空格) 的部分代码都会被ASP.NET引擎进行处理.
-
-在 `@{ /*代码体*/ }` 内的代码每一行都必须以";"结束,如
-
-```cs
-@{
-    var i = 10;
-    var y = 20;
-}
-```
-而 @xxx 则不需要以";"作为结束符,如
-
-@i 输出 10
-
-@y; 输出 20;
-
-**总的来说，可以归纳为以下几点：**
-1. `@{ ... }` 中，`@ 和 {` 之间不得添加空格
-2. `@{ ... }` 内的代码每一行C#代码都必须以 `;` 号结束，而`@xxx`则不需要`；`符合
-3. `@{ ... }` 内可以包含HTML标记
-4. `@{ ... }` 内输出文本的话，需要在文本前加上 `@:` 前缀，或使用`<textarea/>`进行多行输出
-5. `@xxx`的前一个字符若是非空白字符，则ASP.NET不会对其进行处理
 
 <a id="markdown-选择视图" name="选择视图"></a>
 ### 选择视图
