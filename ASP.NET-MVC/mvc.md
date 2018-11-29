@@ -632,7 +632,11 @@ public ActionResult Reirect2Action()
 
 这样引入了公用的页面其它部分，同时还设置了标题。
 
-当多个页面都使用到了同一个布局时，每个页面都要通过Layout属性来指定它的布局，会造成冗余，【`_ViewStart.cshtml`】可以用来消除这种冗余，在Views目录下又一个【`_ViewStart.cshtml`】文件，这个文件优先于同目录下任何视图的执行，可以用它来指定一个默认布局。
+当多个页面都使用到了同一个布局时，每个页面都要通过Layout属性来指定它的布局，会造成冗余，
+
+【`_ViewStart.cshtml`】可以用来消除这种冗余，在Views目录下又一个【`_ViewStart.cshtml`】文件，
+
+这个文件优先于同目录下任何视图的执行，可以用它来指定一个默认布局。
 
 **当没有显明的设置Layout时，Layout继承自文件【_ViewStart.cshtml】中的Layout设置。**
 
@@ -672,7 +676,7 @@ _Layout.cshtml中
 
 具体页面中实现section的定义，如Index.cshtml中实现：
 ```html
-@section {
+@section Footer{
     <h1>这是myFoot</h1>
 }
 ```
