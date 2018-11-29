@@ -31,6 +31,7 @@
         - [Url.Content](#urlcontent)
     - [模型Model](#模型model)
     - [Area区域](#area区域)
+    - [JsonResult时间问题](#jsonresult时间问题)
 
 <!-- /TOC -->
 
@@ -874,17 +875,29 @@ public class Student
 * 不该负责处理所有与数据处理无关的操作或是控制网站的执行流程
 * 专注于如何有效地提供数据短暂存贮，数据格式验证等。
 
-MVC 模型包含程序中的所有逻辑，而这些逻辑并不包含在视图或控制器中。模型应该包含所有程序业务逻辑，验证逻辑和数据库访问逻辑。例如，如果你用 Microsoft Entity Framework 来访问数据库，那么你要在Models文件夹中创建 Entity Framework 类 ( .edmx 文件) 。
+MVC 模型包含程序中的所有逻辑，而这些逻辑并不包含在视图或控制器中。
 
-视图应该仅仅包含生成用户界面的逻辑。控制器应该仅仅包含返回正确视图的最小逻辑或者将用户重定向到其他action(流控制)。其它的任何事情都应该包含在模型中。
+模型应该包含所有程序业务逻辑，验证逻辑和数据库访问逻辑。
 
-通常，你应该为“胖”模型和“瘦”控制器而努力。控制器方法应该只包含几行代码。如果控制器action变得太“胖”的话，那么就应该考虑将逻辑挪出到Models文件夹中的一个新类中。
+例如，如果你用 Microsoft Entity Framework 来访问数据库，那么你要在Models文件夹中创建 Entity Framework 类 ( .edmx 文件) 。
+
+视图应该仅仅包含生成用户界面的逻辑。
+
+控制器应该仅仅包含返回正确视图的最小逻辑或者将用户重定向到其他action(流控制)。其它的任何事情都应该包含在模型中。
+
+通常，你应该为“胖”模型和“瘦”控制器而努力。控制器方法应该只包含几行代码。
+
+如果控制器action变得太“胖”的话，那么就应该考虑将逻辑挪出到Models文件夹中的一个新类中。
 
 <a id="markdown-area区域" name="area区域"></a>
 ## Area区域
 虽然在同一个 ASP.NET MVC 项目中区分多个子系统模块，但有时难免有某个子系统会用到与其他子系统相同的 Controller 名称的情况出现。
 
-ASP.NET MVC中,是依靠文件夹以及类的固定命名规则去组织model实体层，视图层和控制层的。如果是大规模的应用程序，经常会由不同功能的模块组成，而每个功能模块都由MVC中的三层所构成，因此，随着应用程序规模的增大，如何组织这些不同功能模块中的MVC三层的目录结构，有时对开发者来说是种负担。
+ASP.NET MVC中,是依靠文件夹以及类的固定命名规则去组织model实体层，视图层和控制层的。
+
+如果是大规模的应用程序，经常会由不同功能的模块组成，而每个功能模块都由MVC中的三层所构成，
+
+因此，随着应用程序规模的增大，如何组织这些不同功能模块中的MVC三层的目录结构，有时对开发者来说是种负担。
 
 ASP.NET MVC允许开发者将应用划分为“区域”(Area)的概念，每个区域都是按照asp.net mvc的规定对文件目录结构和类的命名规则进行命名。
 
@@ -902,7 +915,9 @@ Areas是将ASP.NET MVC应用按照不同的功能模块划分，对每个功能�
 
 ![](..\assets\asp.net-mvc\area03.png)
 
-上图结构和创建一个空MVC工程结构类似，Admin Area 有自己的 Controllers、Models 和 Views 文件夹，不一样的地方就是多了一个 AdminAreaRegistration.cs 文件，这个文件中定义了一个叫 AdminAreaRegistration 的类，它的内容如下：
+上图结构和创建一个空MVC工程结构类似，Admin Area 有自己的 Controllers、Models 和 Views 文件夹，
+
+不一样的地方就是多了一个 AdminAreaRegistration.cs 文件，这个文件中定义了一个叫 AdminAreaRegistration 的类，它的内容如下：
 
 ```cs
 namespace Hello.Areas.Admin
@@ -944,9 +959,15 @@ namespace Hello.Areas.Admin
 但有一点要注意，在这如果要给路由起名字，一定要确保它和整个应用程序不一样。
 
 **一定要注意**：
-AreaRegistrationContext 类的 MapRoute 方法和 RouteCollection 类的 MapRoute 方法的使用是一样的，只是 AreaRegistrationContext 类限制了注册的路由只会去匹配当前 Area 的 controller，所以，如果你把在 Area 中添加的 controller 的默认命名空间改了，路由系统将找不到这个controller 。
+AreaRegistrationContext 类的 MapRoute 方法和 RouteCollection 类的 MapRoute 方法的使用是一样的，
 
-为了模拟特殊情况，我们在Admin Area中也添加一个重名的控制器，也叫HomeController，对应有一个相同的Action Index。项目结构如下：
+只是 AreaRegistrationContext 类限制了注册的路由只会去匹配当前 Area 的 controller，
+
+所以，如果你把在 Area 中添加的 controller 的默认命名空间改了，路由系统将找不到这个controller 。
+
+为了模拟特殊情况，我们在Admin Area中也添加一个重名的控制器，也叫HomeController，对应有一个相同的Action Index。
+
+项目结构如下：
 
 ![](..\assets\asp.net-mvc\area04.png)
 
@@ -996,3 +1017,88 @@ public class RouteConfig
 ```
 
 以上，一般建议将默认路由设置在根路径下的Controller中。
+
+<a id="markdown-jsonresult时间问题" name="jsonresult时间问题"></a>
+## JsonResult时间问题
+
+返回JsonResult对象，Json方法进行序列化会对时间进行处理成这样：`"\/Date(1239018869048)\/"`
+
+这样的时间值，使用起来并不方便，除了使用NewTonSoft提供的`JsonConvert.SerializeObject()`方法外，还可以通过重写Json方法。
+
+首先定义一个BaseController控制器子类，继承Controller
+```cs
+/// <summary>
+/// 为了解决以下问题：
+/// newtonsoft序列化后多了字符串引号的问题
+/// 时间默认使用json返回时格式不正确
+/// </summary>
+public abstract class BaseController : Controller
+{
+    protected new JsonResult Json(object data)
+    {
+        return Json(data, JsonRequestBehavior.DenyGet);
+    }
+
+    protected new JsonResult Json(object data, JsonRequestBehavior behavior)
+    {
+        if (data == null)
+            return base.Json(null);
+
+        if (!Request.AcceptTypes.Contains("application/json"))
+            return new JsonConvertResult { Data = data, ContentType = "text/plain", JsonRequestBehavior = behavior };
+        else
+            return new JsonConvertResult { Data = data, JsonRequestBehavior = behavior };
+    }
+}
+```
+
+定义JsonResult子类
+```cs
+public class JsonConvertResult : JsonResult
+{
+    // newtonsoft.json 序列化 时间格式
+    readonly IsoDateTimeConverter FULL_DATE_FORMAT = new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+    readonly IsoDateTimeConverter DATE_FORMAT = new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd" };
+
+    /// <summary>
+    /// 重写执行视图
+    /// </summary>
+    /// <param name="context">上下文</param>
+    public override void ExecuteResult(ControllerContext context)
+    {
+        if (context == null)
+            throw new ArgumentNullException("context");
+
+        if (JsonRequestBehavior == JsonRequestBehavior.DenyGet &&
+            string.Equals(context.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("此请求已被阻止，因为当用在 GET 请求中时，会将敏感信息透漏给第三方网站。若要允许 GET 请求，请将 JsonRequestBehavior 设置为 AllowGet。");
+        }
+
+        var response = context.HttpContext.Response;
+
+        response.ContentType = !string.IsNullOrEmpty(ContentType) ? ContentType : "application/json";
+
+        if (ContentEncoding != null)
+            response.ContentEncoding = ContentEncoding;
+
+        // If you need special handling, you can call another form of SerializeObject below
+        var serializedObject = JsonConvert.SerializeObject(Data, FULL_DATE_FORMAT);
+        response.Write(serializedObject);
+    }
+}
+```
+
+在控制器中使用如下：
+```cs
+/// <summary>
+/// 继承自刚刚新建的控制器抽象类 BaseController
+/// </summary>
+public class HomeController : BaseController
+{
+    public JsonResult GetData()
+    {
+        return Json(DateTime.Now);
+    }
+}
+```
