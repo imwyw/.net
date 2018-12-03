@@ -20,9 +20,11 @@
         - [选择视图](#选择视图)
         - [公共模板@RenderBody()](#公共模板renderbody)
         - [@Section](#section)
-        - [PartialView部分视图](#partialview部分视图)
+        - [PartialView分部视图](#partialview分部视图)
+        - [Action和RenderAction](#action和renderaction)
+        - [Redirect和RedirectToAction](#redirect和redirecttoaction)
     - [HTML 帮助器](#html-帮助器)
-        - [建议使用强类型辅助方法](#建议使用强类型辅助方法)
+        - [使用强类型辅助方法更加方便](#使用强类型辅助方法更加方便)
         - [Html.Encode](#htmlencode)
         - [自定义 HTML 辅助方法](#自定义-html-辅助方法)
     - [Url 辅助方法](#url-辅助方法)
@@ -682,34 +684,57 @@ _Layout.cshtml中
 }
 ```
 
-<a id="markdown-partialview部分视图" name="partialview部分视图"></a>
-### PartialView部分视图
+<a id="markdown-partialview分部视图" name="partialview分部视图"></a>
+### PartialView分部视图
 为了代码的复用，相当于我们自己实现的分页控件一样。当我们想要不同的视图之间共享的网页的可重用部件时很有用。
 
-分部视图是另一个视图中呈现的视图。 通过执行分部视图生成的 HTML 输出呈现到调用 (或父) 视图。 分部视图和视图一样使用.cshtml文件扩展名。
+分部视图是另一个视图中呈现的视图。 
 
-使用部分视图：
+通过执行分部视图生成的 HTML 输出呈现到调用 (或父) 视图。 分部视图和视图一样使用.cshtml文件扩展名。
+
+使用分部视图：
 1. 可以简写代码。
 2. 页面代码更加清晰、更好维护。
 
+Partial和RenderPartial:
 ```
 @* 
 1、返回的是string类型，所以结果可以存储在变量里
 2、结果以HTML-encoded 字符串展示，但是有一个临时变量StringWriter，也正是因为这一点效率不如 RenderPartial() 
 3、使用简单，无需创建action，不经过Controller
 *@
-@Html.Partial("_Comments")
+
+不同路径，通过相对路径访问，添加扩展名
+@Html.Partial("~/Views/Partial/TablePager.cshtml")
+
+同路径下无需扩展名
+@Html.Partial("PartialHomePager")
 
 @*
 1、无返回值
 2、通过直接输出到HtmlHelper.ViewContext.Writer(即直接输出到response中)实现view的插入
+3、使用简单，无需创建action，不经过Controller
 *@
 @{
-    Html.RenderPartial("_Comments");
+    Html.RenderPartial("~/Views/Partial/TablePager.cshtml");
 }
 
+```
+
+RenderPartial因为是直接写在响应流中，所以性能会更好(微量影响)，而Partial不用写在代码块中，所以更方便.
+
+<a id="markdown-action和renderaction" name="action和renderaction"></a>
+### Action和RenderAction
+
+对于简单的没有任何逻辑的用户控件，推荐使用Html.Partial；
+
+对于需要设置一些Model的用户控件，推荐使用Html.Action。
+
+当然，有Model数据也是可以使用Html.Partial方法的，可以看方法的重载。
+
+```
 @*
-1、有返回值，结果直接展示为HtmlString .
+1、有返回值，结果直接展示为HtmlString
 2、需要创建对应的action，即需要经过Controller的请求
 3、需要有对应的Action
 *@
@@ -718,17 +743,38 @@ _Layout.cshtml中
 
 @*
 1、无返回值
-2、同RenderPartial直接写在HtmlHelper.ViewContext.Writer中实现
+2、同RenderPartial直接写在HtmlHelper.ViewContext.Writer中实现，写入响应流
 3、需要有对应的Action
 *@
 @{
-    Html.RenderAction();
+    Html.RenderAction("actionName");
+    Html.RenderAction("actionName","controllerName");
 }
-
-@Html.RenderPage() ;
 ```
 
-RenderPartial因为是直接写在响应流中，所以性能会更好(微量影响)，而Partial不用写在代码块中，所以更方便.
+<a id="markdown-redirect和redirecttoaction" name="redirect和redirecttoaction"></a>
+### Redirect和RedirectToAction
+```cs
+// Redirect() 简单地发送一条消息到浏览器，告诉浏览器定位到另一个页面。
+public ActionResult Index()
+{
+    if (Session["UserName"] == null)
+    {
+        return Redirect("/Admin/Home/Index");
+    }
+    return View();
+}
+
+// RedirectToAction() 重定向到指定控制器的Action
+public ActionResult Index()
+{
+    if (Session["UserName"] == null)
+    {
+        return RedirectToAction("SignIn", "Login", new { area = "Admin" });
+    }
+    return View();
+}
+```
 
 ---
 
@@ -766,8 +812,8 @@ Html.ListBox() | 生成多选的下拉菜单
 Html.RadioButton() | 生成单选按钮
 Html.CheckBox() | 生成复选按钮
 
-<a id="markdown-建议使用强类型辅助方法" name="建议使用强类型辅助方法"></a>
-### 建议使用强类型辅助方法
+<a id="markdown-使用强类型辅助方法更加方便" name="使用强类型辅助方法更加方便"></a>
+### 使用强类型辅助方法更加方便
 * Html.TextBoxFor()	
 * Html.HiddenFor()
 * Html.TextAreaFor()	
@@ -1102,3 +1148,4 @@ public class HomeController : BaseController
     }
 }
 ```
+

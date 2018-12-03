@@ -18,7 +18,9 @@ ASP.NET-MVC的筛选器是一种基于AOP(面向方面编程)的设计，我们�
 
 ![ASP.NET-MVC](../assets/asp.net-mvc/MVC生命周期.png)
 
-在Action方法执行前后，这些筛选器会自动执行。 ASP.NETMVC 提供了 AuthorizationFilter、ActionFilter、ResultFilter和ExceptionFilter这四种筛选器，它们对应着四个接口IAuthorizationFilter、IActionFilter、IResultFilter 和 IExceptionFilter。
+在Action方法执行前后，这些筛选器会自动执行。 
+
+ASP.NETMVC 提供了 AuthorizationFilter、ActionFilter、ResultFilter和ExceptionFilter这四种筛选器，它们对应着四个接口IAuthorizationFilter、IActionFilter、IResultFilter 和 IExceptionFilter。
 
 经常应用在用户权限验证、系统日志、异常处理、缓存等功能上。
 
@@ -32,12 +34,13 @@ ASP.NET-MVC的筛选器是一种基于AOP(面向方面编程)的设计，我们�
 **先后顺序**
 IAuthorizationFilter -> IActionFilter - >IResultFilter ->IExceptionFilter
 
-
 <a id="markdown-authorizeattribute" name="authorizeattribute"></a>
 ## AuthorizeAttribute
 是所有Filter类型第一个执行的Filter，在Action调用前执行，需要实现IAuthorizationFilter接口。
 
-我们可以通过使用控制器上或者控制器内部特定操作上的Authorize操作过滤器来实现，甚至可以为整个应用程序全局使用Authorize操作过滤器。Authorize Attribute是ASP.NET MVC自带的默认授权过滤器，可用来限制用户对操作方法的访问。将该特性应用于整个控制器，就可以快速将其应用于控制器中的每个方法。
+我们可以通过使用控制器上或者控制器内部特定操作上的Authorize操作过滤器来实现，甚至可以为整个应用程序全局使用Authorize操作过滤器。
+
+Authorize Attribute是ASP.NET MVC自带的默认授权过滤器，可用来限制用户对操作方法的访问。将该特性应用于整个控制器，就可以快速将其应用于控制器中的每个方法。
 
 MSDN: 
 > https://msdn.microsoft.com/zh-cn/library/system.web.mvc.authorizeattribute(v=vs.118).aspx
@@ -72,7 +75,7 @@ protected virtual void HandleUnauthorizedRequest(AuthorizationContext filterCont
 /// <summary>
 /// 自定义验证授权特性
 /// </summary>
-public class CustomeAuthorize : AuthorizeAttribute
+public class CustomAuthorize : AuthorizeAttribute
 {
     /// <summary>
     /// 处理未能授权的 HTTP 请求。
@@ -103,7 +106,7 @@ public class CustomeAuthorize : AuthorizeAttribute
 /// <summary>
 /// 自定义验证授权特性
 /// </summary>
-public class CustomeAuthorize : AuthorizeAttribute
+public class CustomAuthorize : AuthorizeAttribute
 {
     public override void OnAuthorization(AuthorizationContext filterContext)
     {
@@ -136,10 +139,10 @@ public class CustomeAuthorize : AuthorizeAttribute
 ```cs
 /// <summary>
 /// 主页控制器
-/// 添加在类前面的 [CustomeAuthorize] 特性标签表示该特性对控制器内所有Action均有作用
-/// 同样的，我们也可以将 [CustomeAuthorize] 特性标签添加在Action方法的前面
+/// 添加在类前面的 [CustomAuthorize] 特性标签表示该特性对控制器内所有Action均有作用
+/// 同样的，我们也可以将 [CustomAuthorize] 特性标签添加在Action方法的前面
 /// </summary>
-[CustomeAuthorize]
+[CustomAuthorize]
 public class HomeController : Controller
 {
     /// <summary>
@@ -152,7 +155,7 @@ public class HomeController : Controller
     }
 
     /// <summary>
-    /// 结合类前 [CustomeAuthorize] 特性标签，如果有Action需要实现匿名访问，即忽略验证
+    /// 结合类前 [CustomAuthorize] 特性标签，如果有Action需要实现匿名访问，即忽略验证
     /// 则需要添加该特性标签 [AllowAnonymous]
     /// </summary>
     /// <returns></returns>
@@ -167,7 +170,9 @@ public class HomeController : Controller
 <a id="markdown-actionfilterattribute" name="actionfilterattribute"></a>
 ## ActionFilterAttribute
 
-有时候你想在调用action方法之前或者action方法之后处理一些逻辑，为了支持这个，ASP.NET MVC允许你创建action过滤器。Action过滤器是自定义的Attributes，用来标记添加Action方法之前或者Action方法之后的行为到控制器类中的Action方法中。
+有时候你想在调用action方法之前或者action方法之后处理一些逻辑，为了支持这个，ASP.NET MVC允许你创建action过滤器。
+
+Action过滤器是自定义的Attributes，用来标记添加Action方法之前或者Action方法之后的行为到控制器类中的Action方法中。
 
 一些可能用到Action过滤器的地方有：
 * 日志
@@ -331,7 +336,7 @@ Controller中的调用示例：
 /// <summary>
 /// 主页控制器
 /// </summary>
-[CustomeAuthorize]
+[CustomAuthorize]
 [CustomActionFilter(Roles = "admin")]
 public class HomeController : Controller
 {
@@ -353,7 +358,9 @@ public class HomeController : Controller
 ### Order属性
 获取或者设置执行操作筛选器的顺序。
 
-Order 属性采用必须为 0（默认值）或更大（有一处异常）的整数值。 如果省略 Order 属性，则将为筛选器赋予顺序值 -1，这表示未指定顺序。 范围中 Order 属性设置为 -1 的任何操作筛选器将按不确定的顺序执行，但在具有指定顺序的筛选器之前执行。
+Order 属性采用必须为 0（默认值）或更大（有一处异常）的整数值。 如果省略 Order 属性，则将为筛选器赋予顺序值 -1，这表示未指定顺序。
+
+范围中 Order 属性设置为 -1 的任何操作筛选器将按不确定的顺序执行，但在具有指定顺序的筛选器之前执行。
 
 以AuthorizeAttribute验证授权进行示例，自定义两个特性：
 
