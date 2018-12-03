@@ -723,6 +723,113 @@ Partial和RenderPartial:
 
 RenderPartial因为是直接写在响应流中，所以性能会更好(微量影响)，而Partial不用写在代码块中，所以更方便.
 
+分页的前端部分代码：
+```html
+<!--列表分页部分 add by wangyuanwei 2017-->
+<div id="pagerContainer">
+    <span>第1页&nbsp;共1页</span>
+    <a class="pager-a" href="#">首页</a>
+    <a class="pager-a" href="#">上一页</a>
+    <a class="pager-a" href="#">下一页</a>
+    <input type="number" id="txtJumpIndex" min="0" step="1" 
+        onkeydown="if(event.keyCode==13)event.keyCode=9" 
+        onkeypress="if((event.keyCode<48 || event.keyCode>57))event.returnValue=false" 
+        pattern="^//d+$" style="width:40px;" />
+
+    <a class="pager-a" href="#">跳转</a>
+    @*隐藏变量保存当前index，从0开始对应第一页*@
+    <input type="hidden" id="txtCurIndex" value="0" />
+    @*隐藏变量保存总共页数*@
+    <input type="hidden" id="txtTotal" value="0" />
+</div>
+
+<script type="text/javascript">
+    /*
+    列表页面调用如下：
+
+    // 在页面加载时，添加分页按钮的监听，传递当前页面获取数据函数作为回调函数
+    bindPagerEvent(getDataByPage);
+
+    // 在获取数据时进行分页信息的设置，主要是总共有多少页等信息
+    function getDataByPage(pageIndex){
+        // ajax 分页获取数据，得到总记录数进行设置
+        setPageInfo(100);
+    }
+    */
+
+    /*
+    绑定分页按钮事件
+    dataBound：翻页时请求数据绑定的回调方法
+    */
+    function bindPagerEvent(dataBound) {
+        $("#pagerContainer a").click(function (e) {
+            //获取当前的分页按钮名称
+            var optName = e.target.innerHTML;
+            //当前是第几页（开发角度，从0开始的）
+            var index = parseInt($("#txtCurIndex").val());
+
+            //需要跳转到第几页 （用户角度，从1开始）
+            var jumpIndex = parseInt($("#txtJumpIndex").val());
+
+            switch (optName) {
+                case "首页":
+                    $("#txtCurIndex").val(0);
+                    dataBound(0);
+                    break;
+                case "上一页":
+                    //只要不是首页就可以继续往前翻页
+                    if (index != 0) {
+                        dataBound(index - 1);
+                        $("#txtCurIndex").val(index - 1);
+                    } else {
+                        layer.alert("已经是第一页了");
+                    }
+                    break;
+                case "下一页":
+                    //当前页 +1 等于 总页数 ，表明不可继续翻下一页
+                    if (index + 1 != $("#txtTotal").val()) {
+                        dataBound(index + 1);
+                        $("#txtCurIndex").val(index + 1);
+                    } else {
+                        layer.alert("已经是最后一页了");
+                    }
+                    break;
+                case "跳转":
+                    //需要跳转到的页数必须要大于0，且小于等于总页数
+                    if (jumpIndex > 0 && jumpIndex <= parseInt($("#txtTotal").val())) {
+                        dataBound(jumpIndex - 1);
+                        $("#txtCurIndex").val(jumpIndex - 1);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    /*
+    设置分页显示的详情（第1页 共1页）
+    */
+    function setPageInfo(total) {
+        var index = parseInt($("#txtCurIndex").val()) + 1;
+
+        //显示分页信息时，同时将当前所在页赋值到跳转文本框
+        $("#txtJumpIndex").val(index);
+
+        //Math.floor()取整函数
+        var cnt = Math.floor(total / 5);
+
+        //当能被5整除的时候总页数不需要 +1
+        if (total % 5 != 0) {
+            cnt += 1;
+        }
+        $("#txtTotal").val(cnt);
+        var html = "第" + index + "页&nbsp;共" + cnt + "页";
+        $("#pagerContainer span").html(html);
+    }
+</script>
+```
+
 <a id="markdown-action和renderaction" name="action和renderaction"></a>
 ### Action和RenderAction
 
