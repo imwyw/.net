@@ -159,7 +159,7 @@ public partial class ARTICLE_DBEntities : DbContext
 /// 查询视图，返回泛型集合
 /// </summary>
 /// <returns></returns>
-public static List<v_get_article> GetArticleEF()
+public static List<v_get_article> GetList()
 {
     // 实例化EMD对象ARTICLE_DBEntities，数据库上下文
     using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
@@ -236,11 +236,31 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 /// </summary>
 /// <param name="entity"></param>
 /// <returns>自增序列的主键值</returns>
-public static int AddArticleEF(t_article entity)
+public static int Add(t_article entity)
 {
     using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
     {
         context.t_article.Add(entity);
+        context.SaveChanges();
+        return entity.id;
+    }
+}
+```
+
+```cs
+/// <summary>
+/// t_article类 对应db中表结构
+/// 可以直接在集合上进行添加，调用保存SaveChanges()即可
+/// 保存后，自增序列主键也可以返回
+/// </summary>
+/// <param name="entity"></param>
+/// <returns>自增序列的主键值</returns>
+public static int Add(t_article entity)
+{
+    using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+    {
+        // 使用 context.Entry() 方法进行修改
+        context.Entry(entity).State = System.Data.Entity.EntityState.Added;
         context.SaveChanges();
         return entity.id;
     }
@@ -264,22 +284,63 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
+基于实体对象，也可以使用`context.Entry()`方法进行修改：
+```cs
+/// <summary>
+/// t_article类 为实体类
+/// </summary>
+/// <param name="entity"></param>
+/// <returns></returns>
+public static int Update(t_article entity)
+{
+    using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+    {
+        // 设置对象状态为修改
+        context.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+
+        int res = context.SaveChanges();
+        return res;
+    }
+}
+```
+
 <a id="markdown-删除数据" name="删除数据"></a>
 ### 删除数据
 使用EF删除数据就和在List<>集合中删除元素一样
 
 ```cs
-//实例化EMD对象ARTICLE_DBEntities，数据库上下文
-using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+/// <summary>
+/// 根据ID删除
+/// </summary>
+/// <param name="id"></param>
+/// <returns></returns>
+public static int DeleteByID(int id)
 {
-    var cate = context.t_category.FirstOrDefault(t => t.name == "EntityFramework_new");
-    if (null != cate)
+    using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
     {
-        context.t_category.Remove(cate);
-        context.SaveChanges();
+        t_article entity = context.t_article.FirstOrDefault(t => t.id == id);
+        if (null == entity)
+        {
+            return -1;
+        }
+        context.t_article.Remove(entity);
+        return context.SaveChanges();
     }
 }
 ```
+
+使用Entry()方法设置状态进行删除：
+```cs
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+{
+    // 构造对象，删除业务只需要id即可
+    t_article entity = new t_article() { id = id };
+    context.Entry(entity).State = System.Data.Entity.EntityState.Deleted;
+
+    return context.SaveChanges();
+}
+```
+
 
 <a id="markdown-事务" name="事务"></a>
 ### 事务
@@ -311,7 +372,7 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-使用TransactionScope，前提需要引用System.Transactions.dll，如下：
+使用TransactionScope，不需要手动进行回滚，当异常发生时会自动进行回滚，前提需要引用System.Transactions.dll，如下：
 ```cs
 //实例化EMD对象ARTICLE_DBEntities，数据库上下文
 using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
@@ -336,7 +397,9 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 
 但不可避免的需要在EF中写SQL，比如需要根据条件更新/删除数据，使用集合Predicate方式就显得效率低下并且麻烦了。
 
-使用EF执行SQL又比ADO.NET方便，特别是在执行查询语句的时候，EF会把查询到的数据自动保存到数据实体中，省去了使用DataReader的麻烦。同时查询出来的数据还会进行跟踪，如果你修改了查询出的值，之后就可以很方便的使用.SaveChanges()直接更新到数据库了。
+使用EF执行SQL又比ADO.NET方便，特别是在执行查询语句的时候，EF会把查询到的数据自动保存到数据实体中，省去了使用DataReader的麻烦。
+
+同时查询出来的数据还会进行跟踪，如果你修改了查询出的值，之后就可以很方便的使用.SaveChanges()直接更新到数据库了。
 
 在数据上下文DBModel的实例中有个Database属性，其中有两组方法.ExecuteSqlCommand()和.SqlQuery()。它们都可以执行SQL语句。
 
@@ -367,15 +430,35 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
-如果需要创建或删除当前数据库，Database属性中还存在.Create() 和.Delete()方法，它们不接受参数，返回一个bool值表示执行成功或失败。
+```cs
+//实例化EMD对象ARTICLE_DBEntities，数据库上下文
+using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
+{
+    string sql = "INSERT INTO T_ARTICLE (TITLE,CATEGORY) VALUES (@TITLE,@CATEGORY)";
+    SqlParameter[] sqlParams = new SqlParameter[] {
+        new SqlParameter("@TITLE",entity.title),
+        new SqlParameter("@CATEGORY",entity.category),
+    };
+
+    // 执行sql，和SqlHelper的操作非常相似
+    int res = context.Database.ExecuteSqlCommand(sql, sqlParams);
+    return res;
+}
+```
 
 <a id="markdown-sqlquery" name="sqlquery"></a>
 ### SqlQuery
 SqlQuery()返回查询到的结果，并将结果保存在数据实体中，所以更适合执行查询操作。
 
-从名字就看的出来.SqlQuery()是用来执行查询的。.SqlQuery()使用前需指定返回值的数据类型，比如我查询寻一条学生的完整信息，类型就可以指定为student类型。如果是统计有多少个学生，返回值是个整数，就以设置为int。
+从名字就看的出来.SqlQuery()是用来执行查询的。
 
-**注意：不仅返回值的个数必须与传入类型中属性值的个数相同，而且名称还必须一样，不然会出错。**那么如果我只想获取姓名和年龄，那就得单独定义一个类（其中包含一个string类型的name和int类型的age），来保存数据了。
+.SqlQuery()使用前需指定返回值的数据类型，比如我查询寻一条学生的完整信息，类型就可以指定为student类型。
+
+如果是统计有多少个学生，返回值是个整数，就以设置为int。
+
+**注意：不仅返回值的个数必须与传入类型中属性值的个数相同，而且名称还必须一样，不然会出错。**
+
+那么如果我只想获取姓名和年龄，那就得单独定义一个类（其中包含一个string类型的name和int类型的age），来保存数据了。
 
 ```cs
 //实例化EMD对象ARTICLE_DBEntities，数据库上下文
@@ -421,7 +504,11 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 ### DbSet下的SqlQuery
 在每个数据实体集合DbSet<T>下也有一个.SqlQuery()，功能与上面介绍的一样，只不过DbSet<T>下的.SqlQuery()只能返回DbSet<T>中包含的类型。
 
-但DbSet<T>下的.SqlQuery()在返回数据的同时还会让数据库上下文（DBModel）跟踪返回数据的状态，如果返回的数据发生了修改，就可以使用.SaveChanges()将结果直接保存回数据库。而.Database.SqlQuery()查出的结果则是做不到的。
+但DbSet<T>下的.SqlQuery()在返回数据的同时还会让数据库上下文（DBModel）跟踪返回数据的状态，
+
+如果返回的数据发生了修改，就可以使用.SaveChanges()将结果直接保存回数据库。
+
+而.Database.SqlQuery()查出的结果则是做不到的。
 
 ```cs
 //实例化EMD对象ARTICLE_DBEntities，数据库上下文
@@ -445,6 +532,12 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 ## 在三层架构中的应用
 
 需要特别注意，通常将EntityFramework实体数据模型(edmx)放置在Model层，DAL层和UI层均需要添加对EntityFramework的引用。
+
+可以使用NuGet程序包管理器添加EntityFramework的引用。
+
+并且UI层MVC项目中的web.config文件需要添加EntityFramework的connectionStrings配置项，如下图所示：
+
+![](..\assets\adonet\EF_web_config.png)
 
 
 <a id="markdown-其他" name="其他"></a>
