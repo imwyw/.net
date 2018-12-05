@@ -6,6 +6,8 @@
         - [强类型集合查询](#强类型集合查询)
         - [动态类型的查询](#动态类型的查询)
         - [增删改](#增删改)
+        - [查询条件的IEnumerable支持](#查询条件的ienumerable支持)
+        - [多映射](#多映射)
 
 <!-- /TOC -->
 
@@ -160,6 +162,95 @@ using (IDbConnection conn = new SqlConnection(connStr))
 
 相应的删除、修改也是一样的套路。暂略...
 
+<a id="markdown-查询条件的ienumerable支持" name="查询条件的ienumerable支持"></a>
+### 查询条件的IEnumerable支持
+Dapper允许传入`IEnumerable<int>`类型，并自动进行转换查询
+
+```cs
+using (IDbConnection conn = new SqlConnection(connStr))
+{
+    string sql = @"SELECT ID,NAME,WEIGHT,BIRTH FROM T_DOG WHERE NAME IN @NAMES ";
+    object parameters = new { NAMES = new string[] { "小黑", "小白", "小花" } };
+    // 相当于执行 SELECT ID,NAME,WEIGHT,BIRTH FROM T_DOG WHERE NAME IN ('小黑', '小白', '小花')
+    List<Dog> list = conn.Query<Dog>(sql, parameters).ToList();
+}
+```
+
+<a id="markdown-多映射" name="多映射"></a>
+### 多映射
+Dapper支持将一行结果值映射对应到多个对象，这样做可以大大提高效率。
+
+在上述表T_DOG基础上再添加一张表T_PERSON，两表之间的关系为`T_DOG.OWNER=T_PERSON.ID`，SQL脚本如下：
+
+```sql
+-- 创建主人表
+CREATE TABLE T_PERSON
+    (
+      ID INT IDENTITY(1, 1) PRIMARY KEY ,
+      NAME VARCHAR(32)
+    )
+INSERT  INTO T_PERSON ( NAME ) VALUES  ( '二郎神' )
+INSERT  INTO T_PERSON ( NAME ) VALUES  ( '孙悟空' )
+```
+
+```sql
+-- 修改 表T_DOG结构，增加[OWNER]为狗主人
+ALTER TABLE dbo.T_DOG ADD [OWNER] INT 
+
+-- 根据体重设置新增的字段[OWNER]
+UPDATE dbo.T_DOG SET OWNER = (CASE WHEN WEIGHT>2.5 THEN 1 ELSE 2 END);
+```
+
+对应的强类型如下：
+```cs
+public class Dog
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public double Weight { get; set; }
+    public DateTime Birth { get; set; }
+    /// <summary>
+    /// 狗主人，也是一个对象
+    /// </summary>
+    public Person Owner { get; set; }
+}
+
+public class Person
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+}
+```
+
+传统方式都是在查询得到所有的Dog集合后，然后遍历再去查询所有Dog对象对应的Owner对象，当数据量很大时，此方式非常影响效率，而且很麻烦。
+
+
+`Query<TFirst, TSecond, TReturn>`提供了映射到多个对象的方式，TFirst表示第一个对象，TSecond表示第二个对象，TReturn为返回对象。
+
+`Func<TFirst, TSecond, TReturn> map`委托，参数为(TFirst, TSecond)，需要返回TReturn类型对象，即在方法中需要指明如何关联。
+
+```cs
+public static IEnumerable<TReturn> Query<TFirst, TSecond, TReturn>(this IDbConnection cnn
+, string sql, Func<TFirst, TSecond, TReturn> map
+, object param = null
+, ........);
+```
+
+关联的多个对象有重名时，按照顺序进行关联进行映射：
+```cs
+using (IDbConnection conn = new SqlConnection(connStr))
+{
+    string sql = @"
+SELECT A.ID,A.NAME,WEIGHT,BIRTH,PE.ID,PE.NAME FROM T_DOG A 
+LEFT JOIN T_PERSON PE ON A.OWNER= PE.ID";
+    List<Dog> list = conn.Query<Dog, Person, Dog>(sql
+        , (dog, per) =>
+            {
+                dog.Owner = per;
+                return dog;
+            }).ToList();
+}
+```
 
 
 ---
@@ -168,7 +259,9 @@ using (IDbConnection conn = new SqlConnection(connStr))
 
 https://www.cnblogs.com/huangxincheng/p/5828470.html
 
+https://blog.csdn.net/wyljz/article/details/68926745
 
+https://stackoverflow.com/questions/25921402/how-do-i-get-multi-mapping-to-work-in-dapper
 
 
 
