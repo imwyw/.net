@@ -18,6 +18,8 @@
     * [XML](./Persistence/XML.md)
     * [ADO.NET](./Persistence/ADO.NET.md)
     * [EntityFramework](./Persistence/EntityFramework.md)
+    * [Dapper](./Persistence/Dapper.md)
+    
 
 * [数据库](./DB/README.md)
     * [SqlServer环境](./DB/SqlServerInstall.md)
