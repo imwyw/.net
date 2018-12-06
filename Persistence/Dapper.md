@@ -8,6 +8,9 @@
         - [增删改](#增删改)
         - [查询条件的IEnumerable支持](#查询条件的ienumerable支持)
         - [多映射](#多映射)
+        - [多映射-splitOn](#多映射-spliton)
+        - [多个结果集映射](#多个结果集映射)
+        - [存储过程的应用](#存储过程的应用)
 
 <!-- /TOC -->
 
@@ -18,12 +21,14 @@
 
 所以，用一句话概括就是：ORM是一种对象关系映射的技术。
 
-Dapper是一款轻量级ORM工具。
-Dapper是一个轻型的ORM类。代码就一个SqlMapper.cs文件，编译后就40K的一个很小的Dll.
-Dapper很快，性能优越。Dapper的速度接近与IDataReader，取列表的数据超过了DataTable。
-支持多数据库。。Dapper可以在所有Ado.net Providers下工作，包括sqlite, sqlce, firebird, oracle, MySQL, PostgreSQL and SQL Server
+* Dapper是一款轻量级ORM工具。
+* Dapper是一个轻型的ORM类。代码就一个SqlMapper.cs文件，编译后就40K的一个很小的Dll.
+* Dapper很快，性能优越。Dapper的速度接近与IDataReader，取列表的数据超过了DataTable。
+* 支持多数据库。。Dapper可以在所有Ado.net Providers下工作，包括sqlite, sqlce, firebird, oracle, MySQL, PostgreSQL and SQL Server
 
-开源代码：https://github.com/StackExchange/Dapper
+>https://github.com/StackExchange/Dapper
+
+>https://dapper-tutorial.net/dapper
 
 <a id="markdown-安装" name="安装"></a>
 ## 安装
@@ -252,6 +257,119 @@ LEFT JOIN T_PERSON PE ON A.OWNER= PE.ID";
 }
 ```
 
+<a id="markdown-多映射-spliton" name="多映射-spliton"></a>
+### 多映射-splitOn
+当结果集映射到多个对象嵌套时，如下Company示例：
+```cs
+public class Company
+{
+    public int CID { get; set; }
+    public string Name { get; set; }
+    public Mailing Mailing { get; set; }
+    public Physical Physical { get; set; }
+}
+
+public class Mailing
+{
+    public int MID { get; set; }
+    public string Name { get; set; }
+}
+
+public class Physical
+{
+    public int PID { get; set; }
+    public string Name { get; set; }
+}
+```
+
+Company类和Mailing类、Physical类是关联关系。
+
+上述案例中，对应的Mailing和Physical主键并不是默认的id，此处需要指定splitOn，如下：
+```cs
+using (IDbConnection conn = new SqlConnection(connStr))
+{
+    // 多映射到对象嵌套时，需要注意字段的顺序
+    string sql = @"
+SELECT 1 as cid,'iflytek' as name
+,11 as mid,'now@11.com' as name
+,22 as pid,'文津西路' as name
+";
+    Company result = conn.Query<Company, Mailing, Physical, Company>(sql
+        , (com, mail, phy) =>
+    {
+        com.Mailing = mail;
+        com.Physical = phy;
+        return com;
+    }, splitOn: "mid,pid").FirstOrDefault();
+}
+```
+
+<a id="markdown-多个结果集映射" name="多个结果集映射"></a>
+### 多个结果集映射
+Dapper支持在一次查询中将多个查询结果集映射到不同集合
+
+```cs
+using (IDbConnection conn = new SqlConnection(connStr))
+{
+    string sql = @"
+SELECT ID,NAME,WEIGHT,BIRTH FROM T_DOG
+SELECT ID,NAME FROM T_PERSON
+SELECT 1 AS MID, 'now@126.com' AS NAME 
+";
+    var multi = conn.QueryMultiple(sql);
+    List<Dog> listDog = multi.Read<Dog>().ToList();
+    List<Person> listPerson = multi.Read<Person>().ToList();
+    Mailing mail = multi.Read<Mailing>().FirstOrDefault();
+}
+```
+
+<a id="markdown-存储过程的应用" name="存储过程的应用"></a>
+### 存储过程的应用
+
+基于前面章节所提到的存储过程`sp_paged_data`参见[sp_paged_data](../DB/SQLServer_Program.md)
+
+分页类Pager参见[Pager](./ADO.NET.md)
+
+```cs
+/// <summary>
+/// Dapper 分页查询
+/// </summary>
+/// <typeparam name="T">需要映射到的实体类类型</typeparam>
+/// <param name="sqlTable">关系表名</param>
+/// <param name="sqlColumns">投影列，如*</param>
+/// <param name="sqlWhere">条件子句(可为空)，eg：and id=1</param>
+/// <param name="sqlSort">排序语句(不可为空，必须有排序字段)，eg：id</param>
+/// <param name="pageIndex">当前页码索引号，从0开始</param>
+/// <param name="pageSize">每页显示的记录条数</param>
+/// <returns>分页对象</returns>
+public static Pager<T> QueryByPager<T>(string sqlTable, string sqlColumns, string sqlWhere
+, string sqlSort, int pageIndex, int pageSize)
+{
+    using (IDbConnection conn = new SqlConnection(connStr))
+    {
+        Pager<T> pager = new Pager<T>();
+        var p = new DynamicParameters();
+        p.Add("@sqlTable", sqlTable);
+        p.Add("@sqlColumns", sqlColumns);
+        p.Add("@sqlWhere", sqlWhere);
+        p.Add("@sqlSort", sqlSort);
+        p.Add("@pageIndex", pageIndex);
+        p.Add("@pageSize", pageSize);
+        // 指定记录总数为输出类型
+        p.Add("@rowTotal", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+        pager.Rows = conn.Query<T>("sp_paged_data", p, commandType: CommandType.StoredProcedure).ToList();
+        pager.Total = p.Get<int>("@rowTotal");
+        return pager;
+    }
+}
+```
+
+基于上面的`QueryByPager`方法封装，调用如下：
+```cs
+// 每页5条记录，查询第二页
+Pager<Dog> res = DapperHelper.QueryByPager<Dog>("T_DOG", "ID,NAME,WEIGHT,BIRTH", "", "ID", 1, 5);
+```
 
 ---
 
