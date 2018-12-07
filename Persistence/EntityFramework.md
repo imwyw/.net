@@ -17,6 +17,7 @@
         - [ExecuteSqlCommand](#executesqlcommand)
         - [SqlQuery](#sqlquery)
         - [DbSet下的SqlQuery](#dbset下的sqlquery)
+        - [EF存储过程](#ef存储过程)
     - [在三层架构中的应用](#在三层架构中的应用)
     - [其他](#其他)
         - [命令更新](#命令更新)
@@ -526,6 +527,66 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
         context.SaveChanges();
     }
 }
+```
+
+<a id="markdown-ef存储过程" name="ef存储过程"></a>
+### EF存储过程
+
+基于前面章节所提到的存储过程`sp_paged_data`参见[sp_paged_data](../DB/SQLServer_Program.md)
+
+分页类Pager参见[Pager](./ADO.NET.md)
+
+以分页查询为例，封装方法如下：
+
+```cs
+/// <summary>
+/// 分页查询 调用存储过程
+/// </summary>
+/// <typeparam name="T">实体类</typeparam>
+/// <param name="sqlTable">关系表名</param>
+/// <param name="sqlColumns">投影列，如*</param>
+/// <param name="sqlWhere">条件子句(可为空)，eg：and id=1 </param>
+/// <param name="sqlSort">排序语句(不可为空，必须有排序字段)，eg：id</param>
+/// <param name="pageIndex">当前页码索引号，从0开始</param>
+/// <param name="pageSize">每页显示的记录条数</param>
+/// <returns>分页对象</returns>
+public static Pager<T> QueryPager<T>(string sqlTable, string sqlColumns, string sqlWhere
+    , string sqlSort, int pageIndex, int pageSize)
+{
+    using (db_ArticleEntities context = new db_ArticleEntities())
+    {
+        // 需要执行的sql和参数
+        string sql = @"
+sp_paged_data @sqlTable,@sqlColumns,@sqlWhere,@sqlSort,@pageIndex,@pageSize,@rowTotal out
+";
+        // output 参数，单独定义是为了查询后方便获取存储返回的值
+        SqlParameter parTotal = new SqlParameter("@rowTotal", System.Data.SqlDbType.Int)
+        {
+            Direction = System.Data.ParameterDirection.Output
+        };
+        SqlParameter[] sqlps = new SqlParameter[] {
+            new SqlParameter("@sqlTable",sqlTable),
+            new SqlParameter("@sqlColumns",sqlColumns),
+            new SqlParameter("@sqlWhere",sqlWhere),
+            new SqlParameter("@sqlSort",sqlSort),
+            new SqlParameter("@pageIndex",pageIndex),
+            new SqlParameter("@pageSize",pageSize),
+            parTotal
+        };
+
+        Pager<T> pager = new Pager<T>();
+        pager.Rows = context.Database.SqlQuery<T>(sql, sqlps).ToList();
+        pager.Total = int.Parse(parTotal.Value.ToString());
+
+        return pager;
+    }
+}
+```
+
+封装调用如下：
+```cs
+// 分页查询视图 v_get_article 第3页 每页10条记录
+var res = ArticleMgr.Manager.QueryPager<V_GET_ARTICLE>("v_get_article", "*", "", "id", 2, 10);
 ```
 
 <a id="markdown-在三层架构中的应用" name="在三层架构中的应用"></a>
