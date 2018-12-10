@@ -61,6 +61,18 @@ ASP.NET MVC 执行生命周期大致如下 ：
 
 默认的路由在RegisterRoutes 方法中定义（/App_Start/RouteConfig.cs）
 
+```cs
+public class MvcApplication : System.Web.HttpApplication
+{
+    protected void Application_Start()
+    {
+        AreaRegistration.RegisterAllAreas();
+        // 注册路由
+        RouteConfig.RegisterRoutes(RouteTable.Routes);
+    }
+}
+```
+
 Web应用程序启动时调用Application_Start 方法，该方法会调用RegisterRoutes 方法
 ``` cs
 public static void RegisterRoutes(RouteCollection routes)
