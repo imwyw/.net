@@ -343,25 +343,25 @@ public string GetPrivateData() { ... }
 
 尝试访问会返回：No action was found on the controller 'ControllerName' that matches the name 'ActionName'.
 
+WebAPI对于复杂对象的传递也十分的方便，如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```cs
+static List<Product> listProducts = new List<Product>();
+/// <summary>
+/// 使用 x-www-form-urlencoded 键值对方式发送数据，使用$.ajax()默认类型发送请求
+/// </summary>
+/// <param name="pro"></param>
+/// <returns></returns>
+public IHttpActionResult SaveProduct(Product pro)
+{
+    if (null != pro)
+    {
+        listProducts.Add(pro);
+    }
+    return Ok(listProducts);
+}
+```
 
 > https://www.cnblogs.com/guyun/p/4589115.html
 
+> https://docs.microsoft.com/zh-cn/aspnet/web-api/overview/getting-started-with-aspnet-web-api/tutorial-your-first-web-api
