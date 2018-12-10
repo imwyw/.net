@@ -78,7 +78,7 @@ public class CalculatorService : ICalculatorService
 
 ![](..\assets\SOA\wcf_create3.png)
 
-以下是在ASP.NET应用程序中的调用，以MVC的控制器中为例。现在项目中添加服务引用，可以手动写入服务地址也可以点击【发现】按钮，自动识别项目中服务：
+以下是在ASP.NET应用程序中的调用，以MVC的控制器中为例。先在项目中添加服务引用，可以手动写入服务地址也可以点击【发现】按钮，自动识别项目中服务：
 
 ![](..\assets\SOA\wcf_client1.png)
 
@@ -222,7 +222,7 @@ public class BookService : IBookService
 }
 ```
 
-另外服务端的配置文件很重要，主要在`<system.serviceModel>`节点中配置和，web.config文件如下：
+另外服务端的配置文件很重要，主要在`<system.serviceModel>`节点中配置`services`和`behaviors`节点，web.config文件如下：
 ```config
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
@@ -241,7 +241,11 @@ public class BookService : IBookService
       </webHttpBinding>
     </bindings>
     <services>
-      <!--service name 为对应的svc名称，包含命名空间 -->
+      <!-- !!! 
+      service name="WcfRestService.BookService" 为对应的svc名称，包含命名空间.
+      behaviorConfiguration="testServiceBehavior" 与后面服务端serviceBehaviors节点配置对应
+      behaviorConfiguration="webBehavior" 与终端endpointBehaviors节点配置对应
+       -->
       <service name="WcfRestService.BookService" behaviorConfiguration="testServiceBehavior">
         <endpoint address="" behaviorConfiguration="webBehavior"
                   binding="webHttpBinding" bindingConfiguration="webBinding"
@@ -249,12 +253,14 @@ public class BookService : IBookService
       </service>
     </services>
     <behaviors>
+      <!-- !!! 终端行为配置 -->
       <endpointBehaviors>
         <behavior name="webBehavior">
-          <!--这里必须设置-->
+          <!-- !!! 这里必须设置 webHttp -->
           <webHttp/>
         </behavior>
       </endpointBehaviors>
+      <!-- !!! 服务端行为配置 -->
       <serviceBehaviors>
         <behavior name="testServiceBehavior"></behavior>
         <behavior name="">
