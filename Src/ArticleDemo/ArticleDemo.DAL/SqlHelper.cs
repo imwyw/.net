@@ -404,21 +404,29 @@ namespace ArticleDemo.DAL
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    T a = new T();
+                    //创建指定类型的实例
+                    T entity = Activator.CreateInstance<T>();
 
-                    PropertyInfo[] ps = typeof(T).GetProperties();
-                    foreach (PropertyInfo pi in ps)
+                    //遍历reader字段
+                    for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        try
+                        //判断字段值是否为空或不存在
+                        if (!IsNullOrDbNull(reader[i]))
                         {
-                            object v = reader[pi.Name];
-                            pi.SetValue(a, v, null);
+                            //根据reader序列返回对应名称，并反射找到匹配的属性
+                            PropertyInfo pi = typeof(T).GetProperty(reader.GetName(i),
+                                BindingFlags.GetProperty | BindingFlags.Public
+                                | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+                            if (pi != null)
+                            {
+                                //设置对象中匹配属性的值
+                                pi.SetValue(entity, CheckType(reader[i], pi.PropertyType), null);
+                            }
                         }
-                        catch
-                        { }
                     }
 
-                    result.Rows.Add(a);
+                    result.Rows.Add(entity);
                 }
                 // 存在多个结果集，继续读取下一个结果
                 reader.NextResult();
