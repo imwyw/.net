@@ -133,10 +133,6 @@ cn.com.webxml.www.WeatherWebService srv = new cn.com.webxml.www.WeatherWebServic
 var cityWeather = srv.getWeatherbyCityName("芜湖");
 ```
 
-另有云聚数据可以提供类似服务，免费用户都有一定的访问限制，具体可以查阅官网提供的文档。
-
-> http://www.36wu.com/Service
-
 ## SOAP
 SOAP（Simple Object Access Protocol ）简单对象访问协议，它是在分散或分布式的环境中交换信息的简单的协议，是一个基于XML的协议，它包括四个部分：
 
