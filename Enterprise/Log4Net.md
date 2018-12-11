@@ -75,7 +75,7 @@ log4net框架会在相对于AppDomain.CurrentDomain.BaseDirectory 属性定义�
         /// <summary>
         ///  日志记录器
         /// </summary>
-        private static log4net.ILog _log = null;
+        private static ILog _log = null;
 
         /// <summary>
         /// 日志记录接口
@@ -101,8 +101,10 @@ log4net框架会在相对于AppDomain.CurrentDomain.BaseDirectory 属性定义�
     }
 ```
 
-一个基本的log4net配置如下：
-```config
+一个基本的【log4net.config】配置如下：
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
   <!--log4net配置文件-->
   <log4net>
     <!-- 级别Level： NONE, FATAL, ERROR, WARN, INFO, DEBUG, ALL -->
@@ -116,27 +118,30 @@ log4net框架会在相对于AppDomain.CurrentDomain.BaseDirectory 属性定义�
     </logger>
 
     <!--文本方式记录日志 -->
-    <appender name="InfoFileAppender" type="log4net.Appender.RollingFileAppender,log4net" >
+    <appender name="InfoFileAppender" type="log4net.Appender.RollingFileAppender" >
       <!-- 最小锁定模型 允许多个进程可以写入同一个文件 -->
       <lockingModel type="log4net.Appender.FileAppender+MinimalLock" />
       <!-- 输出到什么目录-->
-      <param name="File" value="Logs" />
+      <param name="File" value="Logs\" />
       <!-- 是否覆写到文件中-->
       <param name="AppendToFile" value="true" />
-      <!--创建方式，此处是日期-->
+      <!--创建方式，此处是日期，即每天创建一个日志文件 -->
       <param name="RollingStyle" value="Date" />
-      <!-- 日志文件名-->
-      <param name="DatePattern" value="&quot;_log_&quot;yyyy-MM-dd&quot;.log&quot;" />
+      <!-- 日志文件名，单引号包含字符串 拼接日期格式【yyyy-MM-dd】-->
+      <param name="DatePattern" value="'log_'yyyy-MM-dd'.log'" />
       <!--是否静态文件名，即名称是否都是一样的-->
       <param name="StaticLogFileName" value="false" />
+      <!--设置编码，否则中文可能会乱码-->
+      <encoding value="utf-8" />
       <!--布局-->
-      <layout type="log4net.Layout.PatternLayout,log4net">
+      <layout type="log4net.Layout.PatternLayout">
         <!--ConversionPattern 日志文件格式-->
         <param name="ConversionPattern" value="%d %-5p %F - %m%n" />
       </layout>
     </appender>
-
   </log4net>
+</configuration>
+
 ```
 
 应用：
