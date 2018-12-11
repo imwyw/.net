@@ -365,3 +365,8 @@ public IHttpActionResult SaveProduct(Product pro)
 > https://www.cnblogs.com/guyun/p/4589115.html
 
 > https://docs.microsoft.com/zh-cn/aspnet/web-api/overview/getting-started-with-aspnet-web-api/tutorial-your-first-web-api
+
+webapi 用户验证
+
+https://www.cnblogs.com/landeanfen/p/5287064.html#_label3_0
+
