@@ -21,7 +21,7 @@ namespace CoSales.Controllers
 
         public JsonResult Add(User entity)
         {
-            ResutlStateDTO result = new ResutlStateDTO(UserMgr.Mgr.Add(entity));
+            ResutlStateDTO result = new ResutlStateDTO();
 
             return Json(result);
         }
