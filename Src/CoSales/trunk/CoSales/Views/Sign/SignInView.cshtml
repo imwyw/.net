@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "欢迎使用CompanySales";
+    Layout = "~/Views/Shared/_LayoutSign.cshtml";
+}
+
+<fieldset class="center-block text-center">
+    <div class="form-group">
+        <input class="form-control" type="text" id="txtUserID" placeholder="用户名或ID" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="password" id="txtPwd" placeholder="请输入密码" />
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-block" data-loading-text="Loading..." id="btnSignin">登录</button>
+    </div>
+    <div class="form-group">
+        没有账号？<a href="/Sign/SignUpView" target="_self">点我注册</a>
+    </div>
+</fieldset>
+
+@section MyScript{
+    <script>
+        $(function () {
+            $('#btnSignin').on('click', signIn);
+            $('#txtUserID,#txtPwd').on('keydown', function (e) {
+                // 回车事件
+                if (e.keyCode == 13) {
+                    // 手动触发按钮click事件
+                    $('#btnSignin').trigger('click');
+                }
+            });
+        });
+
+        function signIn() {
+            var $btn = $(this).button('loading');
+
+            var uid = $('#txtUserID').val();
+            var pwd = $('#txtPwd').val();
+            if (!(uid && pwd)) {
+                alert("用户名或密码不可为空！");
+                $btn.button('reset');
+                return;
+            }
+
+            $.post('/Sign/Login', { userId: uid, password: pwd }
+                , function (resp) {
+                    var obj = getObjRes(resp);
+                    if (obj.Status) {
+                        location.href = '/Home/Index';
+                    } else {
+                        alert(resp.Message);
+                    }
+                }).always(function (e) {
+                    $btn.button('reset');
+                });
+        }
+    </script>
+}

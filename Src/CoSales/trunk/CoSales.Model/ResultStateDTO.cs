@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CoSales.Model
 {
-    public class ResutlStateDTO
+    public class ResultStateDTO
     {
-        public ResutlStateDTO() { }
-        public ResutlStateDTO(bool status, string msg = "")
+        public ResultStateDTO() { }
+        public ResultStateDTO(bool status, string msg = "")
         {
             Status = status;
             Message = msg;

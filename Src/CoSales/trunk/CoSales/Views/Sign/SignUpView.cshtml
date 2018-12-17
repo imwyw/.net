@@ -1,0 +1,70 @@
+﻿
+@{
+    ViewBag.Title = "欢迎注册使用文章管理系统";
+    Layout = "~/Views/Shared/_LayoutSign.cshtml";
+}
+
+<fieldset class="center-block text-center">
+    <div class="form-group">
+        <input class="form-control" type="text" id="txtUserID" placeholder="用户名或ID" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="text" id="txtName" placeholder="中文名称" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="password" id="txtPwd" placeholder="请输入密码" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="password" id="txtPwdRep" placeholder="确认密码" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="text" id="txtRemark" placeholder="备注" />
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-block" id="btnSignUp">注册</button>
+        <!--<button id="btnBack">返回登录页</button>-->
+    </div>
+    <div class="form-group">
+        已有账号<a href="/Login/SignInView" target="_self">点我登录</a>
+    </div>
+</fieldset>
+
+@section MyScript{
+    <script>
+
+        $(function () {
+            $('#btnSignUp').on('click', signUp);
+        });
+
+        function signUp() {
+            // 从页面取数据构造一个对象
+            var user = {
+                UserID: $('#txtUserID').val(),
+                Name: $('#txtName').val(),
+                Pwd: $('#txtPwd').val(),
+                pwdRep: $('#txtPwdRep').val(),
+                Remark: $('#txtRemark').val()
+            };
+
+            //相关的验证
+            if (!(user.UserID && user.Name && user.Pwd && user.pwdRep)) {
+                alert('用户名、密码不可为空！');
+                return;
+            }
+            if (user.Pwd != user.pwdRep) {
+                alert('两次输入密码不一致');
+                return;
+            }
+
+            $.post('/Login/AddUser', user, function (resp) {
+                if (resp.Status) {
+                    alert('注册成功！');
+                    location.href = '/Login/SignInView';
+                } else {
+                    alert(resp.Message);
+                }
+            });
+        }
+
+    </script>
+}
