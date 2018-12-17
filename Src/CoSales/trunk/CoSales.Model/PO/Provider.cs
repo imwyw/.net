@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CoSales.Model.PO
 {
+    [Dapper.Table("T_PROVIDER")]
     public class Provider
     {
         public int ProviderID { get; set; }

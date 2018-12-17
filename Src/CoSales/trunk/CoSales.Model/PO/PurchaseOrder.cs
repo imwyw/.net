@@ -9,6 +9,7 @@ namespace CoSales.Model.PO
     /// <summary>
     /// 进货订单
     /// </summary>
+    [Dapper.Table("T_PURCHASE_ORDER")]
     public class PurchaseOrder
     {
         public int PurchaseOrderID { get; set; }
