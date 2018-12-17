@@ -6,10 +6,24 @@ using System.Web.Mvc;
 
 namespace CoSales.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : Core.BaseController
     {
         // GET: Home
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult MainView()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 概览视图
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SurveyView()
         {
             return View();
         }

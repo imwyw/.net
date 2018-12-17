@@ -3,5 +3,69 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/Home/SurveyView" target="ifrmContent">AIIT</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/Home/SurveyView" target="ifrmContent">概览</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        订单
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/SellOrder/SellOrderListView" target="ifrmContent">销售订单</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/SellOrder/SellOrderListView" target="ifrmContent">进货单</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        产品
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/SellOrder/SellOrderListView" target="ifrmContent">产品列表</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/SellOrder/SellOrderListView" target="ifrmContent">进货单</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Sign/Logout">退出</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+<div class="container ifrm-main">
+    <iframe src="" frameborder="0" name="ifrmContent"></iframe>
+</div>
+<footer class="text-center bg-info">
+    <h5>copyright @@2018 安徽信息工程学院 信息楼303</h5>
+</footer>
 
+@section MyStyle{
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            flex-flow: column nowrap;
+        }
+
+        div.ifrm-main {
+            flex: 1;
+        }
+
+            div.ifrm-main iframe {
+                width: 100%;
+                height: 100%;
+            }
+
+        footer {
+            height: 40px;
+        }
+    </style>
+}

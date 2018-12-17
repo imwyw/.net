@@ -5,7 +5,7 @@
     <title>@ViewBag.Title</title>
     <meta charset="utf-8" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-
+    <link href="~/Content/layui/css/layui.css" rel="stylesheet" />
 
     <style>
         div.container fieldset {
@@ -35,6 +35,9 @@
     <script src="~/Scripts/jquery-3.3.1.min.js"></script>
     <script src="~/Scripts/jquery.cookie-1.4.1.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+    @*独立引用【layer.js】的话，需要放在layui的前面*@
+    @*<script src="~/Content/layer/layer.js"></script>*@
+    <script src="~/Content/layui/layui.all.js"></script>
 
     @RenderSection("MyScript", false)
 </body>

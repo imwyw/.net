@@ -46,5 +46,11 @@ namespace CoSales.Controllers
 
             return Json(state);
         }
+
+        public ActionResult Logout()
+        {
+            Session.Abandon();
+            return RedirectToAction("SignInView");
+        }
     }
 }
