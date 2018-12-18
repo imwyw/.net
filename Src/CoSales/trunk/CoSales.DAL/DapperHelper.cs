@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using CoSales.Common;
+using CoSales.Model;
 
 namespace CoSales.DAL
 {
@@ -71,6 +72,42 @@ namespace CoSales.DAL
                 {
                     Log4Helper.Log.InfoFormat(sql, param);
                     var res = conn.QueryFirstOrDefault<T>(sql, param);
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log4Helper.Log.Error(ex);
+                return null;
+            }
+        }
+
+        public static IEnumerable<dynamic> Query(string sql, object param = null)
+        {
+            try
+            {
+                using (IDbConnection conn = new SqlConnection(connStr))
+                {
+                    Log4Helper.Log.InfoFormat(sql, param);
+                    var res = conn.Query(sql, param);
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log4Helper.Log.Error(ex);
+                return null;
+            }
+        }
+
+        public static IEnumerable<T> Query<T>(string sql, object param = null) where T : class
+        {
+            try
+            {
+                using (IDbConnection conn = new SqlConnection(connStr))
+                {
+                    Log4Helper.Log.InfoFormat(sql, param);
+                    var res = conn.Query<T>(sql, param);
                     return res;
                 }
             }

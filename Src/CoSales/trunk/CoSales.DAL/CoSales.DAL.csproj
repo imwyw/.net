@@ -38,6 +38,10 @@
       <HintPath>..\packages\Dapper.SimpleCRUD.2.0.1\lib\net45\Dapper.SimpleCRUD.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dapper.SqlBuilder, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.SqlBuilder.1.50.5\lib\net451\Dapper.SqlBuilder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -45,6 +49,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
@@ -58,6 +63,7 @@
   <ItemGroup>
     <Compile Include="DapperHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SellOrderDAO.cs" />
     <Compile Include="SimpleCRUD.cs" />
     <Compile Include="UserDAO.cs" />
   </ItemGroup>

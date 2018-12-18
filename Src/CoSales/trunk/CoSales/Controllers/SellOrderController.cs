@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CoSales.BLL;
+using CoSales.Model.DomainModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +13,12 @@ namespace CoSales.Controllers
         public ActionResult SellOrderListView()
         {
             return View();
+        }
+
+        public JsonResult GetSellOrderInfo(SellOrderInfo param)
+        {
+            var result = SellOrderMgr.Mgr.GetSellOrderInfo(param);
+            return Json(result);
         }
     }
 }

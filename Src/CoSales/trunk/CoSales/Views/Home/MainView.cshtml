@@ -45,7 +45,7 @@
                     <li class="layui-nav-item layui-nav-itemed">
                         <a class="" href="javascript:;">订单管理</a>
                         <dl class="layui-nav-child">
-                            <dd><a href="/SellOrder/SellOrderListView">销售订单</a></dd>
+                            <dd><a href="/SellOrder/SellOrderListView" target="mainContent">销售订单</a></dd>
                             <dd><a href="/SellOrder/SellOrderListView">进货订单</a></dd>
                         </dl>
                     </li>
@@ -65,7 +65,7 @@
 
         <div class="layui-body" id="lay_app_body">
             <!-- 内容主体区域 -->
-            <iframe src="/Home/SurveyView" frameborder="0" class="layadmin-iframe"></iframe>
+            <iframe src="/Home/SurveyView" name="mainContent" frameborder="0" class="layadmin-iframe"></iframe>
         </div>
 
         <div class="layui-footer">
@@ -81,7 +81,7 @@
 @section MyScript{
     <script>
         //JavaScript代码区域
-        layui.use('element', function () {
+        layui.use(['form', 'element'], function () {
             var element = layui.element;
 
         });

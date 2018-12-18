@@ -3,12 +3,132 @@
     ViewBag.Title = "SellOrderListView";
 }
 
-<div class="container-fluid">
-    <div class="row">
-
+<div class="layui-fluid sell-list">
+    <div class="layui-row">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">员工姓名：</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" placeholder="请输入员工姓名" id="EmployeeName">
+                </div>
+                <label class="layui-form-label">公司名称：</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" placeholder="请输入公司名称" id="CompanyName">
+                </div>
+                <div class="layui-input-inline">
+                    <button class="layui-btn" id="btnQuery">查询</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-
+    <div class="layui-row">
+        <table id="tt" lay-filter="listTable"></table>
     </div>
 </div>
 
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+@section MyStyle{
+    <style>
+        div.sell-list {
+            min-width: 900px;
+        }
+    </style>
+}
+
+@section MyScript{
+    <script>
+        layui.use(['form', 'table'], function () {
+            init(layui.table);
+        });
+
+        function init(table) {
+            var tablein = initTable(table);
+
+            // 绑定行内按钮事件 tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.on('tool(listTable)', handleTableRow);
+
+            // 查询事件，重新绑定表格数据
+            $('#btnQuery').click({ 'tablein': tablein }, bindTable);
+        }
+
+        // 初始化表格
+        function initTable(table) {
+            return table.render({
+                elem: '#tt'
+                , url: '/SellOrder/GetSellOrderInfo'
+                , method: 'POST'
+                , toolbar: true
+                , title: '销售记录'
+                //, totalRow: true//合计行
+                , loading: true
+                , height: 'full-80'// full-差值 高度铺满
+                , cols: [[
+                  { field: 'ProductName', title: '产品名称', width: 120 }
+                  , { field: 'Price', title: '售价', width: 60 }
+                  , { field: 'SellOrderNumber', title: '数量', width: 60 }
+                  , { field: 'SellOrderDate', title: '订单日期', width: 140 }
+                  , { field: 'ProductStockNumber', title: '产品库存', width: 100 }
+                  , { field: 'EmployeeName', title: '员工', width: 120 }
+                  , { field: 'Sex', title: '性别', width: 60 }
+                  , { field: 'CompanyName', title: '公司名称', width: 150 }
+                  , { field: 'ContactName', title: '联系人', width: 120 }
+                  , { field: 'Phone', title: '联系电话', width: 120 }
+                  , { field: 'Address', title: '地址', width: 120 }
+                  , { field: 'EmailAddress', title: '邮箱', width: 120 }
+                  , { title: '操作', toolbar: '#barDemo', width: 120 }
+                ]]
+                , page: true
+                , response: {
+                    statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
+                }
+                , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+                    return {
+                        "code": 200, //解析接口状态
+                        "msg": '', //解析提示文本
+                        "count": res.Total, //解析数据长度
+                        "data": res.Rows //解析数据列表
+                    };
+                }
+            });//table render end
+        }//initTable end
+
+        // 附带条件重新请求，重载表格
+        function bindTable(e) {
+            e.data.tablein.reload({
+                where: {
+                    EmployeeName: $('#EmployeeName').val()
+                , CompanyName: $('#CompanyName').val()
+                },
+                page: {
+                    page: 1
+                }
+            });// table reload end
+        }
+
+        // 行内事件处理
+        function handleTableRow(obj) {
+            // 该行数据对象
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    //obj.del();//从前端表格中移除
+                    //layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                layer.prompt({
+                    formType: 2
+                  , value: data.EmployeeName
+                }, function (value, index) {
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }
+        }
+    </script>
+}
