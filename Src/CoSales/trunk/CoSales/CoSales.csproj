@@ -247,6 +247,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\SellOrderController.cs" />
     <Compile Include="Controllers\SignController.cs" />
     <Compile Include="Core\BaseController.cs" />
@@ -271,6 +272,7 @@
     <Content Include="Views\SellOrder\SellOrderListView.cshtml" />
     <Content Include="Views\Home\SurveyView.cshtml" />
     <Content Include="Views\Home\MainView.cshtml" />
+    <Content Include="Views\Personal\BasicInfoView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

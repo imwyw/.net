@@ -9,8 +9,11 @@ using System.Web.Mvc;
 
 namespace CoSales.Controllers
 {
+    /// <summary>
+    /// 销售订单
+    /// </summary>
     [CustomAuth]
-    public class SellOrderController : Core.BaseController
+    public class SellOrderController : BaseController
     {
         public ActionResult SellOrderListView()
         {

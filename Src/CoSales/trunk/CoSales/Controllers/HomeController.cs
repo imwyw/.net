@@ -9,6 +9,9 @@ using System.Web.SessionState;
 
 namespace CoSales.Controllers
 {
+    /// <summary>
+    /// 主页及相关
+    /// </summary>
     [CustomAuth]
     public class HomeController : BaseController
     {

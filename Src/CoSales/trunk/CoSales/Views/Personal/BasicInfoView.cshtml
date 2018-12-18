@@ -1,0 +1,86 @@
+﻿
+@{
+    ViewBag.Title = "BasicInfoView";
+}
+
+@section MyStyle{
+    <style>
+        div.layui-sex-radio {
+            width: 300px;
+            margin-left: 0.5px;
+        }
+    </style>
+}
+
+<div class="layui-fluid">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>个人信息维护</legend>
+    </fieldset>
+
+    <form class="layui-form layui-form-pane" method="post" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户ID</label>
+            <div class="layui-input-inline">
+                <input type="text" lay-verify="required" placeholder="请输入" name="UserID" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" lay-verify="required" placeholder="请输入" name="UserName" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-sex-radio" pane="">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="Gender" value="男" title="男" checked="">
+                <input type="radio" name="Gender" value="女" title="女">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">出生日期</label>
+                <div class="layui-input-block">
+                    <input type="text" name="BirthDate" id="birthDate" class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" name="Remark" class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit="" lay-filter="btnSave">保存</button>
+        </div>
+    </form>
+</div>
+
+@section MyScript{
+    <script>
+        layui.use(['form', 'laydate'], function () {
+            save(layui.form);
+            init(layui.laydate);
+        });
+
+        function init(laydate) {
+            laydate.render({
+                elem: '#birthDate'
+            });
+        }
+
+        function save(layform) {
+            layform.on('submit(btnSave)', function (data) {
+                console.log(data.field);//对应form表单提交的内容
+                // 终止默认操作，即取消表单的提交
+                return false;
+            });
+        }
+    </script>
+}

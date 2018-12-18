@@ -11,6 +11,9 @@ using System.Web.SessionState;
 
 namespace CoSales.Controllers
 {
+    /// <summary>
+    /// 登录/注册相关操作
+    /// </summary>
     public class SignController : BaseController
     {
         public ActionResult SignInView()
