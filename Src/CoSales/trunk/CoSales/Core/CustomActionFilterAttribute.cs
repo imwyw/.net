@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace CoSales
+namespace CoSales.Core
 {
     public class CustomActionFilterAttribute : ActionFilterAttribute
     {

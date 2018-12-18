@@ -74,9 +74,9 @@ namespace CoSales.Tests
             User entity = new User();
             entity.UserID = "admin";
             entity.Password = "123";
-            entity.UserName = "jack";
+            entity.UserName = "administrator";
             entity.BirthDate = new DateTime(2000, 1, 1);
-            entity.Gender = "M";
+            entity.Gender = "男";
             entity.Remark = "单元测试添加";
 
             var res = UserMgr.Mgr.Add(entity);
@@ -87,12 +87,12 @@ namespace CoSales.Tests
         public void TestUpdateUser()
         {
             User entity = new User();
-            entity.ID = 1;
-            entity.UserID = "admin";
+            entity.ID = 2;
+            entity.UserID = "w";
             entity.Password = "1";
-            entity.UserName = "administrator";
-            entity.BirthDate = new DateTime(2000, 1, 1);
-            entity.Gender = "M";
+            entity.UserName = "王百万";
+            entity.BirthDate = new DateTime(2017, 1, 1);
+            entity.Gender = "男";
             entity.Remark = "单元测试修改";
             entity.RoleID = 0;
 

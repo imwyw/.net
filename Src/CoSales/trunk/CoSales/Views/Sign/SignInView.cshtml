@@ -11,12 +11,26 @@
         <input class="form-control" type="password" id="txtPwd" placeholder="请输入密码" />
     </div>
     <div class="form-group">
-        <button class="btn btn-primary btn-block" data-loading-text="Loading..." id="btnSignin">登录</button>
+        <div class="checkbox checkbox-container">
+            <label title="为了您的安全，请不要在网吧或公用电脑上使用此功能">
+                <input type="checkbox" id="chkAutoLogin" />三天内免登录
+            </label>
+        </div>
+        <button class="btn btn-success btn-block" data-loading-text="Loading..." id="btnSignin">登&nbsp;&nbsp;录</button>
     </div>
     <div class="form-group">
         没有账号？<a href="/Sign/SignUpView" target="_self">点我注册</a>
     </div>
 </fieldset>
+
+@section MyStyle{
+    <style>
+        /*自动登录勾选框样式*/
+        .checkbox-container {
+            margin: 5px auto;
+        }
+    </style>
+}
 
 @section MyScript{
     <script>
@@ -42,11 +56,11 @@
                 return;
             }
 
-            $.post('/Sign/Login', { userId: uid, password: pwd }
+            $.post('/Sign/Login', { userId: uid, password: pwd, isAutoLogin: $('#chkAutoLogin').prop('checked') }
                 , function (resp) {
                     var obj = getObjRes(resp);
                     if (obj.Status) {
-                        location.href = '/Home/Index';
+                        location.href = '/Home/MainView';
                     } else {
                         alert(resp.Message);
                     }

@@ -1,12 +1,16 @@
-﻿using System;
+﻿using CoSales.BLL;
+using CoSales.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.SessionState;
 
 namespace CoSales.Controllers
 {
-    public class HomeController : Core.BaseController
+    [CustomAuth]
+    public class HomeController : BaseController
     {
         // GET: Home
         public ActionResult Index()
@@ -16,6 +20,7 @@ namespace CoSales.Controllers
 
         public ActionResult MainView()
         {
+            ViewBag.UserName = ContextObjects.CurrentUser.UserName;
             return View();
         }
 

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using CoSales.BLL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace CoSales
+namespace CoSales.Core
 {
     /// <summary>
     /// 自定义特性
@@ -20,7 +21,9 @@ namespace CoSales
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
             // 通过session值来判断当前是否已经通过验证，即处于登录的状态
-            bool isLogin = HttpContext.Current.Session["CurrentUser"] != null;
+            //bool isLogin = HttpContext.Current.Session["CurrentUser"] != null;
+            bool isLogin = ContextObjects.CurrentUser != null;
+
             return isLogin;
         }
 
@@ -31,7 +34,7 @@ namespace CoSales
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             // 将页面重定向到 登录的Action
-            filterContext.Result = new RedirectResult("/Login/SignInView");
+            filterContext.Result = new RedirectResult("/Sign/SignInView");
         }
     }
 }
