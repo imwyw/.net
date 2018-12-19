@@ -53,6 +53,17 @@ WHERE ID=@ID
             return DapperHelper.Excute(sql, entity);
         }
 
+        /// <summary>
+        /// 更新密码
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int? UpdatePwd(User entity)
+        {
+            string sql = @"UPDATE T_USER SET Password=@Password WHERE ID=@ID";
+            return DapperHelper.Excute(sql, entity);
+        }
+
         public List<User> GetList(object whereConditions = null)
         {
             return DapperHelper.GetList<User>(whereConditions).ToList();

@@ -28,6 +28,15 @@ namespace CoSales.Controllers
         }
 
         /// <summary>
+        /// 修改密码页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PasswordView()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// 根据id获取用户实体信息
         /// </summary>
         /// <param name="id"></param>
@@ -105,6 +114,21 @@ namespace CoSales.Controllers
             User user = UserMgr.Mgr.GetUser(ContextObjects.CurrentUser.ID);
             string mime = MimeMapping.GetMimeMapping(user.HeadImg);
             return File(user.HeadImg, mime);
+        }
+
+        /// <summary>
+        /// 更新密码
+        /// </summary>
+        /// <param name="oldPwd"></param>
+        /// <param name="newPwd"></param>
+        /// <returns></returns>
+        public JsonResult ChangePwd(string oldPwd, string newPwd)
+        {
+            ResultStateDTO result = new ResultStateDTO();
+            string msg = "";
+            result.Status = UserMgr.Mgr.UpdatePwd(oldPwd, newPwd, out msg);
+            result.Message = msg;
+            return Json(result);
         }
 
         /// <summary>

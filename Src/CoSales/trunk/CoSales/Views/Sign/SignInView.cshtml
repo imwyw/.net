@@ -59,8 +59,8 @@
             });
 
             //验证码刷新
-            $("#txtValidate + img").on("click", function () {
-                $(this).attr("src", "/Sign/GetValidateImg?rd=" + Math.random());
+            $('#txtValidate + img').on('click', function () {
+                $(this).attr('src', '/Sign/GetValidateImg?rd=' + Math.random());
             });
         });
 
@@ -86,6 +86,10 @@
                     location.href = '/Home/MainView';
                 } else {
                     alert(obj.Message);
+                    // 登录失败冲刷验证码
+                    $('#txtValidate + img').trigger('click');
+                    $('#txtValidate').val('');
+                    $('#txtValidate').focus();
                 }
             }).always(function (e) {
                 // always 完成回调，即不管success或error都将执行

@@ -51,6 +51,27 @@ namespace CoSales.BLL
             return res > 0;
         }
 
+        /// <summary>
+        /// 更新密码
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool UpdatePwd(string oldPwd, string newPwd, out string msg)
+        {
+            // 验证原始密码是否正确
+            User entity = GetUser(ContextObjects.CurrentUser.UserID, oldPwd);
+            if (null == entity)
+            {
+                msg = "请输入正确的原始密码";
+                return false;
+            }
+
+            entity.Password = EncryptHelper.MD5Encrypt(newPwd);
+            bool res = UserDAO.DAO.UpdatePwd(entity).GetValueOrDefault(-1) > 0;
+            msg = res ? "更新成功！" : "密码更新失败！";
+            return res;
+        }
+
         public List<User> GetList(object whereConditions = null)
         {
             var res = UserDAO.DAO.GetList(whereConditions);

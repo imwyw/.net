@@ -274,6 +274,7 @@
     <Content Include="Views\Home\SurveyView.cshtml" />
     <Content Include="Views\Home\MainView.cshtml" />
     <Content Include="Views\Personal\BasicInfoView.cshtml" />
+    <Content Include="Views\Personal\PasswordView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
