@@ -86,7 +86,7 @@
                     location.href = '/Home/MainView';
                 } else {
                     alert(obj.Message);
-                    // 登录失败冲刷验证码
+                    // 登录失败重刷验证码
                     $('#txtValidate + img').trigger('click');
                     $('#txtValidate').val('');
                     $('#txtValidate').focus();
