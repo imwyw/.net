@@ -3,12 +3,17 @@
     Layout = "~/Views/Shared/_LayoutSign.cshtml";
 }
 
+@section MyStyle{
+    <style>
+
+    </style>
+}
+
+@*此页面为纯bootstrap方式*@
+
 <fieldset class="center-block text-center">
     <div class="form-group">
         <input class="form-control" type="text" id="txtUserID" placeholder="用户名或ID" />
-    </div>
-    <div class="form-group">
-        <input class="form-control" type="text" id="txtName" placeholder="中文名称" />
     </div>
     <div class="form-group">
         <input class="form-control" type="password" id="txtPwd" placeholder="请输入密码" />
@@ -17,14 +22,11 @@
         <input class="form-control" type="password" id="txtPwdRep" placeholder="确认密码" />
     </div>
     <div class="form-group">
-        <input class="form-control" type="text" id="txtRemark" placeholder="备注" />
-    </div>
-    <div class="form-group">
-        <button class="btn btn-primary btn-block" id="btnSignUp">注册</button>
+        <button class="btn btn-primary btn-block" data-loading-text="Loading..." id="btnSignUp">注册</button>
         <!--<button id="btnBack">返回登录页</button>-->
     </div>
     <div class="form-group">
-        已有账号<a href="/Login/SignInView" target="_self">点我登录</a>
+        <span>已有账号</span><a href="/Sign/SignInView" target="_self">点我登录</a>
     </div>
 </fieldset>
 
@@ -39,29 +41,31 @@
             // 从页面取数据构造一个对象
             var user = {
                 UserID: $('#txtUserID').val(),
-                Name: $('#txtName').val(),
-                Pwd: $('#txtPwd').val(),
-                pwdRep: $('#txtPwdRep').val(),
-                Remark: $('#txtRemark').val()
+                Password: $('#txtPwd').val(),
+                PasswordRep: $('#txtPwdRep').val()
             };
 
-            //相关的验证
-            if (!(user.UserID && user.Name && user.Pwd && user.pwdRep)) {
+            //相关的验证，采用比较低级的验证方式，并不是很友好
+            if (!(user.UserID && user.Password && user.PasswordRep)) {
                 alert('用户名、密码不可为空！');
                 return;
             }
-            if (user.Pwd != user.pwdRep) {
+            if (user.Password != user.PasswordRep) {
                 alert('两次输入密码不一致');
                 return;
             }
 
-            $.post('/Login/AddUser', user, function (resp) {
-                if (resp.Status) {
+            var $btn = $(this).button('loading');
+            $.post('/Sign/AddUser', user, function (resp) {
+                var obj = getObjRes(resp);
+                if (obj.Status) {
                     alert('注册成功！');
-                    location.href = '/Login/SignInView';
+                    location.href = '/Sign/SignInView';
                 } else {
-                    alert(resp.Message);
+                    console.error(resp.Message);
                 }
+            }).always(function (e) {
+                $btn.button('reset');
             });
         }
 

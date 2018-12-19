@@ -65,7 +65,7 @@
 @section MyScript{
     <script>
         layui.use(['form', 'laydate'], function () {
-            save(layui.form);
+            bindSave(layui.form);
             init(layui.laydate);
         });
 
@@ -75,10 +75,10 @@
             });
         }
 
-        function save(layform) {
+        function bindSave(layform) {
             layform.on('submit(btnSave)', function (data) {
                 console.log(data.field);//对应form表单提交的内容
-                // 终止默认操作，即取消表单的提交
+                // 终止默认操作，即取消表单的submit
                 return false;
             });
         }

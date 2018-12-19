@@ -60,8 +60,7 @@ namespace CoSales.Controllers
             return Json(state);
         }
 
-        [CustomAuth]
-        public JsonResult Add(User entity)
+        public JsonResult AddUser(User entity)
         {
             ResultStateDTO result = new ResultStateDTO();
             int res = UserMgr.Mgr.Add(entity);
