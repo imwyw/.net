@@ -29,6 +29,17 @@ namespace CoSales.BLL
             return res > 0;
         }
 
+        /// <summary>
+        /// 更新用户基本信息，但不包含密码
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool UpdateInfo(User entity)
+        {
+            int res = UserDAO.DAO.UpdateInfo(entity).GetValueOrDefault(-1);
+            return res > 0;
+        }
+
         public List<User> GetList(object whereConditions = null)
         {
             var res = UserDAO.DAO.GetList(whereConditions);
@@ -48,6 +59,12 @@ namespace CoSales.BLL
             //加密后进行判断。自动登录情况下cookie保存的就是加密后的密文
             string cipher = isCipherPwd ? pwd : EncryptHelper.MD5Encrypt(pwd);
             var res = UserDAO.DAO.GetUser(userid, cipher);
+            return res;
+        }
+
+        public User GetUser(int id)
+        {
+            var res = UserDAO.DAO.GetUser(id);
             return res;
         }
     }

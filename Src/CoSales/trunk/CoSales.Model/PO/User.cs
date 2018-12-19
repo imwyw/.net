@@ -18,6 +18,7 @@ namespace CoSales.Model.PO
         public string Gender { get; set; }
         public DateTime? BirthDate { get; set; }
         public int RoleID { get; set; }
+        public string HeadImg { get; set; }
         public string Remark { get; set; }
     }
 }

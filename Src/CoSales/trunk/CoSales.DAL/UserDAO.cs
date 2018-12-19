@@ -23,6 +23,25 @@ namespace CoSales.DAL
             return DapperHelper.Update(entity);
         }
 
+        /// <summary>
+        /// 更新用户基本信息，但不包含密码
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int? UpdateInfo(User entity)
+        {
+            string sql = @"
+UPDATE T_USER SET UserName=@UserName
+,Gender=@Gender
+,BirthDate=@BirthDate
+,RoleID=@RoleID
+,Remark=@Remark
+,HeadImg=@HeadImg
+WHERE ID=@ID
+";
+            return DapperHelper.Excute(sql, entity);
+        }
+
         public List<User> GetList(object whereConditions = null)
         {
             return DapperHelper.GetList<User>(whereConditions).ToList();
@@ -31,6 +50,12 @@ namespace CoSales.DAL
         public User GetUser(string userid, string pwd)
         {
             var res = DapperHelper.GetList<User>(new { UserID = userid, Password = pwd }).FirstOrDefault();
+            return res;
+        }
+
+        public User GetUser(int id)
+        {
+            var res = DapperHelper.Get<User>(id);
             return res;
         }
     }

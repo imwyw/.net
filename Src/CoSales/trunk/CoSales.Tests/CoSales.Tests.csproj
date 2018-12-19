@@ -54,7 +54,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SellUnitTest.cs" />
-    <Compile Include="SignUnitTest.cs" />
+    <Compile Include="UserUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoSales.BLL\CoSales.BLL.csproj">

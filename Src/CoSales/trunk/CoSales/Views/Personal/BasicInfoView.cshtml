@@ -5,10 +5,6 @@
 
 @section MyStyle{
     <style>
-        div.layui-sex-radio {
-            width: 300px;
-            margin-left: 0.5px;
-        }
     </style>
 }
 
@@ -17,11 +13,12 @@
         <legend>个人信息维护</legend>
     </fieldset>
 
-    <form class="layui-form layui-form-pane" method="post" action="">
+    <form class="layui-form" method="post" action="">
         <div class="layui-form-item">
             <label class="layui-form-label">用户ID</label>
             <div class="layui-input-inline">
-                <input type="text" lay-verify="required" placeholder="请输入" name="UserID" class="layui-input">
+                <input type="text" lay-verify="required" placeholder="请输入" name="UserID"
+                       class="layui-input layui-disabled">
             </div>
         </div>
 
@@ -32,9 +29,9 @@
             </div>
         </div>
 
-        <div class="layui-form-item layui-sex-radio" pane="">
+        <div class="layui-form-item">
             <label class="layui-form-label">性别</label>
-            <div class="layui-input-inline">
+            <div class="layui-input-block">
                 <input type="radio" name="Gender" value="男" title="男" checked="">
                 <input type="radio" name="Gender" value="女" title="女">
             </div>
@@ -64,22 +61,51 @@
 
 @section MyScript{
     <script>
-        layui.use(['form', 'laydate'], function () {
-            bindSave(layui.form);
-            init(layui.laydate);
+        var layData = {};
+
+        layui.use(['form', 'laydate', 'layer'], function () {
+            layData.form = layui.form;
+            layData.laydate = layui.laydate;
+            layData.layer = layui.layer;
+            init();
+            bindSave();
         });
 
-        function init(laydate) {
-            laydate.render({
+        function init() {
+            layData.laydate.render({
                 elem: '#birthDate'
+            });
+            bindData();
+        }
+
+        // 保存按钮事件
+        function bindSave() {
+            layData.form.on('submit(btnSave)', function (data) {
+                console.log(data.field);//对应form表单提交的内容
+                // 更新用户信息需要主键ID
+                data.field.ID = $.cookie('ID');
+                $.post('/Personal/SaveUserInfo', data.field, function (resp) {
+                    var obj = getObjRes(resp);
+                    if (obj.Status) {
+                        layData.layer.msg('保存成功！');
+                    }
+                });
+
+                // 终止默认操作，即取消表单的submit
+                return false;
             });
         }
 
-        function bindSave(layform) {
-            layform.on('submit(btnSave)', function (data) {
-                console.log(data.field);//对应form表单提交的内容
-                // 终止默认操作，即取消表单的submit
-                return false;
+        // 获取当前登录用户的详细信息，并绑定至页面，此处如有vue之类的双向绑定更加方便
+        function bindData() {
+            // 当前用户的ID保存在cookie中
+            $.post('/Personal/GetUserInfo', { id: $.cookie('ID') }, function (resp) {
+                var obj = getObjRes(resp);
+                $('input[name=UserID]').val(obj.UserID);
+                $('input[name=UserName]').val(obj.UserName);
+                $('input[name=Gender]').val(obj.Gender);
+                $('input[name=BirthDate]').val(obj.BirthDate);
+                $('textarea[name=Remark]').val(obj.Remark);
             });
         }
     </script>

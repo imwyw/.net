@@ -11,9 +11,9 @@ namespace CoSales.Tests
     /// SignUnitTest 的摘要说明
     /// </summary>
     [TestClass]
-    public class SignUnitTest
+    public class UserUnitTest
     {
-        public SignUnitTest()
+        public UserUnitTest()
         {
             //
             //TODO:  在此处添加构造函数逻辑
@@ -114,6 +114,25 @@ namespace CoSales.Tests
             string pwd = "1";
             var res = UserMgr.Mgr.GetUser(userid, pwd);
             Assert.IsNotNull(res);
+        }
+
+        /// <summary>
+        /// 根据id获取用户实体
+        /// </summary>
+        [TestMethod]
+        public void TestGetUserByID()
+        {
+            var res = UserMgr.Mgr.GetUser(1);
+            Assert.IsNotNull(res);
+        }
+
+        [TestMethod]
+        public void TestUpdateUserInfo()
+        {
+            var user = UserMgr.Mgr.GetUser(1);
+            user.Remark = user.Remark + " unit update info";
+            var res = UserMgr.Mgr.UpdateInfo(user);
+            Assert.IsTrue(res);
         }
     }
 }
