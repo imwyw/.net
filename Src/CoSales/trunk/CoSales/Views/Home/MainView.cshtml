@@ -25,7 +25,8 @@
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item">
                     <a href="javascript:;">
-                        <img src="//tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" class="layui-nav-img">
+                        <!--请求图片资源增加随机传参 ?rd=Math.random() 防止图片资源缓存 -->
+                        <img id="imgHead" src="/Personal/GetUserImg?rd=Math.random()" class="layui-nav-img">
                         @ViewBag.UserName
                     </a>
                     <dl class="layui-nav-child">
@@ -80,10 +81,14 @@
 }
 @section MyScript{
     <script>
-        //JavaScript代码区域
         layui.use(['form', 'element'], function () {
             var element = layui.element;
 
         });
+
+        // 刷新头像，在内联框架中进行调用，用于上传头像后的及时更新
+        function refreshHeadImg() {
+            $('#imgHead').attr('src', '/Personal/GetUserImg?rd=' + Math.random());
+        }
     </script>
 }

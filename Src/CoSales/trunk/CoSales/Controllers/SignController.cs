@@ -46,10 +46,8 @@ namespace CoSales.Controllers
             if (null != res)
             {
                 ContextObjects.CurrentUser = res;
+                SetUserCookie(res);
 
-                HttpContext.Response.AppendCookie(new HttpCookie("ID", res.ID.ToString()));
-                HttpContext.Response.AppendCookie(new HttpCookie("UserID", res.UserID));
-                HttpContext.Response.AppendCookie(new HttpCookie("UserName", res.UserName));
                 if (isAutoLogin)
                 {
                     SetAutoLoginCookie(res);
@@ -123,8 +121,22 @@ namespace CoSales.Controllers
                 string pwd = HttpContext.Request.Cookies[cookieAutoLogin]["CipherPwd"];
                 obj = UserMgr.Mgr.GetUser(uid, pwd, true);
                 ContextObjects.CurrentUser = obj;
+
+                // 自动登录时需要重新写入cookie，否则客户端无法获取当前用户相关信息
+                SetUserCookie(obj);
             }
             return obj;
+        }
+
+        /// <summary>
+        /// 设置用户cookie 基本信息
+        /// </summary>
+        /// <param name="entity"></param>
+        private void SetUserCookie(User entity)
+        {
+            HttpContext.Response.AppendCookie(new HttpCookie("ID", entity.ID.ToString()));
+            HttpContext.Response.AppendCookie(new HttpCookie("UserID", entity.UserID));
+            HttpContext.Response.AppendCookie(new HttpCookie("UserName", entity.UserName));
         }
         #endregion
     }

@@ -40,6 +40,17 @@ namespace CoSales.BLL
             return res > 0;
         }
 
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool UpdateImage(User entity)
+        {
+            int res = UserDAO.DAO.UpdateImage(entity).GetValueOrDefault(-1);
+            return res > 0;
+        }
+
         public List<User> GetList(object whereConditions = null)
         {
             var res = UserDAO.DAO.GetList(whereConditions);

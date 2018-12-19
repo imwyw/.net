@@ -42,6 +42,17 @@ WHERE ID=@ID
             return DapperHelper.Excute(sql, entity);
         }
 
+        /// <summary>
+        /// 修改头像
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int? UpdateImage(User entity)
+        {
+            string sql = @"UPDATE T_USER SET HeadImg=@HeadImg WHERE ID=@ID";
+            return DapperHelper.Excute(sql, entity);
+        }
+
         public List<User> GetList(object whereConditions = null)
         {
             return DapperHelper.GetList<User>(whereConditions).ToList();

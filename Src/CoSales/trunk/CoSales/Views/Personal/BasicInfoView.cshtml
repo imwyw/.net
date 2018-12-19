@@ -5,11 +5,15 @@
 
 @section MyStyle{
     <style>
+        .layui-upload img {
+            width: 200px;
+            height: 200px;
+        }
     </style>
 }
 
 <div class="layui-fluid">
-    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+    <fieldset class="layui-elem-field layui-field-title">
         <legend>个人信息维护</legend>
     </fieldset>
 
@@ -56,38 +60,52 @@
         <div class="layui-form-item">
             <button class="layui-btn" lay-submit="" lay-filter="btnSave">保存</button>
         </div>
+
+
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>头像上传</legend>
+        </fieldset>
+
+        <div class="layui-upload">
+            <button type="button" class="layui-btn" id="btnUpload">上传图片</button>
+            <div class="layui-upload-list">
+                <!--请求图片资源增加随机传参 ?rd=Math.random() 防止图片资源缓存 -->
+                <img class="layui-upload-img" id="preView" src="/Personal/GetUserImg?rd=Math.random()">
+            </div>
+        </div>
+
     </form>
 </div>
 
 @section MyScript{
     <script>
-        var layData = {};
+        var lay = {};
 
-        layui.use(['form', 'laydate', 'layer'], function () {
-            layData.form = layui.form;
-            layData.laydate = layui.laydate;
-            layData.layer = layui.layer;
+        layui.use(['form', 'laydate', 'layer', 'upload'], function () {
+            lay = layui;
+
             init();
             bindSave();
         });
 
         function init() {
-            layData.laydate.render({
+            lay.laydate.render({
                 elem: '#birthDate'
             });
             bindData();
+            initUpload();
         }
 
         // 保存按钮事件
         function bindSave() {
-            layData.form.on('submit(btnSave)', function (data) {
+            lay.form.on('submit(btnSave)', function (data) {
                 console.log(data.field);//对应form表单提交的内容
                 // 更新用户信息需要主键ID
                 data.field.ID = $.cookie('ID');
                 $.post('/Personal/SaveUserInfo', data.field, function (resp) {
                     var obj = getObjRes(resp);
                     if (obj.Status) {
-                        layData.layer.msg('保存成功！');
+                        lay.layer.msg('保存成功！');
                     }
                 });
 
@@ -106,6 +124,38 @@
                 $('input[name=Gender]').val(obj.Gender);
                 $('input[name=BirthDate]').val(obj.BirthDate);
                 $('textarea[name=Remark]').val(obj.Remark);
+            });
+        }
+
+        // 上传图片初识化
+        function initUpload() {
+            lay.upload.render({
+                elem: '#btnUpload'
+                , url: '/Personal/SaveUserImg'
+                //选择文件回调
+                , choose: function (obj) {
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function (index, file, result) {
+                        console.log(index); //得到文件索引
+                        console.log(file); //得到文件对象
+                        console.log(result); //得到文件base64编码，比如图片
+
+                        $('#preView').attr('src', result); //图片链接（base64）
+                    });
+                }
+                , done: function (res) {
+                    //如果上传失败
+                    if (res.code > 0) {
+                        return lay.layer.msg('上传失败');
+                    }
+                    //上传成功
+                    lay.layer.msg('上传成功！');
+                    // 调用MainView中的刷新头像方法
+                    window.parent.refreshHeadImg();
+                }
+                , error: function () {
+                    lay.layer.msg('上传发生异常，请重新上传');
+                }
             });
         }
     </script>
