@@ -1,4 +1,5 @@
 ﻿using CoSales.BLL;
+using CoSales.Common;
 using CoSales.Core;
 using CoSales.Model;
 using CoSales.Model.PO;
@@ -36,12 +37,21 @@ namespace CoSales.Controllers
         /// <param name="userId"></param>
         /// <param name="password"></param>
         /// <param name="isAutoLogin">是否自动登录，即带入cookie中保存的密码</param>
+        /// <param name="validateCode">验证码</param>
         /// <returns></returns>
-        public JsonResult Login(string userId, string password, bool isAutoLogin = false)
+        public JsonResult Login(string userId, string password, string validateCode, bool isAutoLogin = false)
         {
             ResultStateDTO state = new ResultStateDTO();
-            User res = UserMgr.Mgr.GetUser(userId, password);
 
+            //使用 string.Equals提升效率
+            if (!string.Equals(validateCode, TempData["VerificationCode"].ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                state.Status = false;
+                state.Message = "验证码输入有误";
+                return Json(state);
+            }
+
+            User res = UserMgr.Mgr.GetUser(userId, password);
             // 登录成功时，保存当前用户信息至Session，并将基本用户信息写入cookie，以便前端的全局访问
             if (null != res)
             {
@@ -54,8 +64,27 @@ namespace CoSales.Controllers
                 }
                 state.Status = true;
             }
+            else
+            {
+                state.Message = "用户名或密码有误，请重新登录！";
+            }
 
             return Json(state);
+        }
+
+        /// <summary>
+        /// 获取验证码图片
+        /// </summary>
+        /// <returns></returns>
+        public FileResult GetValidateImg()
+        {
+            //创建长度为4的验证字符串
+            string verificationCode = ValidateCode.CreateVerificationText(4);
+            TempData["VerificationCode"] = verificationCode.ToUpper();
+
+            byte[] bytes = ValidateCode.CreateImage(verificationCode, 80, 30);
+
+            return File(bytes, @"image/jpeg");
         }
 
         public JsonResult AddUser(User entity)

@@ -11,6 +11,10 @@
         <input class="form-control" type="password" id="txtPwd" placeholder="请输入密码" />
     </div>
     <div class="form-group">
+        <input type="text" class="form-control" id="txtValidate" name="validateCode" placeholder="验证码" maxlength="4" required />
+        <img id="imgValid" src="/Sign/GetValidateImg" alt="验证码" title="点我刷新" />
+    </div>
+    <div class="form-group">
         <div class="checkbox checkbox-container">
             <label title="为了您的安全，请不要在网吧或公用电脑上使用此功能">
                 <input type="checkbox" id="chkAutoLogin" />三天内免登录
@@ -29,6 +33,15 @@
         .checkbox-container {
             margin: 5px auto;
         }
+
+        #txtValidate {
+            width: 215px;
+            display: inline;
+        }
+
+            #txtValidate + img {
+                cursor: pointer;
+            }
     </style>
 }
 
@@ -36,37 +49,48 @@
     <script>
         $(function () {
             $('#btnSignin').on('click', signIn);
-            $('#txtUserID,#txtPwd').on('keydown', function (e) {
+
+            $('#txtUserID,#txtPwd,#txtValidate').on('keydown', function (e) {
                 // 回车事件
                 if (e.keyCode == 13) {
                     // 手动触发按钮click事件
                     $('#btnSignin').trigger('click');
                 }
             });
+
+            //验证码刷新
+            $("#txtValidate + img").on("click", function () {
+                $(this).attr("src", "/Sign/GetValidateImg?rd=" + Math.random());
+            });
         });
 
         function signIn() {
             var $btn = $(this).button('loading');
 
-            var uid = $('#txtUserID').val();
-            var pwd = $('#txtPwd').val();
-            if (!(uid && pwd)) {
-                alert("用户名或密码不可为空！");
+            var user = {
+                userId: $('#txtUserID').val(),
+                password: $('#txtPwd').val(),
+                validateCode: $("#txtValidate").val(),
+                isAutoLogin: $('#chkAutoLogin').prop('checked')
+            };
+
+            if (!(user.userId && user.password && user.validateCode)) {
+                alert("用户名、密码、验证码不可为空！");
                 $btn.button('reset');
                 return;
             }
 
-            $.post('/Sign/Login', { userId: uid, password: pwd, isAutoLogin: $('#chkAutoLogin').prop('checked') }
-                , function (resp) {
-                    var obj = getObjRes(resp);
-                    if (obj.Status) {
-                        location.href = '/Home/MainView';
-                    } else {
-                        console.error(resp.Message);
-                    }
-                }).always(function (e) {
-                    $btn.button('reset');
-                });
+            $.post('/Sign/Login', user, function (resp) {
+                var obj = getObjRes(resp);
+                if (obj.Status) {
+                    location.href = '/Home/MainView';
+                } else {
+                    alert(obj.Message);
+                }
+            }).always(function (e) {
+                // always 完成回调，即不管success或error都将执行
+                $btn.button('reset');
+            });// post end
         }
     </script>
 }
