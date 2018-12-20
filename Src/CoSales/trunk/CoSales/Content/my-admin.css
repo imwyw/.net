@@ -1,4 +1,8 @@
-﻿.layui-layout-admin {
+﻿div.admin-logo {
+    font-size: 27px !important;
+}
+
+.layui-layout-admin {
     position: fixed;
     top: 0;
     left: 0;
