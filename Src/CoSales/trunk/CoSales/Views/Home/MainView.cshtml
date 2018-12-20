@@ -10,6 +10,12 @@
             <div class="layui-logo">CompanySales</div>
             <!-- 头部区域（可配合layui已有的水平导航） -->
             <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item">
+                    <!--左侧导航的动态缩放-->
+                    <a id="shrink" href="javascript:;">
+                        <i class="layui-icon layui-icon-spread-left"></i>&nbsp;
+                    </a>
+                </li>
                 <li class="layui-nav-item"><a href="">控制台</a></li>
                 <li class="layui-nav-item"><a href="">商品管理</a></li>
                 <li class="layui-nav-item"><a href="">用户</a></li>
@@ -38,28 +44,33 @@
             </ul>
         </div>
 
-        <div class="layui-side layui-bg-black">
+        <div class="layui-side layui-bg-black admin-nav">
             <div class="layui-side-scroll">
-
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
                 <ul class="layui-nav layui-nav-tree" lay-filter="test">
                     <li class="layui-nav-item layui-nav-itemed">
-                        <a class="" href="javascript:;">订单管理</a>
+                        <a class="" href="javascript:;"><i class="layui-icon layui-icon-app"></i><span>订单管理</span></a>
                         <dl class="layui-nav-child">
-                            <dd><a href="/SellOrder/SellOrderListView" target="mainContent">销售订单</a></dd>
-                            <dd><a href="/SellOrder/SellOrderListView">进货订单</a></dd>
+                            <dd>
+                                <a href="/SellOrder/SellOrderListView" target="mainContent"><span>销售订单</span></a>
+                            </dd>
+                            <dd>
+                                <a href="/SellOrder/SellOrderListView"><span>进货订单</span></a>
+                            </dd>
                         </dl>
                     </li>
                     <li class="layui-nav-item">
-                        <a href="javascript:;">解决方案</a>
+                        <a href="javascript:;"><i class="layui-icon layui-icon-snowflake"></i><span>产品管理</span></a>
                         <dl class="layui-nav-child">
-                            <dd><a href="javascript:;">列表一</a></dd>
-                            <dd><a href="javascript:;">列表二</a></dd>
-                            <dd><a href="">超链接</a></dd>
+                            <dd>
+                                <a href="javascript:;"><span>产品列表</span></a>
+                            </dd>
+                            <dd>
+                                <a href="javascript:;"><span>新增产品</span></a>
+                            </dd>
                         </dl>
                     </li>
-                    <li class="layui-nav-item"><a href="">云市场</a></li>
-                    <li class="layui-nav-item"><a href="">发布商品</a></li>
+                    <li class="layui-nav-item"><a href=""><i class="layui-icon layui-icon-user"></i><span>员工管理</span></a></li>
                 </ul>
             </div>
         </div>
@@ -81,10 +92,49 @@
 }
 @section MyScript{
     <script>
+        var lay = {};
+        var isShow = true;
         layui.use(['form', 'element'], function () {
-            var element = layui.element;
-
+            lay = layui;
+            init();
         });
+
+        function init() {
+            $('#shrink').click(function () {
+                //选择出所有的span，并判断是不是hidden
+                $('.admin-nav .layui-nav-item span').each(function () {
+                    if ($(this).is(':hidden')) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                //判断isshow的状态
+                if (isShow) {//收缩
+                    $('#shrink i').removeClass();
+                    $('#shrink i').addClass('layui-icon layui-icon-spread-left');
+                    // 找到所有的展开列表，并收缩该列表项
+                    $('.admin-nav .layui-nav-itemed').removeClass('layui-nav-itemed').addClass('admin-itemed');
+                    $('.layui-side.layui-bg-black').width(60); //设置宽度
+                    $('.kit-side-fold i').css('margin-right', '70%');  //修改图标的位置
+                    //将footer和body的宽度修改
+                    $('.layui-body').css('left', 60 + 'px');
+                    $('.layui-footer').css('left', 60 + 'px');
+                    //修改标志位
+                    isShow = false;
+                } else {//展开
+                    $('#shrink i').removeClass();
+                    $('#shrink i').addClass('layui-icon layui-icon-shrink-right');
+                    // 找到收缩前已展开的列表项，侧栏展开时保持状态
+                    $('.admin-nav .admin-itemed').removeClass('admin-itemed').addClass('layui-nav-itemed');
+                    $('.layui-side.layui-bg-black').width(200);
+                    $('.kit-side-fold i').css('margin-right', '10%');
+                    $('.layui-body').css('left', 200 + 'px');
+                    $('.layui-footer').css('left', 200 + 'px');
+                    isShow = true;
+                }
+            });
+        }
 
         // 刷新头像，在内联框架中进行调用，用于上传头像后的及时更新
         function refreshHeadImg() {
