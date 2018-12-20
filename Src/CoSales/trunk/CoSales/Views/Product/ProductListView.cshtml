@@ -1,19 +1,14 @@
-﻿
-@{
-    ViewBag.Title = "SellOrderListView";
+﻿@{
+    ViewBag.Title = "ProductListView";
 }
 
 <div class="layui-fluid sell-list">
     <div class="layui-row">
         <div class="layui-form">
             <div class="layui-form-item">
-                <label class="layui-form-label">员工姓名：</label>
+                <label class="layui-form-label">产品名称：</label>
                 <div class="layui-input-inline">
-                    <input type="text" class="layui-input" placeholder="请输入员工姓名" id="EmployeeName">
-                </div>
-                <label class="layui-form-label">公司名称：</label>
-                <div class="layui-input-inline">
-                    <input type="text" class="layui-input" placeholder="请输入公司名称" id="CompanyName">
+                    <input type="text" class="layui-input" placeholder="请输入" id="ProductName">
                 </div>
                 <div class="layui-input-inline">
                     <button class="layui-btn" id="btnQuery">查询</button>
@@ -31,21 +26,9 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
-@section MyStyle{
-    <style>
-        div.sell-list {
-            min-width: 900px;
-        }
-
-        .layui-form-label {
-            padding: 9px 3px;
-        }
-    </style>
-}
-
 @section MyScript{
     <script>
-        layui.use(['form', 'table'], function () {
+        layui.use(['table'], function () {
             init(layui.table);
         });
 
@@ -63,7 +46,7 @@
         function initTable(table) {
             return table.render({
                 elem: '#tt'
-                , url: '/SellOrder/GetSellOrderInfo'
+                , url: '/Product/GetProductInfo'
                 , method: 'POST'
                 , toolbar: true
                 , title: '销售记录'
@@ -71,19 +54,12 @@
                 , loading: true
                 , height: 'full-80'// full-差值 高度铺满
                 , cols: [[
-                  { field: 'ProductName', title: '产品名称', width: 120 }
-                  , { field: 'Price', title: '售价', width: 60 }
-                  , { field: 'SellOrderNumber', title: '数量', width: 60 }
-                  , { field: 'SellOrderDate', title: '订单日期', width: 140 }
-                  , { field: 'ProductStockNumber', title: '产品库存', width: 100 }
-                  , { field: 'EmployeeName', title: '员工', width: 120 }
-                  , { field: 'Sex', title: '性别', width: 60 }
-                  , { field: 'CompanyName', title: '公司名称', width: 150 }
-                  , { field: 'ContactName', title: '联系人', width: 120 }
-                  , { field: 'Phone', title: '联系电话', width: 120 }
-                  , { field: 'Address', title: '地址', width: 120 }
-                  , { field: 'EmailAddress', title: '邮箱', width: 120 }
-                  , { title: '操作', toolbar: '#barDemo', width: 120 }
+                  { field: 'ProductName', title: '产品名称' }
+                  , { field: 'Price', title: '售价' }
+                  , { field: 'ProductStockNumber', title: '库存数量' }
+                  , { field: 'ProductSellNumber', title: '累计销售' }
+                  , { field: 'StateText', title: '状态' }
+                  , { title: '操作', toolbar: '#barDemo'}
                 ]]
                 , page: true
                 , response: {
@@ -104,8 +80,7 @@
         function bindTable(e) {
             e.data.tablein.reload({
                 where: {
-                    EmployeeName: $('#EmployeeName').val()
-                , CompanyName: $('#CompanyName').val()
+                    ProductName: $('#ProductName').val()
                 },
                 page: {
                     page: 1

@@ -117,6 +117,38 @@ namespace CoSales.DAL
                 return null;
             }
         }
+
+        /// <summary>
+        /// 封装自定义的分页查询
+        /// 自由化程度更高，不过sql还是写在DAL中
+        /// todo 修改sql为xml可配置化
+        /// 原始sql中必须包含 ROW_NUMBER()开窗！！！ /**where**/ where注释标记不可少！！
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder"></param>
+        /// <param name="sql">SELECT ROW_NUMBER() OVER ( ORDER BY XXID ) AS RN,* FROM TABLE /**where**/ </param>
+        /// <param name="pager"></param>
+        /// <returns></returns>
+        public static ResultPager<T> GetResultPager<T>(SqlBuilder builder, string sql, PageInfo pager) where T : class
+        {
+            string countSql = string.Format($"SELECT COUNT(1) FROM ({sql}) AS TR");
+            string dataSql = pager.IsPager ? string.Format($@"SELECT * FROM ({sql}) AS TR WHERE TR.RN>@PageStart AND TR.RN<@PageEnd ") : sql;
+
+            var templateCount = builder.AddTemplate(countSql);
+            var templateData = builder.AddTemplate(dataSql);
+
+            // 是否分页查询
+            if (pager.IsPager)
+            {
+                builder.AddParameters(new { PageStart = pager.PageStart, PageEnd = pager.PageEnd });
+            }
+            ResultPager<T> resPager = new ResultPager<T>();
+            resPager.Total = (int)DapperHelper.ExcuteScalar(templateCount.RawSql, templateCount.Parameters);
+            resPager.Rows = Query<T>(templateData.RawSql, templateData.Parameters).ToList();
+
+            return resPager;
+        }
+
         #endregion
 
         #region Simple CRUD 封装 https://github.com/ericdc1/Dapper.SimpleCRUD/

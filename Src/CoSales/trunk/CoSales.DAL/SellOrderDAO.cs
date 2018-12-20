@@ -45,14 +45,9 @@ FROM    dbo.T_SELL_ORDER a
         LEFT JOIN dbo.T_CUSTOMER cm ON a.CustomerID = cm.CustomerID
         /**where**/ 
 ";
-            string countSql = string.Format($"SELECT COUNT(1) FROM ({sql}) AS TR");
-
-            string dataSql = param.IsPager ? string.Format($@"SELECT * FROM ({sql}) AS TR WHERE TR.RN>@PageStart AND TR.RN<@PageEnd ") : sql;
 
             // Dapper 扩展 SqlBuilder
             SqlBuilder builder = new SqlBuilder();
-            var templateCount = builder.AddTemplate(countSql);
-            var templateData = builder.AddTemplate(dataSql);
 
             if (!string.IsNullOrEmpty(param.EmployeeName))
             {
@@ -66,14 +61,8 @@ FROM    dbo.T_SELL_ORDER a
             {
                 builder.Where("SellOrderDate=@SellOrderDate", new { SellOrderDate = param.SellOrderDate });
             }
-            if (param.IsPager)
-            {
-                builder.AddParameters(new { PageStart = param.PageStart, PageEnd = param.PageEnd });
-            }
 
-            ResultPager<SellOrderInfo> resPager = new ResultPager<SellOrderInfo>();
-            resPager.Total = (int)DapperHelper.ExcuteScalar(templateCount.RawSql, templateCount.Parameters);
-            resPager.Rows = DapperHelper.Query<SellOrderInfo>(templateData.RawSql, templateData.Parameters).ToList();
+            ResultPager<SellOrderInfo> resPager = DapperHelper.GetResultPager<SellOrderInfo>(builder, sql, param);
 
             return resPager;
         }

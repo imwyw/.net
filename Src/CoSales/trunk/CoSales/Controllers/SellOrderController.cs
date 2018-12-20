@@ -15,7 +15,20 @@ namespace CoSales.Controllers
     [CustomAuth]
     public class SellOrderController : BaseController
     {
+        /// <summary>
+        /// 销售订单
+        /// </summary>
+        /// <returns></returns>
         public ActionResult SellOrderListView()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 进货订单
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PurchaseOrderListView()
         {
             return View();
         }
@@ -25,5 +38,7 @@ namespace CoSales.Controllers
             var result = SellOrderMgr.Mgr.GetSellOrderInfo(param);
             return Json(result);
         }
+
+
     }
 }

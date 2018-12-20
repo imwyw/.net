@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainModel\SellOrderInfo.cs" />
+    <Compile Include="NodeType\EnumProductState.cs" />
     <Compile Include="PageInfo.cs" />
     <Compile Include="PO\Customer.cs" />
     <Compile Include="PO\Department.cs" />
