@@ -105,7 +105,7 @@
 
         // 删除产品
         function removeProduct(row) {
-            $.post('/Product/RemoveProduct', { id: row.data.ProductID }, function (resp) {
+            $.post('/Product/RemoveProduct', { id: row.data.ID }, function (resp) {
                 var obj = getObjRes(resp);
                 if (obj.Status) {
                     lay.layer.msg('已删除');
@@ -121,7 +121,7 @@
             lay.layer.open({
                 type: 2//iframe层
                     , title: '产品详情'
-                    , content: '/Product/EditProductView?id=' + row.data.ProductID
+                    , content: '/Product/EditProductView?id=' + row.data.ID
                     , shade: 0.8//遮罩
                     , area: ['90%', '90%']//宽高设置
             });
