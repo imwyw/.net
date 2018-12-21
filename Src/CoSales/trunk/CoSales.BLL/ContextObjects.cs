@@ -51,5 +51,16 @@ namespace CoSales.BLL
                 return Path.Combine(BaseFilePath, "UserImage");
             }
         }
+
+        /// <summary>
+        /// 产品描述相关图片
+        /// </summary>
+        public static string ProductImagePath
+        {
+            get
+            {
+                return Path.Combine(BaseFilePath, "ProductImage");
+            }
+        }
     }
 }

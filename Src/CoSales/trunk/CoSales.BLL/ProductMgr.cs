@@ -53,5 +53,7 @@ namespace CoSales.BLL
             var res = ProductDAO.DAO.RemoveProduct(id).GetValueOrDefault(-1);
             return res > 0;
         }
+
+
     }
 }

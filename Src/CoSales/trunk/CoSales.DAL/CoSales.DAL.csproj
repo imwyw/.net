@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttachmentDAO.cs" />
     <Compile Include="DapperHelper.cs" />
     <Compile Include="ProductDAO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

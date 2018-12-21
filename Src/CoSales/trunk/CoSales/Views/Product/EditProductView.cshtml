@@ -50,29 +50,33 @@
             </div>
 
             <div class="layui-tab-item">
-                <div class="layui-upload">
-                    <div class="layui-upload-list">
-                        <img class="layui-upload-img" id="imgProduct">
-                    </div>
-                    <button type="button" class="layui-btn layui-btn-normal" id="btnChoose">选择图片</button>
+                <div class="layui-upload img-container">
+                    <button type="button" class="layui-btn layui-btn-normal" id="btnUpload">上传图片</button>
+                    @*<div class="layui-upload-list">
+                            <img class="layui-upload-img img-preview">
+                            <button type="button" class="layui-btn layui-btn-warm layui-btn-sm">删除</button>
+                        </div>*@
                 </div>
             </div>
         </div>
     </div>
-
 
 </div>
 <input type="hidden" id="hidProductID" value="@ViewBag.ProductID" />
 
 @section MyStyle{
     <style>
+        img.img-preview {
+            width: 400px;
+            height: 300px;
+        }
     </style>
 }
 @section MyScript{
     <script>
         var lay = {};
 
-        layui.use(['form', 'layer', 'element'], function () {
+        layui.use(['form', 'upload', 'layer', 'element'], function () {
             lay = layui;
 
             init();
@@ -81,7 +85,8 @@
 
         function init() {
             bindData();
-            //initUpload();
+            initUpload();
+            bindImages();
         }
 
         // 保存按钮事件
@@ -113,5 +118,48 @@
             });
         }
 
+        // 上传图片初识化
+        function initUpload() {
+            lay.upload.render({
+                elem: '#btnUpload'
+                , url: '/Product/UploadProductImg'
+                , data: { productID: $('#hidProductID').val() }//额外参数
+                , done: function (res, index, upload) {
+                    lay.layer.msg(res.msg);
+
+                    // 上传成功的话，则添加显示
+                    if (res.code == 0) {
+                        var html = '<div class="layui-upload-list">'
+                                    + '<img class="layui-upload-img img-preview" >'
+                                    + '<button type="button" class="layui-btn layui-btn-warm layui-btn-sm">删除</button>'
+                                    + '</div>';
+                        $('div.img-container').append(html);
+                        $('div.img-container img:last').attr('src', '/Product/GetImageByPath?fullPath=' + res.data.src); //图片链接（base64）
+                    }
+
+                }//done end
+                , error: function () {
+                    lay.layer.msg('上传发生异常，请重新上传');
+                }
+            });
+        }
+
+        // 加载所有产品图片
+        function bindImages() {
+            $.post('/Product/GetImagesByProduct', {
+                productID: $('#hidProductID').val()
+            }, function (resp) {
+                var arr = getObjRes(resp);
+                // 循环添加img元素，并设置src加载图片
+                $.each(arr, function (i, t) {
+                    var html = '<div class="layui-upload-list">'
+                    + '<img class="layui-upload-img img-preview" >'
+                    + '<button type="button" class="layui-btn layui-btn-warm layui-btn-sm">删除</button>'
+                    + '</div>';
+                    $('div.img-container').append(html);
+                    $('div.img-container img:last').attr('src', '/Product/GetImageByPath?fullPath=' + t.AttPath);
+                });
+            });
+        }
     </script>
 }
