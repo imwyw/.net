@@ -31,5 +31,27 @@ namespace CoSales.BLL
             var res = ProductDAO.DAO.GetProductInfo(param);
             return res;
         }
+
+        /// <summary>
+        /// 根据id获取产品实体
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Product GetProduct(int id)
+        {
+            Product res = ProductDAO.DAO.GetProduct(id);
+            return res;
+        }
+
+        /// <summary>
+        /// 逻辑删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool RemoveProduct(int id)
+        {
+            var res = ProductDAO.DAO.RemoveProduct(id).GetValueOrDefault(-1);
+            return res > 0;
+        }
     }
 }

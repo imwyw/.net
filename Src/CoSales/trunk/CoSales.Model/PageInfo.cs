@@ -14,11 +14,14 @@ namespace CoSales.Model
         /// <summary>
         /// 第几页
         /// </summary>
+        [Dapper.NotMapped]
         public int? page { get; set; }
         /// <summary>
         /// 每页记录数
         /// </summary>
+        [Dapper.NotMapped]
         public int? limit { get; set; }
+        [Dapper.NotMapped]
         public int PageStart
         {
             get
@@ -26,6 +29,7 @@ namespace CoSales.Model
                 return (page.GetValueOrDefault(0) - 1) * limit.GetValueOrDefault(0);
             }
         }
+        [Dapper.NotMapped]
         public int PageEnd
         {
             get
@@ -36,6 +40,7 @@ namespace CoSales.Model
         /// <summary>
         /// 是否分页
         /// </summary>
+        [Dapper.NotMapped]
         public bool IsPager { get { return page.HasValue; } }
     }
 }

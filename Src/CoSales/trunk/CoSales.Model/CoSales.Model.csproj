@@ -55,6 +55,7 @@
     <Compile Include="DomainModel\SellOrderInfo.cs" />
     <Compile Include="NodeType\EnumProductState.cs" />
     <Compile Include="PageInfo.cs" />
+    <Compile Include="PO\Attachment.cs" />
     <Compile Include="PO\Customer.cs" />
     <Compile Include="PO\Department.cs" />
     <Compile Include="PO\Employee.cs" />

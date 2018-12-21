@@ -9,7 +9,11 @@ namespace CoSales.Model.PO
     [Dapper.Table("T_PROVIDER")]
     public class Provider
     {
-        public int ProviderID { get; set; }
+        /// <summary>
+        /// 标识为主键
+        /// </summary>
+        [Dapper.Key]
+        public int ID { get; set; }
         public string ProviderName { get; set; }
         public string ContactName { get; set; }
         public string ProviderAddress { get; set; }

@@ -1,0 +1,117 @@
+﻿
+@{
+    ViewBag.Title = "EditProduct";
+}
+
+<div class="layui-fluid">
+    <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">产品描述</li>
+            <li>图片描述</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <fieldset class="layui-elem-field layui-field-title">
+                    <legend>产品信息</legend>
+                </fieldset>
+                <form class="layui-form" method="post" action="">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">产品名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" lay-verify="required" placeholder="请输入" name="ProductName"
+                                   class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">价格</label>
+                        <div class="layui-input-inline">
+                            <input lay-verify="required" placeholder="￥" name="Price" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">库存数量</label>
+                        <div class="layui-input-inline">
+                            <input lay-verify="required" name="ProductStockNumber" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">已售数量</label>
+                        <div class="layui-input-inline">
+                            <input lay-verify="required" name="ProductSellNumber" class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-submit="" lay-filter="btnSave">保存</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="layui-tab-item">
+                <div class="layui-upload">
+                    <div class="layui-upload-list">
+                        <img class="layui-upload-img" id="imgProduct">
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-normal" id="btnChoose">选择图片</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<input type="hidden" id="hidProductID" value="@ViewBag.ProductID" />
+
+@section MyStyle{
+    <style>
+    </style>
+}
+@section MyScript{
+    <script>
+        var lay = {};
+
+        layui.use(['form', 'layer', 'element'], function () {
+            lay = layui;
+
+            init();
+            //bindSave();
+        });
+
+        function init() {
+            bindData();
+            //initUpload();
+        }
+
+        // 保存按钮事件
+        function bindSave() {
+            lay.form.on('submit(btnSave)', function (data) {
+                console.log(data.field);//对应form表单提交的内容
+                // 更新用户信息需要主键ID
+                data.field.ID = $.cookie('ID');
+                $.post('/Personal/SaveUserInfo', data.field, function (resp) {
+                    var obj = getObjRes(resp);
+                    if (obj.Status) {
+                        lay.layer.msg('保存成功！');
+                    }
+                });
+
+                // 终止默认操作，即取消表单的submit
+                return false;
+            });
+        }
+
+        // 获取当前登录用户的详细信息，并绑定至页面，此处如有vue之类的双向绑定更加方便
+        function bindData() {
+            $.post('/Product/GetProduct', { id: $('#hidProductID').val() }, function (resp) {
+                var obj = getObjRes(resp);
+                $('input[name=ProductName]').val(obj.ProductName);
+                $('input[name=Price]').val(obj.Price);
+                $('input[name=ProductStockNumber]').val(obj.ProductStockNumber);
+                $('input[name=ProductSellNumber]').val(obj.ProductSellNumber);
+            });
+        }
+
+    </script>
+}

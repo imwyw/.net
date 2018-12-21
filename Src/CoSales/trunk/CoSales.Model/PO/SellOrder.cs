@@ -9,7 +9,11 @@ namespace CoSales.Model.PO
     [Dapper.Table("T_SELL_ORDER")]
     public class SellOrder
     {
-        public int SellOrderID { get; set; }
+        /// <summary>
+        /// 标识为主键
+        /// </summary>
+        [Dapper.Key]
+        public int ID { get; set; }
         public int ProductID { get; set; }
         public Product Product { get; set; }
         public int SellOrderNumber { get; set; }

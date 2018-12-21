@@ -17,8 +17,8 @@ namespace CoSales.DAL
         public ResultPager<SellOrderInfo> GetSellOrderInfo(SellOrderInfo param)
         {
             string sql = @"
-SELECT  Row_number() over(order by SellOrderDate) as RN,
-        a.SellOrderID ,
+SELECT  Row_number() over(order by a.ID) as RN,
+        a.ID ,
         a.ProductID ,
         a.SellOrderNumber ,
         a.EmployeeID ,
@@ -28,7 +28,7 @@ SELECT  Row_number() over(order by SellOrderDate) as RN,
         pt.Price ,
         pt.ProductStockNumber ,
         pt.ProductSellNumber ,
-        em.EmployeeName ,
+        em.ID EmployeeName ,
         em.Sex ,
         em.BirthDate ,
         em.HireDate ,
@@ -40,9 +40,9 @@ SELECT  Row_number() over(order by SellOrderDate) as RN,
         cm.Address ,
         cm.EmailAddress
 FROM    dbo.T_SELL_ORDER a
-        LEFT JOIN dbo.T_PRODUCT pt ON a.ProductID = pt.ProductID
-        LEFT JOIN dbo.T_EMPLOYEE em ON a.EmployeeID = em.EmployeeID
-        LEFT JOIN dbo.T_CUSTOMER cm ON a.CustomerID = cm.CustomerID
+        LEFT JOIN dbo.T_PRODUCT pt ON a.ProductID = pt.ID
+        LEFT JOIN dbo.T_EMPLOYEE em ON a.EmployeeID = em.ID
+        LEFT JOIN dbo.T_CUSTOMER cm ON a.CustomerID = cm.ID
         /**where**/ 
 ";
 

@@ -9,7 +9,11 @@ namespace CoSales.Model.PO
     [Dapper.Table("T_DEPARTMENT")]
     public class Department
     {
-        public int DepartmentID { get; set; }
+        /// <summary>
+        /// 标识为主键
+        /// </summary>
+        [Dapper.Key]
+        public int ID { get; set; }
         public string DepartmentName { get; set; }
         public string Manager { get; set; }
         public string Depart_Description { get; set; }

@@ -8,7 +8,7 @@ namespace CoSales.Model.DomainModel
 {
     public class SellOrderInfo : PageInfo
     {
-        public int? SellOrderID { get; set; }
+        public int? ID { get; set; }
         public int? ProductID { get; set; }
         public int? SellOrderNumber { get; set; }
         public int? EmployeeID { get; set; }

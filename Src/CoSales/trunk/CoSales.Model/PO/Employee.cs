@@ -9,7 +9,11 @@ namespace CoSales.Model.PO
     [Dapper.Table("T_EMPLOYEE")]
     public class Employee
     {
-        public int EmployeeID { get; set; }
+        /// <summary>
+        /// 标识为主键
+        /// </summary>
+        [Dapper.Key]
+        public int ID { get; set; }
         public string EmployeeName { get; set; }
         public string Sex { get; set; }
         public DateTime BirthDate { get; set; }

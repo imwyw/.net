@@ -1,4 +1,5 @@
 ﻿using CoSales.Model;
+using CoSales.Model.NodeType;
 using CoSales.Model.PO;
 using Dapper;
 using System;
@@ -21,8 +22,8 @@ namespace CoSales.DAL
         public ResultPager<Product> GetProductInfo(Product param)
         {
             string sql = @"
-SELECT  ROW_NUMBER() OVER ( ORDER BY ProductID ) AS RN ,
-        ProductID ,
+SELECT  ROW_NUMBER() OVER ( ORDER BY A.ID ) AS RN ,
+        a.ID ,
         ProductName ,
         Price ,
         ProductStockNumber ,
@@ -51,6 +52,28 @@ FROM    T_PRODUCT a
             ResultPager<Product> resPager = DapperHelper.GetResultPager<Product>(builder, sql, param);
 
             return resPager;
+        }
+
+        /// <summary>
+        /// 根据id获取产品实体
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Product GetProduct(int id)
+        {
+            return DapperHelper.Get<Product>(id);
+        }
+
+        /// <summary>
+        /// 逻辑删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int? RemoveProduct(int id)
+        {
+            string sql = @"UPDATE T_PRODUCT SET State=@State WHERE ID=@ID";
+            object pams = new { State = (int)EnumProductState.已删除, ID = id };
+            return DapperHelper.Excute(sql, pams);
         }
     }
 }

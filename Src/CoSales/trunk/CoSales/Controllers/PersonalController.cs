@@ -112,8 +112,10 @@ namespace CoSales.Controllers
         {
             // 图片信息从数据库中获取，session中获取无法保证是最新的
             User user = UserMgr.Mgr.GetUser(ContextObjects.CurrentUser.ID);
-            string mime = MimeMapping.GetMimeMapping(user.HeadImg);
-            return File(user.HeadImg, mime);
+            // 默认头像设置
+            string filePath = System.IO.File.Exists(user.HeadImg) ? user.HeadImg : "~/Content/layui/images/face/1.gif";
+            string mime = MimeMapping.GetMimeMapping(filePath);
+            return File(filePath, mime);
         }
 
         /// <summary>
