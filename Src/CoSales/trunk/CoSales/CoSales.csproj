@@ -236,6 +236,8 @@
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\echarts.js" />
+    <Content Include="Scripts\echarts.min.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
@@ -278,6 +280,7 @@
     <Content Include="Views\Product\ProductListView.cshtml" />
     <Content Include="Views\SellOrder\PurchaseOrderListView.cshtml" />
     <Content Include="Views\Product\EditProductView.cshtml" />
+    <Content Include="Views\Shared\_LayoutMain.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

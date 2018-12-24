@@ -1,92 +1,51 @@
 ﻿@{
     ViewBag.Title = "CompanySales";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
 }
 
-@*https://www.layui.com/demo/layuiAdmin.html*@
 
-<div class="layui-layout-body">
-    <div class="layui-layout layui-layout-admin">
-        <div class="layui-header">
-            <div class="layui-logo admin-logo">CompanySales</div>
-            <!-- 头部区域（可配合layui已有的水平导航） -->
-            <ul class="layui-nav layui-layout-left">
-                <li class="layui-nav-item">
-                    <!--左侧导航的动态缩放-->
-                    <a id="shrink" href="javascript:;">
-                        <i class="layui-icon layui-icon-spread-left"></i>&nbsp;
-                    </a>
-                </li>
-                <li class="layui-nav-item"><a href="">控制台</a></li>
-                @*<li class="layui-nav-item"><a href="">商品管理</a></li>
-                <li class="layui-nav-item"><a href="">用户</a></li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;">其它系统</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="">邮件管理</a></dd>
-                        <dd><a href="">消息管理</a></dd>
-                        <dd><a href="">授权管理</a></dd>
-                    </dl>
-                </li>*@
-            </ul>
-            <ul class="layui-nav layui-layout-right">
-                <li class="layui-nav-item">
-                    <a href="javascript:;">
-                        <!--请求图片资源增加随机传参 ?rd=Math.random() 防止图片资源缓存 -->
-                        <img id="imgHead" src="/Personal/GetUserImg?rd=Math.random()" class="layui-nav-img">
-                        @ViewBag.UserName
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="/Personal/BasicInfoView" target="mainContent">基本资料</a></dd>
-                        <dd><a href="/Personal/PasswordView" target="mainContent">安全设置</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item"><a href="/Sign/Logout">退出</a></li>
-            </ul>
-        </div>
-
-        <div class="layui-side layui-bg-black admin-nav">
-            <div class="layui-side-scroll">
-                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-                <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                    <li class="layui-nav-item layui-nav-itemed">
-                        <a class="" href="javascript:;"><i class="layui-icon layui-icon-app"></i><span>订单管理</span></a>
-                        <dl class="layui-nav-child">
-                            <dd>
-                                <a href="/SellOrder/SellOrderListView" target="mainContent"><span>销售订单</span></a>
-                            </dd>
-                            <dd>
-                                <a href="/SellOrder/PurchaseOrderListView" target="mainContent"><span>进货订单</span></a>
-                            </dd>
-                        </dl>
-                    </li>
-                    <li class="layui-nav-item layui-nav-itemed">
-                        <a href="javascript:;"><i class="layui-icon layui-icon-snowflake"></i><span>产品管理</span></a>
-                        <dl class="layui-nav-child">
-                            <dd>
-                                <a href="/Product/ProductListView" target="mainContent"><span>产品列表</span></a>
-                            </dd>
-                        </dl>
-                    </li>
-                    <li class="layui-nav-item"><a href=""><i class="layui-icon layui-icon-user"></i><span>员工管理</span></a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="layui-body" id="lay_app_body">
-            <!-- 内容主体区域 -->
-            <iframe src="/Home/SurveyView" name="mainContent" frameborder="0" class="layadmin-iframe"></iframe>
-        </div>
-
-        <div class="layui-footer">
-            <!-- 底部固定区域 -->
-            © AIIT
-        </div>
+<div class="layui-side layui-bg-black admin-nav">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            <li class="layui-nav-item layui-nav-itemed">
+                <a class="" href="javascript:;"><i class="layui-icon layui-icon-app"></i><span>订单管理</span></a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="/SellOrder/SellOrderListView" target="mainContent"><span>销售订单</span></a>
+                    </dd>
+                    <dd>
+                        <a href="/SellOrder/PurchaseOrderListView" target="mainContent"><span>进货订单</span></a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-nav-itemed">
+                <a href="javascript:;"><i class="layui-icon layui-icon-snowflake"></i><span>产品管理</span></a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="/Product/ProductListView" target="mainContent"><span>产品列表</span></a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href=""><i class="layui-icon layui-icon-user"></i><span>员工管理</span></a></li>
+        </ul>
     </div>
-
 </div>
+
+<div class="layui-body" id="lay_app_body">
+    <!-- 内容主体区域 -->
+    <iframe src="/SellOrder/SellOrderListView" name="mainContent" frameborder="0" class="layadmin-iframe"></iframe>
+</div>
+
+<div class="layui-footer">
+    <!-- 底部固定区域 -->
+    © AIIT
+</div>
+
 @section MyStyle{
-    <link href="~/Content/my-admin.css" rel="stylesheet" />
+
 }
+
 @section MyScript{
     <script>
         var lay = {};
