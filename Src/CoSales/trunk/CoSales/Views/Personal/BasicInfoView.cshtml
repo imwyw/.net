@@ -79,17 +79,13 @@
 
 @section MyScript{
     <script>
-        var lay = {};
-
         layui.use(['form', 'laydate', 'layer', 'upload'], function () {
-            lay = layui;
-
             init();
             bindSave();
         });
 
         function init() {
-            lay.laydate.render({
+            layui.laydate.render({
                 elem: '#birthDate'
             });
             bindData();
@@ -98,14 +94,14 @@
 
         // 保存按钮事件
         function bindSave() {
-            lay.form.on('submit(btnSave)', function (data) {
+            layui.form.on('submit(btnSave)', function (data) {
                 console.log(data.field);//对应form表单提交的内容
                 // 更新用户信息需要主键ID
                 data.field.ID = $.cookie('ID');
                 $.post('/Personal/SaveUserInfo', data.field, function (resp) {
                     var obj = getObjRes(resp);
                     if (obj.Status) {
-                        lay.layer.msg('保存成功！');
+                        layui.layer.msg('保存成功！');
                     }
                 });
 
@@ -129,7 +125,7 @@
 
         // 上传图片初识化
         function initUpload() {
-            lay.upload.render({
+            layui.upload.render({
                 elem: '#btnUpload'
                 , url: '/Personal/SaveUserImg'
                 //选择文件回调
@@ -146,15 +142,15 @@
                 , done: function (res) {
                     //如果上传失败
                     if (res.code > 0) {
-                        return lay.layer.msg('上传失败');
+                        return layui.layer.msg('上传失败');
                     }
                     //上传成功
-                    lay.layer.msg('上传成功！');
+                    layui.layer.msg('上传成功！');
                     // 调用MainView中的刷新头像方法
                     window.parent.refreshHeadImg();
                 }
                 , error: function () {
-                    lay.layer.msg('上传发生异常，请重新上传');
+                    layui.layer.msg('上传发生异常，请重新上传');
                 }
             });
         }

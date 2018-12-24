@@ -28,9 +28,7 @@
 
 @section MyScript{
     <script>
-        var lay = {};
         layui.use(['table'], function () {
-            lay = layui;
             init();
         });
 
@@ -38,7 +36,7 @@
             var tablein = initTable();
 
             // 绑定行内按钮事件 tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
-            lay.table.on('tool(listTable)', handleTableRow);
+            layui.table.on('tool(listTable)', handleTableRow);
 
             // 查询事件，重新绑定表格数据
             $('#btnQuery').click({ 'tablein': tablein }, bindTable);
@@ -46,7 +44,7 @@
 
         // 初始化表格
         function initTable(table) {
-            return lay.table.render({
+            return layui.table.render({
                 elem: '#tt'
                 , url: '/Product/GetProductInfo'
                 , method: 'POST'
@@ -95,7 +93,7 @@
             // 该行数据对象
             var data = obj.data;
             if (obj.event === 'del') {
-                lay.layer.confirm('真的删除行么', function (index) {
+                layui.layer.confirm('真的删除行么', function (index) {
                     removeProduct(obj);
                 });
             } else if (obj.event === 'edit') {
@@ -108,17 +106,17 @@
             $.post('/Product/RemoveProduct', { id: row.data.ID }, function (resp) {
                 var obj = getObjRes(resp);
                 if (obj.Status) {
-                    lay.layer.msg('已删除');
+                    layui.layer.msg('已删除');
                     row.del();
                 } else {
-                    lay.layer.msg('无法删除');
+                    layui.layer.msg('无法删除');
                 }
             });
         }
 
         // 编辑产品详情
         function editProduct(row) {
-            lay.layer.open({
+            layui.layer.open({
                 type: 2//iframe层
                     , title: '产品详情'
                     , content: '/Product/EditProductView?id=' + row.data.ID

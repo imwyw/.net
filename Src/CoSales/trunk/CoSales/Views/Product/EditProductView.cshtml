@@ -74,11 +74,7 @@
 }
 @section MyScript{
     <script>
-        var lay = {};
-
         layui.use(['form', 'upload', 'layer', 'element'], function () {
-            lay = layui;
-
             init();
             //bindSave();
         });
@@ -91,14 +87,14 @@
 
         // 保存按钮事件
         function bindSave() {
-            lay.form.on('submit(btnSave)', function (data) {
+            layui.form.on('submit(btnSave)', function (data) {
                 console.log(data.field);//对应form表单提交的内容
                 // 更新用户信息需要主键ID
                 data.field.ID = $.cookie('ID');
                 $.post('/Personal/SaveUserInfo', data.field, function (resp) {
                     var obj = getObjRes(resp);
                     if (obj.Status) {
-                        lay.layer.msg('保存成功！');
+                        layui.layer.msg('保存成功！');
                     }
                 });
 
@@ -120,12 +116,12 @@
 
         // 上传图片初识化
         function initUpload() {
-            lay.upload.render({
+            layui.upload.render({
                 elem: '#btnUpload'
                 , url: '/Product/UploadProductImg'
                 , data: { productID: $('#hidProductID').val() }//额外参数
                 , done: function (res, index, upload) {
-                    lay.layer.msg(res.msg);
+                    layui.layer.msg(res.msg);
 
                     // 上传成功的话，则添加显示
                     if (res.code == 0) {
@@ -139,7 +135,7 @@
 
                 }//done end
                 , error: function () {
-                    lay.layer.msg('上传发生异常，请重新上传');
+                    layui.layer.msg('上传发生异常，请重新上传');
                 }
             });
         }

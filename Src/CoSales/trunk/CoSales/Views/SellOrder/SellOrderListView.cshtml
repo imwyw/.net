@@ -46,22 +46,22 @@
 @section MyScript{
     <script>
         layui.use(['form', 'table'], function () {
-            init(layui.table);
+            init();
         });
 
-        function init(table) {
-            var tablein = initTable(table);
+        function init() {
+            var tablein = initTable();
 
             // 绑定行内按钮事件 tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
-            table.on('tool(listTable)', handleTableRow);
+            layui.table.on('tool(listTable)', handleTableRow);
 
             // 查询事件，重新绑定表格数据
             $('#btnQuery').click({ 'tablein': tablein }, bindTable);
         }
 
         // 初始化表格
-        function initTable(table) {
-            return table.render({
+        function initTable() {
+            return layui.table.render({
                 elem: '#tt'
                 , url: '/SellOrder/GetSellOrderInfo'
                 , method: 'POST'
