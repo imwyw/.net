@@ -66,5 +66,59 @@ FROM    dbo.T_SELL_ORDER a
 
             return resPager;
         }
+
+        /// <summary>
+        /// 添加销售记录
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int Insert(SellOrder entity)
+        {
+            return DapperHelper.Insert(entity);
+        }
+
+        /// <summary>
+        /// 统计一年中每个月各销售人员销售产品数量
+        /// 目前写死展示 年销量前5的员工
+        /// </summary>
+        /// <param name="year">需要统计的年份</param>
+        /// <returns></returns>
+        public IEnumerable<dynamic> GetEmployeeSellStat(int year)
+        {
+            string sql = @"
+WITH    temp
+          AS ( SELECT   FORMAT(a.SellOrderDate, 'yyyy-MM') SellMonth ,
+                        MONTH(a.SellOrderDate) IntMonth,
+                        a.EmployeeID ,
+                        em.EmployeeName ,
+                        a.SellOrderNumber
+               FROM     dbo.T_SELL_ORDER a
+                        LEFT	JOIN dbo.T_EMPLOYEE em ON a.EmployeeID = em.ID
+                        LEFT JOIN dbo.T_PRODUCT pd ON a.ProductID = pd.ID
+                        LEFT JOIN dbo.T_CUSTOMER cu ON a.CustomerID = cu.ID
+               WHERE    YEAR(a.SellOrderDate) = @Year
+             )
+    SELECT  temp.SellMonth ,
+            temp.IntMonth ,/*IntMonth字段排序用*/
+            temp.EmployeeID ,
+            temp.EmployeeName ,
+            SUM(temp.SellOrderNumber) SellSum
+    FROM    temp
+            JOIN ( SELECT TOP 5
+                            EmployeeID
+                   FROM     temp
+                   GROUP BY EmployeeID
+                   ORDER BY SUM(SellOrderNumber) DESC
+                 ) tp ON temp.EmployeeID = tp.EmployeeID
+    GROUP BY temp.SellMonth ,
+            temp.IntMonth,
+            temp.EmployeeID ,
+            temp.EmployeeName
+    ORDER BY temp.EmployeeID
+";
+            object pams = new { Year = year };
+            return DapperHelper.Query<dynamic>(sql, pams);
+        }
+
     }
 }

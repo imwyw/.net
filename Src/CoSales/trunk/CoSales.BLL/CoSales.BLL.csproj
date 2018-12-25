@@ -48,6 +48,8 @@
   <ItemGroup>
     <Compile Include="AttachmentMgr.cs" />
     <Compile Include="ContextObjects.cs" />
+    <Compile Include="CustomerMgr.cs" />
+    <Compile Include="EmployeeMgr.cs" />
     <Compile Include="ProductMgr.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SellOrderMgr.cs" />

@@ -54,6 +54,11 @@ namespace CoSales.BLL
             return res > 0;
         }
 
+        public List<Product> GetList()
+        {
+            var res = ProductDAO.DAO.GetList();
+            return res;
+        }
 
     }
 }

@@ -75,5 +75,10 @@ FROM    T_PRODUCT a
             object pams = new { State = (int)EnumProductState.已删除, ID = id };
             return DapperHelper.Excute(sql, pams);
         }
+
+        public List<Product> GetList()
+        {
+            return DapperHelper.GetList<Product>().ToList();
+        }
     }
 }

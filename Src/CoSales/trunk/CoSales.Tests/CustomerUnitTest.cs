@@ -2,18 +2,17 @@
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CoSales.Model.PO;
 using CoSales.BLL;
 
 namespace CoSales.Tests
 {
     /// <summary>
-    /// ProductUnitTest 的摘要说明
+    /// CustomerUnitTest 的摘要说明
     /// </summary>
     [TestClass]
-    public class ProductUnitTest
+    public class CustomerUnitTest
     {
-        public ProductUnitTest()
+        public CustomerUnitTest()
         {
             //
             //TODO:  在此处添加构造函数逻辑
@@ -61,26 +60,10 @@ namespace CoSales.Tests
         #endregion
 
         [TestMethod]
-        public void TestGetProductInfo()
-        {
-            Product param = new Product();
-            //param.ProductName = "盘";
-            param.StateList = new List<int>();
-            param.StateList.Add(1);
-            param.StateList.Add(2);
-            param.page = 1;
-            param.limit = 10;
-
-            var res = ProductMgr.Mgr.GetProductInfo(param);
-            Assert.IsNotNull(res);
-        }
-
-        [TestMethod]
         public void TestGetList()
         {
-            var res = ProductMgr.Mgr.GetList();
+            var res = CustomerMgr.Mgr.GetList();
             Assert.IsNotNull(res);
         }
-           
     }
 }

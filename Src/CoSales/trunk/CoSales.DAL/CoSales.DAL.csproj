@@ -62,7 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttachmentDAO.cs" />
+    <Compile Include="CustomerDAO.cs" />
     <Compile Include="DapperHelper.cs" />
+    <Compile Include="EmployeeDAO.cs" />
     <Compile Include="ProductDAO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SellOrderDAO.cs" />

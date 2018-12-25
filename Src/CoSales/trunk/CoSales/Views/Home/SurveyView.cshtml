@@ -1,8 +1,148 @@
 ﻿
 @{
-    ViewBag.Title = "SurveyView";
+    ViewBag.Title = "控制台";
     Layout = "~/Views/Shared/_LayoutMain.cshtml";
 }
 
-<h2>SurveyView</h2>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span>销售统计</span>
+                    <div class="layui-form layui-inline">
+                        <div class="layui-input-inline">
+                            <select id="selYear" lay-filter="selYear"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <div id="empSellStat"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+@section MyStyle{
+    <style>
+        div.layui-card-header span {
+            margin-right: 20px;
+        }
+
+        #empSellStat {
+            width: 700px;
+            height: 400px;
+        }
+    </style>
+}
+
+@section MyScript{
+    <script>
+        var chart = {};
+
+        layui.use(['form'], function () {
+            init();
+
+            initEmpSellStat();
+        });
+
+        // 初始化页面
+        function init() {
+            var curYear = new Date().getFullYear();
+            for (var i = 0; i < 15; i++) {
+                var html = '<option value="' + curYear + '" >' + curYear + '年</option>';
+                $('#selYear').append(html);
+                curYear--;
+            }
+            layui.form.render();
+
+            layui.form.on('select(selYear)', function (data) {
+                bindChart(data.value);
+            });
+        }
+
+        // 初始化 echart统计图
+        function initEmpSellStat() {
+            // 基于准备好的dom，初始化echarts实例
+            chart.empSellChart = echarts.init(document.getElementById('empSellStat'));
+            // 指定图表的配置项和数据
+            chart.option = {
+                title: {
+                    text: '员工销售数量统计'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: []//多个line折线对应标签
+                },
+                grid: {
+                    left: '1%',
+                    right: '1%',
+                    bottom: '1%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: []//横轴
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: []
+            };
+            bindChart(new Date().getFullYear());
+        }// initEmpSellStat end
+
+        function bindChart(yyyy) {
+            $.post('/SellOrder/GetEmployeeSellStat', { year: yyyy }, function (resp) {
+                var arr = getObjRes(resp);
+                var data = {
+                    legendData: [],//多个折线 line 标题
+                    xData: [],//横轴坐标
+                    series: []//渲染数据
+                };
+
+                // 设置横轴坐标数据
+                for (var i = 1; i <= 12; i++) {
+                    data.xData.push(yyyy + '-' + _.padStart(i, 2, '0'));
+                }
+
+                /*
+                _.groupBy 按照EmployeeName进行分组，得到分组后的对象
+                _.keysIn 将分组对象key值转换为对象
+                即chart图表的多个折线
+                */
+                data.legendData = _.keysIn(_.groupBy(arr, 'EmployeeName'));
+
+                // 遍历每个员工
+                $.each(data.legendData, function (i, t) {
+                    // 各月份对应的统计数量
+                    var perMonthCountArr = [];
+
+                    // 遍历每个月，找到该月该员工的统计数目
+                    $.each(data.xData, function (xi, xt) {
+                        // lodash _.find 用于寻找数组中匹配的对象
+                        var findEmp = _.find(arr, { EmployeeName: t, SellMonth: xt });
+                        perMonthCountArr.push(findEmp ? findEmp.SellSum : 0);
+                    });
+                    data.series.push({ name: t, type: 'line', stack: '总量', data: perMonthCountArr });
+                });
+
+                chart.option.legend.data = data.legendData;
+                chart.option.xAxis.data = data.xData;
+                chart.option.series = data.series;
+
+                // 使用刚指定的配置项和数据显示图表。
+                chart.empSellChart.setOption(chart.option);
+            });
+        }// bindChart end
+    </script>
+}

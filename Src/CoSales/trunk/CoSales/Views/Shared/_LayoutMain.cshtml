@@ -70,8 +70,15 @@
     <script type="text/javascript" src="~/Scripts/base.js"></script>
     <script src="~/Scripts/jquery-3.3.1.min.js"></script>
     <script src="~/Scripts/jquery.cookie-1.4.1.min.js"></script>
-    @*独立引用【layer.js】的话，需要放在layui的前面*@
-    @*<script src="~/Content/layer/layer.js"></script>*@
+    
+    <!-- 百度统计图表库 -->
+    <script src="~/Scripts/echarts.js"></script>
+    
+    <!-- js工具库 lodash https://lodash.com/docs/4.17.11 -->
+    <script src="~/Scripts/lodash.js"></script>
+
+    <!--独立引用【layer.js】的话，需要放在layui的前面-->
+    <!--<script src="~/Content/layer/layer.js"></script>-->
     <script src="~/Content/layui/layui.js"></script>
 
     @RenderSection("MyScript", false)

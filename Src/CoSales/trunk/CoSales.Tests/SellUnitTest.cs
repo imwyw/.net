@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CoSales.BLL;
 using CoSales.Model.DomainModel;
+using CoSales.Model.PO;
 
 namespace CoSales.Tests
 {
@@ -68,6 +69,73 @@ namespace CoSales.Tests
             param.page = 1;
             param.limit = 10;
             var res = SellOrderMgr.Mgr.GetSellOrderInfo(param);
+            Assert.IsNotNull(res);
+        }
+
+        /// <summary>
+        /// 添加销售记录
+        /// </summary>
+        [TestMethod]
+        public void TestInsertSellOrder()
+        {
+            SellOrder entity = new SellOrder();
+            entity.ProductID = 1;
+            entity.SellOrderNumber = 1000;
+            entity.EmployeeID = 1;
+            entity.CustomerID = 1;
+            entity.SellOrderDate = new DateTime(2018, 12, 1);
+
+            var res = SellOrderMgr.Mgr.Insert(entity);
+            Assert.IsTrue(res);
+        }
+
+        /// <summary>
+        /// 批量添加销售订单测试数据
+        /// </summary>
+        [TestMethod]
+        public void TestAddSellOrder()
+        {
+            Random rd = new Random();
+            var listPds = ProductMgr.Mgr.GetList();
+            var listEmp = EmployeeMgr.Mgr.GetList();
+            var listCus = CustomerMgr.Mgr.GetList();
+
+            int year = DateTime.Now.Year;
+            int month = DateTime.Now.Month;
+            int curMonth = month;
+
+            // 循环每年
+            for (int i = 0; i < 15; i++)
+            {
+                // 循环每个月
+                while (curMonth > 0)
+                {
+                    int daysInMonth = DateTime.DaysInMonth(year - i, curMonth);
+
+                    // 每个月插入 100条 测试数据
+                    for (int j = 0; j < 100; j++)
+                    {
+                        int rVal = rd.Next(1, 100);
+                        SellOrder entity = new SellOrder();
+                        entity.ProductID = listPds.ToArray()[rVal % listPds.Count].ID;
+                        entity.SellOrderNumber = rd.Next(1, 100) * 10;
+                        entity.EmployeeID = listEmp.ToArray()[rVal % listEmp.Count].ID;
+                        entity.CustomerID = listCus.ToArray()[rVal % listCus.Count].ID;
+                        entity.SellOrderDate = new DateTime(year - i, curMonth, rd.Next(1, daysInMonth + 1));
+
+                        var res = SellOrderMgr.Mgr.Insert(entity);
+                    }
+                    curMonth--;
+                }
+                curMonth = 12;
+            }
+            Assert.IsTrue(true);
+        }
+
+        [TestMethod]
+        public void TestGetEmployeeSellStat()
+        {
+            var res = SellOrderMgr.Mgr.GetEmployeeSellStat(2004);
             Assert.IsNotNull(res);
         }
     }
