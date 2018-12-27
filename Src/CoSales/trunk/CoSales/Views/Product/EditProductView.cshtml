@@ -89,6 +89,9 @@
         function bindSave() {
             layui.form.on('submit(btnSave)', function (data) {
                 console.log(data.field);//对应form表单提交的内容
+                // 需要隐藏域 主键ID
+                data.field.ID = $('#hidProductID').val();
+
                 $.post('/Product/UpdateProduct', data.field, function (resp) {
                     var obj = getObjRes(resp);
                     if (obj.Status) {

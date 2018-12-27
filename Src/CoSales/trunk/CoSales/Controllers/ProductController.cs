@@ -61,10 +61,10 @@ namespace CoSales.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public JsonResult RemoveProduct(int id)
+        public JsonResult RemoveProduct(IEnumerable<int> ids)
         {
             ResultStateDTO res = new ResultStateDTO();
-            res.Status = ProductMgr.Mgr.RemoveProduct(id);
+            res.Status = ProductMgr.Mgr.RemoveProduct(ids);
             return Json(res);
         }
 
@@ -122,5 +122,32 @@ namespace CoSales.Controllers
             result.Status = ProductMgr.Mgr.UpdateProduct(entity);
             return Json(result);
         }
+
+
+        /// <summary>
+        /// 通过审核
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public JsonResult PassFlow(IEnumerable<int> ids)
+        {
+            ResultStateDTO result = new ResultStateDTO();
+            result.Status = ProductMgr.Mgr.PassFlow(ids);
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 驳回
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public JsonResult RejectFlow(IEnumerable<int> ids)
+        {
+            ResultStateDTO result = new ResultStateDTO();
+            result.Status = ProductMgr.Mgr.RejectFlow(ids);
+            return Json(result);
+        }
+
+
     }
 }

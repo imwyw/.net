@@ -38,6 +38,11 @@
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-sm" lay-event="add">新增产品</button>
         <button class="layui-btn layui-btn-sm" lay-event="remove">批量删除</button>
+        <!-- 判断当前用户角色ID -->
+        {{# if($.cookie('RoleID')>0){ }}
+        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="pass">通过</button>
+        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="reject">驳回</button>
+        {{# } }}
     </div>
 </script>
 
@@ -114,7 +119,7 @@
             var data = obj.data;
             if (obj.event === 'del') {
                 layui.layer.confirm('真的删除行么', function (index) {
-                    removeProduct(obj);
+                    removeProduct(obj.data.ID);
                 });
             } else {
                 editProduct(obj.data.ID);
@@ -123,20 +128,39 @@
 
         // 处理表格工具栏
         function handleTableTool(obj) {
+            // 包含勾选数据的对象
             var checkStatus = layui.table.checkStatus(obj.config.id);
-            switch (obj.event) {
-                case 'add':
-                    editProduct();
-                    break;
-                case 'remove':
-                    // layer.msg(JSON.stringify(checkStatus.data));
-                    break;
+            // map映射为 id 数组
+            var arrIds = checkStatus.data.map(function (t, i) { return t.ID; });
+            if (obj.event === 'add') {
+                editProduct();
+            } else if (arrIds.length > 0) {
+                var url = '/Product/';
+                var toolMsg = '';
+                if (obj.event === 'pass') {
+                    url += 'PassFlow';
+                    toolMsg = '已审批';
+                } else if (obj.event === 'reject') {
+                    url += 'RejectFlow';
+                    toolMsg = '已驳回';
+                } else {
+                    url += 'RemoveProduct';
+                    toolMsg = '已删除';
+                }
+                $.post(url, { ids: arrIds }, function (resp) {
+                    var resObj = getObjRes(resp);
+                    if (resObj.Status) {
+                        layer.msg(toolMsg + '成功!');
+                        // 触发查询事件，重新载入表格数据
+                        $('#btnQuery').trigger('click');
+                    }
+                });
             }
-        }
+        }// handleTableTool end
 
         // 删除产品
-        function removeProduct(row) {
-            $.post('/Product/RemoveProduct', { id: row.data.ID }, function (resp) {
+        function removeProduct(id) {
+            $.post('/Product/RemoveProduct', { ids: [id] }, function (resp) {
                 var obj = getObjRes(resp);
                 if (obj.Status) {
                     layui.layer.msg('已删除');

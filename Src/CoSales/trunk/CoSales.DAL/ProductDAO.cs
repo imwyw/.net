@@ -92,10 +92,10 @@ WHERE a.ID=@ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public int? RemoveProduct(int id)
+        public int? RemoveProduct(IEnumerable<int> ids)
         {
-            string sql = @"UPDATE T_PRODUCT SET State=@State WHERE ID=@ID";
-            object pams = new { State = (int)EnumProductState.已删除, ID = id };
+            string sql = @"UPDATE T_PRODUCT SET State=@State WHERE ID IN @ID";
+            object pams = new { State = (int)EnumProductState.已删除, ID = ids };
             return DapperHelper.Excute(sql, pams);
         }
 
@@ -128,12 +128,14 @@ WHERE   ID = @ID
         /// <param name="id"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        public int? FlowMoveTo(int id, EnumProductState state)
+        public int? FlowMoveTo(IEnumerable<int> ids, int state)
         {
-            string sql = @"UPDATE dbo.T_PRODUCT SET State = @State WHERE ID = @ID";
-            object pams = new { State = (int)state, ID = id };
+            string sql = @"UPDATE dbo.T_PRODUCT SET State = @State WHERE ID IN @ID";
+            object pams = new { State = state, ID = ids };
             return DapperHelper.Excute(sql, pams);
         }
+
+
 
     }
 }

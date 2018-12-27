@@ -46,11 +46,11 @@ namespace CoSales.BLL
         /// <summary>
         /// 逻辑删除
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="ids"></param>
         /// <returns></returns>
-        public bool RemoveProduct(int id)
+        public bool RemoveProduct(IEnumerable<int> ids)
         {
-            var res = ProductDAO.DAO.RemoveProduct(id).GetValueOrDefault(-1);
+            var res = ProductDAO.DAO.RemoveProduct(ids).GetValueOrDefault(-1);
             return res > 0;
         }
 
@@ -89,6 +89,28 @@ namespace CoSales.BLL
             }
             var res = ProductDAO.DAO.Insert(entity);
             return res;
+        }
+
+        /// <summary>
+        /// 审核通过
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public bool PassFlow(IEnumerable<int> ids)
+        {
+            var res = ProductDAO.DAO.FlowMoveTo(ids, (int)EnumProductState.正常).GetValueOrDefault(-1);
+            return res > 0;
+        }
+
+        /// <summary>
+        /// 驳回
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public bool RejectFlow(IEnumerable<int> ids)
+        {
+            var res = ProductDAO.DAO.FlowMoveTo(ids, (int)EnumProductState.被驳回).GetValueOrDefault(-1);
+            return res > 0;
         }
     }
 }
