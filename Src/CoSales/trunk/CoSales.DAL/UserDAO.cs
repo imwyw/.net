@@ -36,7 +36,6 @@ UPDATE T_USER SET UserName=@UserName
 ,BirthDate=@BirthDate
 ,RoleID=@RoleID
 ,Remark=@Remark
-,HeadImg=@HeadImg
 WHERE ID=@ID
 ";
             return DapperHelper.Excute(sql, entity);

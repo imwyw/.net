@@ -16,7 +16,7 @@ namespace CoSales
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "MainView", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "SurveyView", id = UrlParameter.Optional }
             );
         }
     }
