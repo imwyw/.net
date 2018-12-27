@@ -166,6 +166,7 @@ namespace CoSales.Controllers
             HttpContext.Response.AppendCookie(new HttpCookie("ID", entity.ID.ToString()));
             HttpContext.Response.AppendCookie(new HttpCookie("UserID", entity.UserID));
             HttpContext.Response.AppendCookie(new HttpCookie("UserName", entity.UserName));
+            HttpContext.Response.AppendCookie(new HttpCookie("RoleID", entity.RoleID.ToString()));
         }
         #endregion
     }
