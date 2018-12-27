@@ -18,6 +18,8 @@ namespace CoSales.BLL
         public bool Insert(Attachment entity)
         {
             var res = AttachmentDAO.DAO.Insert(entity);
+            // 主键ID
+            entity.ID = res;
             return res > 0;
         }
 
@@ -74,7 +76,8 @@ namespace CoSales.BLL
                 }
                 else
                 {
-                    state.data = new { src = fullName };
+                    // 返回主键id和全路径名称
+                    state.data = new { src = fullName, id = entity.ID };
                     state.msg = "上传成功！";
                 }
                 return state;
@@ -84,6 +87,25 @@ namespace CoSales.BLL
         public List<Attachment> GetList(int relatedID)
         {
             var res = AttachmentDAO.DAO.GetList(relatedID);
+            return res;
+        }
+
+        /// <summary>
+        /// 按主键ID进行删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool DeleteById(int id)
+        {
+            Attachment entity = AttachmentDAO.DAO.Get(id);
+            bool res = AttachmentDAO.DAO.DeleteById(id) > 0;
+
+            // 数据库删掉后，再从磁盘里删掉
+            if (File.Exists(entity.AttPath) && res)
+            {
+                File.Delete(entity.AttPath);
+            }
+
             return res;
         }
     }

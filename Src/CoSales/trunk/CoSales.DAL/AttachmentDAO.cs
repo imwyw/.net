@@ -31,5 +31,25 @@ namespace CoSales.DAL
             object where = new { RelatedID = relatedID };
             return DapperHelper.GetList<Attachment>(where).ToList();
         }
+
+        /// <summary>
+        /// 根据id返回实体对象
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Attachment Get(int id)
+        {
+            return DapperHelper.Get<Attachment>(id);
+        }
+
+        /// <summary>
+        /// 按主键ID进行删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int DeleteById(int id)
+        {
+            return DapperHelper.Delete<Attachment>(id);
+        }
     }
 }

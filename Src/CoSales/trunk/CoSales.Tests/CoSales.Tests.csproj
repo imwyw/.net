@@ -52,6 +52,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttachmentUnitTest.cs" />
     <Compile Include="CustomerUnitTest.cs" />
     <Compile Include="EmployeeUnitTest.cs" />
     <Compile Include="ProductUnitTest.cs" />

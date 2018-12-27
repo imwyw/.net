@@ -252,6 +252,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AttachmentController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
@@ -295,6 +296,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Attachment\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoSales.BLL\CoSales.BLL.csproj">

@@ -213,7 +213,7 @@ namespace CoSales.DAL
                 using (IDbConnection conn = new SqlConnection(connStr))
                 {
                     Log4Helper.Log.Info(Id);
-                    var res = conn.Update(Id);
+                    var res = conn.Delete<T>(Id);
                     return res;
                 }
             }

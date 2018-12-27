@@ -27,6 +27,8 @@ namespace CoSales.BLL
         public bool Insert(SellOrder entity)
         {
             var res = SellOrderDAO.DAO.Insert(entity);
+            // 主键ID
+            entity.ID = res;
             return res > 0;
         }
 

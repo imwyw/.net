@@ -34,7 +34,6 @@ namespace CoSales.DAL
 UPDATE T_USER SET UserName=@UserName
 ,Gender=@Gender
 ,BirthDate=@BirthDate
-,RoleID=@RoleID
 ,Remark=@Remark
 WHERE ID=@ID
 ";

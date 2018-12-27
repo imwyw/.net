@@ -88,6 +88,8 @@ namespace CoSales.BLL
                 entity.State = (int)EnumProductState.正常;
             }
             var res = ProductDAO.DAO.Insert(entity);
+            // 主键ID
+            entity.ID = res;
             return res;
         }
 

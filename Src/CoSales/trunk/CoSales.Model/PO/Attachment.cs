@@ -12,6 +12,7 @@ namespace CoSales.Model.PO
     [Dapper.Table("T_ATTACHMENT")]
     public class Attachment
     {
+        [Dapper.Key]
         public int ID { get; set; }
         /// <summary>
         /// 附件类型

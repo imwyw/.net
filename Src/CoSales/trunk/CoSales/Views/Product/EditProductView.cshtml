@@ -83,6 +83,7 @@
             bindData();
             initUpload();
             bindImages();
+            bindImageDelete();
         }
 
         // 保存按钮事件
@@ -151,7 +152,8 @@
                     if (res.code == 0) {
                         var html = '<div class="layui-upload-list">'
                                     + '<img class="layui-upload-img img-preview" >'
-                                    + '<button type="button" class="layui-btn layui-btn-warm layui-btn-sm">删除</button>'
+                                    + '<button type="button" class="layui-btn layui-btn-warm layui-btn-sm img-del" data-id="'
+                                    + res.data.id + '">删除</button>'
                                     + '</div>';
                         $('div.img-container').append(html);
                         $('div.img-container img:last').attr('src', '/Product/GetImageByPath?fullPath=' + res.data.src); //图片链接（base64）
@@ -175,10 +177,28 @@
                 $.each(arr, function (i, t) {
                     var html = '<div class="layui-upload-list">'
                     + '<img class="layui-upload-img img-preview" >'
-                    + '<button type="button" class="layui-btn layui-btn-warm layui-btn-sm">删除</button>'
+                    + '<button type="button" class="layui-btn layui-btn-warm layui-btn-sm img-del" data-id="'
+                    + t.ID + '">删除</button>'
                     + '</div>';
                     $('div.img-container').append(html);
                     $('div.img-container img:last').attr('src', '/Product/GetImageByPath?fullPath=' + t.AttPath);
+                });
+            });
+        }
+
+        function bindImageDelete() {
+            $('div.img-container').on('click', 'button.img-del', function (e) {
+                var _id = $(this).attr('data-id');
+                var imgPart = $(this).closest('div.layui-upload-list');
+                console.log(_id);
+                $.post('/Attachment/RemoveAttachById', { id: _id }, function (resp) {
+                    var obj = getObjRes(resp);
+                    if (obj.Status) {
+                        layer.msg('删除成功！');
+                        imgPart.remove();
+                    } else {
+                        layer.msg('无法删除！');
+                    }
                 });
             });
         }

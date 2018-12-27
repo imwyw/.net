@@ -19,6 +19,8 @@ namespace CoSales.BLL
             // 密码保存为密文，密码做加密处理
             entity.Password = EncryptHelper.MD5Encrypt(entity.Password);
             int res = UserDAO.DAO.Add(entity);
+            // 主键ID
+            entity.ID = res;
             return res;
         }
 
