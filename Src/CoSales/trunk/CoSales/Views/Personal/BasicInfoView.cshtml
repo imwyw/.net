@@ -17,7 +17,7 @@
         <legend>个人信息维护</legend>
     </fieldset>
 
-    <form class="layui-form" method="post" action="">
+    <form class="layui-form" lay-filter="formUser" method="post" action="">
         <div class="layui-form-item">
             <label class="layui-form-label">用户ID</label>
             <div class="layui-input-inline">
@@ -61,20 +61,19 @@
             <button class="layui-btn" lay-submit="" lay-filter="btnSave">保存</button>
         </div>
 
-
-        <fieldset class="layui-elem-field layui-field-title">
-            <legend>头像上传</legend>
-        </fieldset>
-
-        <div class="layui-upload">
-            <button type="button" class="layui-btn" id="btnUpload">上传图片</button>
-            <div class="layui-upload-list">
-                <!--请求图片资源增加随机传参 ?rd=Math.random() 防止图片资源缓存 -->
-                <img class="layui-upload-img" id="preView" src="/Personal/GetUserImg?rd=Math.random()">
-            </div>
-        </div>
-
     </form>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>头像上传</legend>
+    </fieldset>
+
+    <div class="layui-upload">
+        <button type="button" class="layui-btn" id="btnUpload">上传图片</button>
+        <div class="layui-upload-list">
+            <!--请求图片资源增加随机传参 ?rd=Math.random() 防止图片资源缓存 -->
+            <img class="layui-upload-img" id="preView" src="/Personal/GetUserImg?rd=Math.random()">
+        </div>
+    </div>
 </div>
 
 @section MyScript{
@@ -115,11 +114,7 @@
             // 当前用户的ID保存在cookie中
             $.post('/Personal/GetUserInfo', { id: $.cookie('ID') }, function (resp) {
                 var obj = getObjRes(resp);
-                $('input[name=UserID]').val(obj.UserID);
-                $('input[name=UserName]').val(obj.UserName);
-                $('input[name=Gender]').val(obj.Gender);
-                $('input[name=BirthDate]').val(obj.BirthDate);
-                $('textarea[name=Remark]').val(obj.Remark);
+                layui.form.val('formUser',obj);
             });
         }
 
