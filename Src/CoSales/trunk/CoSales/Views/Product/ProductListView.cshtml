@@ -21,14 +21,29 @@
     </div>
 </div>
 
+<!-- 行内编辑模板 -->
 <script type="text/html" id="barDemo">
+    <!-- layui 模板语法， d.XXXX为绑定数据行对应的属性，通过模板语法判断，只有状态为正常时才可以编辑 -->
+    <!-- https://www.layui.com/doc/modules/laytpl.html 参考JavaScript表达式的用法 -->
+    {{# if(['正常','被驳回'].indexOf(d.StateText)>-1){ }}
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    {{# } else { }}
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="show">查看</a>
+    {{# } }}
+</script>
+
+<!-- 表格工具栏 -->
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">新增产品</button>
+        <button class="layui-btn layui-btn-sm" lay-event="remove">批量删除</button>
+    </div>
 </script>
 
 @section MyScript{
     <script>
-        layui.use(['table'], function () {
+        layui.use(['table', 'layer'], function () {
             init();
         });
 
@@ -37,6 +52,9 @@
 
             // 绑定行内按钮事件 tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
             layui.table.on('tool(listTable)', handleTableRow);
+
+            // 绑定表格工具栏事件
+            layui.table.on('toolbar(listTable)', handleTableTool);
 
             // 查询事件，重新绑定表格数据
             $('#btnQuery').click({ 'tablein': tablein }, bindTable);
@@ -50,11 +68,13 @@
                 , method: 'POST'
                 , toolbar: true
                 , title: '销售记录'
+                , toolbar: '#toolbar'
                 //, totalRow: true//合计行
                 , loading: true
                 , height: 'full-80'// full-差值 高度铺满
                 , cols: [[
-                  { field: 'ProductName', title: '产品名称' }
+                    { type: 'checkbox', fixed: 'left' }
+                  , { field: 'ProductName', title: '产品名称' }
                   , { field: 'Price', title: '售价' }
                   , { field: 'ProductStockNumber', title: '库存数量' }
                   , { field: 'ProductSellNumber', title: '累计销售' }
@@ -96,8 +116,21 @@
                 layui.layer.confirm('真的删除行么', function (index) {
                     removeProduct(obj);
                 });
-            } else if (obj.event === 'edit') {
-                editProduct(obj);
+            } else {
+                editProduct(obj.data.ID);
+            }
+        }
+
+        // 处理表格工具栏
+        function handleTableTool(obj) {
+            var checkStatus = layui.table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    editProduct();
+                    break;
+                case 'remove':
+                    // layer.msg(JSON.stringify(checkStatus.data));
+                    break;
             }
         }
 
@@ -115,11 +148,11 @@
         }
 
         // 编辑产品详情
-        function editProduct(row) {
+        function editProduct(id) {
             layui.layer.open({
                 type: 2//iframe层
                     , title: '产品详情'
-                    , content: '/Product/EditProductView?id=' + row.data.ID
+                    , content: '/Product/EditProductView?id=' + id
                     , shade: 0.8//遮罩
                     , area: ['90%', '90%']//宽高设置
             });

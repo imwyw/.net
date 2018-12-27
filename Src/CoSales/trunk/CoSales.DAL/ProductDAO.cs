@@ -61,7 +61,30 @@ FROM    T_PRODUCT a
         /// <returns></returns>
         public Product GetProduct(int id)
         {
-            return DapperHelper.Get<Product>(id);
+            string sql = @"
+SELECT  a.ID ,
+        ProductName ,
+        Price ,
+        ProductStockNumber ,
+        ProductSellNumber ,
+        State ,
+        nd.NodeName StateText
+FROM    T_PRODUCT a
+        LEFT JOIN dbo.T_DIC_NODE nd ON a.state = nd.NodeID
+WHERE a.ID=@ID
+";
+            object pams = new { ID = id };
+            return DapperHelper.QueryFirstOrDefault<Product>(sql, pams);
+        }
+
+        /// <summary>
+        /// 添加产品，返回主键ID
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int Insert(Product entity)
+        {
+            return DapperHelper.Insert(entity);
         }
 
         /// <summary>
@@ -80,5 +103,37 @@ FROM    T_PRODUCT a
         {
             return DapperHelper.GetList<Product>().ToList();
         }
+
+        /// <summary>
+        /// 更新产品信息
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int? UpdateProduct(Product entity)
+        {
+            string sql = @"
+UPDATE  dbo.T_PRODUCT
+SET     ProductName = @ProductName ,
+        Price = @Price ,
+        ProductStockNumber = @ProductStockNumber ,
+        ProductSellNumber = @ProductSellNumber
+WHERE   ID = @ID
+";
+            return DapperHelper.Excute(sql, entity);
+        }
+
+        /// <summary>
+        /// 状态修改，即流转至某节点
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public int? FlowMoveTo(int id, EnumProductState state)
+        {
+            string sql = @"UPDATE dbo.T_PRODUCT SET State = @State WHERE ID = @ID";
+            object pams = new { State = (int)state, ID = id };
+            return DapperHelper.Excute(sql, pams);
+        }
+
     }
 }

@@ -80,7 +80,14 @@
     <!--独立引用【layer.js】的话，需要放在layui的前面-->
     <!--<script src="~/Content/layer/layer.js"></script>-->
     <script src="~/Content/layui/layui.js"></script>
-
+    <script>
+        $(function () { 
+            // 解决登录超时的情况下，仅仅内联框架发生跳转的情况
+            if (top.location != self.location) {
+                top.location = self.location;
+            }
+        })
+    </script>
     @RenderSection("MyScript", false)
 </body>
 </html>

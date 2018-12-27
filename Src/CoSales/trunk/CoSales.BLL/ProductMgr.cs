@@ -60,5 +60,35 @@ namespace CoSales.BLL
             return res;
         }
 
+        /// <summary>
+        /// 更新产品信息
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool UpdateProduct(Product entity)
+        {
+            var res = ProductDAO.DAO.UpdateProduct(entity).GetValueOrDefault(-1);
+            return res > -1;
+        }
+
+        /// <summary>
+        /// 新增产品，普通用户新增时需要经过审核判断
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int InsertProduct(Product entity)
+        {
+            // todo 先写死0，普通用户需要进行审核，管理员新增无需审核
+            if (ContextObjects.CurrentUser.RoleID == (int)EnumRole.普通用户)
+            {
+                entity.State = (int)EnumProductState.待审核;
+            }
+            else
+            {
+                entity.State = (int)EnumProductState.正常;
+            }
+            var res = ProductDAO.DAO.Insert(entity);
+            return res;
+        }
     }
 }
