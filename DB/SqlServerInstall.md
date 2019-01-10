@@ -5,6 +5,8 @@
     - [配置](#配置)
         - [SQL Server ManagementStudio](#sql-server-managementstudio)
         - [配置管理器](#配置管理器)
+    - [备份与恢复](#备份与恢复)
+        - [备份数据库](#备份数据库)
     - [常见问题](#常见问题)
         - [无法登陆](#无法登陆)
         - [已安装vs2010无法安装sqlserver2012](#已安装vs2010无法安装sqlserver2012)
@@ -153,6 +155,18 @@ SQL Server 2012 | C:\Windows\SysWOW64\SQLServerManager11.msc
 ![](..\assets\SqlServer\SqlServerConfigurationManager_1.png)
 
 详见：[SQL Server 配置管理器](https://docs.microsoft.com/zh-cn/sql/relational-databases/sql-server-configuration-manager)
+
+<a id="markdown-备份与恢复" name="备份与恢复"></a>
+## 备份与恢复
+<a id="markdown-备份数据库" name="备份数据库"></a>
+### 备份数据库
+【任务】-【备份】，如下图：
+
+![](..\assets\SqlServer\bak_1.png)
+
+以完整备份为例，选择导出bak文件的路径，确定进行备份：
+
+![](..\assets\SqlServer\bak_2.png)
 
 <a id="markdown-常见问题" name="常见问题"></a>
 ## 常见问题
