@@ -10,14 +10,22 @@
             - [const](#const)
             - [枚举](#枚举)
             - [const/readonly](#constreadonly)
-        - [类型转换](#类型转换)
-            - [隐式转换](#隐式转换)
-            - [显式转换](#显式转换)
-            - [用户定义的转换](#用户定义的转换)
-            - [使用帮助程序类进行转换](#使用帮助程序类进行转换)
-        - [装箱(boxing)、拆箱(unboxing)](#装箱boxing拆箱unboxing)
         - [结构体](#结构体)
             - [结构体和类](#结构体和类)
+        - [值类型和引用类型](#值类型和引用类型)
+        - [可空修饰符](#可空修饰符)
+        - [类型转换](#类型转换)
+            - [显式转换(强制转换)](#显式转换强制转换)
+            - [隐式转换](#隐式转换)
+            - [Parse](#parse)
+            - [TryParse](#tryparse)
+            - [使用帮助类](#使用帮助类)
+        - [装箱(boxing)、拆箱(unboxing)](#装箱boxing拆箱unboxing)
+            - [装箱](#装箱)
+            - [拆箱](#拆箱)
+            - [过程](#过程)
+            - [为什么装箱？](#为什么装箱)
+            - [执行效率](#执行效率)
     - [流程控制](#流程控制)
         - [顺序](#顺序)
         - [分支](#分支)
@@ -144,7 +152,9 @@ enum <enum_name>
 
 枚举列表中的每个符号代表一个整数值，一个比它前面的符号大的整数值。
 
-默认情况下，第一个枚举符号的值是 0.例如：
+默认情况下，第一个枚举符号的值是 0.
+
+例如：
 
 ```cs
 enum Week
@@ -205,80 +215,6 @@ const常量除了可以声明为类字段之外，还可以声明为方法中的
 在下面两种情况下可以使用const常量，除此之外的其他情况都应该优先采用readonly常量：
 1. 取值永久不变(比如圆周率、一天包含的小时数、地球的半径等)
 2. 对程序性能要求非常苛刻
-
-<a id="markdown-类型转换" name="类型转换"></a>
-### 类型转换
-
-由于 C# 是在编译时静态类型化的，因此变量在声明后就无法再次声明，或无法分配另一种类型的值，除非该类型可以隐式转换为变量的类型。 
-
-例如，string 无法隐式转换为 int。 因此，在将 i 声明为 int 后，无法将字符串“Hello”分配给它，如以下代码所示：
-```cs
-int i;  
-i = "Hello"; // error CS0029: Cannot implicitly convert type 'string' to 'int'
-```
-在 C# 中，可以执行以下几种类型的转换：隐式转换、显式转换（强制转换）、用户定义的转换、使用帮助程序类进行转换
-
-<a id="markdown-隐式转换" name="隐式转换"></a>
-#### 隐式转换
-对于内置数值类型，如果要存储的值无需截断或四舍五入即可适应变量，则可以进行隐式转换。 
-
-例如，long 类型的变量（64 位整数）能够存储 int（32 位整数）可存储的任何值。
-```cs
-int num = 2147483647;
-long bigNum = num;
-```
-
-<a id="markdown-显式转换" name="显式转换"></a>
-#### 显式转换
-如果进行转换可能会导致信息丢失，则编译器会要求执行显式转换，显式转换也称为强制转换。
-```cs
-//下面的程序将 double 强制转换为 int
-double x = 1234.7;
-int a;
-// Cast double to int.
-a = (int)x;
-Console.WriteLine(a);// Output: 1234
-```
-
-<a id="markdown-用户定义的转换" name="用户定义的转换"></a>
-#### 用户定义的转换
-可以定义一些特殊的方法来执行用户定义的转换，使不具有基类和派生类关系的自定义类型之间可以显式和隐式转换。
-
-<a id="markdown-使用帮助程序类进行转换" name="使用帮助程序类进行转换"></a>
-#### 使用帮助程序类进行转换
-int、bool、DateTime类型提供的Parse方法，以及System.Convert 类提供的标准转换方法。
-
-<a id="markdown-装箱boxing拆箱unboxing" name="装箱boxing拆箱unboxing"></a>
-### 装箱(boxing)、拆箱(unboxing)
-装箱就是隐式的将一个值型转换为引用型对象。
-```cs
-//将i进行装箱操作
-int i = 0;
-object obj = i;
-```
-
-拆箱就是将一个引用型对象转换成任意值型
-```cs
-针对上例中的obj进行拆箱
-int res = (int)obj;
-```
-
-```cs
-int i = 0;//L1
-object obj = i;//L2
-Console.WriteLine(i + "," + (int)obj);//L3
-```
-上述代码实际进行了三次装箱、一次拆箱
-
-L2行，i装箱为obj，1次装箱；
-
-L3行，WriteLine参数应该为字符串，即i又进行一次装箱，变为string引用类型，2次装箱；
-
-L3行，(int)obj对obj对象进行拆箱转换为值类型，1次拆箱；
-
-L3行，(int)obj的结果为值类型，控制台打印输出需要又一次的装箱为string类型，3次装箱；
-
-频繁的装拆箱会造成性能的损耗！！！
 
 <a id="markdown-结构体" name="结构体"></a>
 ### 结构体
@@ -354,6 +290,261 @@ class Program
 ```
 
 和引用类型相比，结构越复杂，复制造成的性能开销越大。因此，结构应该只用来表示小的数据结构。
+
+<a id="markdown-值类型和引用类型" name="值类型和引用类型"></a>
+### 值类型和引用类型
+
+所有的类型都可以归为值类型和引用类型。
+
+它们的区别在于复制方式：值类型的数据总是进行值复制，而引用类型的数据总是进行引用复制。
+
+变量引用的位置就是值在内存中实际存储的位置，将第一个变量的值赋给第二个变量时会创建原始变量值的一个内存副本。
+
+![](../assets/Programming/值类型拷贝.png)
+
+类似地，将值类型的实例传给方法，如Console.WriteLine()，也会生成一个内存副本。
+
+在方法内部对参数值进行的任何修改都不会影响调用函数中的原始值。
+
+引用类型的值存储的是对数据存储位置的引用，而不是直接存储数据。
+
+要去那个位置才能找到真正的数据。因此，为了访问数据，“运行时"要先从变量中读取内存位置，再“跳转"到包含数据的内存位置。
+
+引用类型指向的内存区域称为堆（heap），如下图所示：
+
+![](../assets/Programming/引用拷贝.png)
+
+引用类型不像值类型那样要求创建数据的内存副本，所以复制引用类型的实例比复制大的值类型实例更高效。
+
+将引用类型的变量赋给另一个引用类型的变量，只会复制引用而不需要复制所引用的数据。
+
+显然，复制对一个大数据块的引用，比复制整个数据块快得多。
+
+<a id="markdown-可空修饰符" name="可空修饰符"></a>
+### 可空修饰符
+
+一般不能将null值赋给值类型。
+
+这是因为根据定义，值类型不能包含引用，即使是对“无（nothing）”的引用。
+
+但在值本来就缺失的时候，这也会带来问题。
+
+例如，在指定计数的时候，假如计数未知，应该如何输入？一个可能的解决方案是指定特殊值，比如一1或者int.MaxVa1ue.但这些都是有效的整数。
+
+我们倒更希望直接将null赋给值类型，因为这不是有效的整数。
+
+```cs
+/*
+int和DateTime同为值类型，不可以为null值
+使用可空修饰符？或者Nullable<T>类型
+*/
+// int number = null;// 值类型不可以赋值为null
+int? count = null;
+Nullable<DateTime> start = null;
+
+// 针对可空值类型的判断,HasValue判断是否有值
+if (count.HasValue)
+{
+}
+// GetValueOrDefault 当为null时获取默认值
+int res = count.GetValueOrDefault(-1);
+```
+
+<a id="markdown-类型转换" name="类型转换"></a>
+### 类型转换
+
+由于 C# 是在编译时静态类型化的，因此变量在声明后就无法再次声明，或无法分配另一种类型的值，除非该类型可以隐式转换为变量的类型。 
+
+例如，string 无法隐式转换为 int。 因此，在将 i 声明为 int 后，无法将字符串“Hello”分配给它，如以下代码所示：
+```cs
+int i;  
+i = "Hello"; // error CS0029: Cannot implicitly convert type 'string' to 'int'
+```
+在 C# 中，可以执行以下几种类型的转换：隐式转换、显式转换（强制转换）、用户定义的转换、使用帮助程序类进行转换
+
+<a id="markdown-显式转换强制转换" name="显式转换强制转换"></a>
+#### 显式转换(强制转换)
+
+通过在圆括号中指定希望变量转换成的类型，表明你已认可在发生显式转型时可能丢失精度和数据，或者可能造成异常。
+
+如果进行转换可能会导致信息丢失，则编译器会要求执行显式转换，显式转换也称为强制转换。
+```cs
+//下面的程序将 double 强制转换为 int
+double x = 1234.7;
+int a;
+// Cast double to int.
+a = (int)x;
+Console.WriteLine(a);// Output: 1234
+```
+
+<a id="markdown-隐式转换" name="隐式转换"></a>
+#### 隐式转换
+对于内置数值类型，如果要存储的值无需截断或四舍五入即可适应变量，则可以进行隐式转换。 
+
+例如，long 类型的变量（64 位整数）能够存储 int（32 位整数）可存储的任何值。
+```cs
+int num = 2147483647;
+long bigNum = num;
+```
+
+<a id="markdown-parse" name="parse"></a>
+#### Parse
+每个数值数据类型都包含一个Parse()方法，允许将字符串转换为对应的数值类型。
+
+```cs
+string text1 = "123.45";
+var res1 = double.Parse(text1);
+
+string text2 = "666";
+var res2 = int.Parse(text2);
+
+string text3 = "2019-2-14";
+var res3 = DateTime.Parse(text3);
+```
+
+<a id="markdown-tryparse" name="tryparse"></a>
+#### TryParse
+所有基元数值类型都包含静态Tryparse()方法。
+
+该方法与Parse()非常相似，只是转换失败的情况下，它不引发异常，而是返回false。
+
+```cs
+double number;
+string input;
+Console.Write("请输入一个数值:");
+input = Console.ReadLine();
+
+// 解析得到的number是通过out参数返回的
+if (double.TryParse(input, out number))
+{
+    Console.WriteLine(number);
+}
+else
+{
+    Console.WriteLine("您的输入不是一个有效数值");
+}
+```
+
+<a id="markdown-使用帮助类" name="使用帮助类"></a>
+#### 使用帮助类
+静态方法Convert类主要用于在.NET Framework 中支持基本数据类型之间的转换。 
+
+支持的基类型为Boolean， Char， SByte， Byte， Int16， 
+
+Int32， Int64， UInt16， UInt32， UInt64， 
+
+Single， Double，Decimal，DateTime和String。 
+
+此外，Convert类包含方法以支持其他类型的转换，比如DateTime结构体。
+
+```cs
+double dNumber = 23.15;
+
+// Returns 23
+int iNumber = Convert.ToInt32(dNumber);
+Console.WriteLine(iNumber);
+
+// Returns True
+bool bNumber = Convert.ToBoolean(dNumber);
+Console.WriteLine(bNumber);
+
+// Returns "23.15"
+string strNumber = Convert.ToString(dNumber);
+Console.WriteLine(strNumber);
+
+// Returns '2'
+char chrNumber = Convert.ToChar(strNumber[0]);
+Console.WriteLine(chrNumber);
+
+string time = "2019-2-17 18:18:38";
+DateTime dt = Convert.ToDateTime(time);
+Console.WriteLine(dt);
+```
+
+
+<a id="markdown-装箱boxing拆箱unboxing" name="装箱boxing拆箱unboxing"></a>
+### 装箱(boxing)、拆箱(unboxing)
+
+<a id="markdown-装箱" name="装箱"></a>
+#### 装箱
+装箱是将**值类型**转换为**引用类型** ；
+
+```cs
+// val是值类型，对val进行装箱
+int val = 100; 
+object obj = val; 
+Console.WriteLine ("对象的值 = {0}", obj); //对象的值 = 100
+```
+
+<a id="markdown-拆箱" name="拆箱"></a>
+#### 拆箱
+
+拆箱是将**引用类型**转换为**值类型**。
+
+被装过箱的对象才能被拆箱，val经过装箱成obj，再进行强制类型转换为值类型
+```cs
+int val = 100; 
+object obj = val; 
+int num = (int) obj; 
+Console.WriteLine ("num: {0}", num); //num: 100
+```
+
+<a id="markdown-过程" name="过程"></a>
+#### 过程
+
+**装箱操作：**
+
+![](../assets/Programming/装箱.png)
+
+上图中的值类型i和引用o互不影响，因为装箱会产生i的副本。上述装箱的过程：
+1. 首先从托管堆中为新生成的引用对象分配内存(大小为值类型实例大小加上一个方法表指针和一个SyncBlockIndex)。 
+2. 然后将值类型的数据拷贝到刚刚分配的内存中。 
+3. 返回托管堆中新分配对象的地址。这个地址就是一个指向对象的引用了。
+
+**拆箱操作：**
+
+![](../assets/Programming/装箱.png)
+
+上图中的引用o和值类型i的改变也互不影响，上图对应的拆箱过程：
+1. 首先获取托管堆中属于值类型那部分字段的地址，这一步是严格意义上的拆箱。
+2. 将引用对象中的值拷贝到位于线程堆栈上的值类型实例中。
+
+<a id="markdown-为什么装箱" name="为什么装箱"></a>
+#### 为什么装箱？
+
+为什么需要装箱？也就是为何要将值类型转为引用类型？
+
+一种最普通的场景是，调用一个含类型为Object的参数的方法，该Object可支持任意为型，以便通用。
+
+当你需要将一个值类型(如Int32)传入时，需要装箱。 
+
+另一种用法是，一个非泛型的容器，同样是为了保证通用，而将元素类型定义为Object。
+
+于是，要将值类型数据加入容器时，需要装箱。
+
+<a id="markdown-执行效率" name="执行效率"></a>
+#### 执行效率
+
+从原理上可以看出，装箱时，生成的是全新的引用对象，这会有时间损耗，也就是造成效率降低。
+
+针对上面提到的两种情况，在第一种情况下，可以通过重载函数来避免。第二种情况，则可以通过泛型来避免。 
+
+```cs
+int i = 0;//L1
+object obj = i;//L2
+Console.WriteLine(i + "," + (int)obj);//L3
+```
+上述代码实际进行了三次装箱、一次拆箱
+
+L2行，i装箱为obj，1次装箱；
+
+L3行，WriteLine参数应该为字符串，即i又进行一次装箱，变为string引用类型，2次装箱；
+
+L3行，(int)obj对obj对象进行拆箱转换为值类型，1次拆箱；
+
+L3行，(int)obj的结果为值类型，控制台打印输出需要又一次的装箱为string类型，3次装箱；
+
+频繁的装拆箱会造成性能的损耗！！！
 
 <a id="markdown-流程控制" name="流程控制"></a>
 ## 流程控制
@@ -525,11 +716,11 @@ public double Calculate(double x, double y) {......}
 ### 参数传递
 当调用带有参数的方法时，您需要向方法传递参数。在 C# 中，有三种向方法传递参数的方式：
 
-| 方式     | 描述                                                                                                                                                             |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 方式     | 描述  |
+| -------- | ------- |
 | 值参数   | 这种方式复制参数的实际值给函数的形式参数，实参和形参使用的是两个不同内存中的值。在这种情况下，当形参的值发生改变时，不会影响实参的值，从而保证了实参数据的安全。 |
-| 引用参数 | 这种方式复制参数的内存位置的引用给形式参数。这意味着，当形参的值发生改变时，同时也改变实参的值。                                                                 |
-| 输出参数 | 这种方式可以返回多个值。                                                                                                                                         |
+| 引用参数 | 这种方式复制参数的内存位置的引用给形式参数。这意味着，当形参的值发生改变时，同时也改变实参的值。 |
+| 输出参数 | 这种方式可以返回多个值。|
 
 <a id="markdown-值传递" name="值传递"></a>
 #### 值传递
