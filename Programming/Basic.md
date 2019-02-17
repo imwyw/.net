@@ -42,6 +42,8 @@
             - [引用传递](#引用传递)
             - [输出参数](#输出参数)
             - [params](#params)
+        - [可选参数](#可选参数)
+        - [命名参数](#命名参数)
 
 <!-- /TOC -->
 
@@ -841,6 +843,68 @@ static void Main(string[] args)
 3. 带 params 关键字的参数必须是最后一个参数，并且在方法声明中只允许一个 params 关键字。
 4. 不能仅使用 params 来使用重载方法。
 5. 没有 params 关键字的方法的优先级高于带有params关键字的方法的优先级
+
+<a id="markdown-可选参数" name="可选参数"></a>
+### 可选参数
+从C#4.0开始，增添了对可选参数（optional parameters）的支持。
+
+声明方法时将常量值赋给参数，以后调用方法时就不必每个参数都指定。
+
+```cs
+static void Main(string[] args)
+{
+    Console.WriteLine(Add(1, 2));
+    Console.WriteLine(Add(1));
+}
+
+static int Add(int a, int b = 1)
+{
+    return a + b;
+}
+```
+
+在上例中，如果调用时不指定extension(扩展)参数，就是使用声明时赋给extension的值(上例中b默认为1)。
+
+这样的设计，避免了额外一个方法重载的需求。
+
+需要注意两点：
+1. 可选参数一定放在所有必须参数的后面
+2. 默认参数的默认值必须是常量，或者说必须是能在编译时确定下来的值
+
+下例中，DateTime.Now.Month并非是编译时常量，所以无法通过编译
+```cs
+static int Add(int a, int b = DateTime.Now.Month)
+{
+    return a + b;
+}
+```
+
+<a id="markdown-命名参数" name="命名参数"></a>
+### 命名参数
+利用命名参数，调用者可显式地为一个参数赋值，而不是像以前那样只能依据参数顺序来决定哪个值赋给哪个参数，如下代码所示：
+
+```cs
+static void Main(string[] args)
+{
+    Console.WriteLine(Display("马云"));
+    Console.WriteLine(Display("刘强东", lastName: "liu"));
+}
+
+static string Display(string name, string firstName = "jack", string lastName = "ma")
+{
+    return $"{name}-{firstName} {lastName}";
+}
+```
+
+调用时，在两个可选参数中（firstName和lastName），只指定了lastName。
+
+试想，如果一个方法有大量参数，而且其中许多都是可选的（在一些第三方组件中，这是很常见的一种情况），那么命名参数语法肯定能带来不少便利。
+
+但是，这个便利的代价是牺牲方法接口的灵活性。过去（至少就c#来说），参数名可以自由更改，不会造成调用代码无法编译的情况。
+
+但在添加了命名参数后，参数名就成为方法接口的一部分。更改名称会导致使用命名参数的代码无法编译。
+
+所以，重构的时候针对此情况一定要特别注意！
 
 ---
 
