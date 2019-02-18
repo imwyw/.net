@@ -1,124 +1,125 @@
 <!-- TOC -->
 
 - [DB](#db)
-    - [SqlServer2012的安装](#sqlserver2012的安装)
-    - [配置](#配置)
-        - [SQL Server ManagementStudio](#sql-server-managementstudio)
-        - [配置管理器](#配置管理器)
-    - [备份与恢复](#备份与恢复)
-        - [备份数据库](#备份数据库)
-    - [常见问题](#常见问题)
-        - [无法登陆](#无法登陆)
-        - [已安装vs2010无法安装sqlserver2012](#已安装vs2010无法安装sqlserver2012)
-        - [无法启动WindowsManagementInstrumentation(WMI)服务](#无法启动windowsmanagementinstrumentationwmi服务)
+  - [SqlServer2012的安装](#sqlserver2012%E7%9A%84%E5%AE%89%E8%A3%85)
+  - [配置](#%E9%85%8D%E7%BD%AE)
+    - [SQL Server ManagementStudio](#sql-server-managementstudio)
+    - [配置管理器](#%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E5%99%A8)
+  - [备份与恢复](#%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D)
+    - [备份数据库](#%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%E5%BA%93)
+  - [常见问题](#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
+    - [无法登陆](#%E6%97%A0%E6%B3%95%E7%99%BB%E9%99%86)
+    - [已安装vs2010无法安装sqlserver2012](#%E5%B7%B2%E5%AE%89%E8%A3%85vs2010%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85sqlserver2012)
+    - [无法启动WindowsManagementInstrumentation(WMI)服务](#%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8windowsmanagementinstrumentationwmi%E6%9C%8D%E5%8A%A1)
 
 <!-- /TOC -->
+
 <a id="markdown-db" name="db"></a>
 # DB
 常见的数据库有
 
-名称 | 开发商 | 场景
----|-----|---
-DB2 | IBM | 大型企业
-INFORMIX | IBM | 大型企业
-Oracle | Oracle甲骨文 | 中大型企业
-MySql | Oracle收购 | 中小型企业
-SqlServer | Microsoft | 中小型企业
-SQLite | 开源 | 轻量级，但性能非常强悍
+| 名称      | 开发商       | 场景                   |
+| --------- | ------------ | ---------------------- |
+| DB2       | IBM          | 大型企业               |
+| INFORMIX  | IBM          | 大型企业               |
+| Oracle    | Oracle甲骨文 | 中大型企业             |
+| MySql     | Oracle收购   | 中小型企业             |
+| SqlServer | Microsoft    | 中小型企业             |
+| SQLite    | 开源         | 轻量级，但性能非常强悍 |
 
 <a id="markdown-sqlserver2012的安装" name="sqlserver2012的安装"></a>
 ## SqlServer2012的安装
 1.打开setup.exe，选择安装选项，如下图：
 
-![](..\assets\SqlServer\Install_1.png)
+![](../assets/SqlServer/Install_1.png)
 
 2.安装程序支持规则检测，点击确定进行下一步，如下图：
 
-![](..\assets\SqlServer\Install_2.png)
+![](../assets/SqlServer/Install_2.png)
 
 3.输入密钥FH666-Y346V-7XFQ3-V69JM-RHW28，点击下一步：
 
-![](..\assets\SqlServer\Install_3.png)
+![](../assets/SqlServer/Install_3.png)
 
 4.默认勾选即可，如图：
 
-![](..\assets\SqlServer\Install_4.png)
+![](../assets/SqlServer/Install_4.png)
 
 5.可以不需要勾选更新，如图：
 
-![](..\assets\SqlServer\Install_5.png)
+![](../assets/SqlServer/Install_5.png)
 
 6.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_6.png)
+![](../assets/SqlServer/Install_6.png)
 
 7.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_7.png)
+![](../assets/SqlServer/Install_7.png)
 
 8.选中数据库引擎服务、客户端工具连接和管理工具，点击下一步：
 
-![](..\assets\SqlServer\Install_8.png)
+![](../assets/SqlServer/Install_8.png)
 
 9.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_9.png)
+![](../assets/SqlServer/Install_9.png)
 
 10.此处采用默认实例名称和默认安装路径，默认实例名称不建议更改，点击下一步：
 
-![](..\assets\SqlServer\Install_10.png)
+![](../assets/SqlServer/Install_10.png)
 
 如果有实例名称被占用的情况，可以选择命名实例，只要名称不重复都可以。
 
-![](..\assets\SqlServer\实例名称冲突.png)
+![](../assets/SqlServer/实例名称冲突.png)
 
 ps.实例名称被占用一般是以前安装过或者存在多个版本sqlserver服务导致的。
 
 11.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_11.png)
+![](../assets/SqlServer/Install_11.png)
 
 12.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_12.png)
+![](../assets/SqlServer/Install_12.png)
 
 13.身份验证模式选择混合模式并设置密码，添加当前用户为管理员；数据目录课进行修改，也可保持默认，在这里作默认处理；如下两图：
 
-![](..\assets\SqlServer\Install_13-1.png)
+![](../assets/SqlServer/Install_13-1.png)
 
-![](..\assets\SqlServer\Install_13-2.png)
+![](../assets/SqlServer/Install_13-2.png)
 
 14.添加当前用户权限，点击下一步：
 
-![](..\assets\SqlServer\Install_14.png)
+![](../assets/SqlServer/Install_14.png)
 
 15.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_15.png)
+![](../assets/SqlServer/Install_15.png)
 
 16.添加当前用户权限，点击下一步：
 
-![](..\assets\SqlServer\Install_16.png)
+![](../assets/SqlServer/Install_16.png)
 
 17.输入控制器名称，点击下一步：
 
-![](..\assets\SqlServer\Install_17.png)
+![](../assets/SqlServer/Install_17.png)
 
 18.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_18.png)
+![](../assets/SqlServer/Install_18.png)
 
 19.默认设置，点击下一步：
 
-![](..\assets\SqlServer\Install_19.png)
+![](../assets/SqlServer/Install_19.png)
 
 20.默认设置，点击安装：
 
-![](..\assets\SqlServer\Install_20.png)
+![](../assets/SqlServer/Install_20.png)
 
 21.重启计算机，完成安装：
 
-![](..\assets\SqlServer\Install_21.png)
+![](../assets/SqlServer/Install_21.png)
 
 <a id="markdown-配置" name="配置"></a>
 ## 配置
@@ -131,9 +132,9 @@ SQL Server Management Studio 组合了大量图形工具和丰富的脚本编辑
 
 安装完成后打开【SQL Server ManagementStudio】连接工具，显示如下登录窗口，使用windows身份验证登录或者使用第13步安装配置的密码进行登录。
 
-![](..\assets\SqlServer\Config_1.png)
+![](../assets/SqlServer/Config_1.png)
 
-![](..\assets\SqlServer\Config_2.png)
+![](../assets/SqlServer/Config_2.png)
 
 <a id="markdown-配置管理器" name="配置管理器"></a>
 ### 配置管理器
@@ -145,14 +146,14 @@ Microsoft 管理控制台 (mmc.exe) 使用 SQLServerManager<version>.msc 文件�
 
 以下是在 C 盘安装 Windows 的情况下最新的四个版本的路径。
 
-版本 | 路径
----|---
-SQL Server 2017 | C:\Windows\SysWOW64\SQLServerManager14.msc
-SQL Server 2016 | C:\Windows\SysWOW64\SQLServerManager13.msc
-SQL Server 2014 | C:\Windows\SysWOW64\SQLServerManager12.msc
-SQL Server 2012 | C:\Windows\SysWOW64\SQLServerManager11.msc
+| 版本            | 路径                                       |
+| --------------- | ------------------------------------------ |
+| SQL Server 2017 | C:\Windows\SysWOW64\SQLServerManager14.msc |
+| SQL Server 2016 | C:\Windows\SysWOW64\SQLServerManager13.msc |
+| SQL Server 2014 | C:\Windows\SysWOW64\SQLServerManager12.msc |
+| SQL Server 2012 | C:\Windows\SysWOW64\SQLServerManager11.msc |
 
-![](..\assets\SqlServer\SqlServerConfigurationManager_1.png)
+![](../assets/SqlServer/SqlServerConfigurationManager_1.png)
 
 详见：[SQL Server 配置管理器](https://docs.microsoft.com/zh-cn/sql/relational-databases/sql-server-configuration-manager)
 
@@ -162,11 +163,11 @@ SQL Server 2012 | C:\Windows\SysWOW64\SQLServerManager11.msc
 ### 备份数据库
 【任务】-【备份】，如下图：
 
-![](..\assets\SqlServer\bak_1.png)
+![](../assets/SqlServer/bak_1.png)
 
 以完整备份为例，选择导出bak文件的路径，确定进行备份：
 
-![](..\assets\SqlServer\bak_2.png)
+![](../assets/SqlServer/bak_2.png)
 
 <a id="markdown-常见问题" name="常见问题"></a>
 ## 常见问题
@@ -175,19 +176,19 @@ SQL Server 2012 | C:\Windows\SysWOW64\SQLServerManager11.msc
 ### 无法登陆
 - 检查数据库服务是否开启  运行 services.msc查看SQL Server服务是否正在运行；或通过SQL Server配置管理器查看服务是否正在运行；
 
-![](..\assets\SqlServer\sql_server_1.png)
+![](../assets/SqlServer/sql_server_1.png)
 
 - SqlServerConfigurationManager配置管理工具，可以在[C:\Windows\System32\SQLServerManager11.msc]或[C:\Windows\SysWOW64\SQLServerManager11.msc]找到
 
-![](..\assets\SqlServer\sql_server_2.png)
+![](../assets/SqlServer/sql_server_2.png)
 
 - 是否启用TCP/IP协议
 
-![](..\assets\SqlServer\sql_server_3.png)
+![](../assets/SqlServer/sql_server_3.png)
 
 - 是否启用混合模式及用户名密码是否正确
 
-![](..\assets\SqlServer\sql_server_4.gif)
+![](../assets/SqlServer/sql_server_4.gif)
 
 - 检查网络是否可以访问，使用ping进行检测
 
@@ -195,7 +196,7 @@ SQL Server 2012 | C:\Windows\SysWOW64\SQLServerManager11.msc
 ### 已安装vs2010无法安装sqlserver2012
 具体呈现如下：
 
-![](..\assets\SqlServer\faq_vs2010_1.png)
+![](../assets/SqlServer/faq_vs2010_1.png)
 
 需要安装vs2010 sp1补丁
 
