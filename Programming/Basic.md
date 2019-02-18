@@ -44,6 +44,7 @@
             - [params](#params)
         - [可选参数](#可选参数)
         - [命名参数](#命名参数)
+        - [递归](#递归)
 
 <!-- /TOC -->
 
@@ -905,6 +906,122 @@ static string Display(string name, string firstName = "jack", string lastName = 
 但在添加了命名参数后，参数名就成为方法接口的一部分。更改名称会导致使用命名参数的代码无法编译。
 
 所以，重构的时候针对此情况一定要特别注意！
+
+<a id="markdown-递归" name="递归"></a>
+### 递归
+递归意味着方法调用它自身。
+
+有趣的类比：递归就是包子馅的包子。它的极限是馒头。
+
+求n的阶乘
+```cs
+/// <summary>
+/// 4! = 4*3!  4*3*2!  4*3*2*1
+/// 3! = 3*2!  3*2*1
+/// 2! = 2*1
+/// 1! = 1
+/// </summary>
+/// <param name="n"></param>
+/// <returns></returns>
+int JieCheng(int n)
+{
+    if (n == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return n * JieCheng(n - 1);
+    }
+}
+```
+
+在数学上，费波那契数列是以递归的方法来定义：
+
+![](../assets/Programming/fibonacci.png)
+
+就是费波那契数列由0和1开始，之后的费波那契系数就是由之前的两数相加而得出。首几个费波那契系数是：
+
+0,1,1,2,3,5,8,13,21,34,55,89,144,233……
+
+**特别指出：0不是第一项，而是第零项。**
+```cs
+static void Main(string[] args)
+{
+    DateTime time = DateTime.Now;
+    for (int i = 0; i < 40; i++)
+    {
+        Console.WriteLine(Fibonacci(i));
+    }
+    Console.WriteLine("！！！耗时(单位秒)：" + DateTime.Now.Subtract(time).TotalSeconds);
+}
+
+// 结构简单，复杂度高
+static int Fibonacci(int n)
+{
+    if (n == 0)
+    {
+        return 0;
+    }
+    else if (n == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return Fibonacci(n - 2) + Fibonacci(n - 1);
+    }
+}
+```
+
+精简化后：
+// 结构更简单，复杂度仍很高
+```cs
+static int Fibonacci(int n)
+{
+    return n < 2 ? n : Fibonacci(n - 2) + Fibonacci(n - 1);
+}
+```
+
+提升效率：
+```cs
+static void Main(string[] args)
+{
+    DateTime time = DateTime.Now;
+
+    int LENGTH = 40;
+    int[] arrFibo = new int[LENGTH];
+    for (int i = 0; i < LENGTH; i++)
+    {
+        Console.WriteLine(Fibonacci(i, arrFibo));
+    }
+    Console.WriteLine("！！！耗时(单位秒)：" + DateTime.Now.Subtract(time).TotalSeconds);
+}
+
+/// <summary>
+/// 通过中间结果提升效率
+/// </summary>
+/// <param name="n"></param>
+/// <param name="arr">通过数组记录中间结果</param>
+/// <returns></returns>
+static int Fibonacci(int n, int[] arr)
+{
+    if (n < 2)
+    {
+        arr[n] = n;
+        return n;
+    }
+    else
+    {
+        arr[n] = arr[n - 2] + arr[n - 1];
+        return arr[n];
+    }
+}
+```
+
+用递归实现方法时，常见错误是在程序执行期间发生栈溢出。
+
+通常是由于无限递归造成的。如果方法持续调用自身，永远抵达不了递归结束的位置触发点。
 
 ---
 
