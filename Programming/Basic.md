@@ -506,7 +506,7 @@ Console.WriteLine ("num: {0}", num); //num: 100
 
 **拆箱操作：**
 
-![](../assets/Programming/装箱.png)
+![](../assets/Programming/拆箱.png)
 
 上图中的引用o和值类型i的改变也互不影响，上图对应的拆箱过程：
 1. 首先获取托管堆中属于值类型那部分字段的地址，这一步是严格意义上的拆箱。
