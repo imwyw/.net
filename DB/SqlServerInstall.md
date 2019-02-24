@@ -1,16 +1,16 @@
 <!-- TOC -->
 
 - [DB](#db)
-  - [SqlServer2012的安装](#sqlserver2012%E7%9A%84%E5%AE%89%E8%A3%85)
-  - [配置](#%E9%85%8D%E7%BD%AE)
-    - [SQL Server ManagementStudio](#sql-server-managementstudio)
-    - [配置管理器](#%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E5%99%A8)
-  - [备份与恢复](#%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D)
-    - [备份数据库](#%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%E5%BA%93)
-  - [常见问题](#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
-    - [无法登陆](#%E6%97%A0%E6%B3%95%E7%99%BB%E9%99%86)
-    - [已安装vs2010无法安装sqlserver2012](#%E5%B7%B2%E5%AE%89%E8%A3%85vs2010%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85sqlserver2012)
-    - [无法启动WindowsManagementInstrumentation(WMI)服务](#%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8windowsmanagementinstrumentationwmi%E6%9C%8D%E5%8A%A1)
+    - [SqlServer2012的安装](#sqlserver2012的安装)
+    - [配置](#配置)
+        - [SQL Server ManagementStudio](#sql-server-managementstudio)
+        - [配置管理器](#配置管理器)
+    - [备份与恢复](#备份与恢复)
+        - [备份数据库](#备份数据库)
+    - [常见问题](#常见问题)
+        - [无法登陆](#无法登陆)
+        - [已安装vs2010无法安装sqlserver2012](#已安装vs2010无法安装sqlserver2012)
+        - [无法启动WindowsManagementInstrumentation(WMI)服务](#无法启动windowsmanagementinstrumentationwmi服务)
 
 <!-- /TOC -->
 
