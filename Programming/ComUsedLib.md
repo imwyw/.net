@@ -20,7 +20,17 @@
         - [堆栈Stack](#堆栈stack)
         - [队列Queue](#队列queue)
     - [泛型](#泛型)
-        - [泛型使用](#泛型使用)
+        - [泛型类](#泛型类)
+        - [泛型特性Generic](#泛型特性generic)
+        - [泛型方法](#泛型方法)
+        - [性能和类型安全](#性能和类型安全)
+        - [类型推断](#类型推断)
+        - [泛型约束](#泛型约束)
+            - [引用类型约束](#引用类型约束)
+            - [值类型约束](#值类型约束)
+            - [构造函数类型约束](#构造函数类型约束)
+            - [转换类型约束](#转换类型约束)
+            - [组合约束](#组合约束)
         - [泛型集合List<T>](#泛型集合listt)
         - [Dictionay<Tkey,Tvalue>](#dictionaytkeytvalue)
     - [自定义集合](#自定义集合)
@@ -346,19 +356,21 @@ foreach (var item in qu)
 
 <a id="markdown-泛型" name="泛型"></a>
 ## 泛型
-泛型可以定义类型安全的数据结构，而无须使用实际的数据类型。有助于最大限度地重用代码、保护类型的安全以及提高性能。
-
-泛型（Generic）允许您延迟编写类或方法中的编程元素的数据类型的规范，直到实际在程序中使用它的时候。
+**泛型（Generic）**允许您延迟编写类或方法中的编程元素的数据类型的规范，直到实际在程序中使用它的时候。
 
 换句话说，泛型允许您编写一个可以与任何数据类型一起工作的类或方法。
 
-我们可以通过数据类型的替代参数编写类或方法的规范。
+泛型本来代表的就是通用类型，国内翻译作泛型，其实可以理解为一个模子。
 
-当编译器遇到类的构造函数或方法的函数调用时，它会生成代码来处理指定的数据类型。
+在生活中，我们经常会看到模子，像我们平常生活中用的桶就是一个模子，
+ 
+我们可以用桶子装水，也可以用来装油，牛奶等等，然而把这些都装进桶子里面之后，
+ 
+它们都会具有桶的形状（水，牛奶和油本来是没有形的），即具有模子的特征。
 
-<a id="markdown-泛型使用" name="泛型使用"></a>
-### 泛型使用
-泛型类：
+<a id="markdown-泛型类" name="泛型类"></a>
+### 泛型类
+定义一个泛型类：
 ```cs
 /// <summary>
 /// 泛型数组类
@@ -383,7 +395,57 @@ public class MyGenericArray<T>
 }
 ```
 
-泛型方法：
+在Main方法中调用：
+```cs
+// 声明一个整型数组
+MyGenericArray<int> intArray = new MyGenericArray<int>(5);
+// 设置值
+for (int c = 0; c < 5; c++)
+{
+    intArray.setItem(c, c*5);
+}
+// 获取值
+for (int c = 0; c < 5; c++)
+{
+    Console.Write(intArray.getItem(c) + " ");
+}
+Console.WriteLine();
+// 声明一个字符数组
+MyGenericArray<char> charArray = new MyGenericArray<char>(5);
+// 设置值
+for (int c = 0; c < 5; c++)
+{
+    charArray.setItem(c, (char)(c+97));
+}
+// 获取值
+for (int c = 0; c < 5; c++)
+{
+    Console.Write(charArray.getItem(c) + " ");
+}
+Console.WriteLine();
+Console.ReadKey();
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```
+0 5 10 15 20
+a b c d e
+```
+
+<a id="markdown-泛型特性generic" name="泛型特性generic"></a>
+### 泛型特性Generic
+
+使用泛型是一种增强程序功能的技术，具体表现在以下几个方面：
+1. 它有助于最大限度地重用代码、保护类型的安全以及提高性能。
+2. 可以创建泛型集合类。.NET 框架类库在 System.Collections.Generic 命名空间中包含了一些新的泛型集合类。您可以使用这些泛型集合类来替代 System.Collections 中的集合类。
+3. 可以创建自己的泛型接口、泛型类、泛型方法、泛型事件和泛型委托。
+4. 可以对泛型类进行约束以访问特定数据类型的方法。
+5. 关于泛型数据类型中使用的类型的信息可在运行时通过使用反射获取。
+
+<a id="markdown-泛型方法" name="泛型方法"></a>
+### 泛型方法
+
 ```cs
 /// <summary>
 /// 泛型方法
@@ -410,6 +472,188 @@ static void Main()
     Console.WriteLine("交换后a:{0}\t b:{1}", a, b);
     Console.WriteLine("交换后str1:{0}\t str2:{1}", str1, str2);
 }
+```
+
+<a id="markdown-性能和类型安全" name="性能和类型安全"></a>
+### 性能和类型安全
+泛型可以实现代码的重用，还可以提供更好的性能和类型安全。
+
+```cs
+// 计时
+Stopwatch watcher = new Stopwatch();
+int COUNT = 10 * 1000 * 1000;
+
+// 非泛型数组
+ArrayList arraylist = new ArrayList();
+
+// 泛型数组
+List<int> genericlist = new List<int>();
+
+watcher.Start();
+for (int i = 1; i < COUNT; i++)
+{
+    genericlist.Add(i);
+}
+watcher.Stop();
+
+// 输出所用的时间
+Console.WriteLine($"泛型集合运行的时间：{watcher.ElapsedMilliseconds}(毫秒)");
+
+watcher.Start();
+for (int i = 1; i < COUNT; i++)
+{
+    arraylist.Add(i);
+}
+watcher.Stop();
+
+// 输出所用的时间
+Console.WriteLine($"非泛型集合运行的时间：{watcher.ElapsedMilliseconds}(毫秒)");
+```
+
+从两个结果中就可以明显看出 向泛型数组中的加入数据的效率远高于非泛型数组。
+
+这样就充分说明泛型的另一个好处【高性能】，并且泛型类型也保证了类型安全，上例中的genericlist无法添加string类型的值。
+
+<a id="markdown-类型推断" name="类型推断"></a>
+### 类型推断
+类型推断，意味着编译器会在调用一个泛型方法时自动判断要使用的类型。
+
+要注意的是：类型推断只使用于泛型方法，不适用于泛型类型。
+
+```cs
+static void Main(string[] args)
+{
+    int n1 = 1;
+    int n2 = 2;
+    // 没有类型推断时需要写的代码
+    GenericMethodTest<int>(ref n1, ref n2);
+
+    // 有了类型推断后需要写的代码
+    // 此时编译器可以根据传递的实参 1和2来判断应该使用Int类型实参来调用泛型方法
+    // 可以看出有了类型推断之后少了<>,这样代码多的时候可以增强可读性
+    GenericMethodTest(ref n1, ref n2);
+    Console.WriteLine("n1的值现在为：" + n1);
+    Console.WriteLine("n2的值现在为：" + n2);
+    Console.Read();
+
+    //string t1 = "123";
+    //object t2 = "456";
+    //// 此时编译出错，不能推断类型
+    //// 使用类型推断时，C#使用变量的数据类型，而不是使用变量引用对象的数据类型
+    //// 所以下面的代码会出错，因为C#编译器发现t1是string，而t2是一个object类型
+    //// 即使 t2引用的是一个string,此时由于t1和t2是不同数据类型，编译器所以无法推断出类型，所以报错。
+    //GenericMethodTest(ref t1, ref t2);
+}
+
+/// <summary>
+/// 类型推断的Demo
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="t1"></param>
+/// <param name="t2"></param>
+static void GenericMethodTest<T>(ref T t1, ref T t2)
+{
+    T temp = t1;
+    t1 = t2;
+    t2 = temp;
+}
+```
+
+<a id="markdown-泛型约束" name="泛型约束"></a>
+### 泛型约束
+在声明泛型方法/泛型类的时候，可以给泛型加上一定的约束来满足我们特定的一些条件。
+
+C#中有4种约束可以使用，然而这4种约束的语法都差不多。（约束要放在泛型方法或泛型类型声明的末尾，并且要使用Where关键字）
+
+<a id="markdown-引用类型约束" name="引用类型约束"></a>
+#### 引用类型约束
+表示形式为 `T:class`， 确保传递的类型实参必须是引用类型
+
+```cs
+public class SampleReference<T> where T : Stream
+{
+    public void Test(T stream)
+    {
+        stream.Close();
+    }
+}
+```
+
+上面代码中类型参数T设置了引用类型约束，Where T:stream的意思就是告诉编译器，
+
+传入的类型实参必须是System.IO.Stream或者从Stream中派生的一个类型.
+
+如果一个类型参数没有指定约束，则默认T为System.Object类型，但是并不能显示的指定System.Object约束。
+
+但是注意不能指定下面特殊的引用类型：
+```cs
+System.Object,System.Array,System.Delegate,System.MulticastDelegate,System.ValueType,System.Enum,System.Void.
+```
+
+<a id="markdown-值类型约束" name="值类型约束"></a>
+#### 值类型约束
+表示形式为 `T:struct`，确保传递的类型实参时值类型，其中包括枚举，但是不包括可空类型。
+
+```cs
+public class SampleValueType<T> where T : struct
+{
+    public static T CreateValue()
+    {
+        return new T();
+    }
+}
+```
+
+在上面代码中，`new T()`是可以通过编译的。
+
+因为T 是一个值类型，而所有值类型都有一个公共的无参构造函数。
+
+如果T不约束，或约束为引用类型时，此时上面的代码就会报错，因为有的引用类型没有公共的无参构造函数的。
+
+<a id="markdown-构造函数类型约束" name="构造函数类型约束"></a>
+#### 构造函数类型约束
+表示形式为 `T:new()`，如果类型参数有多个约束时，此约束必须为最后指定。
+
+确保指定的类型实参有一个公共无参构造函数的非抽象类型，适用于所有值类型，所有非静态、非抽象、没有显示声明的构造函数的类。
+
+<a id="markdown-转换类型约束" name="转换类型约束"></a>
+#### 转换类型约束
+表示形式：
+* `T:基类名` （确保指定的类型实参必须是基类或派生自基类的子类）
+* `T:接口名`（确保指定的类型实参必须是接口或实现了该接口的类）
+* `T:U`（为 T 提供的类型参数必须是为 U 提供的参数或派生自为 U 提供的参数）
+
+声明 | 已构造类型的例子
+---|---------
+`Class Sample<T> where T: Stream` | `Sample<Stream>`有效的，`Sample<string>`无效的
+`Class Sample<T> where T: IDisposable` | `Sample<Stream>`有效的，`Sample<StringBuilder>`无效的
+`Class Sample<T,U> where T: U` | `Sample<Stream,IDispsable>`有效的，`Sample<string,IDisposable>`无效的
+
+<a id="markdown-组合约束" name="组合约束"></a>
+#### 组合约束
+将多个不同种类的约束合并在一起的情况就是组合约束了。
+
+如果存在多个转换类型约束时，如果其中一个是类，则类必须放在接口的前面。
+
+不同的类型参数可以有不同的约束，但是他们分别要由一个单独的where关键字。
+
+```cs
+// 有效的组合约束
+class Sample<T> where T:class, IDisposable, new() {}
+class Sample<T,U> where T:class where U: struct {}
+
+// 无效的组合约束
+class Sample<T> where T: class, struct {} //(没有任何类型即时引用类型又是值类型的,所以为无效的)
+
+class Sample<T> where T: Stream, class {} //(引用类型约束应该为第一个约束，放在最前面,所以为无效的)
+
+class Sample<T> where T: new(), Stream {} //(构造函数约束必须放在最后面，所以为无效)
+
+class Sample<T> where T: IDisposable, Stream {} //(类必须放在接口前面，所以为无效的)
+
+class Sample<T,U> where T: struct where U:class, T {} //(类型形参“T”具有“struct”约束，因此“T”不能用作“U”的约束,所以为无效的)
+
+class Sample<T,U> where T:Stream, U:IDisposable {} //(不同的类型参数可以有不同的约束，但是他们分别要由一个单独的where关键字,所以为无效的)
 ```
 
 <a id="markdown-泛型集合listt" name="泛型集合listt"></a>
