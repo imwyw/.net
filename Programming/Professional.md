@@ -8,6 +8,16 @@
             - [泛型委托-Func](#泛型委托-func)
         - [Lambda表达式](#lambda表达式)
         - [事件](#事件)
+    - [Enumerable支持标准查询的操作符](#enumerable支持标准查询的操作符)
+        - [匿名类型和隐式类型](#匿名类型和隐式类型)
+        - [IEnumerable<T>](#ienumerablet)
+        - [标准查询操作符](#标准查询操作符)
+            - [Where筛选](#where筛选)
+            - [Select投射](#select投射)
+            - [使用Count()对元素进行计数](#使用count对元素进行计数)
+            - [OrderBy和ThenBy排序](#orderby和thenby排序)
+            - [GroupBy分组](#groupby分组)
+    - [自定义集合](#自定义集合)
     - [扩展方法](#扩展方法)
     - [反射](#反射)
         - [反射(Reflection)](#反射reflection)
@@ -397,6 +407,375 @@ class Program
     }
 }
 ```
+
+<a id="markdown-enumerable支持标准查询的操作符" name="enumerable支持标准查询的操作符"></a>
+## Enumerable支持标准查询的操作符
+
+<a id="markdown-匿名类型和隐式类型" name="匿名类型和隐式类型"></a>
+### 匿名类型和隐式类型
+匿名类型是由编译器声明的数据类型，当编译器看到匿名类型时，会执行一些后台操作，生成这个类，并允许像已经显式声明过它那样使用。
+
+```cs
+var book1 = new { Title = "黄金时代", Auth = "王小波", Price = 29 };
+var book2 = new { Title = book1.Title };
+```
+
+匿名类型纯粹是一个C#语言特性，不是"运行时"中的一种新类型。
+
+需要注意的是，除非赋给变量的类型能一眼看出，否则应该只有在声明匿名类型（具体类型只有在编译时才能确定）时，才使用隐式类型的变量。
+
+不要不分青红皂白地使用隐式类型(var)的变量，这里的var和JavaScript中的var是不一样的概念。
+
+**匿名类型的安全性和不可变性**
+
+```cs
+var book1 = new { Title = "黄金时代", Auth = "王小波", Price = 29 };
+var book2 = new { Title = book1.Title };
+
+// 隐式转换类型
+//book1 = book2;
+
+// 无法为属性赋值，它是只读的
+//book1.Title = "青铜时代";
+```
+
+匿名类型之间不兼容，并且匿名类型是不可变的，所以匿名类型一经实例化，就无法修改其属性值。
+
+<a id="markdown-ienumerablet" name="ienumerablet"></a>
+### IEnumerable<T>
+集合实质上就是一个类，实现了`IEnumerable<T>`接口。
+
+这个接口非常重要，要想支持对集合执行的遍历操作，最起码要求就是实现IEnumerable<T>接口。
+
+C#编译器不要求一定要实现IEnumerable/IEnumerable<T>才能用foreach对一个数据类型进行迭代。
+
+相反，编译器采用一个称为"Duck typing"的概念；也就是查找一个GetEnumerator()方法，这个方法返回包含current属性和№veNe×t()方法的一个类型。
+
+Duck typing按名称查找方法，而不是依赖接口或显式方法调用。
+
+如果找不到可枚举模式的恰当实现，编译器就检查集合是否实现了接口。
+
+**foreach循环内不要修改集合！！！**
+
+<a id="markdown-标准查询操作符" name="标准查询操作符"></a>
+### 标准查询操作符
+
+`IEnumerable<T>`上的每个方法都是一个标准查询操作符，用于为所操作的集合提供查询功能。
+
+以下案例均基于Inventor和Patent类，代码如下：
+
+```cs
+/// <summary>
+/// 专利
+/// </summary>
+public class Patent
+{
+    /// <summary>
+    /// 标题
+    /// </summary>
+    public string Title { get; set; }
+    /// <summary>
+    /// 发布年份
+    /// </summary>
+    public string YearOfPublication { get; set; }
+    /// <summary>
+    /// 唯一码
+    /// </summary>
+    public string ApplicationNumber { get; set; }
+    public long[] InventorIds { get; set; }
+    public override string ToString()
+    {
+        return $"{Title}({YearOfPublication})";
+    }
+}
+
+/// <summary>
+/// 发明家
+/// </summary>
+public class Inventor
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public string City { get; set; }
+    public string State { get; set; }
+    public string Country { get; set; }
+    public override string ToString()
+    {
+        return $"{Name}({City},{State})";
+    }
+}
+
+public static class PatentData
+{
+    public static readonly Inventor[] Inventors = new Inventor[] {
+        new Inventor() { Name="Benjamin Franklin",City="Philadelphia",State="PA",Country="USA",Id=1},
+        new Inventor() { Name="Orville Wright",City="Kitty Hawk",State="NC",Country="USA",Id=2},
+        new Inventor() { Name="Wilbur Wright",City="Kitty Hawk",State="NC",Country="USA",Id=3},
+        new Inventor() { Name="Samuel Morse",City="New York",State="NY",Country="USA",Id=4},
+        new Inventor() { Name="George Stephenson",City="Wylam",State="Northumberland",Country="UK",Id=5},
+        new Inventor() { Name="John Michaelis",City="Chicago",State="IL",Country="USA",Id=6},
+        new Inventor() { Name="Mary Phelps Jacob",City="New York",State="NY",Country="USA",Id=7},
+    };
+
+    public static readonly Patent[] Patents = new Patent[] {
+        new Patent() { Title="Bifocals",YearOfPublication="1784",InventorIds= new long[] {1} },
+        new Patent() { Title="Phonograph",YearOfPublication="1877",InventorIds= new long[] {1} },
+        new Patent() { Title="Kinetoscope",YearOfPublication="1888",InventorIds= new long[] {1} },
+        new Patent() { Title="Electrical Telegraph",YearOfPublication="1837",InventorIds= new long[] {4} },
+        new Patent() { Title="Flying Machine",YearOfPublication="1903",InventorIds= new long[] {2,3} },
+        new Patent() { Title="Steam Locomotive",YearOfPublication="1815",InventorIds= new long[] {5} },
+        new Patent() { Title="Droplet Deposition Apparatus",YearOfPublication="1989",InventorIds= new long[] {6} },
+        new Patent() { Title="Backless Brassiere",YearOfPublication="1914",InventorIds= new long[] {7} },
+    };
+}
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        IEnumerable<Patent> patents = PatentData.Patents;
+        Print(patents);
+
+        IEnumerable<Inventor> inventors = PatentData.Inventors;
+        Print(inventors);
+    }
+
+    static void Print<T>(IEnumerable<T> items)
+    {
+        foreach (T item in items)
+        {
+            Console.WriteLine(item.ToString());
+        }
+    }
+}
+```
+
+<a id="markdown-where筛选" name="where筛选"></a>
+#### Where筛选
+从集合中筛选出数据，需要提供筛选器方法返回true或false以指明特定的元素是否应该被包含进来。
+
+获取一个实参并返回一个布尔值的lambda表达式称为**谓词**。
+
+集合的`Where()`方法依据谓词来确定筛选条件，下面案例是寻找18xx年发布的专利
+
+```cs
+IEnumerable<Patent> patentsOf1800 = PatentData.Patents.Where(t => t.YearOfPublication.StartsWith("18"));
+Print(patentsOf1800);
+```
+
+<a id="markdown-select投射" name="select投射"></a>
+#### Select投射
+由于`IEnumerab1e<T>.Where()`输出的是一个新的`IEnumerab1e<T>`集合，所以完全可以在这个集合的基础上再调用另一个标准查询操作符。
+
+例如，从原始集合中筛选好数据后，可以接着对这些数据进行转换，如下所示：
+
+```cs
+IEnumerable<Patent> patentsOf1800 = PatentData.Patents.Where(t => t.YearOfPublication.StartsWith("18"));
+// 生成新的字符串结合
+IEnumerable<string> patentsInfo = patentsOf1800.Select(t => t.Title);
+Print(patentsInfo);
+```
+
+匿名类型，在创建`IEnumerable<T>`集合时，T可以是匿名类型，如下使用`Select()`投射匿名类型
+
+```cs
+IEnumerable<string> fileList = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory);
+var items = fileList.Select(t =>
+    {
+        FileInfo info = new FileInfo(t);
+        return new { FileName = info.Name, Size = info.Length };
+    });
+```
+
+在为匿名类型生成的`ToString()`方法中，会自动添加用于显示属性名称及其值的代码。
+
+使用`Select()`进行“投射"，这是非常强大的一个功能。
+
+上一节讲述了如何使用`Where()`标准查询操作符在“垂直"方向上筛选集合工（减少集合中项的数量）。
+
+现在，使用`Select()`标准查询操作符，还可以在“水平"方向上减小集合的规模（减少列的数量）或者对数据进行彻底的转换。
+
+综合运用`Where()`和`Select()`，可以获得原始集合的一个子集，从而满足当前算法的要求。
+
+这两个方法各自提供了一个功能强大的、对集合进行操纵的API。
+
+<a id="markdown-使用count对元素进行计数" name="使用count对元素进行计数"></a>
+#### 使用Count()对元素进行计数
+
+```cs
+Console.WriteLine($"Patent Count:{PatentData.Patents.Count()}");
+Console.WriteLine($@"Patent Count in 1800s :{
+    PatentData.Patents.Count(t => t.YearOfPublication.StartsWith("18"))}");
+```
+
+虽然`Count()`语句看起来简单，但IEnumerab1e<T>没有改变，所以真正执行的代码仍然会遍历集合中的所有项。
+
+如果集合直接提供一个Count属性，就应该首选属性，而不要用LINQ的`Count()`方法（这是一个许多人都没有意识到的差异）。
+
+幸好，`ICollection<T>`包含了Count属性，所以如果集合支持`ICollection<T>`，那么在它上面调用Count()方法，会对集合进行转型，并直接调用Count。
+
+```cs
+// 常用的 List 实现了`ICollection<T>`接口，即针对List可以直接使用Count属性
+public class List<T> : IList<T>, ICollection<T>, IList, ICollection, IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IEnumerable{}
+```
+
+然而，如果不支持`ICollection<T>`,`Enumerable.Count()`就会枚举集合中的所有项，而不是调用内建的Count机制。
+
+如果计数的目的只是为了看这个计数是否大于0，那么首选的做法是使用Any()操作符。
+
+Any()只尝试遍历集合中的一个项，如果成功就返回true,而不会遍历整个序列。如下例所示：
+
+```cs
+// 效率低
+if(PatentData.Patents.Count() > 0) {...}
+
+// 建议采用
+if(PatentData.Patents.Any()) {...}
+```
+
+<a id="markdown-orderby和thenby排序" name="orderby和thenby排序"></a>
+#### OrderBy和ThenBy排序
+
+<a id="markdown-groupby分组" name="groupby分组"></a>
+#### GroupBy分组
+
+
+
+<a id="markdown-自定义集合" name="自定义集合"></a>
+## 自定义集合
+在System.Collections 命名空间下，常用的集合类中，有两个类不属于集合，而是作为自定义集合类的基类。 
+
+* CollectionBase:为强类型集合提供abstract 基类 
+* DictionaryBase:为键/值对的强类型集合提供abstract基类。 
+
+如果我们对自定义集合有更多要求的话，比如：
+* 能够通过索引号去访问集合中的某个元素，则需要定义集合的**索引器**
+* 能够通过foreach循环遍历每一个元素，则需要定义集合的**迭代器**
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        StudentCollection stuCollection = new StudentCollection();
+        stuCollection.Add(new Student("jack"));
+        stuCollection.Add(new Student("lucy"));
+
+        //使用迭代器，因为CollectionBase实现了IEnumerable接口，所以可以直接使用foreach
+        foreach (Student item in stuCollection)
+        {
+            item.SayHi();
+        }
+
+        //使用索引器进行方法调用
+        stuCollection[1].SayHi();
+    }
+}
+
+/// <summary>
+/// 自定义CollectionBase集合
+/// </summary>
+public class StudentCollection : CollectionBase
+{
+    /// <summary>
+    /// 重写父类中的Add方法，因为父类Add为私有方法，元数据中不可见
+    /// CollectionBase源码中可见父类中实现了Add方法
+    /// https://referencesource.microsoft.com/#mscorlib/system/collections/collectionbase.cs
+    /// </summary>
+    /// <param name="stu"></param>
+    /// <returns></returns>
+    public int Add(Student stu)
+    {
+        return List.Add(stu);
+    }
+
+    /// <summary>
+    /// Remove方法同上Add方法，都是私有实现
+    /// </summary>
+    /// <param name="stu"></param>
+    public void Remove(Student stu)
+    {
+        List.Remove(stu);
+    }
+
+    /// <summary>
+    /// 父类中为普通方法，不可重写，只能使用new进行隐藏
+    /// </summary>
+    /// <param name="index"></param>
+    public new void RemoveAt(int index)
+    {
+        List.RemoveAt(index);
+    }
+
+    /// <summary>
+    /// 索引器
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public Student this[int index]
+    {
+        get { return List[index] as Student; }
+        set { List[index] = value; }
+    }
+}
+
+public class Student
+{
+    public Student(string name) { Name = name; }
+    public string Name { get; set; }
+    public void SayHi() { Console.WriteLine($"hello i'm {Name}"); }
+}
+```
+
+关于迭代，foreach遍历是C#常见的功能，C#使用yield关键字让自定义集合实现foreach遍历的方法
+
+一般来说当我们创建自定义集合的时候为了让其能支持foreach遍历，就只能让其实现IEnumerable接口（可能还要实现IEnumerator接口）
+
+但是我们也可以通过使用yield关键字构建的迭代器方法来实现foreach的遍历，且自定义的集合不用实现IEnumerable接口
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        StudentList sts = new StudentList();
+        foreach (Student item in sts)
+        {
+            item.SayHi();
+        }
+    }
+}
+
+public class StudentList
+{
+    private Student[] arr = new Student[3];
+    public StudentList()
+    {
+        arr[0] = new Student("张三");
+        arr[1] = new Student("李四");
+        arr[2] = new Student("王富贵");
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        foreach (Student item in arr)
+        {
+            // yield return 作用就是返回集合的一个元素,并移动到下一个元素上
+            yield return item;
+        }
+    }
+}
+
+public class Student
+{
+    public Student(string name) { Name = name; }
+    public string Name { get; set; }
+    public void SayHi() { Console.WriteLine($"hello i'm {Name}"); }
+}
+```
+
+注意：**虽然不用实现IEnumerable接口 ，但是迭代器的方法必须命名为GetEnumerator()，返回值也必须是IEnumerator类型。**
+
 
 <a id="markdown-扩展方法" name="扩展方法"></a>
 ## 扩展方法
