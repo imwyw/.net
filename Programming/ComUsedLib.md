@@ -31,8 +31,12 @@
             - [构造函数类型约束](#构造函数类型约束)
             - [转换类型约束](#转换类型约束)
             - [组合约束](#组合约束)
-        - [泛型集合List<T>](#泛型集合listt)
-        - [Dictionay<Tkey,Tvalue>](#dictionaytkeytvalue)
+    - [支持标准查询的操作符](#支持标准查询的操作符)
+        - [匿名类型和隐式类型](#匿名类型和隐式类型)
+        - [IEnumerable<T>](#ienumerablet)
+        - [标准查询操作符](#标准查询操作符)
+            - [Where筛选](#where筛选)
+    - [Dictionay<Tkey,Tvalue>](#dictionaytkeytvalue)
     - [自定义集合](#自定义集合)
     - [异常处理](#异常处理)
 
@@ -656,33 +660,145 @@ class Sample<T,U> where T: struct where U:class, T {} //(类型形参“T”具�
 class Sample<T,U> where T:Stream, U:IDisposable {} //(不同的类型参数可以有不同的约束，但是他们分别要由一个单独的where关键字,所以为无效的)
 ```
 
-<a id="markdown-泛型集合listt" name="泛型集合listt"></a>
-### 泛型集合List<T>
-List<T>类是 ArrayList 类的泛型等效类。
+<a id="markdown-支持标准查询的操作符" name="支持标准查询的操作符"></a>
+## 支持标准查询的操作符
 
-不会强行对值类型进行装箱和拆箱，或对引用类型进行向下强制类型转换，所以性能得到提高。
+<a id="markdown-匿名类型和隐式类型" name="匿名类型和隐式类型"></a>
+### 匿名类型和隐式类型
+匿名类型是由编译器声明的数据类型，当编译器看到匿名类型时，会执行一些后台操作，生成这个类，并允许像已经显式声明过它那样使用。
 
 ```cs
-//限制类型只能是string，同样的限定类型也可以是值类型
-List<string> lstRes = new List<string>();
-//添加对象到结尾处
-lstRes.Add("a");
-lstRes.Add("b");
-lstRes.Add("c");
-
-//长度
-int len = lstRes.Count;
-
-//删除
-lstRes.Remove("a");
-
-//是否包含某个对象
-lstRes.Contains("a");
+var book1 = new { Title = "黄金时代", Auth = "王小波", Price = 29 };
+var book2 = new { Title = book1.Title };
 ```
-更多的方法等待你去探索。。。
+
+匿名类型纯粹是一个C#语言特性，不是"运行时"中的一种新类型。
+
+需要注意的是，除非赋给变量的类型能一眼看出，否则应该只有在声明匿名类型（具体类型只有在编译时才能确定）时，才使用隐式类型的变量。
+
+不要不分青红皂白地使用隐式类型(var)的变量，这里的var和JavaScript中的var是不一样的概念。
+
+**匿名类型的安全性和不可变性**
+
+```cs
+var book1 = new { Title = "黄金时代", Auth = "王小波", Price = 29 };
+var book2 = new { Title = book1.Title };
+
+// 隐式转换类型
+//book1 = book2;
+
+// 无法为属性赋值，它是只读的
+//book1.Title = "青铜时代";
+```
+
+匿名类型之间不兼容，并且匿名类型是不可变的，所以匿名类型一经实例化，就无法修改其属性值。
+
+<a id="markdown-ienumerablet" name="ienumerablet"></a>
+### IEnumerable<T>
+集合实质上就是一个类，实现了`IEnumerable<T>`接口。
+
+这个接口非常重要，要想支持对集合执行的遍历操作，最起码要求就是实现IEnumerable<T>接口。
+
+C#编译器不要求一定要实现IEnumerable/IEnumerable<T>才能用foreach对一个数据类型进行迭代。
+
+相反，编译器采用一个称为"Duck typing"的概念；也就是查找一个GetEnumerator()方法，这个方法返回包含current属性和№veNe×t()方法的一个类型。
+
+Duck typing按名称查找方法，而不是依赖接口或显式方法调用。
+
+如果找不到可枚举模式的恰当实现，编译器就检查集合是否实现了接口。
+
+**foreach循环内不要修改集合！！！**
+
+<a id="markdown-标准查询操作符" name="标准查询操作符"></a>
+### 标准查询操作符
+
+`IEnumerable<T>`上的每个方法都是一个标准查询操作符，用于为所操作的集合提供查询功能。
+
+以下案例均基于Inventor和Patent类，代码如下：
+
+```cs
+public class Patent
+{
+    public string Title { get; set; }
+    public string YearOfPublication { get; set; }
+    public string ApplicationNumber { get; set; }
+    public long[] InventorIds { get; set; }
+    public override string ToString()
+    {
+        return $"{Title}({YearOfPublication})";
+    }
+}
+
+public class Inventor
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public string City { get; set; }
+    public string State { get; set; }
+    public string Country { get; set; }
+    public override string ToString()
+    {
+        return $"{Name}({City},{State})";
+    }
+}
+
+public static class PatentData
+{
+    public static readonly Inventor[] Inventors = new Inventor[] {
+        new Inventor() { Name="Benjamin Franklin",City="Philadelphia",State="PA",Country="USA",Id=1},
+        new Inventor() { Name="Orville Wright",City="Kitty Hawk",State="NC",Country="USA",Id=2},
+        new Inventor() { Name="Wilbur Wright",City="Kitty Hawk",State="NC",Country="USA",Id=3},
+        new Inventor() { Name="Samuel Morse",City="New York",State="NY",Country="USA",Id=4},
+        new Inventor() { Name="George Stephenson",City="Wylam",State="Northumberland",Country="UK",Id=5},
+        new Inventor() { Name="John Michaelis",City="Chicago",State="IL",Country="USA",Id=6},
+        new Inventor() { Name="Mary Phelps Jacob",City="New York",State="NY",Country="USA",Id=7},
+    };
+
+    public static readonly Patent[] Patents = new Patent[] {
+        new Patent() { Title="Bifocals",YearOfPublication="1784",InventorIds= new long[] {1} },
+        new Patent() { Title="Phonograph",YearOfPublication="1877",InventorIds= new long[] {1} },
+        new Patent() { Title="Kinetoscope",YearOfPublication="1888",InventorIds= new long[] {1} },
+        new Patent() { Title="Electrical Telegraph",YearOfPublication="1837",InventorIds= new long[] {4} },
+        new Patent() { Title="Flying Machine",YearOfPublication="1903",InventorIds= new long[] {2,3} },
+        new Patent() { Title="Steam Locomotive",YearOfPublication="1815",InventorIds= new long[] {5} },
+        new Patent() { Title="Droplet Deposition Apparatus",YearOfPublication="1989",InventorIds= new long[] {6} },
+        new Patent() { Title="Backless Brassiere",YearOfPublication="1914",InventorIds= new long[] {7} },
+    };
+}
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        IEnumerable<Patent> patents = PatentData.Patents;
+        Print(patents);
+
+        IEnumerable<Inventor> inventors = PatentData.Inventors;
+        Print(inventors);
+    }
+
+    static void Print<T>(IEnumerable<T> items)
+    {
+        foreach (T item in items)
+        {
+            Console.WriteLine(item.ToString());
+        }
+    }
+}
+```
+
+<a id="markdown-where筛选" name="where筛选"></a>
+#### Where筛选
+从集合中筛选出数据，需要提供筛选器方法返回true或false以指明特定的元素是否应该被包含进来。
+
+获取一个实参并返回一个布尔值的lambda表达式称为**谓词**。
+
+集合的`Where()`方法依据谓词来确定筛选条件。
+
+
 
 <a id="markdown-dictionaytkeytvalue" name="dictionaytkeytvalue"></a>
-### Dictionay<Tkey,Tvalue>
+## Dictionay<Tkey,Tvalue>
 在初始化的时候也必须指定其类型，而且他还需要指定一个Key,并且这个Key是唯一的。
 
 正因为这样，Dictionary的索引速度非常快。但是也因为他增加了一个Key,Dictionary占用的内存空间比其他类型要大。
