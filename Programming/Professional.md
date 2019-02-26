@@ -664,6 +664,105 @@ if(PatentData.Patents.Any()) {...}
 <a id="markdown-groupby分组" name="groupby分组"></a>
 #### GroupBy分组
 
+```cs
+class Pet
+{
+    public string Name { get; set; }
+    public double Age { get; set; }
+    public string Gender { get; set; }
+}
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        List<Pet> petsList = new List<Pet>{
+            new Pet { Name="Barley", Age=8.3,Gender="F" },
+            new Pet { Name="Boots", Age=4.9 ,Gender="F"},
+            new Pet { Name="Whiskers", Age=1.5 ,Gender="M"},
+            new Pet { Name="Daisy", Age=4.3 ,Gender="M"} };
+
+        IEnumerable<IGrouping<double, Pet>> ageGroup = petsList.GroupBy(pet => Math.Floor(pet.Age));
+        // 遍历得到的分组，此处 item.Key即为分组的key值，item为该分组下的列表
+        foreach (var item in ageGroup)
+        {
+            Console.WriteLine($"Count:{item.Count()}");
+            // 再次遍历分组下的数据
+            foreach (var pet in item)
+            {
+                Console.WriteLine($"年龄：{item.Key}，名字：{pet.Name}");
+            }
+        }
+    }
+}
+```
+
+注意，`GroupBy()`返回的是`IEnumerable<IGrouping<TKey, TSource>>`类型的数据项，
+
+该类型有一个属性指定了作为分组依据的键(此处是对年龄向下取整Math.floor(pet.Age))。
+
+如果需要对多个列进行分组，参考如下代码：
+```cs
+var ageGroup = petsList.GroupBy(pet => new { Gen = pet.Gender, Age = Math.Floor(pet.Age) });
+// 遍历得到的分组，此处 item.Key即为分组的key值，item为该分组下的列表
+foreach (var item in ageGroup)
+{
+    Console.WriteLine($"Count:{item.Count()}");
+    // 再次遍历分组下的数据
+    foreach (var pet in item)
+    {
+        Console.WriteLine($"分组信息：{item.Key}，名字：{pet.Name}");
+    }
+}
+```
+
+针对上述案例的petsList修改，可以通过第二个传参指定返回匿名类型
+```cs
+var query = petsList.GroupBy(pet => pet.Gender,
+    pet =>
+    {
+        // 构造新的匿名类型返回
+        return new { PetName = pet.Name, PetAge = Math.Floor(pet.Age) };
+    });
+
+// 遍历得到的分组，此处 item.Key即为分组的key值，item为该分组下的列表
+foreach (var item in query)
+{
+    Console.WriteLine($"公母：{item.Key}，Count:{item.Count()}============");
+    // 再次遍历分组下的数据
+    foreach (var pet in item)
+    {
+        Console.WriteLine($"年龄：{pet.PetAge}，名字：{pet.PetName}");
+    }
+}
+```
+
+在分组时也可以基于分组产生新的分组信息，如下：
+```cs
+/*
+生成的不再是 IEnumerable<IGrouping<double, Pet>> 类型，而是IEnumerable<>集合
+第1个参数是按照哪个列进行分组，
+第2个参数是每个分组里的数据处理，
+第3个参数是分组后每组数据处理，产生新的匿名类型，(key,keyList)=>{ return new {}}
+*/
+var query = petsList.GroupBy(pet => pet.Gender,
+    pet => pet,
+    (groupGender, genderPets) =>
+    {
+        return new
+        {
+            MaxAge = genderPets.Max(t => t.Age),
+            MinAge = genderPets.Min(t => t.Age),
+            Sex = groupGender,
+            Size = genderPets.Count()
+        };
+    });
+
+foreach (var item in query)
+{
+    Console.WriteLine(item);
+}
+```
 
 
 <a id="markdown-自定义集合" name="自定义集合"></a>
