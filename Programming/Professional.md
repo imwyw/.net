@@ -340,6 +340,30 @@ x=> x*x
 
 **订阅器(subscriber)** 是一个接受事件并提供事件处理程序的对象。在发布器(publisher)类中的委托调用订阅器(subscriber)类中的方法(事件处理程序)。
 
+使用`Action<>`类型定义事件，添加事件监听并触发。
+
+```cs
+/// <summary>
+/// 定义事件
+/// Action<string> 无返回值，有一个string参数的委托
+/// </summary>
+public static event Action<string> PrintEvt;
+
+static void Main(string[] args)
+{
+    // lambda表达式添加事件监听
+    PrintEvt += s =>
+    {
+        Console.WriteLine("lambda表达式方式添加事件监听\t" + s);
+    };
+
+    // 调用该事件
+    PrintEvt.Invoke("你好");
+}
+```
+
+综合案例，对某一对象添加多个事件的监听。
+
 ```cs
 /// <summary>
 /// 定义一个无返回值有参委托
