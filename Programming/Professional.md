@@ -473,7 +473,7 @@ var book2 = new { Title = book1.Title };
 
 C#编译器不要求一定要实现IEnumerable/IEnumerable<T>才能用foreach对一个数据类型进行迭代。
 
-相反，编译器采用一个称为"Duck typing"的概念；也就是查找一个GetEnumerator()方法，这个方法返回包含current属性和№veNe×t()方法的一个类型。
+相反，编译器采用一个称为"Duck typing"的概念；也就是查找一个GetEnumerator()方法，这个方法返回包含Current属性和MoveNe×t()方法的一个类型。
 
 Duck typing按名称查找方法，而不是依赖接口或显式方法调用。
 
@@ -589,7 +589,7 @@ Print(patentsOf1800);
 
 <a id="markdown-select投射" name="select投射"></a>
 #### Select投射
-由于`IEnumerab1e<T>.Where()`输出的是一个新的`IEnumerab1e<T>`集合，所以完全可以在这个集合的基础上再调用另一个标准查询操作符。
+由于`IEnumerable<T>.Where()`输出的是一个新的`IEnumerable<T>`集合，所以完全可以在这个集合的基础上再调用另一个标准查询操作符。
 
 例如，从原始集合中筛选好数据后，可以接着对这些数据进行转换，如下所示：
 
@@ -632,7 +632,7 @@ Console.WriteLine($@"Patent Count in 1800s :{
     PatentData.Patents.Count(t => t.YearOfPublication.StartsWith("18"))}");
 ```
 
-虽然`Count()`语句看起来简单，但IEnumerab1e<T>没有改变，所以真正执行的代码仍然会遍历集合中的所有项。
+虽然`Count()`语句看起来简单，但IEnumerable<T>没有改变，所以真正执行的代码仍然会遍历集合中的所有项。
 
 如果集合直接提供一个Count属性，就应该首选属性，而不要用LINQ的`Count()`方法（这是一个许多人都没有意识到的差异）。
 
@@ -659,6 +659,7 @@ if(PatentData.Patents.Any()) {...}
 
 <a id="markdown-orderby和thenby排序" name="orderby和thenby排序"></a>
 #### OrderBy和ThenBy排序
+
 
 <a id="markdown-groupby分组" name="groupby分组"></a>
 #### GroupBy分组
