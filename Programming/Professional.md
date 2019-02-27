@@ -660,6 +660,32 @@ if(PatentData.Patents.Any()) {...}
 <a id="markdown-orderby和thenby排序" name="orderby和thenby排序"></a>
 #### OrderBy和ThenBy排序
 
+基于上面的案例，使用YearOfPublication作为排序的键，返回的仍然是IEnumerable集合类型
+
+```cs
+var orderAge = PatentData.Patents.OrderBy(t => t.YearOfPublication);
+foreach (var item in orderAge)
+{
+    Console.WriteLine(item.YearOfPublication);
+}
+```
+
+ThenBy用于多个列的分组，如下所示：
+```cs
+List<Pet> petsList = new List<Pet>{
+    new Pet { Name="Barley", Age=8.3,Gender="F" },
+    new Pet { Name="Boots", Age=4.9 ,Gender="F"},
+    new Pet { Name="Whiskers", Age=1.5 ,Gender="M"},
+    new Pet { Name="Daisy", Age=4.3 ,Gender="M"},
+    new Pet { Name="Ban", Age=1.2, Gender="M"}
+};
+
+var res = petsList.OrderBy(t => t.Gender).ThenBy(t => t.Age);
+foreach (var item in res.ToList())
+{
+    Console.WriteLine($"{item.Name}-{item.Age}-{item.Gender}");
+}
+```
 
 <a id="markdown-groupby分组" name="groupby分组"></a>
 #### GroupBy分组
