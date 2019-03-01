@@ -12,6 +12,7 @@
         - [事务的处理](#事务的处理)
     - [SqlHelper类的封装](#sqlhelper类的封装)
         - [基本封装](#基本封装)
+        - [插入Null值](#插入null值)
     - [Guid的应用](#guid的应用)
         - [Unique Int64](#unique-int64)
     - [ADO.NET Oracle](#adonet-oracle)
@@ -959,6 +960,51 @@ public class SqlHelper
         }
         return builder.ToString().Substring(0, builder.ToString().Length - 1);
     }
+}
+```
+
+<a id="markdown-插入null值" name="插入null值"></a>
+### 插入Null值
+SqlCommand新增记录时，参数为null时，会抛出异常。如参数化查询，需要@XXX，但未提供该参数。
+
+一般来说，在Asp.Net与数据库的交互中，通常使用Command对象，如：SqlCommand。
+
+像有些日期字段，如果用户没有选择日期，我们希望他保持NULL状态。
+
+```cs
+string sql = "INSERT INTO T_USER (XXX_TIME) VALUES (@XXX_TIME)";
+SqlParameter[] sqlParams = new SqlParameter[] {
+    new SqlParameter("@XXX_TIME", user.XXX_TIME) { IsNullable=true },
+};
+```
+
+上述代码中，只是设置了该参数允许为Null，这里的IsNullable，不是说你可以插入null值，而是指DBNull.Value值。
+
+下面的SqlNull()方法应该封装在SqlHelper类中，此处为了全面展示，所以上述代码重构为：
+```cs
+/// <summary>
+/// 数据库中的null必须使用DBNull才能插入，所以需要进行此判断转换
+/// </summary>
+/// <param name="obj"></param>
+/// <returns></returns>
+public static object SqlNull(object obj)
+{
+    if (null == obj)
+    {
+        return DBNull.Value;
+    }
+    return obj;
+}
+
+public static int Add()
+{
+    SqlConnection conn = new SqlConnection("server=.;database=db_name;uid=sa;pwd=123456;");
+    string sql = "INSERT INTO T_USER (XXX_TIME) VALUES (@XXX_TIME)";
+    SqlParameter[] sqlParams = new SqlParameter[] {
+        new SqlParameter("@XXX_TIME", SqlNull(user.XXX_TIME)) { IsNullable=true },
+    };
+    int res = SqlHelper.ExecuteNonQuery(sql, sqlParams);
+    return res;
 }
 ```
 
