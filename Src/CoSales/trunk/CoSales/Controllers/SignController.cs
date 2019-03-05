@@ -17,6 +17,10 @@ namespace CoSales.Controllers
     /// </summary>
     public class SignController : BaseController
     {
+        /// <summary>
+        /// 登录视图
+        /// </summary>
+        /// <returns></returns>
         public ActionResult SignInView()
         {
             if (null != CheckAutoLoginByCookie())
