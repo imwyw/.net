@@ -248,6 +248,8 @@
     <Content Include="Scripts\lodash.core.min.js" />
     <Content Include="Scripts\lodash.js" />
     <Content Include="Scripts\lodash.min.js" />
+    <Content Include="Views\HttpError\404.html" />
+    <Content Include="Views\HttpError\500.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
