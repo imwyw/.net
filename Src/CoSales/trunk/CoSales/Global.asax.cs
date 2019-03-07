@@ -9,6 +9,7 @@ namespace CoSales
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        #region 应用程序级别
         /// <summary>
         /// 不是每次请求都调用
         /// 在Web应用程序的生命周期里就执行一次
@@ -121,6 +122,7 @@ namespace CoSales
                 Server.ClearError();
             }
         }
+        #endregion
 
         #region 每次请求都会按照顺序执行以下事件
         /// <summary>
