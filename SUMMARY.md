@@ -11,7 +11,6 @@
     * [桌面编程](./Programming/Form.md)
     * [LINQ](./Programming/LINQ.md)
     * [编码规范](./Programming/CodeStyle.md)
-    * [专题代码](./Programming/TopicSub.md)
 
 * [持久化](./Persistence/README.md)
     * [文件](./Persistence/File.md)
@@ -59,4 +58,6 @@
     * [ABP](./Enterprise/ABP.md)
 
 * [其他]()
+    * [专题](./Other/TopicSub.md)
     * [面试相关](./Other/面试.md)
+    
