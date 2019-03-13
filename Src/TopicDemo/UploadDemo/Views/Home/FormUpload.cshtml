@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "FormUpload";
+}
+
+<h2>表单上传方式</h2>
+
+
+<form id="form1" action="/Home/GetFormFile" method="post" enctype="multipart/form-data">
+    <input type="file" name="myFile" />
+    <input type="submit" id="btnUpload" />
+</form>
+<hr />
+<div>
+    <input type="file" name="file2" id="file2" />
+    <input type="text" id="txtName" />
+    <button id="btnUp">提交</button>
+</div>
+
+<script>
+    $('#btnUp').click(function () {
+        var formData = new FormData();
+        formData.append('myFile', document.getElementById('file2').files[0]);
+        formData.append('name', $('#txtName').val());
+        $.ajax({
+            url: '/Home/GetAjaxFile',
+            type: 'POST',
+            data: formData,
+            //必须false才会避开jQuery对 formdata 的默认处理.XMLHttpRequest会对 formdata 进行正确的处理.
+            processData: false,
+            //必须false才会自动加上正确的Content-Type
+            contentType: false,
+            success: function (resp) {
+                //...
+            }
+        });
+    });
+</script>
