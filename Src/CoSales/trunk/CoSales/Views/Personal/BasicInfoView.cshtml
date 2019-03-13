@@ -114,7 +114,7 @@
             // 当前用户的ID保存在cookie中
             $.post('/Personal/GetUserInfo', { id: $.cookie('ID') }, function (resp) {
                 var obj = getObjRes(resp);
-                layui.form.val('formUser',obj);
+                layui.form.val('formUser', obj);
             });
         }
 
