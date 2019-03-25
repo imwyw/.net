@@ -36,7 +36,7 @@ Web API是一个比较宽泛的概念。这里我们提到Web API特指ASP.NET W
 
 Web API在ASP.NET完整框架中地位如下图，与SignalR一起同为构建Service的框架。
 
-![](..\assets\webapi\asp.net-webapi.png)
+![](../assets/webapi/asp.net-webapi.png)
 
 Web API负责构建http常规服务，而SingalR主要负责的是构建实时服务，例如股票，聊天室，在线游戏等实时性要求比较高的服务。
 
@@ -44,7 +44,7 @@ Web API负责构建http常规服务，而SingalR主要负责的是构建实时�
 ### 为什么用WebAPI
 Web API最重要的是可以构建面向各种客户端的服务。另外与WCF REST Service不同在于，Web API利用Http协议的各个方面来表达服务(例如 URI/request response header/caching/versioning/content format)，因此就省掉很多配置。
 
-![](..\assets\webapi\webapi-1.png)
+![](../assets/webapi/webapi-1.png)
 
 当你遇到以下这些情况的时候，就可以考虑使用Web API了。
 * 需要Web Service但是不需要SOAP
@@ -67,7 +67,7 @@ Web API的主要功能
 ### Web API vs MVC
 你可能会觉得Web API 与MVC很类似，他们有哪些不同之处呢？先上图，这就是他们最大的不同之处。
 
-![](..\assets\webapi\webapi-vs-mvc.png)
+![](../assets/webapi/webapi-vs-mvc.png)
 
 详细点说他们的区别：
 * MVC主要用来构建网站，既关心数据也关心页面展示，而Web API只关注数据
@@ -90,20 +90,22 @@ Web API的主要功能
 ## 入门项目
 <a id="markdown-创建项目" name="创建项目"></a>
 ### 创建项目
-在模板窗格中，选择已安装的模板展开Visual C# 节点。 下Visual C#，选择Web。 在项目模板列表中选择ASP.NET Web 应用程序。 命名项目"ProductsApp"，然后单击确定。
+在模板窗格中，选择已安装的模板展开Visual C# 节点。 下Visual C#，选择Web。 在项目模板列表中选择ASP.NET Web 应用程序。 
 
-![](..\assets\webapi\webapi-create.jpg)
+命名项目"ProductsApp"，然后单击确定。
+
+![](../assets/webapi/webapi-create.jpg)
 
 在中新建 ASP.NET 项目对话框中，选择空模板。 下"添加文件夹和核心引用"，检查Web API。 单击 “确定”。
 
-![](..\assets\webapi\webapi-create2.jpg)
+![](../assets/webapi/webapi-create2.jpg)
 
 <a id="markdown-新建model和controller" name="新建model和controller"></a>
 ### 新建Model和Controller
 
 新建Model：
 
-![](..\assets\webapi\webapi-create-prod1.jpg)
+![](../assets/webapi/webapi-create-prod1.jpg)
 
 ```cs
 namespace ProductsApp.Models
@@ -120,11 +122,11 @@ namespace ProductsApp.Models
 
 新建控制器,在添加基架对话框中，选择Web API 控制器-空，如图：
 
-![](..\assets\webapi\webapi-create-controller1.jpg)
+![](../assets/webapi/webapi-create-controller1.jpg)
 
 将控制器命名"ProductsController"。修改控制器内容如下：
 
-![](..\assets\webapi\webapi-create-controller2.jpg)
+![](../assets/webapi/webapi-create-controller2.jpg)
 
 ```cs
 public class ProductsController : ApiController
@@ -161,7 +163,7 @@ public class ProductsController : ApiController
 
 选择Web节点下的Visual C#，然后选择HTML 页项。 将该页命名为"index.html"。
 
-![](..\assets\webapi\webapi-create-proj.jpg)
+![](../assets/webapi/webapi-create-proj.jpg)
 
 ```html
 <!DOCTYPE html>
@@ -221,7 +223,7 @@ public class ProductsController : ApiController
 
 开始调试应用程序。 网页应如下所示：
 
-![](..\assets\webapi\webapi-res1.jpg)
+![](../assets/webapi/webapi-res1.jpg)
 
 <a id="markdown-操作结果" name="操作结果"></a>
 ## 操作结果
@@ -305,7 +307,9 @@ routes.MapHttpRoute(
 );
 ```
 
-在此路由模板中， {action} 参数名称在控制器上的操作方法。 使用此样式的路由，使用属性来指定允许的 HTTP 方法。 例如，假设您的控制器具有以下方法：
+在此路由模板中， {action} 参数名称在控制器上的操作方法。 使用此样式的路由，使用属性来指定允许的 HTTP 方法。
+
+例如，假设您的控制器具有以下方法：
 
 ```cs
 public class ProductsController : ApiController
@@ -315,10 +319,14 @@ public class ProductsController : ApiController
 }
 ```
 
-在这种情况下，"api/products/Details/1"的 GET 请求将映射到的详细信息的方法。 这种路由是类似于 ASP.NET MVC 中，并可能适用于 RPC 样式 API。
+在这种情况下，"api/products/Details/1"的 GET 请求将映射到的详细信息的方法。 
+
+这种路由是类似于 ASP.NET MVC 中，并可能适用于 RPC 样式 API。
 
 
-可以通过重写操作的名称ActionName属性。 在以下示例中，有两个操作映射到"api/products/thumbnail/id"。一种支持 GET方法 和另一种支持 POST方法 ：
+可以通过重写操作的名称ActionName属性。 在以下示例中，有两个操作映射到"api/products/thumbnail/id"。
+
+一种支持 GET方法 和另一种支持 POST方法 ：
 
 ```cs
 public class ProductsController : ApiController
