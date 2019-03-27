@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../Scripts/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+    <button id="btnAllProduct">获取数据</button>
+    <button id="btnToken">登陆授权</button>
+    <button id="btnGetByToken">附加token的请求</button>
+    <div style="color:green;" id="suc_div"></div>
+    <div style="color:red;" id="err_div"></div>
+    <script>
+        $(function () {
+            // Headers未附加token令牌的请求
+            $('#btnAllProduct').click(function () {
+                $.ajax({
+                    url: 'http://localhost:10034/api/Products/GetAllProducts',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (resp) {
+                    },
+                    error: function (err) {
+                        $('#err_div').append(err.status + err.responseText);
+                        $('#err_div').append('<br/>');
+                    }
+                });
+            });
+            // 密码验证授权，获取token令牌
+            $('#btnToken').click(function () {
+                $.ajax({
+                    url: 'http://localhost:10034/token',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        grant_type: 'password',
+                        username: 'admin',
+                        password: '123'
+                    },
+                    success: function (resp) {
+                        // 获取服务器返回的token并保存至localStorage
+                        localStorage.access_token = resp.access_token;
+                        $('#suc_div').append('access_token:' + resp.access_token);
+                        $('#suc_div').append('<br/>');
+                    },
+                    error: function (err) {
+                        $('#err_div').append(err.status + err.responseText);
+                    }
+                });
+            });
+            // Headers附加token请求数据
+            $('#btnGetByToken').click(function () {
+                $.ajax({
+                    url: 'http://localhost:10034/api/Products/GetAllProducts',
+                    type: 'POST',
+                    headers: {
+                        Authorization: 'bearer ' + localStorage.access_token
+                    },
+                    dataType: 'json',
+                    success: function (resp) {
+                        $.each(resp, function (i, t) {
+                            $('#suc_div').append(`Id:${t.Id},Name:${t.Name},Category:${t.Category}`);
+                            $('#suc_div').append('<br/>');
+                        });
+
+                    },
+                    error: function (err) {
+                        $('#err_div').append(err.status + err.responseText);
+                        $('#suc_div').append('<br/>');
+                    }
+                });
+            });
+        })
+    </script>
+</body>
+</html>
