@@ -14,6 +14,13 @@
     - [操作结果](#操作结果)
     - [路由](#路由)
         - [路由表](#路由表)
+    - [token验证](#token验证)
+        - [安全问题](#安全问题)
+        - [添加Owin包](#添加owin包)
+        - [StartUp类](#startup类)
+        - [添加验证类](#添加验证类)
+        - [Authorize授权](#authorize授权)
+        - [前端html请求](#前端html请求)
 
 <!-- /TOC -->
 
@@ -42,7 +49,9 @@ Web API负责构建http常规服务，而SingalR主要负责的是构建实时�
 
 <a id="markdown-为什么用webapi" name="为什么用webapi"></a>
 ### 为什么用WebAPI
-Web API最重要的是可以构建面向各种客户端的服务。另外与WCF REST Service不同在于，Web API利用Http协议的各个方面来表达服务(例如 URI/request response header/caching/versioning/content format)，因此就省掉很多配置。
+Web API最重要的是可以构建面向各种客户端的服务。
+
+另外与WCF REST Service不同在于，Web API利用Http协议的各个方面来表达服务(例如 URI/request response header/caching/versioning/content format)，因此就省掉很多配置。
 
 ![](../assets/webapi/webapi-1.png)
 
@@ -243,7 +252,9 @@ IHttpActionResult | 调用ExecuteAsync来创建HttpResponseMessage，然后将�
 <a id="markdown-路由表" name="路由表"></a>
 ### 路由表
 
-在 ASP.NET Web API 中，控制器是处理 HTTP 请求的类。 调用控制器的公共方法操作方法或只需操作。 当 Web API 框架收到请求时，它将请求路由到某个操作。
+在 ASP.NET Web API 中，控制器是处理 HTTP 请求的类。 调用控制器的公共方法操作方法或只需操作。 
+
+当 Web API 框架收到请求时，它将请求路由到某个操作。
 
 若要确定要调用的操作，框架将使用路由表。 【WebApiConfig.cs】文件
 
@@ -255,9 +266,13 @@ routes.MapHttpRoute(
 );
 ```
 
-路由表中的每个条目包含路由模板。 Web API 的默认路由模板"api / {controller} / {id}"。 在此模板中， "api"是文本路径段和 {controller} 和 {id} 是占位符变量。
+路由表中的每个条目包含路由模板。 Web API 的默认路由模板"api / {controller} / {id}"。 
 
-Web API 框架接收 HTTP 请求时，它尝试匹配根据一个路由表中的路由模板的 URI。 如果没有路由匹配，客户端收到 404 错误。 例如，下面的 Uri 匹配的默认路由：
+在此模板中， "api"是文本路径段和 {controller} 和 {id} 是占位符变量。
+
+Web API 框架接收 HTTP 请求时，它尝试匹配根据一个路由表中的路由模板的 URI。 
+
+如果没有路由匹配，客户端收到 404 错误。 例如，下面的 Uri 匹配的默认路由：
 
 * / api/联系人
 * /api/contacts/1
@@ -370,11 +385,404 @@ public IHttpActionResult SaveProduct(Product pro)
 }
 ```
 
+<a id="markdown-token验证" name="token验证"></a>
+## token验证
+
+<a id="markdown-安全问题" name="安全问题"></a>
+### 安全问题
+
+基于前面新的webapi，可以通过PostMan进行测试：
+
+获取所有产品信息
+
+http://localhost:10034/api/Products/GetAllProducts
+
+![](../assets/webapi/get_all.png)
+
+
+获取指定id的product
+
+http://localhost:10034/api/Products/GetProduct?id=1
+
+![](../assets/webapi/get_one.png)
+
+可以看到这个产品的API是公开访问的，没有任何验证，这样不是很安全，下一步我将加上token验证。
+
+<a id="markdown-添加owin包" name="添加owin包"></a>
+### 添加Owin包
+
+打开NuGet包管理器控制台
+
+![](../assets/webapi/nuget_console.png)
+
+
+在控制台依次输入如下指令安装扩展包：
+
+```
+Install-Package Microsoft.AspNet.WebApi.Owin
+Install-Package Microsoft.Owin.Host.SystemWeb
+Install-Package Microsoft.AspNet.Identity.Owin
+Install-Package Microsoft.Owin.Cors
+Install-Package EntityFramework
+```
+
+如下所示：
+```
+每个程序包都由其所有者许可给你。Microsoft 不负责第三方程序包，也不授予其许可证。一些程序包可能包括受其他许可证约束的依赖项。单击程序包源(源) URL 可确定任何依赖项。
+
+程序包管理器控制台主机版本 3.0.0.0
+
+键入 "get-help NuGet" 可查看所有可用的 NuGet 命令。
+
+PM> Install-Package Microsoft.AspNet.WebApi.Owin
+正在尝试收集与目标为“.NETFramework,Version=v4.5”的项目“ProductApp”有关的程序包“Microsoft.AspNet.WebApi.Owin.5.2.7”的相关依赖项信息
+正在尝试解析程序包“Microsoft.AspNet.WebApi.Owin.5.2.7”的依赖项，DependencyBehavior 为“Lowest”
+正在解析操作以安装程序包“Microsoft.AspNet.WebApi.Owin.5.2.7”
+已解析操作以安装程序包“Microsoft.AspNet.WebApi.Owin.5.2.7”
+已从“packages.config”中删除程序包“Microsoft.AspNet.WebApi.Client.5.2.3”
+已从 ProductApp 成功卸载“Microsoft.AspNet.WebApi.Client.5.2.3”
+已从“packages.config”中删除程序包“Microsoft.AspNet.WebApi.Client.zh-Hans.5.2.3”
+已从 ProductApp 成功卸载“Microsoft.AspNet.WebApi.Client.zh-Hans.5.2.3”
+已从“packages.config”中删除程序包“Microsoft.AspNet.WebApi.Core.5.2.3”
+已从 ProductApp 成功卸载“Microsoft.AspNet.WebApi.Core.5.2.3”
+已从“packages.config”中删除程序包“Microsoft.AspNet.WebApi.Core.zh-Hans.5.2.3”
+已从 ProductApp 成功卸载“Microsoft.AspNet.WebApi.Core.zh-Hans.5.2.3”
+程序包“Microsoft.AspNet.WebApi.Client.5.2.7”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.WebApi.Client.5.2.7”添加到“packages.config”
+已将“Microsoft.AspNet.WebApi.Client 5.2.7”成功安装到 ProductApp
+程序包“Microsoft.AspNet.WebApi.Client.zh-Hans.5.2.7”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.WebApi.Client.zh-Hans.5.2.7”添加到“packages.config”
+已将“Microsoft.AspNet.WebApi.Client.zh-Hans 5.2.7”成功安装到 ProductApp
+程序包“Microsoft.AspNet.WebApi.Core.5.2.7”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.WebApi.Core.5.2.7”添加到“packages.config”
+已将“Microsoft.AspNet.WebApi.Core 5.2.7”成功安装到 ProductApp
+程序包“Microsoft.AspNet.WebApi.Core.zh-Hans.5.2.7”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.WebApi.Core.zh-Hans.5.2.7”添加到“packages.config”
+已将“Microsoft.AspNet.WebApi.Core.zh-Hans 5.2.7”成功安装到 ProductApp
+程序包“Owin.1.0.0”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Owin.1.0.0”添加到“packages.config”
+已将“Owin 1.0.0”成功安装到 ProductApp
+正在将程序包“Microsoft.Owin.2.0.2”添加到文件夹“D:\Codes\dotNet\WebApiDemo\packages”
+已将程序包“Microsoft.Owin.2.0.2”添加到文件夹“D:\Codes\dotNet\WebApiDemo\packages”
+已将程序包“Microsoft.Owin.2.0.2”添加到“packages.config”
+已将“Microsoft.Owin 2.0.2”成功安装到 ProductApp
+程序包“Microsoft.AspNet.WebApi.Owin.5.2.7”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.WebApi.Owin.5.2.7”添加到“packages.config”
+已将“Microsoft.AspNet.WebApi.Owin 5.2.7”成功安装到 ProductApp
+正在从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Client.5.2.3”
+已从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Client.5.2.3”
+正在从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Client.zh-Hans.5.2.3”
+已从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Client.zh-Hans.5.2.3”
+正在从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Core.5.2.3”
+已从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Core.5.2.3”
+正在从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Core.zh-Hans.5.2.3”
+已从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.AspNet.WebApi.Core.zh-Hans.5.2.3”
+PM> Install-Package Microsoft.Owin.Host.SystemWeb
+正在尝试收集与目标为“.NETFramework,Version=v4.5”的项目“ProductApp”有关的程序包“Microsoft.Owin.Host.SystemWeb.4.0.1”的相关依赖项信息
+正在尝试解析程序包“Microsoft.Owin.Host.SystemWeb.4.0.1”的依赖项，DependencyBehavior 为“Lowest”
+正在解析操作以安装程序包“Microsoft.Owin.Host.SystemWeb.4.0.1”
+已解析操作以安装程序包“Microsoft.Owin.Host.SystemWeb.4.0.1”
+已从“packages.config”中删除程序包“Microsoft.Owin.2.0.2”
+已从 ProductApp 成功卸载“Microsoft.Owin.2.0.2”
+程序包“Microsoft.Owin.4.0.1”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.Owin.4.0.1”添加到“packages.config”
+已将“Microsoft.Owin 4.0.1”成功安装到 ProductApp
+程序包“Microsoft.Owin.Host.SystemWeb.4.0.1”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.Owin.Host.SystemWeb.4.0.1”添加到“packages.config”
+已将“Microsoft.Owin.Host.SystemWeb 4.0.1”成功安装到 ProductApp
+正在从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.Owin.2.0.2”
+已从文件夹“D:\Codes\dotNet\WebApiDemo\packages”中删除程序包“Microsoft.Owin.2.0.2”
+PM> Install-Package Microsoft.AspNet.Identity.Owin
+正在尝试收集与目标为“.NETFramework,Version=v4.5”的项目“ProductApp”有关的程序包“Microsoft.AspNet.Identity.Owin.2.2.2”的相关依赖项信息
+正在尝试解析程序包“Microsoft.AspNet.Identity.Owin.2.2.2”的依赖项，DependencyBehavior 为“Lowest”
+正在解析操作以安装程序包“Microsoft.AspNet.Identity.Owin.2.2.2”
+已解析操作以安装程序包“Microsoft.AspNet.Identity.Owin.2.2.2”
+程序包“Microsoft.AspNet.Identity.Core.2.2.2”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.Identity.Core.2.2.2”添加到“packages.config”
+已将“Microsoft.AspNet.Identity.Core 2.2.2”成功安装到 ProductApp
+程序包“Microsoft.Owin.Security.3.0.1”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.Owin.Security.3.0.1”添加到“packages.config”
+已将“Microsoft.Owin.Security 3.0.1”成功安装到 ProductApp
+程序包“Microsoft.Owin.Security.Cookies.3.0.1”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.Owin.Security.Cookies.3.0.1”添加到“packages.config”
+已将“Microsoft.Owin.Security.Cookies 3.0.1”成功安装到 ProductApp
+程序包“Microsoft.Owin.Security.OAuth.3.0.1”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.Owin.Security.OAuth.3.0.1”添加到“packages.config”
+已将“Microsoft.Owin.Security.OAuth 3.0.1”成功安装到 ProductApp
+程序包“Microsoft.AspNet.Identity.Owin.2.2.2”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.Identity.Owin.2.2.2”添加到“packages.config”
+已将“Microsoft.AspNet.Identity.Owin 2.2.2”成功安装到 ProductApp
+PM> Install-Package Microsoft.Owin.Cors
+正在尝试收集与目标为“.NETFramework,Version=v4.5”的项目“ProductApp”有关的程序包“Microsoft.Owin.Cors.4.0.1”的相关依赖项信息
+正在尝试解析程序包“Microsoft.Owin.Cors.4.0.1”的依赖项，DependencyBehavior 为“Lowest”
+正在解析操作以安装程序包“Microsoft.Owin.Cors.4.0.1”
+已解析操作以安装程序包“Microsoft.Owin.Cors.4.0.1”
+程序包“Microsoft.AspNet.Cors.5.0.0”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.AspNet.Cors.5.0.0”添加到“packages.config”
+已将“Microsoft.AspNet.Cors 5.0.0”成功安装到 ProductApp
+程序包“Microsoft.Owin.Cors.4.0.1”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“Microsoft.Owin.Cors.4.0.1”添加到“packages.config”
+已将“Microsoft.Owin.Cors 4.0.1”成功安装到 ProductApp
+PM> Install-Package EntityFramework
+正在尝试收集与目标为“.NETFramework,Version=v4.5”的项目“ProductApp”有关的程序包“EntityFramework.6.2.0”的相关依赖项信息
+正在尝试解析程序包“EntityFramework.6.2.0”的依赖项，DependencyBehavior 为“Lowest”
+正在解析操作以安装程序包“EntityFramework.6.2.0”
+已解析操作以安装程序包“EntityFramework.6.2.0”
+程序包“EntityFramework.6.2.0”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
+已将程序包“EntityFramework.6.2.0”添加到“packages.config”
+正在执行脚本文件“D:\Codes\dotNet\WebApiDemo\packages\EntityFramework.6.2.0\tools\init.ps1”
+正在执行脚本文件“D:\Codes\dotNet\WebApiDemo\packages\EntityFramework.6.2.0\tools\install.ps1”
+
+Type 'get-help EntityFramework' to see all available Entity Framework commands.
+已将“EntityFramework 6.2.0”成功安装到 ProductApp
+PM> 
+```
+
+<a id="markdown-startup类" name="startup类"></a>
+### StartUp类
+
+在项目根目录下添加Owin“Startup”类
+
+```cs
+// Owin启动项类
+[assembly: OwinStartup(typeof(ProductApp.Startup))]
+namespace ProductApp
+{
+    public class Startup
+    {
+        public void Configuration(IAppBuilder app)
+        {
+            HttpConfiguration config = new HttpConfiguration();
+            ConfigureOAuth(app);
+
+            WebApiConfig.Register(config);
+            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+            app.UseWebApi(config);
+        }
+
+        public void ConfigureOAuth(IAppBuilder app)
+        {
+            OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()
+            {
+                AllowInsecureHttp = true,
+                TokenEndpointPath = new PathString("/token"),
+                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(20),//过期时间
+                Provider = new SimpleAuthorizationServerProvider()
+            };
+            app.UseOAuthAuthorizationServer(OAuthServerOptions);
+            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
+        }
+    }
+}
+```
+
+使用Owin的Setup类，就不需要MVC的Global类了，删除之。
+
+<a id="markdown-添加验证类" name="添加验证类"></a>
+### 添加验证类
+
+在项目下添加 SimpleAuthorizationServerProvider 类，用于用户的授权认证。
+
+```cs
+public class SimpleAuthorizationServerProvider : OAuthAuthorizationServerProvider
+{
+    public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
+    {
+        context.Validated();
+    }
+
+    public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
+    {
+
+        context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
+
+        //模拟登陆验证未通过
+        if (!context.UserName.Equals("admin") || !context.Password.Equals("123"))
+        {
+            context.SetError("验证失败", "用户名或密码错误");
+            return;
+        }
+
+
+        var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+        identity.AddClaim(new Claim("sub", context.UserName));
+        identity.AddClaim(new Claim("role", "user"));
+
+        context.Validated(identity);
+    }
+}
+```
+
+在ASP.NET Web API中启用OAuth的Access Token验证非常简单，只需在相应的Controller或Action加上[Authorize]标记
+
+<a id="markdown-authorize授权" name="authorize授权"></a>
+### Authorize授权
+
+针对action增加Authorize特性
+
+```cs
+[Authorize]
+public IEnumerable<Product> GetAllProducts()
+{
+    return products;
+}
+```
+
+增加验证后，通过PostMan模拟请求，被服务器拒绝授权：
+
+![](../assets/webapi/get_all_no_token.png)
+
+需要先通过授权拿到token令牌，请求~/token，并附加username和password信息获取token
+
+```cs
+TokenEndpointPath = new PathString("/token"),
+```
+
+![](../assets/webapi/get_token.png)
+
+如上图所示，通过验证获取服务器生成的 【access_token】，有效时间在【StartUp】类【ConfigureOAuth】方法配置
+
+在新的请求header中附加token信息，在Headers中新增【Authorization】，值为：【bearer token】
+
+```
+Authorization:bearer Gqq4cdp4E3MxX0GFWnnqMG_Qs6csz7v7Np2uJUHjaKEbtorUL84mIBAYcwG1QARec1_HLzwbQ4CHmOto3D0azsChCWgdnQ-8g3ASK4sYZ9nYZjxPjEsfxfjVsEXETlWAOkM3riWXrp6gv3o8bY3oJdM5KiVkhHO7Yfbg8MctxqGDbSIcAr3Qc4p9ne-KTTXYAUjt-75-WkLsTXBwbR7CNfVCmfY3wolXrTrlzCxIl_E
+```
+
+
+![](../assets/webapi/get_all_by_token.png)
+
+
+根据指定id返回数据也是同样的道理：
+
+![](../assets/webapi/get_one_by_token.png)
+
+这样我们就完成了简单的WEB API的token验证
+
+<a id="markdown-前端html请求" name="前端html请求"></a>
+### 前端html请求
+
+构造前端html页面如下：
+```html
+<button id="btnAllProduct">获取数据</button>
+<button id="btnToken">登陆授权</button>
+<button id="btnGetByToken">附加token的请求</button>
+<div style="color:green;" id="suc_div"></div>
+<div style="color:red;" id="err_div"></div>
+```
+
+模拟ajax未附加token的请求如下：
+```js
+// Headers未附加token令牌的请求
+$('#btnAllProduct').click(function () {
+    $.ajax({
+        url: 'http://localhost:10034/api/Products/GetAllProducts',
+        type: 'POST',
+        dataType: 'json',
+        success: function (resp) {
+        },
+        error: function (err) {
+            $('#err_div').append(err.status + err.responseText);
+            $('#err_div').append('<br/>');
+        }
+    });
+});
+```
+
+无访问授权，返回401
+
+![](../assets/webapi/ajax_401.png)
+
+模拟用户登录授权，返回token令牌，保存至浏览器localStorage
+```js
+// 密码验证授权，获取token令牌
+$('#btnToken').click(function () {
+    $.ajax({
+        url: 'http://localhost:10034/token',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            grant_type: 'password',
+            username: 'admin',
+            password: '123'
+        },
+        success: function (resp) {
+            // 获取服务器返回的token并保存至localStorage
+            localStorage.access_token = resp.access_token;
+            $('#suc_div').append('access_token:' + resp.access_token);
+            $('#suc_div').append('<br/>');
+        },
+        error: function (err) {
+            $('#err_div').append(err.status + err.responseText);
+        }
+    });
+});
+```
+
+验证通过，服务器返回token信息：
+
+![](../assets/webapi/ajax_get_token.png)
+
+使用获取的token令牌，添加至Headers部分，重新请求数据：
+
+```js
+// Headers附加token请求数据
+$('#btnGetByToken').click(function () {
+    $.ajax({
+        url: 'http://localhost:10034/api/Products/GetAllProducts',
+        type: 'POST',
+        headers: {
+            Authorization: 'bearer ' + localStorage.access_token//bearer后面有个空格！！！
+        },
+        dataType: 'json',
+        success: function (resp) {
+            $.each(resp, function (i, t) {
+                $('#suc_div').append(`Id:${t.Id},Name:${t.Name},Category:${t.Category}`);
+                $('#suc_div').append('<br/>');
+            });
+        },
+        error: function (err) {
+            $('#err_div').append(err.status + err.responseText);
+            $('#suc_div').append('<br/>');
+        }
+    });
+});
+```
+
+![](../assets/webapi/ajax_get_by_token.png)
+
+通过ajax请求附加token信息，除了上面使用的Headers配置，还可以使用beforeSend回调进行设置：
+
+```js
+function GetDateForServiceCustomer(userId) {
+    $.ajax({
+        url: 'http://*******/api',
+        data: {
+        },
+        beforeSend: function(request) {
+            request.setRequestHeader("Authorization", token);
+        },
+        dataType: 'JSON',
+        type: 'GET',
+        success: function (resp) {
+        },
+        error: function () {
+        }
+    });
+}
+```
+
+以上，完成了简单的WebApi身份验证。
+
+---
+
 > https://www.cnblogs.com/guyun/p/4589115.html
 
 > https://docs.microsoft.com/zh-cn/aspnet/web-api/overview/getting-started-with-aspnet-web-api/tutorial-your-first-web-api
 
 webapi 用户验证
 
-https://www.cnblogs.com/landeanfen/p/5287064.html#_label3_0
+> https://www.cnblogs.com/landeanfen/p/5287064.html#_label3_0
 
+webapi token
+
+> https://www.cnblogs.com/relax/p/4956441.html
