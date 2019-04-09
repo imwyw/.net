@@ -65,11 +65,11 @@
 
 对于下表中的进货和销售还可以继续拆分，对于这样的记录是无法录入到关系型数据库的。
 
-![](..\assets\SqlServer\1nf.jpg)
+![](../assets/SqlServer/1nf.jpg)
 
 数据库中正确的反应应该如下：
 
-![](..\assets\SqlServer\1nf-1.jpg)
+![](../assets/SqlServer/1nf-1.jpg)
 
 <a id="markdown-2nf二范式" name="2nf二范式"></a>
 ### 2NF二范式
@@ -77,7 +77,7 @@
 
 但是仅仅符合1NF的设计，仍然会存在数据冗余过大，插入异常，删除异常，修改异常的问题等。
 
-![](..\assets\SqlServer\2nf-1.jpg)
+![](../assets/SqlServer/2nf-1.jpg)
 
 针对上表中的数据，存在以下问题：
 1. 每一名学生的学号、姓名、系名、系主任这些数据重复多次。每个系与对应的系主任的数据也重复多次。**数据冗余**
@@ -91,13 +91,13 @@
 
 按照2NF进行拆分，解决非主属性部分依赖主属性的问题，如下两张表是符合2NF的：
 
-![](..\assets\SqlServer\2nf-2.jpg)
+![](../assets/SqlServer/2nf-2.jpg)
 
 <a id="markdown-3nf三范式" name="3nf三范式"></a>
 ### 3NF三范式
 3NF在2NF的基础之上，消除了非主属性对于码的传递函数依赖。
 
-![](..\assets\SqlServer\3nf-1.jpg)
+![](../assets/SqlServer/3nf-1.jpg)
 
 对于上面2NF案例中的学生表，还存在一些问题，【系主任】是完全依赖于【系名】，但在表中【系主任】还依赖于学生【学号】。
 
@@ -105,11 +105,11 @@
 
 进一步修改，得到如下依赖关系：
 
-![](..\assets\SqlServer\3nf-2.jpg)
+![](../assets/SqlServer/3nf-2.jpg)
 
 符合3NF的表结构：
 
-![](..\assets\SqlServer\3nf-3.jpg)
+![](../assets/SqlServer/3nf-3.jpg)
 
 参考引用：
 [解释一下关系数据库的第一第二第三范式？ - 刘慰的回答 - 知乎](https://www.zhihu.com/question/24696366/answer/29189700)
@@ -379,7 +379,7 @@ VALUES  ( 1, 'BigData'),(2,'AI'),(5,'SINGING')
 
 数据如下所示：
 
-![](..\assets\SqlServer\join_demo_1.png)
+![](../assets/SqlServer/join_demo_1.png)
 
 ```sql
 -- 笛卡尔积 cross join 
@@ -611,7 +611,7 @@ OVER 子句定义查询结果集内的窗口或用户指定的行集。 然后�
 
 一般语法是：`PIVOT(聚合函数(值-列) FOR pivot-列 in (值1,值2,值3...) )AS P`
 
-![](..\assets\SqlServer\pivot_1.png)
+![](../assets/SqlServer/pivot_1.png)
 
 以上即行转列的示例，对应的sql脚本如下：
 
@@ -669,7 +669,7 @@ SELECT * FROM (SELECT NAME,COURSE,SCORE FROM T_SCORE ) T PIVOT(MAX(SCORE) FOR CO
 
 一般语法是：`UNPIVOT(值-列 FOR pivot-列 IN (列1,列2,列3...)) AS P`
 
-![](..\assets\SqlServer\unpivot_1.png)
+![](../assets/SqlServer/unpivot_1.png)
 
 ```sql
 -- 构建测试表 用以模拟
@@ -855,11 +855,11 @@ SELECT * FROM dbo.T_INDEX_TEST_NEW WHERE guid ='003EE909-FE1F-432A-AAAA-33A31084
 
 下图是针对`T_INDEX_TEST`无索引的查询：
 
-![](..\assets\SqlServer\index-demo-1.jpg)
+![](../assets/SqlServer/index-demo-1.jpg)
 
 针对GUID有聚集索引的`T_INDEX_TEST_NEW`查询计划如下：
 
-![](..\assets\SqlServer\index-demo-2.jpg)
+![](../assets/SqlServer/index-demo-2.jpg)
 
 
 
