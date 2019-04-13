@@ -30,15 +30,15 @@
 ## ASP.NET静态网页实现简单登录跳转
 新建Web应用程序，如下图：
 
-![](..\assets\asp.net\HtmlLoginDemo1.png)
+![](../assets/asp.net/HtmlLoginDemo1.png)
 
 选择Empty空模板，如下图：
 
-![](..\assets\asp.net\HtmlLoginDemo2.png)
+![](../assets/asp.net/HtmlLoginDemo2.png)
 
 添加Login.html文件并设为起始页，如下图：
 
-![](..\assets\asp.net\HtmlLoginDemo1.gif)
+![](../assets/asp.net/HtmlLoginDemo1.gif)
 
 Login.html内容如下：
 ```html
@@ -203,7 +203,7 @@ public void Login(HttpContext context)
 所谓“状态管理”，是指使用ASP.NET中的ViewState、Cookie、Session和Application等对象实现页面数据缓存和传递的技术。
 
 在ASP.NET中，状态管理会被划分为两大类：
-![](..\assets\ASP.NET\状态管理.png)
+![](../assets/ASP.NET/状态管理.png)
 
 可以说状态管理对象依附在内置对象而工作的。下面是这些内置对象的常见属性和方法：
 
@@ -303,7 +303,7 @@ Application.UnLock();//同步结束
 
 考虑多用户的情况，我们使用Application进行记录在线用户数，需要处理所有的客户端请求，所以需要有一个全局的请求处理，对应如下操作：
 
-![](..\assets\asp.net\Global.asax.jpg)
+![](../assets/asp.net/Global.asax.jpg)
 
 ```cs
 public class Global : System.Web.HttpApplication
@@ -796,7 +796,7 @@ JsonConvert.SerializeObject(list, new IsoDateTimeConverter() { DateTimeFormat = 
 <a id="markdown-compositionfailedexception" name="compositionfailedexception"></a>
 ### CompositionFailedException
 
-![](..\assets\asp.net\Microsoft.VisualStudio.Composition.CompositionFailedException.png)
+![](../assets/asp.net/Microsoft.VisualStudio.Composition.CompositionFailedException.png)
 
 参考 
 [Javascript and css intellisense not working](https://connect.microsoft.com/VisualStudio/feedback/details/1288784/javascript-and-css-intellisense-not-working)
