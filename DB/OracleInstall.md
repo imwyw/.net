@@ -33,17 +33,17 @@
 
 按照默认过程进行安装即可，以下为对应步骤的图示：
 
-![](..\assets\Oracle\oracle-install-1.png)
+![](../assets/Oracle/oracle-install-1.png)
 
-![](..\assets\Oracle\oracle-install-2.png)
+![](../assets/Oracle/oracle-install-2.png)
 
-![](..\assets\Oracle\oracle-install-3.png)
+![](../assets/Oracle/oracle-install-3.png)
 
-![](..\assets\Oracle\oracle-install-4.png)
+![](../assets/Oracle/oracle-install-4.png)
 
-![](..\assets\Oracle\oracle-install-6.png)
+![](../assets/Oracle/oracle-install-6.png)
 
-![](..\assets\Oracle\安装完成.png)
+![](../assets/Oracle/安装完成.png)
 
 <a id="markdown-oem" name="oem"></a>
 ## OEM
@@ -55,63 +55,63 @@ Enterprise Manager Database Control 提供了一个基于 Web 的界面，您可
 
 一定要检查OracleDbConsole有没有启动。
 
-![](..\assets\Oracle\orcl-console.png)
+![](../assets/Oracle/orcl-console.png)
 
 OEM的默认管理地址为：https://localhost:1158/em，点击【高级】并继续访问
 
-![](..\assets\Oracle\oem-login1.png)
+![](../assets/Oracle/oem-login1.png)
 
-![](..\assets\Oracle\oem-login2.png)
+![](../assets/Oracle/oem-login2.png)
 
 登录的账号和口令为安装oracle时设置的，连接身份选择【SYSDBA】选项，如下：
 
-![](..\assets\Oracle\oem-login3.png)
+![](../assets/Oracle/oem-login3.png)
 
 登录成功后首页显示如下：
 
-![](..\assets\Oracle\oem-main.png)
+![](../assets/Oracle/oem-main.png)
 
 <a id="markdown-配置监听" name="配置监听"></a>
 ## 配置监听
 开始菜单中打开【Oracle-OraDb11g_home1】-【配置和移植工具】-【Net Configuration Assistant】网络配置
 
-![](..\assets\Oracle\oracle-net-config-assistant.png)
+![](../assets/Oracle/oracle-net-config-assistant.png)
 
 选择【监听程序】进行配置
 
-![](..\assets\Oracle\oracle-net-listen-1.png)
+![](../assets/Oracle/oracle-net-listen-1.png)
 
-![](..\assets\Oracle\oracle-net-listen-2.png)
+![](../assets/Oracle/oracle-net-listen-2.png)
 
-![](..\assets\Oracle\oracle-net-listen-3.png)
+![](../assets/Oracle/oracle-net-listen-3.png)
 
-![](..\assets\Oracle\oracle-net-listen-4.png)
+![](../assets/Oracle/oracle-net-listen-4.png)
 
-![](..\assets\Oracle\oracle-net-listen-5.png)
+![](../assets/Oracle/oracle-net-listen-5.png)
 
-![](..\assets\Oracle\oracle-net-listen-6.png)
+![](../assets/Oracle/oracle-net-listen-6.png)
 
-![](..\assets\Oracle\oracle-net-listen-7.png)
+![](../assets/Oracle/oracle-net-listen-7.png)
 
-![](..\assets\Oracle\oracle-net-listen-8.png)
+![](../assets/Oracle/oracle-net-listen-8.png)
 
 再进行【本地网络服务名】的配置
 
-![](..\assets\Oracle\oracle-net-listen-srv-1.png)
+![](../assets/Oracle/oracle-net-listen-srv-1.png)
 
-![](..\assets\Oracle\oracle-net-listen-srv-2.png)
+![](../assets/Oracle/oracle-net-listen-srv-2.png)
 
-![](..\assets\Oracle\oracle-net-listen-srv-3.png)
+![](../assets/Oracle/oracle-net-listen-srv-3.png)
 
-![](..\assets\Oracle\oracle-net-listen-srv-4.png)
+![](../assets/Oracle/oracle-net-listen-srv-4.png)
 
-![](..\assets\Oracle\oracle-net-listen-srv-5.png)
+![](../assets/Oracle/oracle-net-listen-srv-5.png)
 
-![](..\assets\Oracle\oracle-net-listen-srv-6.png)
+![](../assets/Oracle/oracle-net-listen-srv-6.png)
 
-![](..\assets\Oracle\oracle-net-listen-srv-7.png)
+![](../assets/Oracle/oracle-net-listen-srv-7.png)
 
-![](..\assets\Oracle\oracle-net-listen-srv-8.png)
+![](../assets/Oracle/oracle-net-listen-srv-8.png)
 
 <a id="markdown-注册监听" name="注册监听"></a>
 ## 注册监听
@@ -120,7 +120,7 @@ OEM的默认管理地址为：https://localhost:1158/em，点击【高级】并�
 
 打开【Net Manager】进行监听程序-添加数据库的配置：
 
-![](..\assets\Oracle\net-manager-监听配置-添加数据库.png)
+![](../assets/Oracle/net-manager-监听配置-添加数据库.png)
 
 需要注意的是【全局数据库名】和【SID】名称不要写错了，Oracle主目录为：【D:\app\Administrator\product\11.2.0\dbhome_1】（不同安装环境，目录有所差异）
 
@@ -195,17 +195,17 @@ ADR_BASE_LISTENER = D:\app\Administrator
 
 在win10安装会有此提示，可以忽略
 
-![](..\assets\Oracle\oracle-client-win10.png)
+![](../assets/Oracle/oracle-client-win10.png)
 
 进行客户端的默认安装
 
-![](..\assets\Oracle\oracle-client-install-1.png)
+![](../assets/Oracle/oracle-client-install-1.png)
 
-![](..\assets\Oracle\oracle-client-install-2.png)
+![](../assets/Oracle/oracle-client-install-2.png)
 
-![](..\assets\Oracle\oracle-client-install-4.png)
+![](../assets/Oracle/oracle-client-install-4.png)
 
-![](..\assets\Oracle\oracle-client-install-5.png)
+![](../assets/Oracle/oracle-client-install-5.png)
 
 <a id="markdown-客户端sqlplus连接测试" name="客户端sqlplus连接测试"></a>
 ## 客户端SqlPlus连接测试
@@ -233,7 +233,7 @@ ORCL =
 
 打开命令提示符，进行连接测试，如下：
 
-![](..\assets\Oracle\客户端-sqlplus-conn.png)
+![](../assets/Oracle/客户端-sqlplus-conn.png)
 
 显示Connected即表明服务端的监听配置和客户端的TNS配置是正确的
 
@@ -267,47 +267,47 @@ Oracle安装会自动的生成sys用户和system用户
 ### OEM创建表空间和用户
 以sys管理员账号登录EM，选择【服务器】-【表空间】
 
-![](..\assets\Oracle\EM-表空间选项.png)
+![](../assets/Oracle/EM-表空间选项.png)
 
 选择【创建】进行新建表空间
 
-![](..\assets\Oracle\EM-表空间-创建.png)
+![](../assets/Oracle/EM-表空间-创建.png)
 
-![](..\assets\Oracle\EM-表空间-创建-1.png)
+![](../assets/Oracle/EM-表空间-创建-1.png)
 
-![](..\assets\Oracle\EM-表空间-创建-2.png)
+![](../assets/Oracle/EM-表空间-创建-2.png)
 
-![](..\assets\Oracle\EM-表空间-创建-3.png)
+![](../assets/Oracle/EM-表空间-创建-3.png)
 
 以上，表空间【FLY】创建完成，并已设置为默认表空间。
 
 接着开始创建用户，选择【服务器】-【用户】
 
-![](..\assets\Oracle\EM-用户选项.png)
+![](../assets/Oracle/EM-用户选项.png)
 
-![](..\assets\Oracle\EM-用户-创建.png)
+![](../assets/Oracle/EM-用户-创建.png)
 
 设置用户一般信息（名称、口令、默认表空间等），如下：
 
-![](..\assets\Oracle\EM-用户-创建-1.png)
+![](../assets/Oracle/EM-用户-创建-1.png)
 
 选择【角色】标签，进行角色设置：
 
-![](..\assets\Oracle\EM-用户-创建-2.png)
+![](../assets/Oracle/EM-用户-创建-2.png)
 
 创建完成后，在客户端进行连接测试，如下：
 
-![](..\assets\Oracle\EM-用户-创建-连接测试.png)
+![](../assets/Oracle/EM-用户-创建-连接测试.png)
 
 <a id="markdown-命令方式用户操作" name="命令方式用户操作"></a>
 ### 命令方式用户操作
 做好以上准备后，我们可以针对数据添加用户并授权，以下操作均在服务端进行
 
-![](..\assets\Oracle\create-user-1.png)
+![](../assets/Oracle/create-user-1.png)
 
 打开sqlplus，使用安装Oracle时设置的密码进行登录：
 
-![](..\assets\Oracle\create-user-login.png)
+![](../assets/Oracle/create-user-login.png)
 
 上图中system为默认系统用户，可以用来进行用户的相关操作
 
@@ -406,41 +406,41 @@ orcl =
 
 开始菜单中打开【Oracle-OraDb11g_home1】-【配置和移植工具】-【DataBase Configuration Assistant】数据库配置助手进行新建实例
 
-![](..\assets\Oracle\oracle-db-create-config.png)
+![](../assets/Oracle/oracle-db-create-config.png)
 
-![](..\assets\Oracle\oracle-db-create-0.png)
+![](../assets/Oracle/oracle-db-create-0.png)
 
-![](..\assets\Oracle\oracle-db-create-1.png)
+![](../assets/Oracle/oracle-db-create-1.png)
 
-![](..\assets\Oracle\oracle-db-create-2.png)
+![](../assets/Oracle/oracle-db-create-2.png)
 
-![](..\assets\Oracle\oracle-db-create-3.png)
+![](../assets/Oracle/oracle-db-create-3.png)
 
-![](..\assets\Oracle\oracle-db-create-4.png)
+![](../assets/Oracle/oracle-db-create-4.png)
 
-![](..\assets\Oracle\oracle-db-create-5.png)
+![](../assets/Oracle/oracle-db-create-5.png)
 
-![](..\assets\Oracle\oracle-db-create-6.png)
+![](../assets/Oracle/oracle-db-create-6.png)
 
-![](..\assets\Oracle\oracle-db-create-7.png)
+![](../assets/Oracle/oracle-db-create-7.png)
 
-![](..\assets\Oracle\oracle-db-create-8.png)
+![](../assets/Oracle/oracle-db-create-8.png)
 
-![](..\assets\Oracle\oracle-db-create-9.png)
+![](../assets/Oracle/oracle-db-create-9.png)
 
-![](..\assets\Oracle\oracle-db-create-10.png)
+![](../assets/Oracle/oracle-db-create-10.png)
 
-![](..\assets\Oracle\oracle-db-create-11.png)
+![](../assets/Oracle/oracle-db-create-11.png)
 
-![](..\assets\Oracle\oracle-db-create-12.png)
+![](../assets/Oracle/oracle-db-create-12.png)
 
 安装过程较为耗时，正在安装中。。。
 
-![](..\assets\Oracle\oracle-db-create-ing.png)
+![](../assets/Oracle/oracle-db-create-ing.png)
 
 安装完成【退出】即可
 
-![](..\assets\Oracle\oracle-db-create-finish.png)
+![](../assets/Oracle/oracle-db-create-finish.png)
 
 <a id="markdown-疑难解答" name="疑难解答"></a>
 ## 疑难解答
@@ -454,7 +454,7 @@ orcl =
 <a id="markdown-em相关账户解锁" name="em相关账户解锁"></a>
 ### EM相关账户解锁
 
-![](..\assets\Oracle\dbca-emca-em相关账户解锁.png)
+![](../assets/Oracle/dbca-emca-em相关账户解锁.png)
 
 ```
 
@@ -536,7 +536,7 @@ Enterprise Manager 代理端口 (orcl) = 3938
 <a id="markdown-实例化oc4j配置文件时出错" name="实例化oc4j配置文件时出错"></a>
 ### 实例化OC4J配置文件时出错
 
-![](..\assets\Oracle\dbca-emca-em实例化OC4J配置出错.png)
+![](../assets/Oracle/dbca-emca-em实例化OC4J配置出错.png)
 
 由于安装包不完整，从官网下载需要解压两个压缩包，完整安装即解决该问题。
 
