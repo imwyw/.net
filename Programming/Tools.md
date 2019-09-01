@@ -1,6 +1,8 @@
 <!-- TOC -->
 
 - [工具篇](#工具篇)
+    - [VisualStudio](#visualstudio)
+        - [VS2015](#vs2015)
     - [SVN](#svn)
         - [简介](#简介)
         - [概念](#概念)
@@ -19,6 +21,22 @@
 
 <a id="markdown-工具篇" name="工具篇"></a>
 # 工具篇
+<a id="markdown-visualstudio" name="visualstudio"></a>
+## VisualStudio
+
+<a id="markdown-vs2015" name="vs2015"></a>
+### VS2015
+通常我们进行C#开发时，选择自定义安装，保持默认路径即可。如下图：
+
+![](../assets/Programming/vs15-install-1.png)
+
+指定必要的组件即可，其余的组件再安装完成后还可以继续添加，如下图所示：
+
+![](../assets/Programming/vs15-install-2.png)
+
+静静等待安装完成，启动环境即可。
+
+![](../assets/Programming/vs15-install-3.png)
 
 <a id="markdown-svn" name="svn"></a>
 ## SVN
