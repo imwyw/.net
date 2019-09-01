@@ -2,7 +2,9 @@
 
 - [工具篇](#工具篇)
     - [VisualStudio](#visualstudio)
-        - [VS2015](#vs2015)
+        - [VS2015安装](#vs2015安装)
+        - [快捷操作](#快捷操作)
+        - [ActivityLog.xml异常](#activitylogxml异常)
     - [SVN](#svn)
         - [简介](#简介)
         - [概念](#概念)
@@ -14,6 +16,8 @@
         - [撤销本地修改](#撤销本地修改)
         - [撤销已经提交的代码](#撤销已经提交的代码)
         - [svn pre-commit](#svn-pre-commit)
+    - [FileZilla](#filezilla)
+        - [Client](#client)
     - [Visual Studio Code](#visual-studio-code)
         - [列模式](#列模式)
 
@@ -24,8 +28,16 @@
 <a id="markdown-visualstudio" name="visualstudio"></a>
 ## VisualStudio
 
-<a id="markdown-vs2015" name="vs2015"></a>
-### VS2015
+<a id="markdown-vs2015安装" name="vs2015安装"></a>
+### VS2015安装
+VS2015版本
+
+* Community 社区版
+* Enterprise 企业版
+* Professional 专业版（教学使用）
+
+![](../assets/Programming/vs15-version.png)
+
 通常我们进行C#开发时，选择自定义安装，保持默认路径即可。如下图：
 
 ![](../assets/Programming/vs15-install-1.png)
@@ -37,6 +49,32 @@
 静静等待安装完成，启动环境即可。
 
 ![](../assets/Programming/vs15-install-3.png)
+
+<a id="markdown-快捷操作" name="快捷操作"></a>
+### 快捷操作
+
+Ctrl + J ： 智能感知（IntelliSense）
+
+Ctrl + F ： 显示查找对话框
+
+Ctrl+K+D 或 Ctrl+E+D ：代码格式化
+
+Ctrl + F5 ： 运行不调试
+
+F5 ：启动调试
+
+Ctrl + U ： 改成小写
+
+Ctrl + Shift + U ： 改成大写
+
+<a id="markdown-activitylogxml异常" name="activitylogxml异常"></a>
+### ActivityLog.xml异常
+
+错误详情：Microsoft Visual Studio 2015 遇到了异常,可能是由某个扩展导致的。
+
+检查文件"C:\Users\Administrator\AppData\Roaming\Microsoft\VisualStudio\10.0\ActivityLog.xml”以获取详细信息。"
+
+解决方案： 把隐藏文件夹【C:\Users\Administrator\AppData\Local\Microsoft\VisualStudio\14.0\ComponentModelCache】 删除，重新打开生成vs项目，搞定！
 
 <a id="markdown-svn" name="svn"></a>
 ## SVN
@@ -151,6 +189,22 @@ svnlook log %REPOS% -t %TXN% | findstr /ic:"        " > nul
  :success 
  exit 0
 ```
+
+<a id="markdown-filezilla" name="filezilla"></a>
+## FileZilla
+FileZilla是一个免费开源的FTP软件，分为客户端版本和服务器版本，具备所有的FTP软件功能。
+
+可控性、有条理的界面和管理多站点的简化方式使得Filezilla客户端版成为一个方便高效的FTP客户端工具，
+
+而FileZilla Server则是一个小巧并且可靠的支持FTP&SFTP的FTP服务器软件。
+
+<a id="markdown-client" name="client"></a>
+### Client
+FileZilla 客户端是一个快速可靠的、跨平台的FTP,FTPS和SFTP客户端。具有图形用户界面(GUI)和很多有用的特性。
+
+![](../assets/Programming/filezilla-client-1.png)
+
+关于FileZilla Client端使用技巧自行在网上搜索了解。
 
 <a id="markdown-visual-studio-code" name="visual-studio-code"></a>
 ## Visual Studio Code
