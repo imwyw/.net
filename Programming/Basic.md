@@ -36,6 +36,7 @@
         - [多维数组](#多维数组)
     - [方法](#方法)
         - [形参实参](#形参实参)
+        - [静态方法](#静态方法)
         - [重载](#重载)
         - [参数传递](#参数传递)
             - [值传递](#值传递)
@@ -96,6 +97,31 @@ string str  = "Hello iflytek";
 
 值类型就是在栈中分配内存，在申明的同时就初始化，以确保数据不为NULL；
 
+常见数据类型：
+
+数据类型名字 | 说明 | 数值类型后缀字符
+-------|----|---------
+int | 整型，4字节，32位 | 
+long | 长整型，8字节，64位 | l
+float | 浮点型，4字节，32位 | f
+double | 双精度数，8字节，64位 | d
+
+常用数据类型所占内存空间：
+```cs
+Console.WriteLine("int类型占用:{0}字节",sizeof(int));
+Console.WriteLine("long类型占用:{0}字节", sizeof(long));
+Console.WriteLine("float类型占用:{0}字节", sizeof(float));
+Console.WriteLine("double类型占用:{0}字节", sizeof(double));
+
+//output:
+/*
+int类型占用： 4字节
+long类型占用： 8字节
+float类型占用： 4字节
+double类型占用： 8字节
+*/
+```
+
 ```cs
 int a;
 Console.WriteLine(a);//会报错，a未进行赋值
@@ -116,7 +142,9 @@ Console.WriteLine(s1.IsMarry);
 #### 引用类型
 类、数组、接口、委托、字符串等。
 
-引用型是在堆中分配内存，初始化为null，引用型是需要GC(GARBAGE COLLECTION)来回收内存的。值类型不需要GC，超出了作用范围，系统就会自动释放！
+引用型是在堆中分配内存，初始化为null，引用型是需要GC(GARBAGE COLLECTION)来回收内存的。
+
+值类型不需要GC，超出了作用范围，系统就会自动释放！
 
 <a id="markdown-类型系统" name="类型系统"></a>
 #### 类型系统
@@ -173,16 +201,24 @@ enum Week
 
 static void Main(string[] args)
 {
+    // 枚举类型转换为字面值和数值
     Console.WriteLine(Week.Monday);//Monday
     Console.WriteLine((int)Week.Monday);//1
 
     Week today = Week.Tuesday;
+    
     //1、枚举类型转换为数值
     int today1 = (int)today;
+    
     //2、数值转换为枚举类型
     Week resWeek = (Week)Enum.Parse(typeof(Week), "5");//resWeek为5对应的Friday
+    Week wk5 = (Week)5;
+    
     //3、数值转换为枚举字符串
     string str = Enum.GetName(typeof(Week), 6);//Saturday
+
+    //4、字符串转换为枚举类型
+    Week wk1 = (Week)Enum.Parse(typeof(Week), "Friday");
 }
 ```
 
@@ -209,9 +245,13 @@ int C = A + 3;
 ```
 其中的const常量B被替换成字面量3，而readonly常量A则保持引用方式。
 
-readonly常量只能声明为类字段，支持实例类型或静态类型，可以在声明的同时初始化或者在构造函数中进行初始化，初始化完成后便无法更改。
+**readonly常量**只能声明为类字段，支持实例类型或静态类型，
 
-const常量除了可以声明为类字段之外，还可以声明为方法中的局部常量，默认为静态类型(无需用static修饰，否则将导致编译错误)，但必须在声明的同时完成初始化。
+可以在声明的同时初始化或者在构造函数中进行初始化，初始化完成后便无法更改。
+
+**const常量**除了可以声明为类字段之外，还可以声明为方法中的局部常量，
+
+默认为静态类型(无需用static修饰，否则将导致编译错误)，但必须在声明的同时完成初始化。
 
 性能上来说：const直接以字面量形式参与运算，性能要略高于readonly，但对于一般应用而言，这种性能上的差别可以说是微乎其微。
 
@@ -332,7 +372,9 @@ class Program
 
 但在值本来就缺失的时候，这也会带来问题。
 
-例如，在指定计数的时候，假如计数未知，应该如何输入？一个可能的解决方案是指定特殊值，比如一1或者int.MaxVa1ue.但这些都是有效的整数。
+例如，在指定计数的时候，假如计数未知，应该如何输入？
+
+一个可能的解决方案是指定特殊值，比如`-1`或者`int.MaxValue`.但这些都是有效的整数。
 
 我们倒更希望直接将null赋给值类型，因为这不是有效的整数。
 
@@ -356,9 +398,13 @@ int res = count.GetValueOrDefault(-1);
 <a id="markdown-类型转换" name="类型转换"></a>
 ### 类型转换
 
-由于 C# 是在编译时静态类型化的，因此变量在声明后就无法再次声明，或无法分配另一种类型的值，除非该类型可以隐式转换为变量的类型。 
+由于 C# 是在编译时静态类型化的，因此变量在声明后就无法再次声明，
 
-例如，string 无法隐式转换为 int。 因此，在将 i 声明为 int 后，无法将字符串“Hello”分配给它，如以下代码所示：
+或无法分配另一种类型的值，除非该类型可以隐式转换为变量的类型。 
+
+例如，string 无法隐式转换为 int。 
+
+因此，在将 i 声明为 int 后，无法将字符串“Hello”分配给它，如以下代码所示：
 ```cs
 int i;  
 i = "Hello"; // error CS0029: Cannot implicitly convert type 'string' to 'int'
@@ -371,10 +417,12 @@ i = "Hello"; // error CS0029: Cannot implicitly convert type 'string' to 'int'
 通过在圆括号中指定希望变量转换成的类型，表明你已认可在发生显式转型时可能丢失精度和数据，或者可能造成异常。
 
 如果进行转换可能会导致信息丢失，则编译器会要求执行显式转换，显式转换也称为强制转换。
+
 ```cs
 //下面的程序将 double 强制转换为 int
 double x = 1234.7;
 int a;
+
 // Cast double to int.
 a = (int)x;
 Console.WriteLine(a);// Output: 1234
@@ -559,20 +607,48 @@ L3行，(int)obj的结果为值类型，控制台打印输出需要又一次的�
 ### 分支
 if...else...
 
+![](../assets/Programming/basic-if.png)
+
+```cs
+if ( 条件 )
+{
+    //执行语句块A
+}
+else
+{
+    //执行语句块B
+}
+```
+
 switch
+```cs
+switch (intValue)
+{
+    case 0:
+        CaseZero();
+        break;
+    case 1:
+        CaseOne();
+        break;
+    default:
+        CaseOthers();
+        break;
+}
+```
 
-if语句每执行一次都要先判断条件表达式是true还是false，为true时执行相应语句，若为false则继续判断下一个表达式，直到最后一个else结束。线性执行。 
-
-switch语句只需在入口时计算表达式的值，然后查找跳转表，执行对应语句，否则default。类似二叉树。
 
 需要注意的几点：
 1. switch…case…只能用于case值为常量的分支结构，而if…else…更加灵活。
-2. if判断条件为逻辑表达式，可以是布尔类型的合法表达式、可以是常量、枚举等。而switch 通常处理算术表达式，或字符。。
+2. if判断条件为逻辑表达式，可以是布尔类型的合法表达式、可以是常量、枚举等。而switch 通常处理算术表达式，或字符。
 3. switch 进行一次条件判断后直接执行到程序的条件语句。而if…else 有几种条件，就得判断多少次。
 4. 相比if语句，switch语句是以空间换时间的分支结构。因为它要生成跳转表，所以占用较多的代码空间。当case常量分布范围很大但实际有效值又比较少的情况，switch…case的空间利用率将变得很低。
-5. 分支较多时，使用switch的效率高于if，除非第一个if条件就为真。。
+5. 分支较多时，使用switch的效率高于if，除非第一个if条件就为真。
 
-最终，当分支较多时，使用if…else…代码可读性不如switch…case…高
+**总结：**
+* 当分支较多时，使用if…else…代码可读性不如switch…case…高；
+* switch可以用if else代替，反之则不行；
+
+
 
 <a id="markdown-循环" name="循环"></a>
 ### 循环
@@ -588,13 +664,21 @@ switch语句只需在入口时计算表达式的值，然后查找跳转表，�
 
 <a id="markdown-数组" name="数组"></a>
 ## 数组
-数组是一个存储相同类型元素的固定大小的顺序集合。数组是用来存储数据的集合，通常认为数组是一个同一类型变量的集合。
-数组中某个指定的元素是通过索引来访问的。所有的数组都是由连续的内存位置组成的。最低的地址对应第一个元素，最高的地址对应最后一个元素。
+数组是一个存储相同类型元素的固定大小的顺序集合。
+
+数组是用来存储数据的集合，通常认为数组是一个同一类型变量的集合。
+
+数组中某个指定的元素是通过索引来访问的。
+
+所有的数组都是由连续的内存位置组成的。最低的地址对应第一个元素，最高的地址对应最后一个元素。
+
 这也是为什么在初始化数组的时候就需要指定数组的大小。
 
 <a id="markdown-一维数组" name="一维数组"></a>
 ### 一维数组
-在内存中是顺序连续存储的，所以它的索引速度非常快，赋值与修改元素也很简单。数组也是一个引用类型，初始化需要使用new关键字。
+在内存中是顺序连续存储的，所以它的索引速度非常快，赋值与修改元素也很简单。
+
+数组也是一个引用类型，初始化需要使用new关键字。
 
 ```cs
 //使用字面值
@@ -693,16 +777,36 @@ Parameter List 形参列表
 
 <a id="markdown-形参实参" name="形参实参"></a>
 ### 形参实参
+![](../assets/Programming/calc-demo-add.png)
+
 ```cs
-//方法的定义，返回类型int，方法名Add，形参列表：int a, int b
-int Add(int a, int b)
+//方法的定义，返回类型int，方法名Add，形参列表：int x, int y
+int Add(int x, int y)
 {
-    return a + b;
+    return x + y;
 }
 
 //方法的调用，传入实参 1和2
 int sum = Add(1, 2);
 ```
+
+<a id="markdown-静态方法" name="静态方法"></a>
+### 静态方法
+C#中，位于同一个类的静态方法可以通过方法名直接调用， 其它类要调用时，
+
+需要加上此方法所在的类名，比如： `Program.Add(100,200);`
+
+```cs
+// 方法前加上static关键字
+static int Add ( int x, int y)
+{
+    return x + y;
+}
+```
+
+如果定义方法时没有加上static关键字，它表明这个方法是一个“实例方法（instance method） ”，
+
+这种方法依附于特定的对象，外界需要通过对象变量来调用。
 
 <a id="markdown-重载" name="重载"></a>
 ### 重载
@@ -796,7 +900,9 @@ static void Main(string[] args)
 <a id="markdown-输出参数" name="输出参数"></a>
 #### 输出参数
 return 语句可用于只从函数中返回一个值。但是，可以使用 输出参数 来从函数中返回两个值。
+
 输出参数会把方法输出的数据赋给自己，其他方面与引用参数相似。
+
 ```cs
 static void AddValue(out int val)
 {
@@ -818,6 +924,7 @@ static void Main(string[] args)
 <a id="markdown-params" name="params"></a>
 #### params
 有时，当声明一个方法时，您不能确定要传递给函数作为参数的参数数目。
+
 在使用数组作为形参时，C# 提供了 params 关键字，使调用数组为形参的方法时，既可以传递数组实参，也可以传递一组数组元素。
 
 params 的使用格式为：`public 返回类型 方法名称( params 类型名称[] 数组名称 )`
