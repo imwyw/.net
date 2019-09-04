@@ -1,6 +1,7 @@
 <!-- TOC -->
 
-- [专题代码](#专题代码)
+- [专题](#专题)
+    - [Equals和==](#equals和)
     - [MD5加密](#md5加密)
     - [上传文件](#上传文件)
         - [form表单方式上传](#form表单方式上传)
@@ -12,12 +13,20 @@
 
 <!-- /TOC -->
 
-<a id="markdown-专题代码" name="专题代码"></a>
-# 专题代码
+<a id="markdown-专题" name="专题"></a>
+# 专题
+
+<a id="markdown-equals和" name="equals和"></a>
+## Equals和==
+
+![](../assets/Other/equals-compare.png)
+
 
 <a id="markdown-md5加密" name="md5加密"></a>
 ## MD5加密
-MD5的全称是Message-Digest Algorithm 5（信息-摘要算法），在90年代初由MIT Laboratory for Computer Science和RSA Data Security Inc的Ronald L. Rivest开发出来，经MD2、MD3和MD4发展而来。
+MD5的全称是Message-Digest Algorithm 5（信息-摘要算法），
+
+在90年代初由MIT Laboratory for Computer Science和RSA Data Security Inc的Ronald L. Rivest开发出来，经MD2、MD3和MD4发展而来。
 
 MD5 是不可逆算法，解密只能通过暴力破解的方式。
 
@@ -29,13 +38,13 @@ MD5 md5 = new MD5CryptoServiceProvider();
 string cipherText = BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(clearText))).Replace("-", "");
 ```
 
-
 <a id="markdown-上传文件" name="上传文件"></a>
 ## 上传文件
 
 <a id="markdown-form表单方式上传" name="form表单方式上传"></a>
 ### form表单方式上传
 使用表单上传附件，一定要将enctype属性设置为"multipart/form-data"，如下所示：
+
 ```html
 <form id="form1" action="/Home/GetFormFile" method="post" enctype="multipart/form-data" >
     <input type="file"  name="myFile" />
