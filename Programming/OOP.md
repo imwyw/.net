@@ -18,7 +18,7 @@
         - [封装](#封装)
         - [继承](#继承)
             - [类继承](#类继承)
-        - [this和base](#this和base)
+            - [this和base](#this和base)
             - [继承中的构造函数](#继承中的构造函数)
             - [父类与子类转换](#父类与子类转换)
             - [类继承修饰符](#类继承修饰符)
@@ -349,7 +349,7 @@ public class Student
 编译器不允许派生类的访问级别比基类更高，如没有显式标记基类，则默认基类为Object类；
 
 <a id="markdown-this和base" name="this和base"></a>
-### this和base
+#### this和base
 
 * this：指当前类，this调用当前类的属性，方法，包括构造函数的方法，继承本类的构造函数
 * base：指当前类的父类，可调用父类的非私有属性，方法，继承父类的构造函数括号里的参数
@@ -547,6 +547,8 @@ class Program
 接口可以定义属性、方法，**但不能定义字段**
 
 不能被static、virtual、abstract和sealed修饰，但可以有new来隐藏基接口成员
+
+![](../assets/oop/duck-ifood.png)
 
 **总结：**
 1. C#中的接口是独立于类来定义的。这与 C++模型是对立的，在 C++中接口实际上就是抽象基类。
