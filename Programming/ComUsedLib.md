@@ -33,6 +33,9 @@
             - [组合约束](#组合约束)
     - [泛型字典`Dictionay<Tkey,Tvalue>`](#泛型字典dictionaytkeytvalue)
     - [异常处理](#异常处理)
+        - [bug和debug](#bug和debug)
+        - [异常案例](#异常案例)
+        - [捕获与处理](#捕获与处理)
 
 <!-- /TOC -->
 
@@ -670,9 +673,34 @@ dicRes.Add("zhaofugui", "赵富贵");
 
 <a id="markdown-异常处理" name="异常处理"></a>
 ## 异常处理
+
+<a id="markdown-bug和debug" name="bug和debug"></a>
+### bug和debug
+
+![](../assets/programming/bug.png)
+
+**Bug** : 程序代码中隐藏的错误
+
+**Debug** ：修正代码中存在的错误的过程，简称“程序调试”
+
+**开发中可能会遇到的几种错误**
+
+* 语法错误：在编译时发现，修改代码后可以顺利通过编译。
+* 运行时错误：程序代码能顺利通过编译，但在运行时出现错误（比如用户输入了无效的数据），如果处理不当，程序可能会非法退出。
+* 逻辑错误：程序代码能顺利通过编译，在运行时也没有出现错误，但就是结果不对 ……
+
+
+<a id="markdown-异常案例" name="异常案例"></a>
+### 异常案例
+
 异常是在程序执行期间出现的问题。C# 中的异常是对程序运行时出现的特殊情况的一种响应，比如尝试除以零。
 
-异常提供了一种把程序控制权从某个部分转移到另一个部分的方式。
+![](../assets/programming/divide-by-zero-exception.png)
+
+程序将会中断，也就是常说的崩掉了，最终CLR会结束整个进程。
+
+<a id="markdown-捕获与处理" name="捕获与处理"></a>
+### 捕获与处理
 
 C# 异常处理时建立在四个关键词之上的：try、catch、finally 和 throw。
 
