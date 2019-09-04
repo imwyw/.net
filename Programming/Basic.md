@@ -808,6 +808,8 @@ static int Add ( int x, int y)
 
 这种方法依附于特定的对象，外界需要通过对象变量来调用。
 
+典型案例，如.NET基类库中的Math类中静态方法。
+
 <a id="markdown-重载" name="重载"></a>
 ### 重载
 ```cs
