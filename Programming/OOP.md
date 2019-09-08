@@ -9,13 +9,14 @@
             - [属性](#属性)
             - [方法](#方法)
             - [实例和静态](#实例和静态)
-        - [访问修饰符](#访问修饰符)
         - [对象的创建和销毁](#对象的创建和销毁)
             - [构造函数](#构造函数)
             - [析构函数](#析构函数)
         - [分部类](#分部类)
     - [三个基本特征](#三个基本特征)
         - [封装](#封装)
+            - [访问修饰符](#访问修饰符)
+            - [属性控制读写](#属性控制读写)
         - [继承](#继承)
             - [类继承](#类继承)
             - [this和base](#this和base)
@@ -255,30 +256,6 @@ class Program
 1. 变量需要被共享的时候
 2. 方法需要被反复的调用的时候
 
-<a id="markdown-访问修饰符" name="访问修饰符"></a>
-### 访问修饰符
-
-一个类编写完成后，并不是任何角色都能去访问该类或该类中的某些特定成员。
-
-使用“访问修饰符”来对类和类成员的访问权限进行控制
-
-- 类的访问修饰符
-
-修饰符 | 说明
-------|---
-public | 公共的，该可以被任何代码访问
-internal | (默认，可不写)内部的，只能由定义它的工程内部的代码访问
-
-- 类成员访问修饰符
-
-修饰符 | 说明
------- | -----
-public | 公共的，成员可以被任何代码访问
-private | (默认，可不写)私有的，只能由本类中的代码访问
-protected | 受保护的，成员只能由本类或其派生类中的代码访问
-internal | 内部的，成员只能由定义它的工程内部的代码访问
-protected internal | 该成员既可以被同一工程的其它代码访问，也可以被其派生类访问
-
 <a id="markdown-对象的创建和销毁" name="对象的创建和销毁"></a>
 ### 对象的创建和销毁
 对象即类的实例化，每个对象都有自己的生命周期，构造而生，析构而亡。
@@ -371,13 +348,37 @@ public class Student
 ### 封装
 屏蔽具体的实现，不用关心实现的过程。
 
-封装的意义，在于明确标识出允许外部使用的所有成员函数和数据项，或者叫接口。
+**封装的意义在于保护或者防止代码（数据）被我们无意中破坏。**
 
-有了封装，就可以明确区分内外，使得类实现者可以修改封装内的东西而不影响外部调用者；
+<a id="markdown-访问修饰符" name="访问修饰符"></a>
+#### 访问修饰符
 
-而外部调用者也可以知道自己不可以碰哪里。
+一个类编写完成后，并不是任何角色都能去访问该类或该类中的某些特定成员。
 
-这就提供一个良好的合作基础——或者说，只要接口这个基础约定不变，则代码改变不足为虑。
+使用“访问修饰符”来对类和类成员的访问权限进行控制
+
+- 类的访问修饰符
+
+修饰符 | 说明
+------|---
+public | 公共的，该可以被任何代码访问
+internal | (默认，可不写)内部的，只能由定义它的工程内部的代码访问
+
+- 类成员访问修饰符
+
+修饰符 | 说明
+------ | -----
+public | 公共的，成员可以被任何代码访问
+private | (默认，可不写)私有的，只能由本类中的代码访问
+protected | 受保护的，成员只能由本类或其派生类中的代码访问
+internal | 内部的，成员只能由定义它的工程内部的代码访问
+protected internal | 该成员既可以被同一工程的其它代码访问，也可以被其派生类访问
+
+
+<a id="markdown-属性控制读写" name="属性控制读写"></a>
+#### 属性控制读写
+
+[属性读写](#markdown-属性)
 
 <a id="markdown-继承" name="继承"></a>
 ### 继承
@@ -398,11 +399,95 @@ public class Student
 * this：指当前类，this调用当前类的属性，方法，包括构造函数的方法，继承本类的构造函数
 * base：指当前类的父类，可调用父类的非私有属性，方法，继承父类的构造函数括号里的参数
 
+```cs
+class Person
+{
+    public void Say()
+    {
+        Console.WriteLine("person hi");
+    }
+}
+
+class Student : Person
+{
+    public void Say()
+    {
+        base.Say();
+        Console.WriteLine("student hi");
+    }
+}
+```
+
 <a id="markdown-继承中的构造函数" name="继承中的构造函数"></a>
 #### 继承中的构造函数
+
+父类一个有参构造，子类默认无参构造，会怎样？
+
+```cs
+class Person
+{
+    public string Name { get; set; }
+    public Person(string name)
+    {
+        Name = name;
+    }
+}
+
+class Student : Person
+{
+
+}
+```
+
+上例中，父类Person新增无参构造，结果如何？
+
+```cs
+class Person
+{
+    public string Name { get; set; }
+    public Person()
+    { }
+    public Person(string name)
+    {
+        Name = name;
+    }
+}
+
+class Student : Person
+{
+
+}
+```
+
+复杂场景下，子类需要指定怎么调用父类的构造。
+
 base关键字表示调用父类，如base()表示父类无参构造函数
 
-构造函数调用的顺序：
+```cs
+class Person
+{
+    public string Name { get; set; }
+    public Person()
+    { }
+    public Person(string name)
+    {
+        Name = name;
+    }
+}
+
+class Student : Person
+{
+    public string StuNO { get; set; }
+    public Student() { }
+    public Student(string name, string stuNO) : base(name)
+    {
+        //Name = name;
+        StuNO = stuNO;
+    }
+}
+```
+
+总结，构造函数调用的顺序：
 1. 如果子类没有定义构造方法，则调用父类的无参数的构造方法。
 2. 如果子类定义了构造方法，不论是无参数还是带参数，在创建子类的对象的时候,首先执行父类无参数的构造方法，然后执行自己的构造方法。
 3. 在创建子类对象时候，如果子类的构造函数没有显式调用父类的构造函数，则会调用父类的默认无参构造函数。
@@ -451,6 +536,21 @@ p2.StuNo = "";//报错，无法访问
 1. is：返回bool类型，指示是否可以做这个转换
 2. as：如果转换成功，则返回对象，否则返回null
 
+针对上面的Person、Student、Teacher类，案例如下：
+```cs
+Person p = new Person();
+Console.WriteLine("p is person:" + (p is Person));
+
+Student s = new Student();
+Console.WriteLine("s is person:" + (s is Person));
+Console.WriteLine("s is teacher:" + (s is Person));
+
+if (s is Person)
+{
+    Person pp1 = s as Person;
+    Console.WriteLine(pp1.Name);
+}
+```
 
 <a id="markdown-类继承修饰符" name="类继承修饰符"></a>
 #### 类继承修饰符
@@ -458,6 +558,25 @@ p2.StuNo = "";//报错，无法访问
 abstract：抽象的，不能实例化，只能被继承，可以有抽象成员
 
 sealed：密封的，不能被继承
+
+能否创建抽象类Animal的实例？能否继承封闭类SingleCell？
+```cs
+public abstract class Animal { }
+
+public sealed class SingleCell : Animal { }
+
+public class ExtendCell : SingleCell { }
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Animal a = new Animal();
+    }
+}
+```
+
+【String类】就是一个典型的封闭类，无法从【String类】派生。
 
 <a id="markdown-基类修饰virtual和abstract" name="基类修饰virtual和abstract"></a>
 #### 基类修饰virtual和abstract
@@ -579,7 +698,6 @@ class Program
 3. 虚方法、实方法都可以被覆盖（new），抽象方法，接口 不可以。
 4. 抽象方法，接口，标记为virtual的方法可以被重写（override），实方法不可以。
 5. 重写使用的频率比较高，实现多态；覆盖用的频率比较低，用于对以前无法修改的类进行继承的时候。
-
 
 <a id="markdown-接口继承" name="接口继承"></a>
 #### 接口继承
