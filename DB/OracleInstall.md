@@ -31,7 +31,9 @@
 ## Oracle Server安装
 下载 http://www.oracle.com/technetwork/cn/database/enterprise-edition/downloads/index.html
 
-按照默认过程进行安装即可，以下为对应步骤的图示：
+https://www.oracle.com/database/technologies/oracle-database-software-downloads.html
+
+按照默认过程进行安装即可，以下为【桌面类】安装对应步骤的图示：
 
 ![](../assets/Oracle/oracle-install-1.png)
 
@@ -44,6 +46,10 @@
 ![](../assets/Oracle/oracle-install-6.png)
 
 ![](../assets/Oracle/安装完成.png)
+
+【服务器类】安装类似，参考以下百度分享：
+
+https://jingyan.baidu.com/article/363872eccfb9266e4aa16f5d.html
 
 <a id="markdown-oem" name="oem"></a>
 ## OEM
