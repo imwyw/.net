@@ -8,6 +8,7 @@
         - [字符串池（只针对字符串常量）](#字符串池只针对字符串常量)
         - [StringBuilder](#stringbuilder)
         - [String和string](#string和string)
+        - [string.Empty/空字符串/null](#stringempty空字符串null)
     - [特殊字符](#特殊字符)
         - [$字符串内插](#字符串内插)
         - [@逐字字符串标识符](#逐字字符串标识符)
@@ -36,6 +37,7 @@
         - [bug和debug](#bug和debug)
         - [异常案例](#异常案例)
         - [捕获与处理](#捕获与处理)
+        - [自定义异常和异常处理链](#自定义异常和异常处理链)
 
 <!-- /TOC -->
 
@@ -79,6 +81,26 @@ string，首先是引用类型，由于字符串是不可变的，每次修改�
 
 之所以发生改变只是因为指向了一块新的地址。
 
+```cs
+string str1 = "hello";
+string str2 = "hello";
+
+/* 即时窗口中调试代码：
+&str1
+0x0632e9c8
+    *&str1: {41186072}
+&str2
+0x0632e9c4
+    *&str2: {41186072}
+
+
+(41186072).ToString("x8")
+"02747318"
+*/
+```
+
+![](../assets/programming/string-内存地址.png)
+
 <a id="markdown-字符串池只针对字符串常量" name="字符串池只针对字符串常量"></a>
 ### 字符串池（只针对字符串常量）
 当一个程序中有多个相同的字符串常量时，多个变量指向的是内存中同一块字符串！
@@ -102,6 +124,24 @@ String是.NET  Framework里面的String，小写的string是C#语言中的string
 如果在追求效率的情况下可以使用大写的String，因为最终通过编译后，小写的string会变成大写的String，可以给编译减少负荷，从而运行效率提高。
 
 MSDN中对string的说明：string is an alias for String in the .NET Framework
+
+<a id="markdown-stringempty空字符串null" name="stringempty空字符串null"></a>
+### string.Empty/空字符串/null
+**""与string.Empty在用法与性能上基本没区别。**string.Empty是在语法级别对""的优化。
+
+这个结论可以使用string不可变性的方式查看内存地址来进行校验。
+
+**string.Empty会在堆上占用一个长度为0的空间，而null不会。**
+
+```cs
+string str1 = "";
+
+string str2 = null;
+```
+
+str1会在栈上保存一个地址,这个地址占4字节，指向内存堆中的某个长度为0的空间，这个空间保存的是str1的实际值。
+
+str2同样会在栈上保存一个地址,这个地址也占4字节，但是这个地址是没有明确指向的，它哪也不指，其内容为0x00000000。
 
 <a id="markdown-特殊字符" name="特殊字符"></a>
 ## 特殊字符
@@ -716,35 +756,64 @@ C# 异常处理时建立在四个关键词之上的：try、catch、finally 和 
 * throw：当问题出现时，程序抛出一个异常。使用 throw 关键字来完成。
 
 ```cs
-try
+static void Main(string[] args)
 {
-   // 引起异常的语句
-}
-catch( ExceptionName e1 )
-{
-   // 错误处理代码
-}
-catch( ExceptionName e2 )
-{
-   // 错误处理代码
-}
-catch( ExceptionName eN )
-{
-   // 错误处理代码
-}
-finally
-{
-   // 要执行的语句
+    Console.WriteLine("请输入一个正整数：");
+    try
+    {
+        // 将用户输入内容转换为数字
+        int value = int.Parse(Console.ReadLine());
+        if (value <= 0)
+        {
+            throw new InvalidOperationException("你输入的不是正整数！");
+        }
+        Console.WriteLine("你输入的数字是：{0}", value);
+    }
+    catch (FormatException formatEx)
+    {
+        Console.WriteLine("输入的字符串无法转换为数字");
+    }
+    catch (OverflowException overEx)
+    {
+        Console.WriteLine("你输入的数字太大了");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    finally
+    {
+        Console.WriteLine("按任意键退出。。。");
+    }
 }
 ```
 
 可以列出多个 catch 语句捕获不同类型的异常，以防 try 块在不同的情况下生成多个异常。
 
-异常的作用：
+**异常基类Exception的重要属性和方法：**
+
+名称 | 用途
+---|---
+e.GetType() | 获取异常的类型。
+e.Message | 告诉用户发生了什么事。
+e.StackTrace | 确定错误发生的位置， 如果有可用的调试信息（即有<程序名>.pdb文件存在） ， 还可显示源文件名和程序行号。
+
+**异常的作用：**
 * 从异常中恢复-比如遇到数据库连接错误，不能让程序崩溃，而是截获这个异常，提示用户并回到正常的运行轨道上来。
 * 事务回滚-比如进行一系列的数据操作，突然其中某一个数据操作发生错误，应该能让此系列操作全部撤销。
 
-在try语句块中的语句throw出来的异常，会被它外围的catch捕获。
+**常用异常类型：**
+
+异常 | 说明
+---|---
+ArithmeticException | 在 算 术 运 算 期 间 发 生 的 异 常 （ 如DivideByZeroException和OverflowException） 的基类。
+DivideByZeroException | 在试图用零作除数时引发。
+IndexOutOfRangeException | 在试图使用小于零或超出数组界限的下标索引数组时引发。
+InvalidCastException | 从基类型或接口到派生类型的显式转换在运行时失败， 引发此异常。
+NullReferenceException | 尝试使用未创建的对象， 引发此异常。
+OutOfMemoryException | 分配内存（通过new） 失败时引发。
+OverflowException | 在checked上下文中的算术运算溢出时引发。
+StackOverflowException | 当执行堆栈由于保存了太多挂起的方法调用而耗尽时， 就会引发此异常， 这通常表明存在非常深或无限的递归。
 
 **如果你不知道发生了异常怎么处理，那就不要进行try...catch...处理！**
 
@@ -761,6 +830,39 @@ catch (Exception ex)
 }
 Console.WriteLine("运行完毕");
 ```
+
+_异常的发生是件好事，它让程序员知道自己的程序可能存在着Bug，_
+
+_并且异常的出现还会通知用户有错误发生，他的数据有可能被破坏，从而让用户有机会考虑补救措施。_
+
+_这远比将所有“错误”包起来不让用户知道要理智得多。_
+
+
+<a id="markdown-自定义异常和异常处理链" name="自定义异常和异常处理链"></a>
+### 自定义异常和异常处理链
+创建自己的异常类：
+```cs
+// 创建异常类
+class MyException : Exception
+{
+
+}
+
+class SomeClass
+{
+    void SomeMethod()
+    {
+        if (condition)
+        {
+            // 抛出自定义异常对象
+            throw new MyException();
+        }
+    }
+}
+```
+
+
+
 
 ---
 
