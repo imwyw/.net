@@ -38,6 +38,7 @@
         - [异常案例](#异常案例)
         - [捕获与处理](#捕获与处理)
         - [自定义异常和异常处理链](#自定义异常和异常处理链)
+        - [开发中异常处理建议](#开发中异常处理建议)
 
 <!-- /TOC -->
 
@@ -861,8 +862,66 @@ class SomeClass
 }
 ```
 
+在实际运行时，最底层的组件捕获一些异常，进行简单处理之后，可以将其转换为自定义的异常类型，
 
+再抛出供上层组件处理，而上层组件又可以重复这个工作，再把工作委托给再上层的组件处理……，由此即可构成一个“异常处理链”。
 
+```cs
+static void Main(string[] args)
+{
+    Method1();
+}
+
+static void Method1()
+{
+    try
+    {
+        Method2();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Method1");
+        Console.WriteLine(ex);
+    }
+}
+
+static void Method2()
+{
+    try
+    {
+        Method3();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Method2");
+        throw ex;
+    }
+}
+
+static void Method3()
+{
+    try
+    {
+        throw new InvalidDataException("输入格式有误");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Method3");
+        throw ex;
+    }
+}
+```
+
+<a id="markdown-开发中异常处理建议" name="开发中异常处理建议"></a>
+### 开发中异常处理建议
+
+* 引发异常只是为了处理确实异常的情况，而不是为了处理可预知的事件或实现某种程序流程控制。
+* 自身能够处理的异常，不要再向外界抛出。
+* 尽可能地在靠近异常发生的地方捕获并处理异常。
+* 在中间层组件中抛出异常，在界面层组件中捕获异常。
+* 尽可能地捕获最具体的异常类型，不要在中间层用catch(Exception)“吃掉”所有异常
+* 在底层组件中捕获CLR抛出的“只有程序员能看懂的”异常，转换为中间层的业务逻辑异常，再由界面层捕获以提供有意义的信息
+* 在开发阶段捕获并显示所有异常信息，发布阶段要移除部分代码，以避免“过于专业”的异常信息困扰用户，特别地，系统发布之后，不要将服务端异常的详细信息显示给客户端，以免被黑客利用。
 
 ---
 
