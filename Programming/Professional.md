@@ -60,9 +60,84 @@
 
 <a id="markdown-委托" name="委托"></a>
 ### 委托
-委托是安全封装方法的类型，类似于 C 和 C++ 中的函数指针。 与 C 函数指针不同的是，委托是面向对象的、类型安全的和可靠的。
+委托是安全封装方法的类型，类似于 C 和 C++ 中的函数指针。 
+
+与 C 函数指针不同的是，委托是面向对象的、类型安全的和可靠的。
 
 说白了，委托是一个类，将方法作为实参传递，实际传递的是方法地址/引用。
+
+先看这个例子：
+
+```cs
+/// <summary>
+/// 定义委托类型
+/// </summary>
+/// <param name="array"></param>
+/// <returns></returns>
+delegate int GetNumberDelegate(int[] array);
+
+class TestOperationNumber
+{
+    /// <summary>
+    /// 显示运算结果
+    /// </summary>
+    /// <param name="dele">委托变量，符合委托定义的方法</param>
+    public void Show(GetNumberDelegate dele)
+    {
+        int[] arr1 = { 1, 1, 2, 3, 5, 8 };
+        int result = dele(arr1);
+        Console.WriteLine("运算得到的结果是：" + result);
+    }
+
+    public int GetMax(int[] array)
+    {
+        int max = array[0];
+        foreach (int item in array)
+        {
+            if (max < item)
+            {
+                max = item;
+            }
+        }
+        return max;
+    }
+
+    public int GetMin(int[] array)
+    {
+        int min = array[0];
+        foreach (int item in array)
+        {
+            if (min > item)
+            {
+                min = item;
+            }
+        }
+        return min;
+    }
+
+    public int GetSum(int[] array)
+    {
+        int sum = 0;
+        foreach (int item in array)
+        {
+            sum += item;
+        }
+        return sum;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        TestOperationNumber opt = new TestOperationNumber();
+        opt.Show(opt.GetMax);
+        opt.Show(opt.GetMin);
+        opt.Show(opt.GetSum);
+    }
+}
+```
+
 
 ```cs
 //委托调用的方法和委托的定义必须保持一致，如下面的几个示例
