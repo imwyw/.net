@@ -399,11 +399,6 @@ protected internal | 该成员既可以被同一工程的其它代码访问，�
 /// </summary>
 internal class Person : Object
 {
-    public string Name { get; set; }
-    public void Say()
-    {
-        Console.WriteLine("i'm person");
-    }
 }
 
 /// <summary>
@@ -412,16 +407,6 @@ internal class Person : Object
 /// </summary>
 public class Student : Person
 {
-    public void Say()
-    {
-        Console.WriteLine("我是学生");
-    }
-    public void Talk()
-    {
-        //base.Say();// 父类的say
-        this.Say();
-        Console.WriteLine("i'm student");
-    }
 }
 ```
 
@@ -432,20 +417,27 @@ public class Student : Person
 * base：指当前类的父类，可调用父类的非私有属性，方法，继承父类的构造函数括号里的参数
 
 ```cs
-class Person
+
+public class Person
 {
+    public string Name { get; set; }
     public void Say()
     {
-        Console.WriteLine("person hi");
+        Console.WriteLine("i'm person");
     }
 }
 
-class Student : Person
+public class Student : Person
 {
     public void Say()
     {
-        base.Say();
-        Console.WriteLine("student hi");
+        Console.WriteLine("我是学生");
+    }
+    public void Talk()
+    {
+        //base.Say();// 父类的Say实现
+        this.Say();// 子类的Say实现
+        Console.WriteLine("i'm student");
     }
 }
 ```
