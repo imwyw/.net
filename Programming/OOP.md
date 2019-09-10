@@ -393,6 +393,35 @@ protected internal | 该成员既可以被同一工程的其它代码访问，�
 
 编译器不允许派生类的访问级别比基类更高，如没有显式标记基类，则默认基类为Object类；
 
+```cs
+internal class Person : Object
+{
+    public string Name { get; set; }
+    public void Say()
+    {
+        Console.WriteLine("i'm person");
+    }
+}
+
+/// <summary>
+/// 可访问性不一致，基类Person可访问性低于Student
+/// 子类要么也是internal，或者父类修改为public
+/// </summary>
+public class Student : Person
+{
+    public void Say()
+    {
+        Console.WriteLine("我是学生");
+    }
+    public void Talk()
+    {
+        //base.Say();// 父类的say
+        this.Say();
+        Console.WriteLine("i'm student");
+    }
+}
+```
+
 <a id="markdown-this和base" name="this和base"></a>
 #### this和base
 
