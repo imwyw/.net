@@ -74,7 +74,7 @@
 /// </summary>
 /// <param name="array"></param>
 /// <returns></returns>
-delegate int GetNumberDelegate(int[] array);
+delegate void GetNumberDelegate(int[] array);
 
 class TestOperationNumber
 {
@@ -85,11 +85,10 @@ class TestOperationNumber
     public void Show(GetNumberDelegate dele)
     {
         int[] arr1 = { 1, 1, 2, 3, 5, 8 };
-        int result = dele(arr1);
-        Console.WriteLine("运算得到的结果是：" + result);
+        dele(arr1);
     }
 
-    public int GetMax(int[] array)
+    public void GetMax(int[] array)
     {
         int max = array[0];
         foreach (int item in array)
@@ -99,10 +98,10 @@ class TestOperationNumber
                 max = item;
             }
         }
-        return max;
+        Console.WriteLine("比较得到最大值：" + max);
     }
 
-    public int GetMin(int[] array)
+    public void GetMin(int[] array)
     {
         int min = array[0];
         foreach (int item in array)
@@ -112,17 +111,17 @@ class TestOperationNumber
                 min = item;
             }
         }
-        return min;
+        Console.WriteLine("比较得到最小值：" + min);
     }
 
-    public int GetSum(int[] array)
+    public void GetSum(int[] array)
     {
         int sum = 0;
         foreach (int item in array)
         {
             sum += item;
         }
-        return sum;
+        Console.WriteLine("遍历求和结果：" + sum);
     }
 }
 
@@ -131,9 +130,13 @@ class Program
     static void Main(string[] args)
     {
         TestOperationNumber opt = new TestOperationNumber();
-        opt.Show(opt.GetMax);
-        opt.Show(opt.GetMin);
-        opt.Show(opt.GetSum);
+        //opt.Show(opt.GetMax);
+        //opt.Show(opt.GetMin);
+        //opt.Show(opt.GetSum);
+
+        GetNumberDelegate d1 = new GetNumberDelegate(opt.GetMax);
+        d1 += opt.GetSum;
+        opt.Show(d1);
     }
 }
 ```
