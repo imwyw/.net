@@ -59,7 +59,7 @@ Length属性 | 获取字符串的长度
 IndexOf(String str) | 获取指定字符/字符串.....在对象字符串中第一次出现的位置，从0开始
 LastIndexOf(String str) | 获取指定字符/字符串....在对象字符串中最后一次 出现的位置。
 SubString(int start) | 从指定位置，截取字符串。
-SubString(int strat, int length) | 从指定位置，截取length长度字符串
+SubString(int start, int length) | 从指定位置，截取length长度字符串
 ToLower()/ToUpper() | 将字符串转换成小写/大写，返回一个新的全小写/大写的字符串。
 Replace(string oldStr,string newStr) | 用新的字符串，替换对象字符串中老的字符串部分。
 Trim()/TrimStart()/TrimEnd() | 去掉对象字符串两端/开始/结尾的空格
