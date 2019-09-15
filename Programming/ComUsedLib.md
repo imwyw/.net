@@ -442,27 +442,27 @@ public class MyGenericArray<T>
 // 声明一个整型数组
 MyGenericArray<int> intArray = new MyGenericArray<int>(5);
 // 设置值
-for (int c = 0; c < 5; c++)
+for (int i = 0; i < 5; i++)
 {
-    intArray.setItem(c, c*5);
+    intArray.setItem(i, i*5);
 }
 // 获取值
-for (int c = 0; c < 5; c++)
+for (int i = 0; i < 5; i++)
 {
-    Console.Write(intArray.getItem(c) + " ");
+    Console.Write(intArray.getItem(i) + " ");
 }
 Console.WriteLine();
 // 声明一个字符数组
 MyGenericArray<char> charArray = new MyGenericArray<char>(5);
 // 设置值
-for (int c = 0; c < 5; c++)
+for (int i = 0; i < 5; i++)
 {
-    charArray.setItem(c, (char)(c+97));
+    charArray.setItem(i, (char)(i+97));
 }
 // 获取值
-for (int c = 0; c < 5; c++)
+for (int i = 0; i < 5; i++)
 {
-    Console.Write(charArray.getItem(c) + " ");
+    Console.Write(charArray.getItem(i) + " ");
 }
 Console.WriteLine();
 Console.ReadKey();
