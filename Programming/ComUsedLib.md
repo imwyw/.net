@@ -424,7 +424,7 @@ public class MyGenericArray<T>
     private T[] array;
     public MyGenericArray(int size)
     {
-        array = new T[size + 1];
+        array = new T[size];
     }
     public T getItem(int index)
     {
