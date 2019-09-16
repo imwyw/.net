@@ -998,58 +998,63 @@ public class Student
     public string Name { get; set; }
     public int Age { get; set; }
     public string Course { get; set; }
-    public void Say(string name)
+    public void Say(string otherName)
     {
-        Console.WriteLine("hi {0},how do u do,i'm {1}", name, Name);
+        Console.WriteLine("hi {0},how do u do,i'm {1}", otherName, Name);
     }
 }
 
-static void Main(string[] args)
+public class Program
 {
-    //以下的type1、type2、type3的是相同的
-    Student stu1 = new Student("");
-    Type type1 = stu1.GetType();
-
-    Type type2 = typeof(Student);
-
-    Type type3 = Type.GetType("Reflection.Student");
-
-    /*
-    加载程序集中类型，并打印显示到控制台
-    */
-    Assembly a = Assembly.LoadFrom("Reflection.exe");
-    Type[] types = a.GetTypes();
-    foreach (Type item in types)
+    static void Main(string[] args)
     {
-        Console.WriteLine("类型名称为：" + item.Name);
+        //以下的type1、type2、type3的是相同的
+        Student stu1 = new Student("");
+        Type type1 = stu1.GetType();
+
+        Type type2 = typeof(Student);
+
+        // Reflection 为命名空间名称
+        Type type3 = Type.GetType("Reflection.Student");
+
+        /*
+        加载程序集中类型，并打印显示到控制台
+        */
+        Assembly a = Assembly.LoadFrom("Reflection.exe");
+        Type[] types = a.GetTypes();
+        foreach (Type item in types)
+        {
+            Console.WriteLine("类型名称为：" + item.Name);
+        }
+
+        /*
+        反射查看类内的成员
+        */
+        Type type = typeof(Student);
+        //获取类内的所有公开字段
+        FieldInfo[] fieldInfos = type.GetFields();
+        //获取类内所有公开属性
+        PropertyInfo[] propInfos = type.GetProperties();
+        //获取类内所有公开方法
+        MethodInfo[] methodInfos = type.GetMethods();
+        //获取类内所有公开成员，包含了字段、属性、方法等
+        MemberInfo[] memInfos = type.GetMembers();
+        foreach (MemberInfo item in memInfos)
+        {
+            Console.WriteLine("MemberType:{0},Name:{1}", item.MemberType, item.Name);
+        }
+
+        /*
+        通过反射构造对象，调用方法
+        */
+        //使用指定类型的默认构造函数来创建该类型的实例，实例化一个对象
+        object obj = Activator.CreateInstance(type, new object[] { "宋小宝" });
+        //获取指定的方法 
+        MethodInfo sayMethod = type.GetMethod("Say");
+        //执行Student类中的Say方法
+        var result = sayMethod.Invoke(obj, new object[] { "王富贵" });
     }
 
-    /*
-    反射查看类内的成员
-    */
-    Type type = typeof(Student);
-    //获取类内的所有公开字段
-    FieldInfo[] fieldInfos = type.GetFields();
-    //获取类内所有公开属性
-    PropertyInfo[] propInfos = type.GetProperties();
-    //获取类内所有公开方法
-    MethodInfo[] methodInfos = type.GetMethods();
-    //获取类内所有公开成员，包含了字段、属性、方法等
-    MemberInfo[] memInfos = type.GetMembers();
-    foreach (MemberInfo item in memInfos)
-    {
-        Console.WriteLine("MemberType:{0},Name:{1}", item.MemberType, item.Name);
-    }
-
-    /*
-    通过反射构造对象，调用方法
-    */
-    //使用指定类型的默认构造函数来创建该类型的实例，实例化一个对象
-    object obj = Activator.CreateInstance(type, new object[] { "宋小宝" });
-    //获取指定的方法 
-    MethodInfo sayMethod = type.GetMethod("Say");
-    //执行Student类中的Say方法
-    var result = sayMethod.Invoke(obj, new object[] { "王富贵" });
 }
 ```
 看了上面的代码，也许会有疑问，既然在开发时就能够写好代码，干嘛还放到运行期去做，不光繁琐，而且效率也受影响。
