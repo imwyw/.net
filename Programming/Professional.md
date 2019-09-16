@@ -3,10 +3,11 @@
 - [高级编程](#高级编程)
     - [委托、Lambda表达式和事件](#委托lambda表达式和事件)
         - [委托](#委托)
+        - [Lambda表达式](#lambda表达式)
+        - [预定义的委托类型](#预定义的委托类型)
             - [泛型委托-Predicate](#泛型委托-predicate)
             - [泛型委托-Action](#泛型委托-action)
             - [泛型委托-Func](#泛型委托-func)
-        - [Lambda表达式](#lambda表达式)
         - [事件](#事件)
     - [Enumerable支持标准查询的操作符](#enumerable支持标准查询的操作符)
         - [匿名类型和隐式类型](#匿名类型和隐式类型)
@@ -129,7 +130,7 @@ string Say(){}
 delegate string DelegateTalk();
 
 bool Say(int value){}
-delegate bool DelegateTalk(int vlaue);
+delegate bool DelegateTalk(int value);
 ```
 
 方法作为参数进行传递
@@ -143,11 +144,11 @@ static void Main(string[] args)
 }
 
 /// <summary>
-/// 无参，返回值为void的委托 和下面的Action等同
+/// 无参，返回值为void的委托
 /// </summary>
-//public delegate void DelegateBack();
+public delegate void DelegateBack();
 
-static void BackHome(Action action)
+static void BackHome(DelegateBack action)
 {
     action();
 }
@@ -167,7 +168,7 @@ static void Subway()
 ```cs
 static void Main(string[] args)
 {
-    Action action = new Action(BuyTicket);
+    DelegateBack action = new DelegateBack(BuyTicket);
     action += Subway;
 
     BackHome(action);
@@ -175,6 +176,142 @@ static void Main(string[] args)
     Console.ReadKey();
 }
 ```
+
+<a id="markdown-lambda表达式" name="lambda表达式"></a>
+### Lambda表达式
+Lambda 表达式是一种可用于创建 委托 或 表达式目录树 类型的 匿名函数 。 
+
+通过使用 lambda 表达式，可以写入可作为参数传递或作为函数调用值返回的本地函数。 
+
+Lambda 表达式对于编写 LINQ 查询表达式特别有用。
+
+[Lambda 表达式(C# 编程指南)](https://docs.microsoft.com/zh-cn/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions)
+
+在 2.0 之前的 C# 版本中，声明委托的唯一方法是使用命名方法。  C# 2.0 引入了匿名方法，而在 C# 3.0 及更高版本中。
+
+Lambda 表达式取代了匿名方法，作为编写内联代码的首选方式。
+
+在C#2.0之前就有委托了，在2.0之后又引入了匿名方法，C#3.0之后，又引入了Lambda表达式。
+
+他们三者之间的顺序是：委托->匿名表达式->Lambda表达式。
+
+以下分别是三种对应不同的实现：
+```cs
+/// <summary>
+/// 计算委托的类型
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <returns></returns>
+delegate int DelegateCalculate(int x, int y);
+
+/// <summary>
+/// 执行计算方法，但具体执行什么运算并不清楚
+/// </summary>
+/// <param name="func">委托传入的方法</param>
+/// <param name="x">操作数1</param>
+/// <param name="y">操作数2</param>
+/// <returns></returns>
+static int DoCalc(DelegateCalculate func, int x, int y)
+{
+    // 执行运算前的某些操作...
+    return func.Invoke(x, y);
+    // 执行运算后的某些操作...
+}
+
+/// <summary>
+/// 加法
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <returns></returns>
+static int Add(int x, int y)
+{
+    return x + y;
+}
+
+static void Main(string[] args)
+{
+    /*
+    委托
+    加法运算，最简单的委托方式，先定义方法Add，再进行传入
+    */
+    int res1 = DoCalc(Add, 1, 2);
+
+    /*
+    匿名方法
+    减法运算，使用匿名方法形式传入
+    */
+    int res2 = DoCalc(delegate (int x, int y)
+    {
+        return x - y;
+    }, 1, 2);
+
+    /*
+    Lambda表达式
+    乘法运算，【=>】左侧(x,y)为参数，【=>】右侧为代码块
+    若要创建 Lambda 表达式，需要在 Lambda 运算符 => 左侧指定输入参数(如果有)，然后在另一侧输入表达式或语句块。
+    */
+    int res3 = DoCalc((x, y) =>
+    {
+        return x * y;
+    }, 2, 3);
+
+    //上述乘法运算也可以简写为：
+    int res4 = DoCalc((x, y) => x * y, 2, 3);
+}
+```
+
+Lambda表达式"是一个特殊的匿名函数，是一种高效的类似于函数式编程的表达式，Lambda简化了开发中需要编写的代码量。
+
+它可以包含表达式和语句，并且可用于创建委托或表达式目录树类型，支持带有可绑定到委托或表达式树的输入参数的内联表达式。
+
+所有Lambda表达式都使用Lambda运算符=>，该运算符读作"goes to"。
+
+Lambda运算符的左边是输入参数(如果有)，右边是表达式或语句块。
+
+Lambda表达式x => x * x读作"x goes to x times x"。
+
+上述示例也可以使用.NET预定义的委托Func<>进行替代，不需要新定义DelegateCalculate委托，如下：
+```cs
+/// <summary>
+/// 计算委托的类型
+/// 注释该委托，使用Func<>委托代替
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <returns></returns>
+//delegate int DelegateCalculate(int x, int y);
+
+/// <summary>
+/// 执行计算方法
+/// Func<int,int,int>前两个int为参数，最后一个int为返回值类型
+/// </summary>
+/// <param name="fun">委托传入的方法 使用.NET预定义的委托</param>
+/// <param name="x">操作数1</param>
+/// <param name="y">操作数2</param>
+/// <returns></returns>
+static int DoCalc(Func<int, int, int> fun, int x, int y)
+{
+    // 执行运算前的某些操作...
+    return func.Invoke(x, y);
+    // 执行运算后的某些操作...
+}
+```
+
+仅当 lambda 只有一个输入参数时，括号才是可选的；否则括号是必需的。 括号内的两个或更多输入参数使用逗号加以分隔：
+```cs
+(x, y) => x == y
+x=> x*x
+```
+
+使用空括号指定零个输入参数：
+```cs
+() => SomeMethod()
+```
+
+<a id="markdown-预定义的委托类型" name="预定义的委托类型"></a>
+### 预定义的委托类型
 
 <a id="markdown-泛型委托-predicate" name="泛型委托-predicate"></a>
 #### 泛型委托-Predicate
@@ -191,35 +328,53 @@ static void Main(string[] args)
 * 返回值：bool，如果 obj 符合由此委托表示的方法中定义的条件，则为 true；否则为 false。
 
 ```cs
-List<string> listStr = new List<string>() { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten" };
-string[] arrStr = listStr.ToArray();
-
-/*
-筛选 长度小于3的元素
-*/
-
-//1、原始方法
-foreach (var item in listStr)
+static void Main()
 {
-    if (item.Length <= 3)
+    List<string> listStr = new List<string>() {
+        "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten" };
+    string[] arrStr = listStr.ToArray();
+
+    /*
+    目标：筛选出长度小于等于3的元素
+    */
+
+    //1、传统方法-遍历
+    foreach (var item in listStr)
     {
-        Console.WriteLine(item);
+        if (item.Length <= 3)
+        {
+            Console.WriteLine(item);
+        }
     }
+    foreach (var item in arrStr)
+    {
+        if (item.Length <= 3)
+        {
+            Console.WriteLine(item);
+        }
+    }
+
+    // public delegate bool Predicate<T>(T obj);
+    //2、使用 Predicate 预先定义好方法的方式
+    Predicate<string> pred1 = new Predicate<string>(GetFilter);
+    List<string> list1 = listStr.FindAll(pred1);
+    Console.WriteLine(string.Join(",", list1));
+
+
+    //3、使用lambda表达式，一步筛选得出结论
+    List<string> list2 = listStr.FindAll(t => t.Length <= 3);
+    Console.WriteLine(string.Join(",", list2));
 }
-foreach (var item in arrStr)
+
+/// <summary>
+/// 筛选元素
+/// </summary>
+/// <param name="val"></param>
+/// <returns></returns>
+static bool GetFilter(string val)
 {
-    if (item.Length <= 3)
-    {
-        Console.WriteLine(item);
-    }
+    return val.Length <= 3;
 }
-
-//2、使用Predicate
-List<string> list1 = listStr.FindAll(t => t.Length <= 3);
-Console.WriteLine(string.Join(",", list1));
-
-string[] arr1 = Array.FindAll(arrStr, t => t.Length <= 3);
-Console.WriteLine(string.Join(",", arr1));
 ```
 
 <a id="markdown-泛型委托-action" name="泛型委托-action"></a>
@@ -251,132 +406,7 @@ delegate bool Delegate2(string name);
 delegate int Delegate3(string str, bool isa, object obj);
 ```
 
-<a id="markdown-lambda表达式" name="lambda表达式"></a>
-### Lambda表达式
-Lambda 表达式是一种可用于创建 委托 或 表达式目录树 类型的 匿名函数 。 
 
-通过使用 lambda 表达式，可以写入可作为参数传递或作为函数调用值返回的本地函数。 
-
-Lambda 表达式对于编写 LINQ 查询表达式特别有用。
-
-[Lambda 表达式(C# 编程指南)](https://docs.microsoft.com/zh-cn/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions)
-
-在 2.0 之前的 C# 版本中，声明委托的唯一方法是使用命名方法。  C# 2.0 引入了匿名方法，而在 C# 3.0 及更高版本中。
-
-Lambda 表达式取代了匿名方法，作为编写内联代码的首选方式。
-
-在C#2.0之前就有委托了，在2.0之后又引入了匿名方法，C#3.0之后，又引入了Lambda表达式。
-
-他们三者之间的顺序是：委托->匿名表达式->Lambda表达式。
-
-以下分别是三种对应不同的实现：
-```cs
-/// <summary>
-/// 计算委托的类型
-/// </summary>
-/// <param name="x"></param>
-/// <param name="y"></param>
-/// <returns></returns>
-delegate int Calculate(int x, int y);
-
-/// <summary>
-/// 执行计算方法
-/// </summary>
-/// <param name="fun">委托传入的方法</param>
-/// <param name="x">操作数1</param>
-/// <param name="y">操作数2</param>
-static void DoCalc(Calculate fun, int x, int y)
-{
-    fun.Invoke(x, y);
-}
-
-/// <summary>
-/// 加法
-/// </summary>
-/// <param name="x"></param>
-/// <param name="y"></param>
-/// <returns></returns>
-static int Add(int x, int y)
-{
-    return x + y;
-}
-
-static void Main(string[] args)
-{
-    /*
-    委托
-    加法运算，最简单的委托方式，先定义方法Add，再进行传入
-    */
-    DoCalc(Add, 1, 2);
-
-    /*
-    匿名方法
-    减法运算，使用匿名方法形式传入
-    */
-    DoCalc(delegate (int x, int y)
-    {
-        return x - y;
-    }, 1, 2);
-
-    /*
-    Lambda表达式
-    乘法运算，【=>】左侧(x,y)为参数，【=>】右侧为代码块
-    若要创建 Lambda 表达式，需要在 Lambda 运算符 => 左侧指定输入参数(如果有)，然后在另一侧输入表达式或语句块。
-    */
-    DoCalc((x, y) =>
-    {
-        return x * y;
-    }, 2, 3);
-
-    //上述乘法运算也可以简写为：
-    DoCalc((x, y) => x * y, 2, 3);
-}
-```
-
-Lambda表达式"是一个特殊的匿名函数，是一种高效的类似于函数式编程的表达式，Lambda简化了开发中需要编写的代码量。
-
-它可以包含表达式和语句，并且可用于创建委托或表达式目录树类型，支持带有可绑定到委托或表达式树的输入参数的内联表达式。
-
-所有Lambda表达式都使用Lambda运算符=>，该运算符读作"goes to"。
-
-Lambda运算符的左边是输入参数(如果有)，右边是表达式或语句块。
-
-Lambda表达式x => x * x读作"x goes to x times x"。
-
-上述示例也可以使用.NET预定义的委托Func<>进行替代，不需要新定义Calculate委托，如下：
-```cs
-/// <summary>
-/// 计算委托的类型
-/// 注释该委托，使用Func<>委托代替
-/// </summary>
-/// <param name="x"></param>
-/// <param name="y"></param>
-/// <returns></returns>
-//delegate int Calculate(int x, int y);
-
-/// <summary>
-/// 执行计算方法
-/// Func<int,int,int>前两个int为参数，最后一个int为返回值类型
-/// </summary>
-/// <param name="fun">委托传入的方法 使用.NET预定义的委托</param>
-/// <param name="x">操作数1</param>
-/// <param name="y">操作数2</param>
-static void DoCalc(Func<int, int, int> fun, int x, int y)
-{
-    fun.Invoke(x, y);
-}
-```
-
-仅当 lambda 只有一个输入参数时，括号才是可选的；否则括号是必需的。 括号内的两个或更多输入参数使用逗号加以分隔：
-```cs
-(x, y) => x == y
-x=> x*x
-```
-
-使用空括号指定零个输入参数：
-```cs
-() => SomeMethod()
-```
 
 <a id="markdown-事件" name="事件"></a>
 ### 事件
@@ -399,91 +429,160 @@ x=> x*x
 使用`Action<>`类型定义事件，添加事件监听并触发。
 
 ```cs
-/// <summary>
-/// 定义事件
-/// Action<string> 无返回值，有一个string参数的委托
-/// </summary>
-public static event Action<string> PrintEvt;
-
-static void Main(string[] args)
+class Student
 {
-    // lambda表达式添加事件监听
-    PrintEvt += s =>
-    {
-        Console.WriteLine("lambda表达式方式添加事件监听\t" + s);
-    };
+    /// <summary>
+    /// 打招呼事件，等价于委托 delegate void DelegatePrint(string xxx); 
+    /// 仅仅只是定义了可以进行打招呼，但具体怎么打招呼，由外部进行确定
+    /// </summary>
+    public Action<string> GreetEvent;
+}
 
-    // 调用该事件
-    PrintEvt.Invoke("你好");
+class Program
+{
+    static void Main()
+    {
+        Student s1 = new Student();
+        s1.GreetEvent = new Action<string>(SayHi);//添加注册事件
+        s1.GreetEvent("jack");
+
+        Console.WriteLine("===========================");
+        Student s2 = new Student();
+        s2.GreetEvent = new Action<string>(SayHi);//添加注册事件
+        s2.GreetEvent += SayNice;//添加注册事件
+        s2.GreetEvent("lucy");
+    }
+
+    static void SayHi(string name)
+    {
+        Console.WriteLine($"hi,{name}");
+    }
+
+    static void SayNice(string name)
+    {
+        Console.WriteLine($"nice to meet you,{name}");
+    }
 }
 ```
 
-综合案例，对某一对象添加多个事件的监听。
+上面的示例中并未对【GreetEvent】添加event关键字，故可以直接通过【对象.事件名】进行触发。
+
+普通委托添加【event】关键字后，只能由成员方法进行调用触发。
 
 ```cs
-/// <summary>
-/// 定义一个无返回值有参委托
-/// </summary>
-/// <param name="name"></param>
-public delegate void MyEventHandler(string name);
-
-public class Student
+class Student
 {
-    /*
-    定义委托实例(事件)
-    使用event关键字为了避免直接在对象上进行委托实例的调用，如【stu1.Introduce("xxx");】
-    */
-    public event MyEventHandler Introduce;
-    public string Name { get; set; }
-    public Student(string name)
+    /// <summary>
+    /// 打招呼事件，等价于委托 delegate void DelegatePrint(string xxx); 
+    /// 仅仅只是定义了可以进行打招呼，但具体怎么打招呼，由外部进行确定
+    /// 使用event关键字为了避免直接在对象上进行委托实例的调用，如【stu1.GreetEvent("xxx");】
+    /// 使用event关键，无法在类外部通过对象名进行重新赋值，只允许进行添加和移除操作
+    /// </summary>
+    public event Action<string> GreetEvent;
+
+    /// <summary>
+    /// 开始打招呼
+    /// </summary>
+    /// <param name="otherName"></param>
+    public void StartGreet(string otherName)
     {
-        Name = name;
-    }
-    public void Say()
-    {
-        Console.WriteLine($"{Name}的自我介绍...");
-        if (null != Introduce)
+        if (GreetEvent != null)
         {
-            Introduce.Invoke(Name);
+            GreetEvent.Invoke(otherName);
         }
     }
 }
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        Student stu1 = new Student("jack");
+        Student s1 = new Student();
+        //s1.GreetEvent = new Action<string>(SayHi);
+        s1.GreetEvent += SayHi;
+        //s1.GreetEvent("jack");
+        s1.StartGreet("jack");
 
-        // 1、注册方法到事件
-        stu1.Introduce += SayByChn;
-
-        // 2、匿名方法
-        stu1.Introduce += delegate (string s)
-        {
-            Console.WriteLine("ni hao, wo shi " + s);
-        };
-
-        // 3、lambda表达式方式，注册事件
-        stu1.Introduce += (v) =>
-        {
-            Console.WriteLine("hello,i'm " + v);
-        };
-
-        // 调用，触发对象上注册的所有方法
-        stu1.Say();
-
-        Console.WriteLine("==============移除SayByChn方法的注册==============");
-        stu1.Introduce -= SayByChn;
-        stu1.Say();
-
-        // 因为 Introduce 定义为event，不允许直接进行调用
-        //stu1.Introduce("xxx");
+        Console.WriteLine("===========================");
+        Student s2 = new Student();
+        //s2.GreetEvent = new Action<string>(SayHi);
+        s2.GreetEvent += SayHi;
+        s2.GreetEvent += SayNice;
+        //s2.GreetEvent("jack");
+        s2.StartGreet("lucy");
     }
 
-    static void SayByChn(string name)
+    static void SayHi(string name)
     {
-        Console.WriteLine("中文版，你好!" + name);
+        Console.WriteLine($"hi,{name}");
+    }
+
+    static void SayNice(string name)
+    {
+        Console.WriteLine($"nice to meet you,{name}");
+    }
+}
+```
+
+以上案例，【event】这样的设计规范，【event】只允许在类的成员方法中进行Invoke，为了明确事件发送对象。
+
+【event】只允许通过【对象.event】添加/移除事件订阅，不允许重新实例化。
+
+针对上面案例进一步修改，对某一对象添加事件订阅和移除事件订阅。
+
+```cs
+class Student
+{
+    /// <summary>
+    /// 打招呼事件，等价于委托 delegate void DelegatePrint(string xxx); 
+    /// 仅仅只是定义了可以进行打招呼，但具体怎么打招呼，由外部进行确定
+    /// 使用event关键字为了避免直接在对象上进行委托实例的调用，如【stu1.GreetEvent("xxx");】
+    /// </summary>
+    public event Action<string> GreetEvent;
+
+    /// <summary>
+    /// 开始打招呼
+    /// </summary>
+    /// <param name="otherName"></param>
+    public void StartGreet(string otherName)
+    {
+        if (GreetEvent != null)
+        {
+            GreetEvent.Invoke(otherName);
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Student s1 = new Student();
+        s1.GreetEvent += SayHi;
+        s1.StartGreet("jack");
+
+        Console.WriteLine("===========================");
+        Student s2 = new Student();
+        s2.GreetEvent += SayHi;
+        s2.GreetEvent += SayNice;
+
+        // 以lambda表达式方式添加事件注册，仅一次性使用，无法进行注册移除
+        s2.GreetEvent += (s) =>
+        {
+            Console.WriteLine($"你好，{s}");
+        };
+        s2.GreetEvent -= SayNice; //移除事件注册
+        s2.StartGreet("lucy");
+    }
+
+    static void SayHi(string name)
+    {
+        Console.WriteLine($"hi,{name}");
+    }
+
+    static void SayNice(string name)
+    {
+        Console.WriteLine($"nice to meet you,{name}");
     }
 }
 ```
