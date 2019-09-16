@@ -8,6 +8,8 @@
     * [面向对象](./Programming/OOP.md)
     * [常用类库](./Programming/ComUsedLib.md)
     * [高级编程](./Programming/Professional.md)
+    * [多线程](./Programming/Thread.md)
+    * [网络编程](./Programming/Socket.md)
     * [桌面编程](./Programming/Form.md)
     * [LINQ](./Programming/LINQ.md)
     * [编码规范](./Programming/CodeStyle.md)
