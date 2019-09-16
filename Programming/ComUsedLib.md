@@ -568,12 +568,12 @@ static void Main(string[] args)
     int n1 = 1;
     int n2 = 2;
     // 没有类型推断时需要写的代码
-    GenericMethodTest<int>(ref n1, ref n2);
+    Swap<int>(ref n1, ref n2);
 
     // 有了类型推断后需要写的代码
     // 此时编译器可以根据传递的实参 1和2来判断应该使用Int类型实参来调用泛型方法
     // 可以看出有了类型推断之后少了<>,这样代码多的时候可以增强可读性
-    GenericMethodTest(ref n1, ref n2);
+    Swap(ref n1, ref n2);
     Console.WriteLine("n1的值现在为：" + n1);
     Console.WriteLine("n2的值现在为：" + n2);
     Console.Read();
@@ -584,7 +584,7 @@ static void Main(string[] args)
     //// 使用类型推断时，C#使用变量的数据类型，而不是使用变量引用对象的数据类型
     //// 所以下面的代码会出错，因为C#编译器发现t1是string，而t2是一个object类型
     //// 即使 t2引用的是一个string,此时由于t1和t2是不同数据类型，编译器所以无法推断出类型，所以报错。
-    //GenericMethodTest(ref t1, ref t2);
+    //Swap(ref t1, ref t2);
 }
 
 /// <summary>
@@ -593,7 +593,7 @@ static void Main(string[] args)
 /// <typeparam name="T"></typeparam>
 /// <param name="t1"></param>
 /// <param name="t2"></param>
-static void GenericMethodTest<T>(ref T t1, ref T t2)
+static void Swap<T>(ref T t1, ref T t2)
 {
     T temp = t1;
     t1 = t2;
