@@ -537,6 +537,7 @@ class Student
     /// 打招呼事件，等价于委托 delegate void DelegatePrint(string xxx); 
     /// 仅仅只是定义了可以进行打招呼，但具体怎么打招呼，由外部进行确定
     /// 使用event关键字为了避免直接在对象上进行委托实例的调用，如【stu1.GreetEvent("xxx");】
+    /// 使用event关键，无法在类外部通过对象名进行重新赋值，只允许进行添加和移除操作
     /// </summary>
     public event Action<string> GreetEvent;
 
