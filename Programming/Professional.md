@@ -646,66 +646,83 @@ Duck typing按名称查找方法，而不是依赖接口或显式方法调用。
 
 ```cs
 /// <summary>
-/// 专利
+/// 商品类
 /// </summary>
-public class Patent
+public class Product
 {
+    public Product(long prodId, string name, string productLocation, double price)
+    {
+        ProdId = prodId;
+        Name = name;
+        ProductLocation = productLocation;
+        Price = price;
+    }
+
+    public long ProdId { get; set; }
+    public string Name { get; set; }
+    public string ProductLocation { get; set; }
+    public double Price { get; set; }
     /// <summary>
-    /// 标题
+    /// 重写ToString方法，方便打印输出
     /// </summary>
-    public string Title { get; set; }
-    /// <summary>
-    /// 发布年份
-    /// </summary>
-    public string YearOfPublication { get; set; }
-    /// <summary>
-    /// 唯一码
-    /// </summary>
-    public string ApplicationNumber { get; set; }
-    public long[] InventorIds { get; set; }
+    /// <returns></returns>
     public override string ToString()
     {
-        return $"{Title}({YearOfPublication})";
+        return $"{Name}(产地：{ProductLocation},价格：{Price})";
     }
 }
 
 /// <summary>
-/// 发明家
+/// 供应商
 /// </summary>
-public class Inventor
+public class Provider
 {
-    public long Id { get; set; }
+    public Provider(long providerId, string name, string city, List<long> prodList)
+    {
+        ProviderId = providerId;
+        Name = name;
+        City = city;
+        ProdList = prodList;
+    }
+
+    public long ProviderId { get; set; }
     public string Name { get; set; }
     public string City { get; set; }
-    public string State { get; set; }
-    public string Country { get; set; }
+    /// <summary>
+    /// 可供应商品
+    /// </summary>
+    public List<long> ProdList { get; set; }
     public override string ToString()
     {
-        return $"{Name}({City},{State})";
+        return $"{City}-{Name}";
     }
 }
 
-public static class PatentData
+
+public static class TestData
 {
-    public static readonly Inventor[] Inventors = new Inventor[] {
-        new Inventor() { Name="Benjamin Franklin",City="Philadelphia",State="PA",Country="USA",Id=1},
-        new Inventor() { Name="Orville Wright",City="Kitty Hawk",State="NC",Country="USA",Id=2},
-        new Inventor() { Name="Wilbur Wright",City="Kitty Hawk",State="NC",Country="USA",Id=3},
-        new Inventor() { Name="Samuel Morse",City="New York",State="NY",Country="USA",Id=4},
-        new Inventor() { Name="George Stephenson",City="Wylam",State="Northumberland",Country="UK",Id=5},
-        new Inventor() { Name="John Michaelis",City="Chicago",State="IL",Country="USA",Id=6},
-        new Inventor() { Name="Mary Phelps Jacob",City="New York",State="NY",Country="USA",Id=7},
+    /// <summary>
+    ///  商品数组，测试数据
+    /// </summary>
+    public static readonly Product[] ProductsArray = new Product[] {
+        new Product(1, "黑人牙膏", "芜湖", 12),
+        new Product(2, "佳洁士牙膏", "芜湖", 4.5),
+        new Product(3, "黑人牙刷", "合肥", 5.5),
+        new Product(4, "舒克牙刷", "合肥", 9.9),
+        new Product(5, "心相印抽纸", "合肥", 10.9),
+        new Product(6, "清风抽纸", "合肥", 12.9),
     };
 
-    public static readonly Patent[] Patents = new Patent[] {
-        new Patent() { Title="Bifocals",YearOfPublication="1784",InventorIds= new long[] {1} },
-        new Patent() { Title="Phonograph",YearOfPublication="1877",InventorIds= new long[] {1} },
-        new Patent() { Title="Kinetoscope",YearOfPublication="1888",InventorIds= new long[] {1} },
-        new Patent() { Title="Electrical Telegraph",YearOfPublication="1837",InventorIds= new long[] {4} },
-        new Patent() { Title="Flying Machine",YearOfPublication="1903",InventorIds= new long[] {2,3} },
-        new Patent() { Title="Steam Locomotive",YearOfPublication="1815",InventorIds= new long[] {5} },
-        new Patent() { Title="Droplet Deposition Apparatus",YearOfPublication="1989",InventorIds= new long[] {6} },
-        new Patent() { Title="Backless Brassiere",YearOfPublication="1914",InventorIds= new long[] {7} },
+    /// <summary>
+    /// 供应商数组，测试数据
+    /// </summary>
+    public static readonly Provider[] ProvidersArray = new Provider[] {
+        new Provider(101, "苏宁小店", "芜湖市弋江区", new List<long>() { 1, 2 }),
+        new Provider(102, "苏宁小店", "芜湖市镜湖区", new List<long>() { 3 }),
+        new Provider(103, "呆萝卜", "芜湖市镜湖区", new List<long>() { 3, 4 }),
+        new Provider(104, "呆萝卜", "芜湖市鸠江区", new List<long>() { 4, 5 }),
+        new Provider(105, "京东小店", "合肥市庐阳区", new List<long>() { 4, 5 }),
+        new Provider(106, "京东小店", "合肥市蜀山区", new List<long>() { 6 }),
     };
 }
 
@@ -713,13 +730,18 @@ public class Program
 {
     static void Main(string[] args)
     {
-        IEnumerable<Patent> patents = PatentData.Patents;
-        Print(patents);
+        IEnumerable<Product> products = TestData.ProductsArray;
+        Print(products);
 
-        IEnumerable<Inventor> inventors = PatentData.Inventors;
-        Print(inventors);
+        IEnumerable<Provider> providers = TestData.ProvidersArray;
+        Print(providers);
     }
 
+    /// <summary>
+    /// 泛型方法，集合对象
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
     static void Print<T>(IEnumerable<T> items)
     {
         foreach (T item in items)
@@ -736,11 +758,13 @@ public class Program
 
 获取一个实参并返回一个布尔值的lambda表达式称为**谓词**。
 
-集合的`Where()`方法依据谓词来确定筛选条件，下面案例是寻找18xx年发布的专利
+集合的`Where()`方法依据谓词来确定筛选条件，下面案例是筛选所有价格大于10的商品
 
 ```cs
-IEnumerable<Patent> patentsOf1800 = PatentData.Patents.Where(t => t.YearOfPublication.StartsWith("18"));
-Print(patentsOf1800);
+// 筛选所有价格大于10的商品
+var priceThan10 = TestData.ProductsArray.Where(t => t.Price > 10);
+Console.WriteLine("****************筛选所有价格大于10的商品****************");
+Print(priceThan10);
 ```
 
 <a id="markdown-select投射" name="select投射"></a>
@@ -750,21 +774,26 @@ Print(patentsOf1800);
 例如，从原始集合中筛选好数据后，可以接着对这些数据进行转换，如下所示：
 
 ```cs
-IEnumerable<Patent> patentsOf1800 = PatentData.Patents.Where(t => t.YearOfPublication.StartsWith("18"));
+var priceThan10 = TestData.ProductsArray.Where(t => t.Price > 10);
 // 生成新的字符串结合
-IEnumerable<string> patentsInfo = patentsOf1800.Select(t => t.Title);
-Print(patentsInfo);
+IEnumerable<string> prodInfo = priceThan10.Select(t => $"{t.Name}(价格：{t.Price})");
+Console.WriteLine("****************筛选所有价格大于10的商品，新投影的列****************");
+Print(prodInfo);
 ```
 
 匿名类型，在创建`IEnumerable<T>`集合时，T可以是匿名类型，如下使用`Select()`投射匿名类型
 
 ```cs
+// 获取当前路径下所有文件
 IEnumerable<string> fileList = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory);
+// 重新投影，选择文件名称和文件大小
 var items = fileList.Select(t =>
-    {
-        FileInfo info = new FileInfo(t);
-        return new { FileName = info.Name, Size = info.Length };
-    });
+{
+    FileInfo info = new FileInfo(t);
+    return new { FileName = info.Name, Size = $"{info.Length / 1024 }Kb" };
+});
+Console.WriteLine("****************获取当前debug目录下所有文件，重新投影名称和大小****************");
+Print(items);
 ```
 
 在为匿名类型生成的`ToString()`方法中，会自动添加用于显示属性名称及其值的代码。
@@ -783,9 +812,9 @@ var items = fileList.Select(t =>
 #### 使用Count()对元素进行计数
 
 ```cs
-Console.WriteLine($"Patent Count:{PatentData.Patents.Count()}");
-Console.WriteLine($@"Patent Count in 1800s :{
-    PatentData.Patents.Count(t => t.YearOfPublication.StartsWith("18"))}");
+Console.WriteLine($"Products Count:{TestData.ProductsArray.Count()}");
+Console.WriteLine($@"Product's price than ￥10 :{
+    TestData.ProductsArray.Count(t => t.Price > 10)}");
 ```
 
 虽然`Count()`语句看起来简单，但IEnumerable<T>没有改变，所以真正执行的代码仍然会遍历集合中的所有项。
@@ -807,114 +836,87 @@ Any()只尝试遍历集合中的一个项，如果成功就返回true,而不会�
 
 ```cs
 // 效率低
-if(PatentData.Patents.Count() > 0) {...}
+if(TestData.ProductsArray.Count() > 0) {...}
 
 // 建议采用
-if(PatentData.Patents.Any()) {...}
+if(TestData.ProductsArray.Any()) {...}
 ```
 
 <a id="markdown-orderby和thenby排序" name="orderby和thenby排序"></a>
 #### OrderBy和ThenBy排序
 
-基于上面的案例，使用YearOfPublication作为排序的键，返回的仍然是IEnumerable集合类型
+基于上面的案例，使用Price作为排序的键，返回的仍然是IEnumerable集合类型
 
 ```cs
-var orderAge = PatentData.Patents.OrderBy(t => t.YearOfPublication);
-foreach (var item in orderAge)
-{
-    Console.WriteLine(item.YearOfPublication);
-}
+var orderPrice = TestData.ProductsArray.OrderBy(t => t.Price);
+Console.WriteLine("****************按price价格升序排列****************");
+Print(orderPrice);
 ```
 
-ThenBy用于多个列的分组，如下所示：
+ThenBy用于多个列的分组，先按照产品产地排序，再按照价格进一步排序，如下所示：
 ```cs
-List<Pet> petsList = new List<Pet>{
-    new Pet { Name="Barley", Age=8.3,Gender="F" },
-    new Pet { Name="Boots", Age=4.9 ,Gender="F"},
-    new Pet { Name="Whiskers", Age=1.5 ,Gender="M"},
-    new Pet { Name="Daisy", Age=4.3 ,Gender="M"},
-    new Pet { Name="Ban", Age=1.2, Gender="M"}
-};
-
-var res = petsList.OrderBy(t => t.Gender).ThenBy(t => t.Age);
-foreach (var item in res.ToList())
-{
-    Console.WriteLine($"{item.Name}-{item.Age}-{item.Gender}");
-}
+var orderPrice = TestData.ProductsArray.OrderBy(t => t.ProductLocation)
+    .ThenBy(t => t.Price);
+Console.WriteLine("****************先按产地排序，再按照price价格排序****************");
+Print(orderPrice);
 ```
 
 <a id="markdown-groupby分组" name="groupby分组"></a>
 #### GroupBy分组
 
 ```cs
-class Pet
+var locationGroup = TestData.ProductsArray.GroupBy(t => t.ProductLocation);
+Console.WriteLine("****************按照产地分组，再遍历分组明细****************");
+// 遍历得到的分组
+foreach (var item in locationGroup)
 {
-    public string Name { get; set; }
-    public double Age { get; set; }
-    public string Gender { get; set; }
-}
-
-public class Program
-{
-    static void Main(string[] args)
+    Console.WriteLine($"key:{item.Key},Count:{item.Count()}");
+    foreach (var prod in item)
     {
-        List<Pet> petsList = new List<Pet>{
-            new Pet { Name="Barley", Age=8.3,Gender="F" },
-            new Pet { Name="Boots", Age=4.9 ,Gender="F"},
-            new Pet { Name="Whiskers", Age=1.5 ,Gender="M"},
-            new Pet { Name="Daisy", Age=4.3 ,Gender="M"} };
-
-        IEnumerable<IGrouping<double, Pet>> ageGroup = petsList.GroupBy(pet => Math.Floor(pet.Age));
-        // 遍历得到的分组，此处 item.Key即为分组的key值，item为该分组下的列表
-        foreach (var item in ageGroup)
-        {
-            Console.WriteLine($"Count:{item.Count()}");
-            // 再次遍历分组下的数据
-            foreach (var pet in item)
-            {
-                Console.WriteLine($"年龄：{item.Key}，名字：{pet.Name}");
-            }
-        }
+        Console.WriteLine(prod);
     }
 }
 ```
 
 注意，`GroupBy()`返回的是`IEnumerable<IGrouping<TKey, TSource>>`类型的数据项，
 
-该类型有一个属性指定了作为分组依据的键(此处是对年龄向下取整Math.floor(pet.Age))。
-
 如果需要对多个列进行分组，参考如下代码：
 ```cs
-var ageGroup = petsList.GroupBy(pet => new { Gen = pet.Gender, Age = Math.Floor(pet.Age) });
-// 遍历得到的分组，此处 item.Key即为分组的key值，item为该分组下的列表
-foreach (var item in ageGroup)
+// 按照多个列进行分组，产地和取整价格
+var locationGroup = TestData.ProductsArray.GroupBy(prod => new
 {
-    Console.WriteLine($"Count:{item.Count()}");
-    // 再次遍历分组下的数据
-    foreach (var pet in item)
+    Location = prod.ProductLocation,
+    PriceFloor = Math.Floor(prod.Price)
+});
+Console.WriteLine("****************按照产地和取整价格进行分组****************");
+// 遍历得到的分组
+foreach (var item in locationGroup)
+{
+    Console.WriteLine($"分组Key:{item.Key},Count:{item.Count()}");
+    foreach (var prod in item)
     {
-        Console.WriteLine($"分组信息：{item.Key}，名字：{pet.Name}");
+        Console.WriteLine(prod);
     }
 }
 ```
 
 针对上述案例的petsList修改，可以通过第二个传参指定返回匿名类型
 ```cs
-var query = petsList.GroupBy(pet => pet.Gender,
-    pet =>
+// 按照指定key进行group by，并返回新的匿名类型
+var locationGroup = TestData.ProductsArray.GroupBy(prod => prod.ProductLocation,
+    prod =>
     {
-        // 构造新的匿名类型返回
-        return new { PetName = pet.Name, PetAge = Math.Floor(pet.Age) };
+        // 投影新的查询对象
+        return new { Name = $"{prod.Name}-{prod.ProductLocation}", PriceFloor = Math.Floor(prod.Price) };
     });
-
-// 遍历得到的分组，此处 item.Key即为分组的key值，item为该分组下的列表
-foreach (var item in query)
+Console.WriteLine("****************按照产地和取整价格进行分组****************");
+// 遍历得到的分组
+foreach (var item in locationGroup)
 {
-    Console.WriteLine($"公母：{item.Key}，Count:{item.Count()}============");
-    // 再次遍历分组下的数据
-    foreach (var pet in item)
+    Console.WriteLine($"分组Key:{item.Key},Count:{item.Count()}");
+    foreach (var prod in item)
     {
-        Console.WriteLine($"年龄：{pet.PetAge}，名字：{pet.PetName}");
+        Console.WriteLine(prod);
     }
 }
 ```
@@ -922,32 +924,29 @@ foreach (var item in query)
 在分组时也可以基于分组产生新的分组信息，如下：
 ```cs
 /*
-生成的不再是 IEnumerable<IGrouping<double, Pet>> 类型，而是IEnumerable<>集合
+生成的不再是 IEnumerable<IGrouping<string, Product>> 类型，而是IEnumerable<>集合
 第1个参数是按照哪个列进行分组，
 第2个参数是每个分组里的数据处理，
 第3个参数是分组后每组数据处理，产生新的匿名类型，(key,keyList)=>{ return new {}}
 */
-var query = petsList.GroupBy(pet => pet.Gender,
-    pet => pet,
-    (groupGender, genderPets) =>
+var query = TestData.ProductsArray.GroupBy(prod => prod.ProductLocation,
+    prod => prod,
+    (location, groupProducts) =>
     {
         return new
         {
-            MaxAge = genderPets.Max(t => t.Age),
-            MinAge = genderPets.Min(t => t.Age),
-            Sex = groupGender,
-            Size = genderPets.Count()
+            Location = location,
+            Size = groupProducts.Count(),
+            MaxPrice = groupProducts.Max(t => t.Price),
+            MinPrice = groupProducts.Min(t => t.Price),
         };
     });
-
+Console.WriteLine("****************按照城市分组，并查找分组内最高/最低价格****************");
 foreach (var item in query)
 {
     Console.WriteLine(item);
 }
 ```
-
-
-
 
 <a id="markdown-扩展方法" name="扩展方法"></a>
 ## 扩展方法
