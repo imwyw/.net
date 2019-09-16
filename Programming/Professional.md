@@ -18,7 +18,6 @@
             - [使用Count()对元素进行计数](#使用count对元素进行计数)
             - [OrderBy和ThenBy排序](#orderby和thenby排序)
             - [GroupBy分组](#groupby分组)
-    - [自定义集合](#自定义集合)
     - [扩展方法](#扩展方法)
     - [反射](#反射)
         - [反射(Reflection)](#反射reflection)
@@ -29,6 +28,7 @@
             - [作用](#作用)
             - [Attribute 与注释的区别](#attribute-与注释的区别)
             - [使用](#使用)
+    - [自定义集合](#自定义集合)
 
 <!-- /TOC -->
 <a id="markdown-高级编程" name="高级编程"></a>
@@ -947,140 +947,6 @@ foreach (var item in query)
 ```
 
 
-<a id="markdown-自定义集合" name="自定义集合"></a>
-## 自定义集合
-在System.Collections 命名空间下，常用的集合类中，有两个类不属于集合，而是作为自定义集合类的基类。 
-
-* CollectionBase:为强类型集合提供abstract 基类 
-* DictionaryBase:为键/值对的强类型集合提供abstract基类。 
-
-如果我们对自定义集合有更多要求的话，比如：
-* 能够通过索引号去访问集合中的某个元素，则需要定义集合的**索引器**
-* 能够通过foreach循环遍历每一个元素，则需要定义集合的**迭代器**
-
-```cs
-class Program
-{
-    static void Main(string[] args)
-    {
-        StudentCollection stuCollection = new StudentCollection();
-        stuCollection.Add(new Student("jack"));
-        stuCollection.Add(new Student("lucy"));
-
-        //使用迭代器，因为CollectionBase实现了IEnumerable接口，所以可以直接使用foreach
-        foreach (Student item in stuCollection)
-        {
-            item.SayHi();
-        }
-
-        //使用索引器进行方法调用
-        stuCollection[1].SayHi();
-    }
-}
-
-/// <summary>
-/// 自定义CollectionBase集合
-/// </summary>
-public class StudentCollection : CollectionBase
-{
-    /// <summary>
-    /// 重写父类中的Add方法，因为父类Add为私有方法，元数据中不可见
-    /// CollectionBase源码中可见父类中实现了Add方法
-    /// https://referencesource.microsoft.com/#mscorlib/system/collections/collectionbase.cs
-    /// </summary>
-    /// <param name="stu"></param>
-    /// <returns></returns>
-    public int Add(Student stu)
-    {
-        return List.Add(stu);
-    }
-
-    /// <summary>
-    /// Remove方法同上Add方法，都是私有实现
-    /// </summary>
-    /// <param name="stu"></param>
-    public void Remove(Student stu)
-    {
-        List.Remove(stu);
-    }
-
-    /// <summary>
-    /// 父类中为普通方法，不可重写，只能使用new进行隐藏
-    /// </summary>
-    /// <param name="index"></param>
-    public new void RemoveAt(int index)
-    {
-        List.RemoveAt(index);
-    }
-
-    /// <summary>
-    /// 索引器
-    /// </summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public Student this[int index]
-    {
-        get { return List[index] as Student; }
-        set { List[index] = value; }
-    }
-}
-
-public class Student
-{
-    public Student(string name) { Name = name; }
-    public string Name { get; set; }
-    public void SayHi() { Console.WriteLine($"hello i'm {Name}"); }
-}
-```
-
-关于迭代，foreach遍历是C#常见的功能，C#使用yield关键字让自定义集合实现foreach遍历的方法
-
-一般来说当我们创建自定义集合的时候为了让其能支持foreach遍历，就只能让其实现IEnumerable接口（可能还要实现IEnumerator接口）
-
-但是我们也可以通过使用yield关键字构建的迭代器方法来实现foreach的遍历，且自定义的集合不用实现IEnumerable接口
-
-```cs
-class Program
-{
-    static void Main(string[] args)
-    {
-        StudentList sts = new StudentList();
-        foreach (Student item in sts)
-        {
-            item.SayHi();
-        }
-    }
-}
-
-public class StudentList
-{
-    private Student[] arr = new Student[3];
-    public StudentList()
-    {
-        arr[0] = new Student("张三");
-        arr[1] = new Student("李四");
-        arr[2] = new Student("王富贵");
-    }
-
-    public IEnumerator GetEnumerator()
-    {
-        foreach (Student item in arr)
-        {
-            // yield return 作用就是返回集合的一个元素,并移动到下一个元素上
-            yield return item;
-        }
-    }
-}
-
-public class Student
-{
-    public Student(string name) { Name = name; }
-    public string Name { get; set; }
-    public void SayHi() { Console.WriteLine($"hello i'm {Name}"); }
-}
-```
-
-注意：**虽然不用实现IEnumerable接口 ，但是迭代器的方法必须命名为GetEnumerator()，返回值也必须是IEnumerator类型。**
 
 
 <a id="markdown-扩展方法" name="扩展方法"></a>
@@ -1316,6 +1182,141 @@ static void Main(string[] args)
     }
 }
 ```
+
+<a id="markdown-自定义集合" name="自定义集合"></a>
+## 自定义集合
+在System.Collections 命名空间下，常用的集合类中，有两个类不属于集合，而是作为自定义集合类的基类。 
+
+* CollectionBase:为强类型集合提供abstract 基类 
+* DictionaryBase:为键/值对的强类型集合提供abstract基类。 
+
+如果我们对自定义集合有更多要求的话，比如：
+* 能够通过索引号去访问集合中的某个元素，则需要定义集合的**索引器**
+* 能够通过foreach循环遍历每一个元素，则需要定义集合的**迭代器**
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        StudentCollection stuCollection = new StudentCollection();
+        stuCollection.Add(new Student("jack"));
+        stuCollection.Add(new Student("lucy"));
+
+        //使用迭代器，因为CollectionBase实现了IEnumerable接口，所以可以直接使用foreach
+        foreach (Student item in stuCollection)
+        {
+            item.SayHi();
+        }
+
+        //使用索引器进行方法调用
+        stuCollection[1].SayHi();
+    }
+}
+
+/// <summary>
+/// 自定义CollectionBase集合
+/// </summary>
+public class StudentCollection : CollectionBase
+{
+    /// <summary>
+    /// 重写父类中的Add方法，因为父类Add为私有方法，元数据中不可见
+    /// CollectionBase源码中可见父类中实现了Add方法
+    /// https://referencesource.microsoft.com/#mscorlib/system/collections/collectionbase.cs
+    /// </summary>
+    /// <param name="stu"></param>
+    /// <returns></returns>
+    public int Add(Student stu)
+    {
+        return List.Add(stu);
+    }
+
+    /// <summary>
+    /// Remove方法同上Add方法，都是私有实现
+    /// </summary>
+    /// <param name="stu"></param>
+    public void Remove(Student stu)
+    {
+        List.Remove(stu);
+    }
+
+    /// <summary>
+    /// 父类中为普通方法，不可重写，只能使用new进行隐藏
+    /// </summary>
+    /// <param name="index"></param>
+    public new void RemoveAt(int index)
+    {
+        List.RemoveAt(index);
+    }
+
+    /// <summary>
+    /// 索引器
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public Student this[int index]
+    {
+        get { return List[index] as Student; }
+        set { List[index] = value; }
+    }
+}
+
+public class Student
+{
+    public Student(string name) { Name = name; }
+    public string Name { get; set; }
+    public void SayHi() { Console.WriteLine($"hello i'm {Name}"); }
+}
+```
+
+关于迭代，foreach遍历是C#常见的功能，C#使用yield关键字让自定义集合实现foreach遍历的方法
+
+一般来说当我们创建自定义集合的时候为了让其能支持foreach遍历，就只能让其实现IEnumerable接口（可能还要实现IEnumerator接口）
+
+但是我们也可以通过使用yield关键字构建的迭代器方法来实现foreach的遍历，且自定义的集合不用实现IEnumerable接口
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        StudentList sts = new StudentList();
+        foreach (Student item in sts)
+        {
+            item.SayHi();
+        }
+    }
+}
+
+public class StudentList
+{
+    private Student[] arr = new Student[3];
+    public StudentList()
+    {
+        arr[0] = new Student("张三");
+        arr[1] = new Student("李四");
+        arr[2] = new Student("王富贵");
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        foreach (Student item in arr)
+        {
+            // yield return 作用就是返回集合的一个元素,并移动到下一个元素上
+            yield return item;
+        }
+    }
+}
+
+public class Student
+{
+    public Student(string name) { Name = name; }
+    public string Name { get; set; }
+    public void SayHi() { Console.WriteLine($"hello i'm {Name}"); }
+}
+```
+
+注意：**虽然不用实现IEnumerable接口 ，但是迭代器的方法必须命名为GetEnumerator()，返回值也必须是IEnumerator类型。**
 
 ---
 
