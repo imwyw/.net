@@ -3,6 +3,7 @@
 - [文件、流](#文件流)
     - [文件相关类](#文件相关类)
     - [路径Path](#路径path)
+        - [当前路径获取](#当前路径获取)
     - [文件File](#文件file)
     - [目录Directory](#目录directory)
     - [文件读写](#文件读写)
@@ -73,6 +74,44 @@ Path.GetFileNameWithoutExtension(@"E:\Attachment\iflytek.txt");//iflytek
 //其他方法自行查看研究
 ```
 
+<a id="markdown-当前路径获取" name="当前路径获取"></a>
+### 当前路径获取
+
+1、取得控制台应用程序的根目录方法
+
+     方法1、Environment.CurrentDirectory 取得或设置当前工作目录的完整限定路径
+     
+     方法2、AppDomain.CurrentDomain.BaseDirectory 获取基目录，它由程序集冲突解决程序用来探测程序集
+     
+ 2、取得Web应用程序的根目录方法
+ 
+     方法1、HttpRuntime.AppDomainAppPath.ToString();//获取承载在当前应用程序域中的应用程序的应用程序目录的物理驱动器路径。用于App_Data中获取
+
+     方法2、Server.MapPath("") 或者 Server.MapPath("~/");//返回与Web服务器上的指定的虚拟路径相对的物理文件路径
+     
+     方法3、Request.ApplicationPath;//获取服务器上ASP.NET应用程序的虚拟应用程序根目录
+     
+ 3、取得WinForm应用程序的根目录方法
+
+     1、Environment.CurrentDirectory.ToString();//获取或设置当前工作目录的完全限定路径
+
+     2、Application.StartupPath.ToString();//获取启动了应用程序的可执行文件的路径，不包括可执行文件的名称
+     
+     3、Directory.GetCurrentDirectory();//获取应用程序的当前工作目录
+
+     4、AppDomain.CurrentDomain.BaseDirectory;//获取基目录，它由程序集冲突解决程序用来探测程序集
+     
+     5、AppDomain.CurrentDomain.SetupInformation.ApplicationBase;//获取或设置包含该应用程序的目录的名称
+     
+其中：以下两个方法可以获取执行文件名称
+
+     1、Process.GetCurrentProcess().MainModule.FileName;//可获得当前执行的exe的文件名。
+
+     2、Application.ExecutablePath;//获取启动了应用程序的可执行文件的路径，包括可执行文件的名称
+     
+     3、System.IO.Path类中有一些获取路径的方法，可以在控制台程序或者WinForm中根据相对路径来获取绝对路径
+
+
 <a id="markdown-文件file" name="文件file"></a>
 ## 文件File
 - File:静态类，提供文件操作的静态方法，无法被实例化。
@@ -105,6 +144,7 @@ else
     fl.Create().Dispose();
 }
 ```
+
 
 <a id="markdown-目录directory" name="目录directory"></a>
 ## 目录Directory
@@ -207,7 +247,9 @@ string resMsg = System.Text.Encoding.UTF8.GetString(bytes);
 
 <a id="markdown-filestream" name="filestream"></a>
 ### FileStream
-读写通过字节序列的方式
+这个类提供了在文件中读写字节的方法，但经常使用StreamReader或 StreamWriter执行这些功能。
+
+这是因为FileStream类操作的是字节和字节数组，而Stream类操作的是字符数据。
 
 ```cs
 string path = @"E:\Attachment\iflytek\iflytek.txt";
@@ -232,6 +274,9 @@ fs.Close();
 
 <a id="markdown-streamreaderstreamwriter" name="streamreaderstreamwriter"></a>
 ### StreamReader/StreamWriter
+
+用来处理流数据，提供了高效的流读写功能。可以直接用字符串进行读写，而不用转换成字节数组。
+
 ```cs
 string path = @"E:\Attachment\iflytek\iflytek.txt";
 
@@ -256,7 +301,7 @@ using (FileStream fs = new FileStream(path, FileMode.Append))
 {
     using (StreamWriter sw = new StreamWriter(fs))
     {
-        sw.Write("hello streamwriter\n");
+        sw.Write("hello streamwriter" + Environment.NewLine);
     }
 }
 
@@ -385,5 +430,7 @@ using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
 ---
 
 参考引用：
+
+[C# 获取当前程序运行路径](https://blog.csdn.net/june905206961/article/details/78428551)
 
 [C# 文件操作（摘抄）](https://www.cnblogs.com/hellowzl/p/6797556.html)
