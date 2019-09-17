@@ -616,7 +616,7 @@ xdoc.Save(xmlPath);
 string str = ConfigurationManager.AppSettings["Name"];
 ```
 
-新建和修改：
+新建和修改(慎用)：
 ```cs
 Configuration cfg = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 cfg.AppSettings.Settings.Add("Version", "1.0");
