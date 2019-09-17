@@ -411,8 +411,6 @@ delegate bool Delegate2(string name);
 delegate int Delegate3(string str, bool isa, object obj);
 ```
 
-
-
 <a id="markdown-事件" name="事件"></a>
 ### 事件
 事件(Event) 基本上说是一个用户操作，如按键、点击、鼠标移动等等，或者是一些出现，如系统生成的通知。
@@ -647,7 +645,7 @@ Duck typing按名称查找方法，而不是依赖接口或显式方法调用。
 
 `IEnumerable<T>`上的每个方法都是一个标准查询操作符，用于为所操作的集合提供查询功能。
 
-以下案例均基于Inventor和Patent类，代码如下：
+以下案例均基于Product和Provider类，代码如下：
 
 ```cs
 /// <summary>

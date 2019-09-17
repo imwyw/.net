@@ -398,6 +398,15 @@ static void BuyTicket()
 
 [5天不再惧怕多线程系列](http://www.cnblogs.com/huangxincheng/archive/2012/03/14/2395279.html)
 
-[.net 多线程的使用（Thread）](https://www.cnblogs.com/wangbaicheng1477865665/p/async2.html)
+[.NET多线程的使用（Thread）](https://www.cnblogs.com/wangbaicheng1477865665/p/async2.html)
 
 [C#多线程之旅](http://www.cnblogs.com/jackson0714/p/5100372.html#_label0)
+
+[C# 多线程（1）多线程基础](https://blog.csdn.net/num197/article/details/80307592)
+
+[C# 多线程（2）多线程同步](https://blog.csdn.net/num197/article/details/80312998)
+
+[C# 多线程（3）CLR线程池](https://blog.csdn.net/num197/article/details/80315328)
+
+[C# 多线程（4）Task的使用](https://blog.csdn.net/num197/article/details/80320819)
+
