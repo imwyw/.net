@@ -24,6 +24,9 @@
             - [删除](#删除)
         - [XmlDocument和XmlReader](#xmldocument和xmlreader)
         - [XDocument(方便、快捷)](#xdocument方便快捷)
+            - [创建xml](#创建xml)
+            - [读取所有](#读取所有)
+            - [修改和删除](#修改和删除)
     - [配置文件的读写](#配置文件的读写)
 
 <!-- /TOC -->
@@ -558,14 +561,15 @@ doc.Save(xmlPath);
 
 <a id="markdown-xdocument方便快捷" name="xdocument方便快捷"></a>
 ### XDocument(方便、快捷)
-LINQ to XML API
+XDocument是.net 3.5为Linq to XML准备的轻量级Document对象
 
 和XmlDocument相同的是会把所有的XML所有的节点加载到内存中。
 
+<a id="markdown-创建xml" name="创建xml"></a>
+#### 创建xml
+
 使用XDocument进行创建xml文件，和上面XmlDocument创建xml文档一致，但是代码要精简很多，如下所示：
 ```cs
-string xmlPath = @"..\..\bookstore.xml";
-
 //XDocument 需要 using System.Xml.Linq;
 XDocument xdoc = new XDocument(new XDeclaration("1.0", "utf-8", null));
 
@@ -591,7 +595,64 @@ XElement book2 = new XElement("book", new XAttribute("category", "CHILDREN")
 //记得要进行保存
 root.Add(book2);
 
-xdoc.Save(xmlPath);
+xdoc.Save("xbooks.xml");
+```
+
+<a id="markdown-读取所有" name="读取所有"></a>
+#### 读取所有
+查找节点经常用到的方法有Descendants()和Elements()。
+
+两者的区别是：Descendants()方法会一直向下遍历查找直到没有子节点，
+
+Elements()只会查找当前节点的子节点，不会向下递归查找。
+
+```cs
+XElement books = XElement.Load("books.xml");
+
+// 查找当前节点所有子节点
+var xes1 = books.Elements();
+Console.WriteLine(xes1.Count());
+foreach (XElement el in xes1)
+{
+    Console.WriteLine(el);
+}
+
+// 查找所有节点，递归
+var xes2 = books.Descendants();
+
+// 查找当前节点所有book子节点
+var xes3 = books.Elements("book");
+
+// 查找所有title节点
+var xes4 = books.Descendants("title");
+
+// 查找book节点下直接title子节点
+var xes5 = books.Elements("book").Elements("title");
+
+// 查找所有title节点，匹配属性lang为en的节点
+var xes6 = books.Descendants("title").Where(t => t.Attribute("lang").Value == "en");
+```
+
+<a id="markdown-修改和删除" name="修改和删除"></a>
+#### 修改和删除
+```cs
+XElement books = XElement.Load("books.xml");
+
+// FirstOrDefault查找category属性为"COOKING"的第一个节点
+var cookBook = books.Descendants("book")
+    .FirstOrDefault(t => t.Attribute("category").Value == "COOKING");
+// 如果有，则修改该属性值
+if (null != cookBook)
+{
+    cookBook.Attribute("category").Value = "eating";
+}
+// 修改后需要进行保存
+books.Save("edit_books.xml");
+
+// 查找所有出版年份为2005年的book节点，并删除
+var bookYear2005 = books.Descendants("book").Where(t => t.Element("year").Value == "2005");
+bookYear2005.Remove();
+books.Save("remove_books.xml");
 ```
 
 <a id="markdown-配置文件的读写" name="配置文件的读写"></a>
@@ -636,3 +697,4 @@ Console.WriteLine(ConfigurationManager.AppSettings["Version"]);
 
 [XML技术总结之XDocument 和XmlDocument](http://www.cnblogs.com/HQFZ/p/4788428.html)
 
+[C#读写xml文件](https://www.cnblogs.com/joean/p/4985348.html)
