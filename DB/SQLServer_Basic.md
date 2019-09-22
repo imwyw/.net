@@ -61,7 +61,9 @@
 ### 1NF一范式
 定义为：符合1NF的关系中的每个属性都不可再分。
 
-现在使用的关系型数据库管理系统都已在创建数据表是要求满足一范式。不符合1NF的表也无法录入到数据库，如果不符合这个最基本的要求那么操作是无法成功的。
+现在使用的关系型数据库管理系统都已在创建数据表是要求满足一范式。
+
+不符合1NF的表也无法录入到数据库，如果不符合这个最基本的要求那么操作是无法成功的。
 
 对于下表中的进货和销售还可以继续拆分，对于这样的记录是无法录入到关系型数据库的。
 
@@ -73,17 +75,25 @@
 
 <a id="markdown-2nf二范式" name="2nf二范式"></a>
 ### 2NF二范式
-2NF在1NF的基础之上，消除了非主属性对于码的部分函数依赖。
-
-但是仅仅符合1NF的设计，仍然会存在数据冗余过大，插入异常，删除异常，修改异常的问题等。
+仅仅符合1NF的设计，仍然会存在数据冗余过大，插入异常，删除异常，修改异常的问题等。
 
 ![](../assets/SqlServer/2nf-1.jpg)
+
+【学号】+【课名】->【分数】
+
+【学号】->【姓名】
+
+【学号】->【系名】
+
+【学号】->【系主任】
 
 针对上表中的数据，存在以下问题：
 1. 每一名学生的学号、姓名、系名、系主任这些数据重复多次。每个系与对应的系主任的数据也重复多次。**数据冗余**
 2. 假如学校新建了一个系，但是暂时还没有招收任何学生（比如3月份就新建了，但要等到8月份才招生），那么是无法将系名与系主任的数据单独地添加到数据表中去的。 **插入异常**
 3. 假如将某个系中所有学生相关的记录都删除，那么所有系与系主任的数据也就随之消失了（一个系所有学生都没有了，并不表示这个系就没有了）。 **删除异常**
 4. 假如李小明转系到法律系，那么为了保证数据库中数据的一致性，需要修改三条记录中系与系主任的数据。**修改异常**
+
+**2NF在1NF的基础之上，消除了非主属性对于码的部分函数依赖。**
 
 为了可以区分上表中每一条记录，我们需要结合两个字段才能确定唯一一条记录，即【学号+课名】，在这里【学号+课名】是上表的码/主属性。
 
@@ -95,11 +105,11 @@
 
 <a id="markdown-3nf三范式" name="3nf三范式"></a>
 ### 3NF三范式
-3NF在2NF的基础之上，消除了非主属性对于码的传递函数依赖。
+对于上面2NF案例中的学生表，还存在一些问题，【系主任】是完全依赖于【系名】，但在表中【系主任】还依赖于学生【学号】。
 
 ![](../assets/SqlServer/3nf-1.jpg)
 
-对于上面2NF案例中的学生表，还存在一些问题，【系主任】是完全依赖于【系名】，但在表中【系主任】还依赖于学生【学号】。
+**3NF在2NF的基础之上，消除了非主属性对于码的传递函数依赖。**
 
 存在非主属性【系主任】对于【学号】的传递依赖，上表并不符合3NF的设计。
 
@@ -111,8 +121,6 @@
 
 ![](../assets/SqlServer/3nf-3.jpg)
 
-参考引用：
-[解释一下关系数据库的第一第二第三范式？ - 刘慰的回答 - 知乎](https://www.zhihu.com/question/24696366/answer/29189700)
 
 <a id="markdown-语句" name="语句"></a>
 ## 语句
@@ -410,9 +418,6 @@ INTERSECT 返回 INTERSECT 操作数左右两边的两个查询都返回的所�
 * 所有查询中的列数和列的顺序必须相同。 
 * 数据类型必须兼容。 
 
-> http://www.cnblogs.com/dyufei/archive/2009/11/11/2573976.html
-
-
 <a id="markdown-用法拓展" name="用法拓展"></a>
 ### 用法拓展
 <a id="markdown-distinct" name="distinct"></a>
@@ -543,8 +548,6 @@ SELECT * FROM 大表 WHERE FIELD_X IN (SELECT FIELD_X FROM 小表);
 SELECT * FROM 小表 WHERE EXISTS (SELECT * FROM 大表 WHERE 大表.xx = 小表.xx);
 ```
 
-> https://www.cnblogs.com/liyasong/p/sql_in_exists.html
-
 <a id="markdown-with-as" name="with-as"></a>
 #### WITH AS
 WITH AS短语，也叫做子查询部分（subquery factoring），可以定义一个SQL片断，该SQL片断会被整个SQL语句用到。
@@ -584,9 +587,6 @@ WITH    temp
                      FROM   temp );
 ```
 
-> http://www.cnblogs.com/fightLonely/archive/2011/02/24/1963907.html
-
-
 <a id="markdown-开窗函数" name="开窗函数"></a>
 #### 开窗函数
 
@@ -594,14 +594,74 @@ OVER 子句定义查询结果集内的窗口或用户指定的行集。 然后�
 
 在ISO SQL规定了这样的函数为开窗函数，在Oracle中则被称为分析函数，而在DB2中则被称为OLAP函数。
 
-开窗函数与聚合函数一样，都是对行的集合组进行聚合计算。它用于为行定义一个窗口（这里的窗口是指运算将要操作的行的集合），它对一组值进行操作，不需要使用GROUP BY子句对数据进行分组，能够在同一行中同时返回基础行的列和聚合列。
+开窗函数与聚合函数一样，都是对行的集合组进行聚合计算。
+
+它用于为行定义一个窗口（这里的窗口是指运算将要操作的行的集合），它对一组值进行操作，不需要使用GROUP BY子句对数据进行分组，能够在同一行中同时返回基础行的列和聚合列。
 
 调用格式为：`函数名(列) OVER(选项)`
 
 语法：`OVER ( [ PARTITION BY value_expression ] [ order_by_clause ] )  `
 
+第一大类：**聚合开窗函数**====》聚合函数(列) OVER (选项)，这里的选项可以是PARTITION BY子句，但不可是ORDER BY子句
 
-> https://www.cnblogs.com/Leo_wl/p/3509860.html
+```sql
+CREATE TABLE t_product
+    (
+      ProductID INT ,
+      ProductName VARCHAR(20) ,
+      ProductType VARCHAR(20) ,
+      Price INT
+    )
+INSERT dbo.t_product VALUES (1 ,'name1' ,'P1' ,3)
+INSERT dbo.t_product VALUES (2 ,'name2' ,'P1' ,5)
+INSERT dbo.t_product VALUES (3 ,'name3' ,'P2' ,4)
+INSERT dbo.t_product VALUES (4 ,'name4' ,'P2' ,4)
+```
+
+找出价格最高产品的信息：
+```sql
+SELECT  a.*
+FROM    dbo.t_product a
+        JOIN ( SELECT   ProductType ,
+                        MAX(Price) Price
+               FROM     dbo.t_product
+               GROUP BY ProductType
+             ) pmax ON a.ProductType = pmax.ProductType
+WHERE   a.Price = pmax.Price
+ORDER BY a.ProductType
+```
+
+利用over()，将统计信息计算出来，然后直接筛选结果集。
+
+```sql
+WITH    pmax
+          AS ( SELECT   a.* ,
+                        MAX(a.Price) OVER ( PARTITION BY a.ProductType ) MaxPrice
+               FROM     dbo.t_product a
+             )
+    SELECT  *
+    FROM    pmax
+    WHERE   pmax.Price = pmax.MaxPrice
+```
+
+添加【所在分类产品数目】统计信息：
+```sql
+SELECT  a.* ,
+        COUNT(a.ProductID) OVER ( PARTITION BY a.ProductType ) AS "所在分类产品数目"
+FROM    dbo.t_product a;
+```
+
+第二大类：**排序开窗函数**====》排序函数(列) OVER(选项)，这里的选项可以是ORDER BY子句，也可以是　OVER（PARTITION BY子句　ORDER BY子句），但不可以是PARTITION BY子句
+
+查询每个产品分类内的价格排名，并按照升序显示：
+
+```cs
+-- ROW_NUMBER()为每一组的行按顺序生成一个唯一的序号,结合OVER()开窗实现
+SELECT  a.* ,
+        ROW_NUMBER() OVER ( PARTITION BY a.ProductType ORDER BY a.Price ) AS "组内排名"
+FROM    dbo.t_product a
+ORDER BY a.Price;
+```
 
 <a id="markdown-pivot和unpivot" name="pivot和unpivot"></a>
 #### PIVOT和UNPIVOT
@@ -862,5 +922,17 @@ SELECT * FROM dbo.T_INDEX_TEST_NEW WHERE guid ='003EE909-FE1F-432A-AAAA-33A31084
 ![](../assets/SqlServer/index-demo-2.jpg)
 
 
+---
+
+参考引用：
+[解释一下关系数据库的第一第二第三范式？ - 刘慰的回答 - 知乎](https://www.zhihu.com/question/24696366/answer/29189700)
+
+[SQL中EXCEPT、INTERSECT用法](http://www.cnblogs.com/dyufei/archive/2009/11/11/2573976.html)
+
+[Sql语句中IN和exists的区别及应用])(https://www.cnblogs.com/liyasong/p/sql_in_exists.html)
+
+[sql with as 用法](https://www.cnblogs.com/fightLonely/archive/2011/02/24/1963907.html)
+
+[SQL开窗函数](https://www.cnblogs.com/lihaoyang/p/6756956.html)
 
 
