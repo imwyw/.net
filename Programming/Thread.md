@@ -18,6 +18,7 @@
             - [Join()](#join)
             - [Suspend 与 Resume （慎用）](#suspend-与-resume-慎用)
         - [线程安全](#线程安全)
+        - [生产消费者模式](#生产消费者模式)
     - [同步异步](#同步异步)
         - [概念](#概念)
         - [区别体现](#区别体现)
@@ -140,9 +141,9 @@ GetDomain() | 返回当前线程正在其中运行的当前域
 GetDomainId() | 返回当前线程正在其中运行的当前域Id
 Interrupt() | 中断处于 WaitSleepJoin 线程状态的线程
 Join() | 已重载。 阻塞调用线程，直到某个线程终止时为止
-Resume() | 继续运行已挂起的线程
+~~Resume()~~ | 继续运行已挂起的线程
 Start() | 执行本线程
-Suspend() | 挂起当前线程，如果当前线程已属于挂起状态则此不起作用
+~~Suspend()~~ | 挂起当前线程，如果当前线程已属于挂起状态则此不起作用
 Sleep() | 把正在运行的线程挂起一段时间
 
 <a id="markdown-threading命名空间" name="threading命名空间"></a>
@@ -395,60 +396,254 @@ Thread.Suspend（）与 Thread.Resume（）是在Framework1.0 就已经存在的
 
 <a id="markdown-线程安全" name="线程安全"></a>
 ### 线程安全
+多个线程访问同变量可能会出现一些意想不到的情况，线程安全问题都是由全局变量及静态变量引起的。
+
+以下为多线程买票的案例，我们无法保证余票递减。
+
 ```cs
-/// <summary>
-/// 用于多线程操作时锁，火车票有余票100张，多个线程同时进行买票操作，如何保证同时操作的时候余票的显示正确的
-/// </summary>
+static int ticketCount = 100;
+
+static void Main(string[] args)
+{
+    Thread th1 = new Thread(BuyTicket);
+    Thread th2 = new Thread(BuyTicket);
+    Thread th3 = new Thread(BuyTicket);
+    Thread th4 = new Thread(BuyTicket);
+    th1.Name = "王富贵";
+    th2.Name = "赵有才";
+    th3.Name = "郑钱花";
+
+    th1.Start();
+    th2.Start();
+    th3.Start();
+}
+
+static void BuyTicket()
+{
+    while (ticketCount > 0)
+    {
+        ticketCount -= 5;
+        Console.WriteLine($"{Thread.CurrentThread.Name}买票{5}张，剩余票数：{ticketCount}");
+    }
+}
+```
+
+若每个线程中对全局变量、静态变量只有读操作，而无写操作，一般来说，这个全局变量是线程安全的；
+
+若有多个线程同时对一个变量执行读写操作，一般都需要考虑线程同步，否则就可能影响线程安全。
+
+```cs
 static object lockObj = new object();
 
 static int ticketCount = 100;
 
-//随机对象，用于随机买票
-static Random random = new Random();
-
 static void Main(string[] args)
 {
-    Thread buyWork1 = new Thread(BuyTicket);
-    buyWork1.Name = "王富贵";
-    Thread buyWork2 = new Thread(BuyTicket);
-    buyWork2.Name = "赵有才";
-    Thread buyWork3 = new Thread(BuyTicket);
-    buyWork3.Name = "郑钱花";
+    Thread th1 = new Thread(BuyTicket);
+    Thread th2 = new Thread(BuyTicket);
+    Thread th3 = new Thread(BuyTicket);
+    Thread th4 = new Thread(BuyTicket);
+    th1.Name = "王富贵";
+    th2.Name = "赵有才";
+    th3.Name = "郑钱花";
 
-    buyWork1.Start();
-    buyWork2.Start();
-    buyWork3.Start();
+    th1.Start();
+    th2.Start();
+    th3.Start();
 }
 
-/// <summary>
-/// 买票操作，用于多线程委托
-/// </summary>
 static void BuyTicket()
 {
-    /*
-    每个线程循环买票，一直买到没票为止
-    while包含lock，每次循环间隙其他线程可以介入操作共享资源
-    */
     while (ticketCount > 0)
     {
         lock (lockObj)
         {
-            //生成一个[1,5]的随机数
-            int cnt = random.Next(1, 5);
-            Console.WriteLine("{0}需要购买{1}张票", Thread.CurrentThread.Name, cnt);
-            if (ticketCount < cnt)
+            if (ticketCount - 5 >= 0)
             {
-                Console.WriteLine("!!!系统余票不足，请重新输入需要购买的票数!!!");
-                return;
+                ticketCount -= 5;
+                Console.WriteLine($"{Thread.CurrentThread.Name}买票{5}张，剩余票数：{ticketCount}");
             }
-            ticketCount -= cnt;
-            Console.WriteLine("##余票提示##购买{0}张，剩余{1}张", cnt, ticketCount);
+            else
+            {
+                Console.WriteLine("余票不足!!!");
+            }
         }
     }
 }
 ```
 
 注意：在多线程中，共享数据是造成复杂原因的主要，而且会产生让人费解的错误。尽管很基本但还是要尽可能保持简单。
+
+<a id="markdown-生产消费者模式" name="生产消费者模式"></a>
+### 生产消费者模式
+在实际的软件开发过程中，经常会碰到如下场景：
+
+某个模块负责产生数据，这些数据由另一个模块来负责处理（此处的模块是广义的，可以是类、函数、线程、进程等）。
+
+产生数据的模块，就形象地称为生产者；而处理数据的模块，就称为消费者。
+
+单单抽象出生产者和消费者，还够不上是生产者／消费者模式。
+
+该模式还需要有一个缓冲区处于生产者和消费者之间，作为一个中介。
+
+生产者把数据放入缓冲区，而消费者从缓冲区取出数据。大概的结构如下图。
+
+![](../assets/Programming/producer_consumer.jpg)
+
+我们举一个寄信的例子（虽说这年头寄信已经不时兴，但这个例子还是比较贴切的）。假设你要寄一封平信，大致过程如下：
+
+1. 你把信写好——相当于生产者制造数据
+2. 你把信放入邮筒——相当于生产者把数据放入缓冲区
+3. 邮递员把信从邮筒取出——相当于消费者把数据取出缓冲区
+4. 邮递员把信拿去邮局做相应的处理——相当于消费者处理数据
+
+设计优点：
+1. 解耦
+2. 支持并发
+3. 忙闲不均
+
+设计生产者【Production】，消费者【Consumption】类，仓库【Storage】类模拟过程：
+
+![](../assets/Programming/produce-consume-uml.png)
+
+【Storage】类：
+```cs
+/// <summary>
+/// 仓库
+/// </summary>
+public class Storage
+{
+    public Storage(int maxCount)
+    {
+        MaxCount = maxCount;
+    }
+
+    public int MaxCount { get; set; }
+    public int CurrentCount { get; set; }
+}
+```
+
+【Production】类：
+```cs
+/// <summary>
+/// 生产者
+/// </summary>
+public class Production
+{
+    public Production(string name, int produceCnt, Storage myStorage)
+    {
+        Name = name;
+        ProduceCnt = produceCnt;
+        MyStorage = myStorage;
+        MyThread = new Thread(ProduceWork);
+    }
+
+    public string Name { get; set; }
+    public int ProduceCnt { get; set; }
+    public Storage MyStorage { get; set; }
+    public Thread MyThread { get; set; }
+    /// <summary>
+    /// 生产操作
+    /// </summary>
+    void ProduceWork()
+    {
+        while (true)
+        {
+            // 1s 生产一次
+            Thread.Sleep(1000);
+            lock (MyStorage)
+            {
+                // 不能爆仓
+                if (MyStorage.CurrentCount + ProduceCnt < MyStorage.MaxCount)
+                {
+                    MyStorage.CurrentCount += ProduceCnt;
+                    Console.WriteLine($"生产者：{Name}生产了{ProduceCnt}个产品，现库存为：{MyStorage.CurrentCount}");
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 开始生产任务
+    /// </summary>
+    public void StartProduce()
+    {
+        MyThread.Start();
+    }
+}
+```
+
+【Consumption】类：
+```cs
+/// <summary>
+/// 消费者
+/// </summary>
+public class Consumption
+{
+    public Consumption(string name, int consumeCnt, Storage myStorage)
+    {
+        Name = name;
+        ConsumeCnt = consumeCnt;
+        MyStorage = myStorage;
+        MyThread = new Thread(ConsumeWork);
+    }
+
+    public string Name { get; set; }
+    public int ConsumeCnt { get; set; }
+    public Storage MyStorage { get; set; }
+    public Thread MyThread { get; set; }
+    void ConsumeWork()
+    {
+        while (true)
+        {
+            // 0.5s 消费一次
+            Thread.Sleep(500);
+            lock (MyStorage)
+            {
+                if (MyStorage.CurrentCount > ConsumeCnt)
+                {
+                    MyStorage.CurrentCount -= ConsumeCnt;
+                    Console.WriteLine($"消费者：{Name}消耗了{ConsumeCnt}个产品，现库存为：{MyStorage.CurrentCount}");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 开始消费任务
+    /// </summary>
+    public void StartConsume()
+    {
+        MyThread.Start();
+    }
+}
+```
+
+模拟调用如下：
+```cs
+static void Main(string[] args)
+{
+    Storage st = new Storage(100);
+
+    List<Production> produceList = new List<Production>();
+    produceList.Add(new Production("合肥", 10, st));
+    produceList.Add(new Production("芜湖", 8, st));
+    produceList.Add(new Production("南京", 15, st));
+
+    List<Consumption> consumeList = new List<Consumption>();
+    consumeList.Add(new Consumption("高校", 10, st));
+    consumeList.Add(new Consumption("政府", 5, st));
+    consumeList.Add(new Consumption("企业", 3, st));
+
+    foreach (var item in produceList)
+    {
+        item.StartProduce();
+    }
+    foreach (var item in consumeList)
+    {
+        item.StartConsume();
+    }
+}
+```
 
 <a id="markdown-同步异步" name="同步异步"></a>
 ## 同步异步
@@ -543,6 +738,8 @@ void ReadBook()
 [.NET多线程的使用（Thread）](https://www.cnblogs.com/wangbaicheng1477865665/p/async2.html)
 
 [C#多线程之旅](http://www.cnblogs.com/jackson0714/p/5100372.html#_label0)
+
+[生产者/消费者模式](https://blog.csdn.net/kaiwii/article/details/6758942)
 
 [C# 多线程（1）多线程基础](https://blog.csdn.net/num197/article/details/80307592)
 
