@@ -27,12 +27,14 @@
             - [SELECT...INTO..](#selectinto)
             - [CASE...WHEN...](#casewhen)
             - [SELECT XXX()](#select-xxx)
-            - [强类型转换](#强类型转换)
             - [IN和Exists](#in和exists)
             - [WITH AS](#with-as)
             - [开窗函数](#开窗函数)
             - [PIVOT和UNPIVOT](#pivot和unpivot)
         - [常用函数](#常用函数)
+            - [类型转换](#类型转换)
+            - [字符串操作](#字符串操作)
+            - [日期时间](#日期时间)
         - [其他语句](#其他语句)
         - [提高效率RedPrompt](#提高效率redprompt)
     - [索引](#索引)
@@ -500,45 +502,7 @@ SELECT SYSDATETIME();
 SELECT 1+1 ;
 ```
 
-<a id="markdown-强类型转换" name="强类型转换"></a>
-#### 强类型转换
-在SQL SERVER中,cast和convert函数都可用于类型转换,其功能是相同的,只是语法不同。
 
-```sql
-CAST ( expression AS data_type [ ( length ) ] ) 
-CONVERT ( data_type [ ( length ) ] , expression [ , style ] ) 
-```
-
-cast一般更容易使用,convert的优点是可以格式化日期和数值，如下案例：
-```sql
-select CAST('123' as int)   -- 123
-select CONVERT(int, '123')  -- 123
-
-select CAST(123.4 as int)   -- 123
-select CONVERT(int, 123.4)  -- 123 
-
-select CAST('123.4' as int)
-select CONVERT(int, '123.4')
--- Conversion failed when converting the varchar value '123.4' to data type int.
-
-select CAST('123.4' as decimal)  -- 123
-select CONVERT(decimal, '123.4') -- 123 
-
-select CAST('123.4' as decimal(9,2))  -- 123.40
-select CONVERT(decimal(9,2), '123.4') -- 123.40
-
-declare @Num money
-set @Num = 1234.56
-select CONVERT(varchar(20), @Num, 0)  -- 1234.56
-select CONVERT(varchar(20), @Num, 1)  -- 1,234.56
-select CONVERT(varchar(20), @Num, 2)  -- 1234.5600
-
--- 时间格式，还有很多其他格式
-SELECT CONVERT(VARCHAR,GETDATE(),120); -- 2018-03-29 23:18:23
-SELECT CONVERT(VARCHAR,GETDATE(),121); -- 2018-03-29 23:18:23.810
-SELECT CONVERT(VARCHAR,GETDATE(),111); -- 2018/03/29
-SELECT CONVERT(VARCHAR,GETDATE(),112); -- 20180329
-```
 
 <a id="markdown-in和exists" name="in和exists"></a>
 #### IN和Exists
@@ -763,8 +727,48 @@ ps.对升级到 SQL Server 2005 或更高版本的数据库使用 PIVOT 和 UNPI
 
 <a id="markdown-常用函数" name="常用函数"></a>
 ### 常用函数
+<a id="markdown-类型转换" name="类型转换"></a>
+#### 类型转换
+在SQL SERVER中,cast和convert函数都可用于类型转换,其功能是相同的,只是语法不同。
 
-**字符串操作**：
+```sql
+CAST ( expression AS data_type [ ( length ) ] ) 
+CONVERT ( data_type [ ( length ) ] , expression [ , style ] ) 
+```
+
+cast一般更容易使用,convert的优点是可以格式化日期和数值，如下案例：
+```sql
+select CAST('123' as int)   -- 123
+select CONVERT(int, '123')  -- 123
+
+select CAST(123.4 as int)   -- 123
+select CONVERT(int, 123.4)  -- 123 
+
+select CAST('123.4' as int)
+select CONVERT(int, '123.4')
+-- Conversion failed when converting the varchar value '123.4' to data type int.
+
+select CAST('123.4' as decimal)  -- 123
+select CONVERT(decimal, '123.4') -- 123 
+
+select CAST('123.4' as decimal(9,2))  -- 123.40
+select CONVERT(decimal(9,2), '123.4') -- 123.40
+
+declare @Num money
+set @Num = 1234.56
+select CONVERT(varchar(20), @Num, 0)  -- 1234.56
+select CONVERT(varchar(20), @Num, 1)  -- 1,234.56
+select CONVERT(varchar(20), @Num, 2)  -- 1234.5600
+
+-- 时间格式，还有很多其他格式
+SELECT CONVERT(VARCHAR,GETDATE(),120); -- 2018-03-29 23:18:23
+SELECT CONVERT(VARCHAR,GETDATE(),121); -- 2018-03-29 23:18:23.810
+SELECT CONVERT(VARCHAR,GETDATE(),111); -- 2018/03/29
+SELECT CONVERT(VARCHAR,GETDATE(),112); -- 20180329
+```
+
+<a id="markdown-字符串操作" name="字符串操作"></a>
+#### 字符串操作
 
 ```sql
 -- STR() 把数值型数据转换为字符型数据。
@@ -793,7 +797,8 @@ SELECT  CHARINDEX('ello', 'HelloWorld');
 SELECT  REPLACE('HelloWorld', 'l', '=');
 ```
 
-**日期时间**：
+<a id="markdown-日期时间" name="日期时间"></a>
+#### 日期时间
 
 ```sql
 -- 缺省模式返回当前日期和时间,DateTime类型,yyyy-MM-dd HH:mm:ss.fff ，3个f，精确到1毫秒(ms)
