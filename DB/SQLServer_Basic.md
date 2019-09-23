@@ -32,8 +32,9 @@
             - [WITH AS](#with-as)
             - [开窗函数](#开窗函数)
             - [PIVOT和UNPIVOT](#pivot和unpivot)
+        - [常用函数](#常用函数)
         - [其他语句](#其他语句)
-        - [提高效率Prompt](#提高效率prompt)
+        - [提高效率RedPrompt](#提高效率redprompt)
     - [索引](#索引)
         - [什么是索引？](#什么是索引)
         - [聚集索引(CLUSTERED)](#聚集索引clustered)
@@ -760,6 +761,53 @@ SELECT * FROM T_SCORE_EX T UNPIVOT ([分数] FOR [课程] IN ([语文],[数学],
 
 ps.对升级到 SQL Server 2005 或更高版本的数据库使用 PIVOT 和 UNPIVOT 时，必须将数据库的兼容级别设置为 90 或更高。
 
+<a id="markdown-常用函数" name="常用函数"></a>
+### 常用函数
+
+**字符串操作**：
+
+```sql
+-- STR() 把数值型数据转换为字符型数据。
+SELECT  STR(123);
+
+-- LOWER() UPPPER() 大小写转换
+SELECT  LOWER('Hello World');
+SELECT  UPPER('Hello World');
+
+-- LTRIM() 把字符串头部的空格去掉。
+-- RTRIM() 把字符串尾部的空格去掉。
+SELECT  'a' + LTRIM(' b ') + 'c';
+SELECT  'a' + RTRIM(' b ') + 'c';
+
+-- LEFT (<character_expression>， <integer_expression>)
+-- RIGHT (<character_expression>， <integer_expression>)
+-- SUBSTRING (<expression>， <starting_ position>， length)
+SELECT  LEFT('HelloWorld', 5);
+SELECT  RIGHT('HelloWorld', 5);
+SELECT  SUBSTRING('HelloWorld', 2, 2);
+
+-- CHARINDEX (<'substring_expression'>， <expression>) substring _expression 是所要查找的字符表达式。如果没有发现子串，则返回0 值。
+SELECT  CHARINDEX('ello', 'HelloWorld');
+
+-- REPLACE(<expression>,<old_string>,<new_string>)
+SELECT  REPLACE('HelloWorld', 'l', '=');
+```
+
+**日期时间**：
+
+```sql
+-- 缺省模式返回当前日期和时间,DateTime类型,yyyy-MM-dd HH:mm:ss.fff ，3个f，精确到1毫秒(ms)
+SELECT  GETDATE();
+-- 当前系统时间，DateTime2类型 yyyy-MM-dd HH:mm:ss.fffffff ，7个f，精确到0.1微秒(μs)
+SELECT  SYSDATETIME();
+-- 返回日期，多少号
+SELECT  DAY(GETDATE());
+-- 返回月份
+SELECT  MONTH(GETDATE());
+-- 返回年份
+SELECT  YEAR(GETDATE());
+```
+
 
 <a id="markdown-其他语句" name="其他语句"></a>
 ### 其他语句
@@ -775,8 +823,11 @@ ps.对升级到 SQL Server 2005 或更高版本的数据库使用 PIVOT 和 UNPI
 
 像DECLARE CURSOR，FETCH INTO和UPDATE WHERE CURRENT用于对一个或多个表单独行的操作。
 
-<a id="markdown-提高效率prompt" name="提高效率prompt"></a>
-### 提高效率Prompt
+<a id="markdown-提高效率redprompt" name="提高效率redprompt"></a>
+### 提高效率RedPrompt
+Sql Prompt下载及安装破解图文教程
+
+> https://www.jb51.net/article/53380.htm
 
 <a id="markdown-索引" name="索引"></a>
 ## 索引
