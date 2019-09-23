@@ -41,8 +41,8 @@
         - [什么是索引？](#什么是索引)
         - [聚集索引(CLUSTERED)](#聚集索引clustered)
         - [非聚集索引(NONCLUSTERED)](#非聚集索引nonclustered)
-        - [索引设计原则](#索引设计原则)
         - [创建索引](#创建索引)
+        - [索引设计原则](#索引设计原则)
 
 <!-- /TOC -->
 <a id="markdown-sqlserver基础" name="sqlserver基础"></a>
@@ -838,6 +838,8 @@ Sql Prompt下载及安装破解图文教程
 ## 索引
 <a id="markdown-什么是索引" name="什么是索引"></a>
 ### 什么是索引？
+索引是与表或视图关联的磁盘上结构，可以加快从表或视图中检索行的速度。
+
 SQL索引在数据库优化中占有一个非常大的比例， 一个好的索引的设计，可以让你的效率提高几十甚至几百倍。
 
 SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提高了SQL Server系统的性能，加快数据的查询速度与减少系统的响应时间。
@@ -880,15 +882,6 @@ SQL索引有两种，聚集索引和非聚集索引，索引主要目的是提�
 2. 包含大量唯一值的字段。
 3. 不返回大型结果集的查询。创建筛选索引以覆盖从大型表中返回定义完善的的行子集的查询。
 4. 经常包含在查询的搜索条件(如返回完全匹配的WHERE子句)中的列。
-
-<a id="markdown-索引设计原则" name="索引设计原则"></a>
-### 索引设计原则
-索引设计不合理或者缺少索引都会对数据库和应用程序的性能造成障碍，高效的索引对于获得良好的性能非常重要。需要参考以下原则：
-1. 索引并非越多越好，以空间换取时间，不仅占用空间增加，而且会影响DML语句的效率。表中内容的更改需要索引做出同步修改，例如新华字典的修改。
-2. 对于经常查询的字段需要添加索引，以提高效率。频繁变动的列或频繁更新的表不建议索引过多，索引需要尽可能的少。
-3. 在存在大量重复值的字段，增加索引没什么太大意义。比如类似性别的字段，只有两种值，使用索引可能造成效率更低。
-4. 字段里的数据量太大，最好也不要加索引。比如行数据的该字段都保存几百个字符，则添加索引没有意义。
-5. 外键字段建议添加索引，以增加关联效率
 
 <a id="markdown-创建索引" name="创建索引"></a>
 ### 创建索引
@@ -938,15 +931,24 @@ AS
           update_time DATETIME DEFAULT ( GETDATE() )
         )
 
-    --500w条记录
-    WHILE ( @NUM <= 5000000 )
+    --1w * 10 = 10w 条记录 
+    WHILE ( @NUM <= 10000 )
         BEGIN 
             SET @NUM = @NUM + 1
 
-    --插入测试数据，NEWID()产生随机值
+    --插入测试数据，NEWID()产生随机值，每次插入10行记录
             INSERT  INTO T_INDEX_TEST
                     ( guid )
-            VALUES  ( NEWID() )
+            VALUES  ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() ),
+                    ( NEWID() )
         END
 ```
 
@@ -977,18 +979,43 @@ SELECT * FROM dbo.T_INDEX_TEST_NEW WHERE guid ='003EE909-FE1F-432A-AAAA-33A31084
 
 ![](../assets/SqlServer/index-demo-2.jpg)
 
+<a id="markdown-索引设计原则" name="索引设计原则"></a>
+### 索引设计原则
+
+场景 | 使用聚集索引 | 使用非聚集索引
+---|--------|--------
+外键列 | 推荐 | 推荐
+主键列 | 推荐 | 推荐
+order by列 | 推荐 | 推荐
+范围数据列 | 推荐 | 不推荐
+小数目不同值 | 推荐 | 不推荐
+大数目不同值 | 不推荐 | 推荐
+频繁更新列 | 不推荐 | 推荐
+频繁修改索引 | 不推荐 | 推荐
+极少不同值 | 不推荐 | 不推荐
+
+索引设计不合理或者缺少索引都会对数据库和应用程序的性能造成障碍，高效的索引对于获得良好的性能非常重要。需要参考以下原则：
+1. 索引并非越多越好，以空间换取时间，不仅占用空间增加，而且会影响DML语句的效率。表中内容的更改需要索引做出同步修改，例如新华字典的修改。对一个存在大量更新操作的表，所建索引的数目一般不要超过3个，最多不要超过5个。
+2. 对于经常查询的字段需要添加索引，以提高效率。频繁变动的列或频繁更新的表不建议索引过多，索引需要尽可能的少。
+3. 在存在大量重复值的字段，增加索引没什么太大意义。比如类似性别的字段，只有两种值，使用索引可能造成效率更低。
+4. 字段里的数据量太大，最好也不要加索引。比如行数据的该字段都保存几百个字符，则添加索引没有意义。
+5. 外键字段建议添加索引，以增加关联效率
+
 
 ---
 
 参考引用：
+
 [解释一下关系数据库的第一第二第三范式？ - 刘慰的回答 - 知乎](https://www.zhihu.com/question/24696366/answer/29189700)
 
 [SQL中EXCEPT、INTERSECT用法](http://www.cnblogs.com/dyufei/archive/2009/11/11/2573976.html)
 
-[Sql语句中IN和exists的区别及应用])(https://www.cnblogs.com/liyasong/p/sql_in_exists.html)
+[Sql语句中IN和exists的区别及应用](https://www.cnblogs.com/liyasong/p/sql_in_exists.html)
 
 [sql with as 用法](https://www.cnblogs.com/fightLonely/archive/2011/02/24/1963907.html)
 
 [SQL开窗函数](https://www.cnblogs.com/lihaoyang/p/6756956.html)
 
+[SQL Server 索引设计指南](https://docs.microsoft.com/zh-cn/sql/2014-toc/sql-server-index-design-guide?view=sql-server-2014)
 
+[T-SQL查询进阶--理解SQL Server中索引的概念，原理以及其他](https://www.cnblogs.com/CareySon/archive/2011/12/22/2297568.html)
