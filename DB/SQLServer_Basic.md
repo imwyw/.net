@@ -16,6 +16,9 @@
             - [投影查询](#投影查询)
             - [选择查询](#选择查询)
             - [聚合查询](#聚合查询)
+                - [Count统计](#count统计)
+                - [GROUP BY](#group-by)
+                - [HAVING子句](#having子句)
         - [多表查询](#多表查询)
             - [连接JOIN](#连接join)
             - [合并UNION](#合并union)
@@ -326,7 +329,8 @@ SELECT MAX(FIELD1) FROM [TABLE_NAME];
 SELECT MIN(FIELD1) FROM [TABLE_NAME];
 ```
 
-**特别注意**：
+<a id="markdown-count统计" name="count统计"></a>
+##### Count统计
 
 `COUNT(*),COUNT(1),COUNT(0)` : 无论数据行中是否有NULL值，返回统计均一样。仅当COUNT(列名)时会判断属性值是否为NULL。
 
@@ -346,23 +350,41 @@ SELECT COUNT(NAME) FROM TABLE_1;--2
 SELECT COUNT(ID) FROM TABLE_1;--0
 ```
 
-**GROUP BY...HAVING...**
+<a id="markdown-group-by" name="group-by"></a>
+##### GROUP BY
+顾名思义group即为分组，即将原来的一整块数据分成几小块。
 
-HAVING用于分组后的筛选
+分组是聚合的前提，聚合是在每个分组内进行一些统计，如在分组内的最大值，最小值，平均值，个数等。
+
+未分组时查询返回的行直接与数据库表中的行对应，分组后分为多少组这个查询就会返回多少条记录，返回的记录中只能包含分组字段和在这个分组上的聚合操作的值。
+
 ```sql
-CREATE TABLE TABLE_1
-(
-	ID INT IDENTITY(1,1),
-	NAME VARCHAR(20)
-)
+CREATE TABLE T_USER
+    (
+      ID INT IDENTITY(1, 1) ,
+      NAME VARCHAR(20) ,
+      AGE INT ,
+      GENDER CHAR(2)
+    )
 
-INSERT INTO TABLE_1 (NAME) VALUES('王');
-INSERT INTO TABLE_1 (NAME) VALUES('张');
-INSERT INTO TABLE_1 (NAME) VALUES('张');
-INSERT INTO TABLE_1 (NAME) VALUES('张');
+INSERT  INTO T_USER ( NAME, GENDER, AGE ) VALUES  ( '王', '男', 12 );
+INSERT  INTO T_USER ( NAME, GENDER, AGE ) VALUES  ( '张', '女', 18 );
+INSERT  INTO T_USER ( NAME, GENDER, AGE ) VALUES  ( '张', '女', 20 );
+INSERT  INTO T_USER ( NAME, GENDER, AGE ) VALUES  ( '张', '女', 22 );
+INSERT  INTO T_USER ( NAME, GENDER, AGE ) VALUES  ( '王', '女', 9 );
+```
 
+在select指定的字段要么就要包含在Group By语句的后面，作为分组的依据；要么就要被包含在聚合函数中。
+
+<a id="markdown-having子句" name="having子句"></a>
+##### HAVING子句
+where 子句的作用是在**对查询结果进行分组前**，将不符合where条件的行去掉，即在分组之前过滤数据，where条件中不能包含聚组函数，使用where条件过滤出特定的行。
+
+having 子句的作用是筛选满足条件的组，即在**分组之后过滤数据，条件中经常包含聚组函数**，使用having 条件过滤出特定的组，也可以使用多个分组标准进行分组。
+
+```sql
 --按列找出重复的数据，并统计重复的数目
-SELECT NAME,COUNT(NAME) CNT FROM TABLE_1 GROUP BY NAME HAVING COUNT(NAME) > 1;
+SELECT NAME,COUNT(NAME) CNT FROM T_USER GROUP BY NAME HAVING COUNT(NAME) > 1;
 ```
 
 <a id="markdown-多表查询" name="多表查询"></a>
