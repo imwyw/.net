@@ -235,8 +235,8 @@ CREATE PROC PROC_ADD_TEST_DATA
 AS
     DECLARE @NN INT = 0;
     BEGIN
-        -- 插入100w条记录
-        WHILE ( @NN < 1000000 )
+        -- 插入1k条记录
+        WHILE ( @NN < 1000 )
             BEGIN
                 SET @NN = @NN + 1;
                 INSERT  INTO DBO.TEST
@@ -259,26 +259,26 @@ END
 SELECT COUNT(1) FROM dbo.TEST;
 ```
 
-下面我们以每页10条数据，在ID升序的情况下查询第3w页数据为例，即查询第300001~3000010条数据( `index > 30000*10 and index <= (30000+1)*10` )
+下面我们以每页10条数据，在ID升序的情况下查询第5页数据为例，即查询第41~50条数据( `index > (5-1)*10 and index <= 5*10` )
 
 ```sql
 -- 即实现以下SQL查询结果，此示例为极端情况(ID为有序递增)，实际应用情况下是无法使用 某字段直接进行大小比较得出结果的
-SELECT * FROM dbo.TEST WHERE id>300000 AND id <= 300010 ORDER BY ID ;
+SELECT * FROM dbo.TEST WHERE id>41 AND id <= 50 ORDER BY ID ;
 ```
 
 <a id="markdown-定位法利用id大于多少" name="定位法利用id大于多少"></a>
 #### 定位法(利用ID大于多少)
 
 ```sql
--- 1、找出排序后的前 30w条数据
-SELECT TOP ( 30000 * 10 ) ID FROM    TEST ORDER BY ID;
+-- 1、找出排序后的前 40 条数据
+SELECT TOP ( 4 * 10 ) ID FROM TEST ORDER BY ID;
 
--- 2、找出前30w条数据中最大的ID
-SELECT MAX(T.ID) FROM (SELECT TOP ( 30000 * 10 ) ID FROM    TEST ORDER BY ID) AS T;
+-- 2、找出前 40 条数据中最大的ID
+SELECT MAX(T.ID) FROM (SELECT TOP ( 4 * 10 ) ID FROM TEST ORDER BY ID) AS T;
 
 -- 3、使用ID大于xxx的方式实现分页查询，得出分页结果
 SELECT TOP 10 * FROM TEST WHERE ID > 
-(SELECT MAX(T.ID) FROM (SELECT TOP ( 30000 * 10 ) ID FROM    TEST ORDER BY ID) AS T)
+(SELECT MAX(T.ID) FROM (SELECT TOP ( 4 * 10 ) ID FROM TEST ORDER BY ID) AS T)
 ORDER BY ID
 ```
 
@@ -287,11 +287,11 @@ ORDER BY ID
 
 ```sql
 -- 1、找出当前页前面的数据
-SELECT TOP (30000*10) * FROM TEST ORDER BY ID;
+SELECT TOP (4*10) * FROM TEST ORDER BY ID;
 
 -- 2、使用NOT IN 的方式过滤
 SELECT TOP 10 * FROM TEST WHERE ID NOT IN 
-(SELECT TOP (30000*10) ID FROM TEST ORDER BY ID)
+(SELECT TOP (4*10) ID FROM TEST ORDER BY ID)
 ORDER BY ID;
 ```
 
@@ -305,7 +305,7 @@ SELECT *,ROW_NUMBER() OVER(ORDER BY ID) RN FROM TEST;
 
 -- 2、按照行号筛选得出当前页对应的数据
 SELECT * FROM (SELECT *,ROW_NUMBER() OVER(ORDER BY ID) RN FROM TEST) AS T
-WHERE T.RN > (30000*10) AND T.RN <= (30000+1)*10;
+WHERE T.RN > (5-1)*10 AND T.RN <= (5)*10;
 ```
 
 ---
