@@ -24,6 +24,12 @@
         - [区别体现](#区别体现)
         - [同步案例](#同步案例)
         - [异步案例](#异步案例)
+    - [线程池](#线程池)
+        - [QueueUserWorkItem异步线程](#queueuserworkitem异步线程)
+        - [委托异步线程](#委托异步线程)
+        - [IAsyncResult](#iasyncresult)
+        - [回调函数](#回调函数)
+    - [计时器](#计时器)
 
 <!-- /TOC -->
 
@@ -726,6 +732,242 @@ void ReadBook()
 
 以异步的方式进行执行耗时的操作时，UI主线程并不会因为执行耗时操作而卡死，可以带来更好的体验。
 
+<a id="markdown-线程池" name="线程池"></a>
+## 线程池
+使用ThreadStart与ParameterizedThreadStart建立新线程非常简单，但通过此方法建立的线程难于管理，若建立过多的线程反而会影响系统的性能。
+
+线程池维护一个请求队列，线程池的代码从队列提取任务，然后委派给线程池的一个线程执行，
+
+线程执行完不会被立即销毁，这样既可以在后台执行任务，又可以减少线程创建和销毁所带来的开销。
+
+线程池线程默认为后台线程（IsBackground）。
+
+使用CLR线程池的工作者线程一般有两种方式：
+1. 直接通过 ThreadPool.QueueUserWorkItem() 方法
+2. 通过委托方式
+
+<a id="markdown-queueuserworkitem异步线程" name="queueuserworkitem异步线程"></a>
+### QueueUserWorkItem异步线程
+
+QueueUserWorkItem添加线程任务，分为无参和有参：
+1. ThreadPool.QueueUserWorkItem(WaitCallback)
+2. ThreadPool.QueueUserWorkItem(WaitCallback,Object)
+
+下面以有参调用举例：
+```cs
+static void Main(string[] args)
+{
+    // 添加任务至线程池
+    ThreadPool.QueueUserWorkItem(new WaitCallback(LoopMessage), "wait call back");
+    // 由于默认为后台线程，必须保持等待，否则退出程序后线程也退出了
+    Console.ReadKey();
+}
+
+static void LoopMessage(object obj)
+{
+    for (int i = 0; i < 100; i++)
+    {
+        Thread.Sleep(20);
+        Console.WriteLine(obj + DateTime.Now.ToString("mm:ss.fff"));
+    }
+}
+```
+
+WaitCallback委托指向的必须是一个带有Object参数的无返回值方法，这无疑是一种限制。
+
+若方法需要有返回值，或者带有多个参数，这将多费周折。
+
+<a id="markdown-委托异步线程" name="委托异步线程"></a>
+### 委托异步线程
+
+利用委托类BeginInvoke与EndInvoke完成异步委托方法，解决了线程任务无法返回值的问题。
+
+```cs
+delegate string MyDelegate(string name);
+
+static void Main(string[] args)
+{
+    MyDelegate myDele = new MyDelegate(Hello);
+    // 异步调用委托，获取计算结果
+    IAsyncResult result = myDele.BeginInvoke("jack", null, null);
+    
+    // 完成主线程其他工作....
+    for (int i = 0; i < 10; i++)
+    {
+        Thread.Sleep(500);
+        Console.WriteLine("主线程任务进行中。。。");
+    }
+    
+    // 调用EndInvoke(IAsyncResult)获取运行结果，取决于异步线程的耗时，若仍未完成则阻塞等待返回值
+    string content = myDele.EndInvoke(result);
+    Console.WriteLine(content);
+
+    // 由于默认为后台线程，必须保持等待，否则退出程序后线程也退出了
+    Console.ReadKey();
+}
+
+static string Hello(string name)
+{
+    string res = string.Empty;
+    for (int i = 0; i < 10; i++)
+    {
+        Thread.Sleep(100);
+        res += $"{name}-{DateTime.Now.ToString("mm:ss.fff")}{Environment.NewLine}";
+    }
+    return res;
+}
+```
+
+上例中，如果在使用myDele.BeginInvoke后立即调用myDele.EndInvoke，那在异步线程未完成工作以前主线程将处于阻塞状态，
+
+等到异步线程结束获取计算结果后，主线程才能继续工作，这明显无法展示出多线程的优势。
+
+<a id="markdown-iasyncresult" name="iasyncresult"></a>
+### IAsyncResult
+
+通过IAsyncResult提高性能，IAsyncResult有以下成员：
+```cs
+public interface IAsyncResult
+{
+    object AsyncState {get;}            //获取用户定义的对象，它限定或包含关于异步操作的信息。
+    WailHandle AsyncWaitHandle {get;}   //获取用于等待异步操作完成的 WaitHandle。
+    bool CompletedSynchronously {get;}  //获取异步操作是否同步完成的指示。
+    bool IsCompleted {get;}             //获取异步操作是否已完成的指示。
+}
+```
+
+WaitHandle里面包含有一个方法WaitOne（int timeout），它可以判断委托是否完成工作，在工作未完成前主线程可以继续其他工作。
+
+上例中主线程调用可以优化如下：
+```cs
+static void Main(string[] args)
+{
+    MyDelegate myDele = new MyDelegate(Hello);
+    // 异步调用委托，获取计算结果
+    IAsyncResult result = myDele.BeginInvoke("jack", null, null);
+    
+    // 异步线程未完成，主线程可以保持继续工作，当异步线程完成时，WaitOne返回true
+    while (!result.AsyncWaitHandle.WaitOne(200))
+    {
+        Console.WriteLine("主线程任务进行中。。。");
+    }
+    
+    // 调用EndInvoke(IAsyncResult)获取运行结果，取决于异步线程的耗时，若仍未完成则阻塞等待返回值
+    string content = myDele.EndInvoke(result);
+    Console.WriteLine(content);
+
+    // 由于默认为后台线程，必须保持等待，否则退出程序后线程也退出了
+    Console.ReadKey();
+}
+```
+
+当要监视多个运行对象的时候，使用IAsyncResult.WaitHandle.WaitOne可就派不上用场了。
+
+.NET为WaitHandle准备了另外两个静态方法：WaitAny（waitHandle[], int）与WaitAll (waitHandle[] , int)。
+
+其中WaitAll在等待所有waitHandle完成后再返回一个bool值。
+
+而WaitAny是等待其中一个waitHandle完成后就返回一个int，这个int是代表已完成waitHandle在waitHandle[]中的数组索引。
+
+```cs
+static void Main(string[] args)
+{
+    MyDelegate myDele = new MyDelegate(Hello);
+    // 异步调用委托，获取计算结果
+    IAsyncResult result = myDele.BeginInvoke("jack", null, null);
+    IAsyncResult result1 = myDele.BeginInvoke("lucy", null, null);
+    IAsyncResult result2 = myDele.BeginInvoke("smith", null, null);
+
+    // 异步线程未完成，主线程可以保持继续工作，当所有异步线程任务完成时，WaitAll返回true
+    WaitHandle[] waitHandleList = new WaitHandle[]
+        { result.AsyncWaitHandle, result1.AsyncWaitHandle, result2.AsyncWaitHandle };
+    while (!WaitHandle.WaitAll(waitHandleList, 200))
+    {
+        Console.WriteLine("主线程任务进行中。。。");
+    }
+
+    // 调用EndInvoke(IAsyncResult)获取运行结果，取决于异步线程的耗时，若仍未完成则阻塞等待返回值
+    string content = myDele.EndInvoke(result);
+    Console.WriteLine(content);
+
+    // 由于默认为后台线程，必须保持等待，否则退出程序后线程也退出了
+    Console.ReadKey();
+}
+```
+
+<a id="markdown-回调函数" name="回调函数"></a>
+### 回调函数
+不管是QueueUserWorkItem添加异步线程，或是委托异步线程，都是属于轮训方式来检测异步线程任务是否执行完成。
+
+ IAsyncResult BeginInvoke（AsyncCallback , object）准备了一个回调函数。
+
+ ```cs
+delegate string MyDelegate(string name);
+static void Main(string[] args)
+{
+    MyDelegate myDele = new MyDelegate(Hello);
+
+    // 异步调用委托，异步线程任务完成后自动调用Completed方法（回调）
+    IAsyncResult result = myDele.BeginInvoke("jack", new AsyncCallback(Completed), null);
+
+    // 主线程任务不受干扰
+    for (int i = 0; i < 10; i++)
+    {
+        Thread.Sleep(500);
+        Console.WriteLine("主线程任务进行中。。。");
+    }
+
+    // 由于默认为后台线程，必须保持等待，否则退出程序后线程也退出了
+    Console.ReadKey();
+}
+
+/// <summary>
+/// 异步线程任务完成后的回调
+/// </summary>
+/// <param name="ar"></param>
+static void Completed(IAsyncResult ar)
+{
+    AsyncResult result = ar as AsyncResult;
+    MyDelegate myDele = (result.AsyncDelegate as MyDelegate);
+    string content = myDele.EndInvoke(result);
+    Console.WriteLine(content);
+}
+
+static string Hello(string name)
+{
+    string res = string.Empty;
+    for (int i = 0; i < 10; i++)
+    {
+        Thread.Sleep(100);
+        res += $"{name}-{DateTime.Now.ToString("mm:ss.fff")}{Environment.NewLine}";
+    }
+    return res;
+}
+ ```
+
+<a id="markdown-计时器" name="计时器"></a>
+## 计时器
+在某些情况下，可能不需要使用单独的线程。如果应用程序需要定期执行简单的与 UI 有关的操作，则应该考虑使用进程计时器。
+
+有时，在智能客户端应用程序中使用进程计时器，以达到下列目的：
+
+* 按计划定期执行操作。
+* 在使用图形时保持一致的动画速度（而不管处理器的速度）。
+* 监视服务器和其他的应用程序以确认它们在线并且正在运行。
+
+.NET Framework 提供三种进程计时器：
+* System.Window.Forms.Timer（适用于窗体）
+* System.Timers.Timer（CLR线程池，不适合UI交互）
+* System.Threading.Timer（不适合UI交互）
+
+属性 | System.Windows.Forms | System.Timers | System.Threading
+---|----------------------|---------------|-----------------
+计时器事件运行在什么线程中？ | UI 线程 | UI 线程或辅助线程 | 辅助线程
+实例是线程安全的吗？ | 否 | 是 | 否
+需要 Windows 窗体吗？ | 是 | 否 | 否
+最初的计时器事件可以调度吗？ | 否 | 否 | 是
+
+
 
 ---
 
@@ -749,3 +991,6 @@ void ReadBook()
 
 [C# 多线程（4）Task的使用](https://blog.csdn.net/num197/article/details/80320819)
 
+[C#多线程和异步](https://blog.csdn.net/nishijibama/article/details/80086737)
+
+[开始接触 async/await](https://www.cnblogs.com/liqingwen/p/5831951.html)
