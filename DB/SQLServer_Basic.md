@@ -434,14 +434,40 @@ VALUES  ( 1, 'BigData'),(2,'AI'),(5,'SINGING')
 
 <a id="markdown-except-和-intersect" name="except-和-intersect"></a>
 #### EXCEPT 和 INTERSECT
-EXCEPT 从左查询中返回右查询没有找到的所有非重复值。
+EXCEPT是指在第一个集合中存在，但是不存在于第二个集合中的数据。
 
-INTERSECT 返回 INTERSECT 操作数左右两边的两个查询都返回的所有非重复值，交集去重。
+INTERSECT是指在两个集合中都存在的数据。
 
 以下是将使用 EXCEPT 或 INTERSECT 的两个查询的结果集组合起来的基本规则：
 
 * 所有查询中的列数和列的顺序必须相同。 
 * 数据类型必须兼容。 
+
+```sql
+-- 左侧中排除右侧数据
+( SELECT    12 AS ID ,
+            'jack' AS NAME
+  UNION ALL
+  SELECT    11 ,
+            'lucy'
+)
+EXCEPT
+( SELECT    11 ,
+            'lucy'
+)
+
+-- 两个集合交集
+( SELECT    12 AS ID ,
+            'jack' AS NAME
+  UNION ALL
+  SELECT    11 ,
+            'lucy'
+)
+INTERSECT
+( SELECT    11 ,
+            'lucy'
+)
+```
 
 <a id="markdown-用法拓展" name="用法拓展"></a>
 ### 用法拓展
