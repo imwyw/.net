@@ -29,7 +29,12 @@
         - [委托异步线程](#委托异步线程)
         - [IAsyncResult](#iasyncresult)
         - [回调函数](#回调函数)
-    - [计时器](#计时器)
+    - [System.Threading.Tasks](#systemthreadingtasks)
+        - [Parallel.For和Parallel.Foreach](#parallelfor和parallelforeach)
+        - [Parallel.Invoke](#parallelinvoke)
+        - [Task-创建](#task-创建)
+        - [Task-取消](#task-取消)
+        - [Task-返回值](#task-返回值)
 
 <!-- /TOC -->
 
@@ -945,27 +950,327 @@ static string Hello(string name)
 }
  ```
 
-<a id="markdown-计时器" name="计时器"></a>
-## 计时器
-在某些情况下，可能不需要使用单独的线程。如果应用程序需要定期执行简单的与 UI 有关的操作，则应该考虑使用进程计时器。
+<a id="markdown-systemthreadingtasks" name="systemthreadingtasks"></a>
+## System.Threading.Tasks
+要使用多线程开发，必须非常熟悉Thread的使用，而且在开发过程中可能会面对很多未知的问题。
 
-有时，在智能客户端应用程序中使用进程计时器，以达到下列目的：
+为了简化开发，.NET 4.0 特别提供一个并行编程库System.Threading.Tasks
 
-* 按计划定期执行操作。
-* 在使用图形时保持一致的动画速度（而不管处理器的速度）。
-* 监视服务器和其他的应用程序以确认它们在线并且正在运行。
+此外，.NET还提供了新的一组扩展方法PLINQ，它具有自动分析查询功能，如果并行查询能提高系统效率，则同时运行，如果查询未能从并行查询中受益，则按原顺序查询。
 
-.NET Framework 提供三种进程计时器：
-* System.Window.Forms.Timer（适用于窗体）
-* System.Timers.Timer（CLR线程池，不适合UI交互）
-* System.Threading.Timer（不适合UI交互）
+System.Threading.Tasks中的类被统称为任务并行库（Task Parallel Library，TPL）
 
-属性 | System.Windows.Forms | System.Timers | System.Threading
----|----------------------|---------------|-----------------
-计时器事件运行在什么线程中？ | UI 线程 | UI 线程或辅助线程 | 辅助线程
-实例是线程安全的吗？ | 否 | 是 | 否
-需要 Windows 窗体吗？ | 是 | 否 | 否
-最初的计时器事件可以调度吗？ | 否 | 否 | 是
+TPL使用CLR线程池把工作分配到CPU，并能自动处理工作分区、线程调度、取消支持、状态管理以及其他低级别的细节操作，极大地简化了多线程的开发。
+
+**注意：TPL比Thread更具智能性，当它判断任务集并没有从并行运行中受益，就会选择按顺序运行。**
+
+**但并非所有的项目都适合使用并行开发，创建过多并行任务可能会损害程序的性能，降低运行效率。**
+
+<a id="markdown-parallelfor和parallelforeach" name="parallelfor和parallelforeach"></a>
+### Parallel.For和Parallel.Foreach
+通过这两个方法可以并行处理System.Func<>、System.Action<>委托。
+
+假设使用单线程同步方式查询6个Person对象，需要用时大约12秒，在使用并行方式，只需使用2秒就能完成查询，而且能够避开Thread的繁琐处理。
+
+```cs
+class Person
+{
+    public Person(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public override string ToString()
+    {
+        return $"name:{Name},age:{Age}";
+    }
+}
+class Program
+{
+    /// <summary>
+    /// 测试数据
+    /// </summary>
+    readonly static List<Person> PersonList = new List<Person>() {
+        new Person("jack",1), new Person("lucy",9),
+        new Person("john",2),new Person("jim",8),
+        new Person("Rose",5),new Person("trump",8)
+    };
+    static void Main(string[] args)
+    {
+        /*
+        fromInclusive：起始索引（包含）
+        toExclusive:结束索引（不包含）
+        body：迭代委托
+        */
+        Parallel.For(0, PersonList.Count, n =>
+            {
+                FindPerson(n);
+            });
+
+        /*
+        source：迭代集合数据源
+        body：迭代集合
+        */
+        Parallel.ForEach(PersonList, p => { FindPerson(p); });
+    }
+
+    /// <summary>
+    /// 模拟查询耗时操作
+    /// </summary>
+    /// <param name="index"></param>
+    static void FindPerson(int index)
+    {
+        Thread.Sleep(2000);
+        Console.WriteLine(PersonList[index]);
+    }
+
+    static void FindPerson(Person p)
+    {
+        Thread.Sleep(2000);
+        Console.WriteLine(p);
+    }
+}
+```
+
+委托的ParallelLoopState参数当中包含有Stop()方法都可以使迭代停止。
+
+当找到某个值时，终止其他异步线程，修改上例Main方法如下：
+```cs
+static void Main(string[] args)
+{
+    /*
+    source：迭代集合数据源
+    body：迭代集合
+    */
+    Parallel.ForEach(PersonList,
+        (p, state) =>
+        {
+            // 当找到lucy后终止所有异步线程
+            if (p.Name == "lucy")
+            {
+                state.Stop();
+            }
+            FindPerson(p);
+        });
+}
+```
+
+当要在多个线程中调用本地变量，可以使用该方法重载：
+```cs
+public static ParallelLoopResult ForEach<TSource, TLocal>(
+    IEnumerable<TSource> source, 
+    Func<TLocal> localInit, 
+    Func<TSource, ParallelLoopState, TLocal, TLocal> body, 
+    Action<TLocal> localFinally);
+```
+
+改方法需要确定两个泛型类型，TSource和TLocal：
+
+其中第一个参数为数据集;
+
+第二个参数是一个Func委托，用于在每个线程执行前进行初始化;
+
+第三个参数是委托Func,它能对数据集的每个成员进行迭代，当中T1是数据集的成员，T2是一个ParallelLoopState对象，它可以控制迭代的状态，T3是线程中的本地变量;
+
+第四个参数是一个Action委托，用于对每个线程的最终状态进行最终操作。
+
+<a id="markdown-parallelinvoke" name="parallelinvoke"></a>
+### Parallel.Invoke
+在TPL当中还可以使用Parallel.Invoke方法触发多个异步任务,其中 actions 中可以包含多个方法或者委托，parallelOptions用于配置Parallel类的操作。
+
+```cs
+public static void Invoke(Action[] actions )
+public static void Invoke(ParallelOptions parallelOptions, Action[] actions )
+```
+
+尽可能并行执行所提供的每个委托操作，除非用户取消了操作，修改Main方法如下：
+
+```cs
+static void Main(string[] args)
+{
+    ParallelOptions option = new ParallelOptions();
+    option.MaxDegreeOfParallelism = 2;// 最大并行任务
+
+    Parallel.Invoke(option, () => { FindPerson(1); },
+        () => { FindPerson(2); },
+        () => { FindPerson(0); });
+}
+```
+
+<a id="markdown-task-创建" name="task-创建"></a>
+### Task-创建
+
+在我们了解Task之前，如果我们要使用多核的功能可能就会自己来开线程，
+
+然而这种线程模型在.net 4.0之后被一种称为基于“任务的编程模型”所冲击，
+
+因为task会比thread具有更小的性能开销，不过大家肯定会有疑惑，任务和线程到底有什么区别？
+
+1. 任务是架构在线程之上的，也就是说任务最终还是要抛给线程去执行。
+2. 任务跟线程不是一对一的关系，比如开10个任务并不是说会开10个线程，这一点任务有点类似线程池，但是任务相比线程池有很小的开销和精确的控制。
+
+实例化和工厂方法创建task任务：
+```cs
+static void Main(string[] args)
+{
+    // 实例化方式创建task
+    var task1 = new Task(() =>
+    {
+        Run1();// 耗时操作
+    });
+    task1.Start();
+
+    // 工厂方式创建task，实例化后自动开始，不需要再次调用Start
+    var task2 = Task.Factory.StartNew(() =>
+    {
+        Run2();
+    });
+
+    // 由于Task创建的任务是基于后台线程的，所以增加主线阻塞等待
+    Console.ReadKey();
+}
+
+static void Run1()
+{
+    Thread.Sleep(1000);
+    Console.WriteLine("我是任务一");
+}
+
+static void Run2()
+{
+    Thread.Sleep(2000);
+    Console.WriteLine("我是任务二");
+}
+```
+
+task实例的简略生命周期：
+
+* Created：表示默认初始化任务，但是我们发现"工厂创建的"实例直接跳过。
+* WaitingToRun: 这种状态表示等待任务调度器分配线程给任务执行。
+* RanToCompletion：任务执行完毕。
+
+<a id="markdown-task-取消" name="task-取消"></a>
+### Task-取消
+
+Token是一个令牌。当我们对Token执行Cancel()操作时，所有Token的宿主线程（或任务）都将收到取消通知，然后做出线程（或任务）中止执行的操作。
+
+```cs
+static void Main(string[] args)
+{
+    // CancelToken的生产者
+    CancellationTokenSource cts = new CancellationTokenSource();
+    CancellationToken ct = cts.Token;
+
+    Task task1 = new Task(() => { Run1(ct); }, ct);
+
+    Task task2 = new Task(Run2);
+
+    try
+    {
+        task1.Start();
+        task2.Start();
+
+        Thread.Sleep(1000);
+
+        // 调用TokenSource的取消，通知所有Token取消任务
+        cts.Cancel();
+
+        // 主线程等待两个任务完成
+        Task.WaitAll(task1, task2);
+    }
+    catch (AggregateException ex)
+    {
+        Console.WriteLine($"发生异常：{ex.InnerException.Message}");
+
+        //task1是否取消
+        Console.WriteLine("task1是不是被取消了？ {0}", task1.IsCanceled);
+        Console.WriteLine("task2是不是被取消了？ {0}", task2.IsCanceled);
+    }
+
+    Console.Read();
+}
+
+static void Run1(CancellationToken ct)
+{
+    // 检查 取消信号，一旦取消则抛出 OperationCanceledException
+    ct.ThrowIfCancellationRequested();
+
+    Console.WriteLine("我是任务1");
+
+    Thread.Sleep(2000);
+
+    // 检查 取消信号，一旦取消则抛出 OperationCanceledException
+    ct.ThrowIfCancellationRequested();
+
+    Console.WriteLine("我是任务1的第二部分信息");
+}
+
+static void Run2()
+{
+    Console.WriteLine("我是任务2");
+}
+```
+
+<a id="markdown-task-返回值" name="task-返回值"></a>
+### Task-返回值
+
+采用Task<TResult>方法，通过泛型定义返回类型：
+
+```cs
+static void Main(string[] args)
+{
+    List<string> strList = new List<string>() { "12", "66", "56" };
+
+    // 定义返回值为 int
+    var task1 = new Task<int>(() =>
+    {
+        int res = 0;
+        foreach (var item in strList)
+        {
+            res += int.Parse(item);
+        }
+        return res;
+    });
+    task1.Start();
+
+    // 等待任务执行完成
+    Task.WaitAll();
+    Console.WriteLine(task1.Result);
+
+    Console.Read();
+}
+```
+
+采用ContinueWith方法，在运行完task后，会执行task.ContinueWith(XX)中的XX语句，但是是否执行、如何执行等需要看task的运行情况
+
+```cs
+static void Main(string[] args)
+{
+    List<string> strList = new List<string>() { "12", "66", "56" };
+
+    // 定义返回值为 int
+    var task1 = new Task<int>(() =>
+    {
+        int res = 0;
+        foreach (var item in strList)
+        {
+            res += int.Parse(item);
+        }
+        return res;
+    });
+    task1.Start();
+
+    // task1 任务完成后执行委托方法，t即为任务本身
+    task1.ContinueWith((t) =>
+    {
+        Console.WriteLine(t.Result);
+    });
+
+    Console.Read();
+}
+```
 
 
 
@@ -994,3 +1299,7 @@ static string Hello(string name)
 [C#多线程和异步](https://blog.csdn.net/nishijibama/article/details/80086737)
 
 [开始接触 async/await](https://www.cnblogs.com/liqingwen/p/5831951.html)
+
+[8天玩转并行开发](https://www.cnblogs.com/huangxincheng/archive/2012/04/02/2429543.html)
+
+[5天玩转C#并行和多线程编程](https://www.cnblogs.com/yunfeifei/p/3993401.html)
