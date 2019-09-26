@@ -22,6 +22,7 @@
         - [OEM管理地址](#oem管理地址)
         - [实例化OC4J配置文件时出错](#实例化oc4j配置文件时出错)
         - [中文乱码](#中文乱码)
+        - [时间格式](#时间格式)
 
 <!-- /TOC -->
 
@@ -131,6 +132,8 @@ OEM的默认管理地址为：https://localhost:1158/em，点击【高级】并�
 需要注意的是【全局数据库名】和【SID】名称不要写错了，Oracle主目录为：【D:\app\Administrator\product\11.2.0\dbhome_1】（不同安装环境，目录有所差异）
 
 再进行修改服务器上的【tnsnames.ora】和【listener.ora】配置文件：
+
+或者通过【Oracle Net Configuration Assistant】和【Net Manager】进行配置，会同步更新至ora配置文件中。
 
 【tnsnames.ora】配置，将默认主机名localhost或者127.0.0.1全部修改为主机IP地址：
 ```sql
@@ -568,3 +571,26 @@ SELECT USERENV('language') FROM DUAL;
 第二步：修改环境变量。
 
 设置完注册表后，接下来设置我们的环境变量，计算机（右键） --->属性--->高级系统设置--->高级--->环境变量--->新建，个人建议新建用户变量，变量名输入：“NLS_LANG”，变量值输入：“SIMPLIFIED CHINESE_CHINA.ZHS16GBK”。点击确定即可，到此我们就设置完了。
+
+<a id="markdown-时间格式" name="时间格式"></a>
+### 时间格式
+Oracle缺省的时间格式即时间数据的显示形式，与所使用的字符集有关。一般显示年月日，而不显示时分秒。
+
+向表中插入数据时，如果不使用转换函数，则时间字段的格式必须遵从会话环境的时间格式，否则不能插入。
+
+针对windows系列，在服务端添加环境变量，重启服务即可：
+
+我的电脑 属性 高级 环境变量 新建 变量名 NLS_DATE_FORMAT 变量值 YYYY-MM-DD HH24:MI:SS 应用 确定
+
+![](../assets/Oracle/oracle_nls_date_format.png)
+
+Linux系列需要修改bash_profile文件（略）。
+
+---
+
+参考引用：
+
+[listener.ora/sqlnet.ora/tnsnames.ora配置文件详解](https://www.cnblogs.com/qianyuliang/p/6520515.html)
+
+[如何永久更改 NLS_DATE_FORMAT](http://www.voidcn.com/article/p-cfsxhmrf-ka.html)
+
