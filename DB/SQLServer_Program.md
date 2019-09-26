@@ -263,7 +263,7 @@ SELECT COUNT(1) FROM dbo.TEST;
 
 ```sql
 -- 即实现以下SQL查询结果，此示例为极端情况(ID为有序递增)，实际应用情况下是无法使用 某字段直接进行大小比较得出结果的
-SELECT * FROM dbo.TEST WHERE id>41 AND id <= 50 ORDER BY ID ;
+SELECT * FROM dbo.TEST WHERE id > 40 AND id <= 50 ORDER BY ID ;
 ```
 
 <a id="markdown-定位法利用id大于多少" name="定位法利用id大于多少"></a>
