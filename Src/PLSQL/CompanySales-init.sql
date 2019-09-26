@@ -3,7 +3,7 @@ create table T_CUSTOMER
 (
   customer_id   INTEGER not null,
   company_name  VARCHAR2(50),
-  contact_name  CHAR(8),
+  contact_name  VARCHAR2(20),
   phone         VARCHAR2(20),
   address       VARCHAR2(100),
   email_address VARCHAR2(50)
@@ -43,8 +43,8 @@ alter table T_CUSTOMER
 create table T_EMPLOYEE
 (
   employee_id   INTEGER not null,
-  employee_name VARCHAR2(50),
-  sex           CHAR(2),
+  employee_name VARCHAR2(20),
+  sex           CHAR(4),
   birth_date    DATE,
   hire_date     DATE,
   salary        NUMBER(19,4),
@@ -89,7 +89,7 @@ create table T_DEPARTMENT
 (
   department_id      INTEGER not null,
   department_name    VARCHAR2(30),
-  manager            CHAR(8),
+  manager            VARCHAR2(20),
   depart_description VARCHAR2(50)
 )
 tablespace FLY
@@ -168,7 +168,7 @@ create table T_PROVIDER
 (
   provider_id      INTEGER not null,
   provider_name    VARCHAR2(50),
-  contact_name     CHAR(8),
+  contact_name     VARCHAR2(20),
   provider_address VARCHAR2(100),
   provider_phone   VARCHAR2(15),
   provider_email   VARCHAR2(20)
@@ -290,115 +290,115 @@ prompt Importing table T_CUSTOMER...
 set feedback off
 set define off
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('1', '三川实业有限公司', '刘明    ', '030-88355547', '上海市大崇明路 50 号', 'guy1@163.com');
+values ('1', '三川实业有限公司', '刘明', '030-88355547', '上海市大崇明路 50 号', 'guy1@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('2', '远东科技有限公司', '王丽丽  ', '030-88355547', '大连市沙河区承德西路 80 号', 'kevin0@163.com');
+values ('2', '远东科技有限公司', '王丽丽', '030-88355547', '大连市沙河区承德西路 80 号', 'kevin0@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('3', '坦森行贸易有限公司', '王炫皓  ', '0321-88755539', '上海市黄台北路 780 号', 'roberto0@163.com');
+values ('3', '坦森行贸易有限公司', '王炫皓', '0321-88755539', '上海市黄台北路 780 号', 'roberto0@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('4', '国顶有限公司', '方小峰  ', '0571-87465557', '杭州市海淀区天府东街 30 号', 'rob0@163.com');
+values ('4', '国顶有限公司', '方小峰', '0571-87465557', '杭州市海淀区天府东街 30 号', 'rob0@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('5', '通恒机械有限公司', '黄国栋  ', '0921-85791234', '天津市南开区东园西甲 30 号', 'robme@163.com');
+values ('5', '通恒机械有限公司', '黄国栋', '0921-85791234', '天津市南开区东园西甲 30 号', 'robme@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('6', '森通科技有限公司', '张孔苗  ', '030-88300584', '大连市沙河区常保阁东 80 号', 'yund@163.com');
+values ('6', '森通科技有限公司', '张孔苗', '030-88300584', '大连市沙河区常保阁东 80 号', 'yund@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('7', '国皓科技有限公司', '黄雅玲  ', '0671-68788601', '杭州市海淀区广发北路 10 号', 'yalin@163.com');
+values ('7', '国皓科技有限公司', '黄雅玲', '0671-68788601', '杭州市海淀区广发北路 10 号', 'yalin@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('8', '迈多贸易科技有限公司', '李丽珊  ', '0533-87855522', '天津市南开区临翠大街 80 号', 'lishan@163.com');
+values ('8', '迈多贸易科技有限公司', '李丽珊', '0533-87855522', '天津市南开区临翠大街 80 号', 'lishan@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('9', '祥通科技有限公司', '姚苗波  ', '0678-85912445', '大连市沙河区花园东街 90 号', 'miaopo@163.com');
+values ('9', '祥通科技有限公司', '姚苗波', '0678-85912445', '大连市沙河区花园东街 90 号', 'miaopo@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('10', '广通网络信息有限公司', '谢久久  ', '0478-85955547', '大连市沙河区平谷嘉石大街 38 号', 'jiujiu@163.com');
+values ('10', '广通网络信息有限公司', '谢久久', '0478-85955547', '大连市沙河区平谷嘉石大街 38 号', 'jiujiu@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('11', '光明杂志社', '谢丽秋  ', '0571-87545551', '上海市黄石路 50 号', 'liqiu@163.com');
+values ('11', '光明杂志社', '谢丽秋', '0571-87545551', '上海市黄石路 50 号', 'liqiu@163.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('12', '威航货运有限公司', '黄小欧  ', '0610-80113555', '天津市经七纬二路 13 号', 'xiaoou@mail.zjitc.com');
+values ('12', '威航货运有限公司', '黄小欧', '0610-80113555', '天津市经七纬二路 13 号', 'xiaoou@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('13', '三捷实业有限公司', '徐慧    ', '0616-86155533', '重庆市英雄山路 84 号', 'xuhui@mail.zjitc.com');
+values ('13', '三捷实业有限公司', '徐慧', '0616-86155533', '重庆市英雄山路 84 号', 'xuhui@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('14', '浩天旅行社', '洪瑞强  ', '0306-67300765', '杭州市海淀区白广路 314 号', 'huidf@mail.zjitc.com');
+values ('14', '浩天旅行社', '洪瑞强', '0306-67300765', '杭州市海淀区白广路 314 号', 'huidf@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('15', '同恒软件有限公司', '陈云海  ', '0306-78355576', '天津市七一路 37 号', 'yunhai@mail.zjitc.com');
+values ('15', '同恒软件有限公司', '陈云海', '0306-78355576', '天津市七一路 37 号', 'yunhai@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('16', '万海房产有限公司', '台融岛  ', '0717- 87455522', '天津市劳动路 23 号', 'rongdo@mail.zjitc.com');
+values ('16', '万海房产有限公司', '台融岛', '0717- 87455522', '天津市劳动路 23 号', 'rongdo@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('17', '世邦房产有限公司', '高强    ', '0241- 83410391', '天津市南开区光明东路 395 号', 'gaoq@mail.zjitc.com');
+values ('17', '世邦房产有限公司', '高强', '0241- 83410391', '天津市南开区光明东路 395 号', 'gaoq@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('18', '迈策船舶有限公司', '郑莉晓  ', '0567-56306788', '天津市南开区沉香街 329 号', 'lixiao@mail.zjitc.com');
+values ('18', '迈策船舶有限公司', '郑莉晓', '0567-56306788', '天津市南开区沉香街 329 号', 'lixiao@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('19', '中通软件有限公司', '张小平  ', '0307- 45555502', '厦门市光复北路 895 号', 'xiaopin@mail.zjitc.com');
+values ('19', '中通软件有限公司', '张小平', '0307- 45555502', '厦门市光复北路 895 号', 'xiaopin@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('20', '正人资源有限公司', '张耀    ', '0571-45576753', '杭州市临江东街 62 号', 'zhanoq@mail.zjitc.com');
+values ('20', '正人资源有限公司', '张耀', '0571-45576753', '杭州市临江东街 62 号', 'zhanoq@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('21', '红阳事业有限公司', '杨晓鹏  ', '0571-45275559', '杭州市海淀区外滩西路 238 号', 'zgab1@mail.zjitc.com');
+values ('21', '红阳事业有限公司', '杨晓鹏', '0571-45275559', '杭州市海淀区外滩西路 238 号', 'zgab1@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('22', '嘉元实业有限公司', '李霞    ', '0919-87255594', '武汉市东湖大街 28 号', 'xiao34@mail.zjitc.com');
+values ('22', '嘉元实业有限公司', '李霞', '0919-87255594', '武汉市东湖大街 28 号', 'xiao34@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('23', '嘉业房产有限公司', '黄丹和  ', '0321-78820161', '瑞安市经三纬二路 8 号', 'danhe@mail.zjitc.com');
+values ('23', '嘉业房产有限公司', '黄丹和', '0321-78820161', '瑞安市经三纬二路 8 号', 'danhe@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('24', '五洲信托投资有限公司', '张玉    ', '0876-67695346', '天津市沿江北路 942 号', 'zhany34@mail.zjitc.com');
+values ('24', '五洲信托投资有限公司', '张玉', '0876-67695346', '天津市沿江北路 942 号', 'zhany34@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('25', '友恒信托投资有限公司', '戴瑶    ', '0896-67387731', '天津市经二路 9 号', 'dail4@mail.zjitc.com');
+values ('25', '友恒信托投资有限公司', '戴瑶', '0896-67387731', '天津市经二路 9 号', 'dail4@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('26', '国银贸易有限公司', '吴晓贵  ', '0876-76703221', '福州市嘉禾区辅城街 42 号', 'xiaogui@mail.zjitc.com');
+values ('26', '国银贸易有限公司', '吴晓贵', '0876-76703221', '福州市嘉禾区辅城街 42 号', 'xiaogui@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('27', '文成软件有限公司', '汤蓬蓬  ', '0569-67349882', '福州市嘉禾区临江街 32 号', 'penpen@mail.zjitc.com');
+values ('27', '文成软件有限公司', '汤蓬蓬', '0569-67349882', '福州市嘉禾区临江街 32 号', 'penpen@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('28', '康浦房产有限公司', '黄振    ', '0687- 67435425', '厦门市授业路 361 号', 'huangzheng@mail.zjitc.com');
+values ('28', '康浦房产有限公司', '黄振', '0687- 67435425', '厦门市授业路 361 号', 'huangzheng@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('29', '东旗有限公司', '莫笑笑  ', '0571-26760334', '温州市尊石路 238 号', 'xiao3@mail.zjitc.com');
+values ('29', '东旗有限公司', '莫笑笑', '0571-26760334', '温州市尊石路 238 号', 'xiao3@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('30', '建资房产有限公司', '赵凯    ', '0922-67755582', '广州市广惠东路 38 号', 'zhaokai@mail.zjitc.com');
+values ('30', '建资房产有限公司', '赵凯', '0922-67755582', '广州市广惠东路 38 号', 'zhaokai@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('31', '温州中学', '李德奇  ', '0577-68235423', '温州市市府路23号', 'deqi4@mail.zjitc.com');
+values ('31', '温州中学', '李德奇', '0577-68235423', '温州市市府路23号', 'deqi4@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('32', '均瑶航空公司', '何燕    ', '0577-82635423', '温州市学院路24号', 'heyan3@mail.zjitc.com');
+values ('32', '均瑶航空公司', '何燕', '0577-82635423', '温州市学院路24号', 'heyan3@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('33', '清华大学出版社', '李明明  ', '010-92929332', '北京市朝阳路23号', 'mingmin3@mail.zjitc.com');
+values ('33', '清华大学出版社', '李明明', '010-92929332', '北京市朝阳路23号', 'mingmin3@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('35', '北京秦峰昕鑫商贸有限公司', '李俊峰  ', '0135-53583789', '北京市 北京复兴路83号东九楼504大厦１8c', 'rr45@mail.zjitc.com');
+values ('35', '北京秦峰昕鑫商贸有限公司', '李俊峰', '0135-53583789', '北京市 北京复兴路83号东九楼504大厦１8c', 'rr45@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('36', '深圳市金丰达科技有限公司', '董小姐  ', '0755-83789290', '中国 广东 深圳市 福田区福华路２９号京海大厦１８Ｃ', 'hjyu7@mail.zjitc.com');
+values ('36', '深圳市金丰达科技有限公司', '董小姐', '0755-83789290', '中国 广东 深圳市 福田区福华路２９号京海大厦１８Ｃ', 'hjyu7@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('37', '上海友谊卷笔刀有限公司', '马颖达  ', '021-58033688', '上海市南汇区南六公路1125弄三灶工业园区发展西路11号', '5er6@mail.zjitc.com');
+values ('37', '上海友谊卷笔刀有限公司', '马颖达', '021-58033688', '上海市南汇区南六公路1125弄三灶工业园区发展西路11号', '5er6@mail.zjitc.com');
 
 insert into T_CUSTOMER (CUSTOMER_ID, COMPANY_NAME, CONTACT_NAME, PHONE, ADDRESS, EMAIL_ADDRESS)
-values ('38', '林川中学', '毛梅捷  ', '13858235423', '新居市学院路24号', 'lincun@lczxmail.com.c');
+values ('38', '林川中学', '毛梅捷', '13858235423', '新居市学院路24号', 'lincun@lczxmail.com.c');
 
 prompt Done.
 
@@ -412,106 +412,106 @@ insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, 
 values ('1', '章宏', '男', to_date('28-10-1969', 'dd-mm-yyyy'), to_date('30-04-2005', 'dd-mm-yyyy'), '3100', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('2', '李立三  ', '女', to_date('13-05-1980', 'dd-mm-yyyy'), to_date('20-01-2003', 'dd-mm-yyyy'), '3460.2', '1');
+values ('2', '李立三', '女', to_date('13-05-1980', 'dd-mm-yyyy'), to_date('20-01-2003', 'dd-mm-yyyy'), '3460.2', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('3', '王孔若  ', '女', to_date('17-12-1974', 'dd-mm-yyyy'), to_date('11-08-2000', 'dd-mm-yyyy'), '3800.8', '1');
+values ('3', '王孔若', '女', to_date('17-12-1974', 'dd-mm-yyyy'), to_date('11-08-2000', 'dd-mm-yyyy'), '3800.8', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('4', '余杰    ', '男', to_date('11-07-1973', 'dd-mm-yyyy'), to_date('23-09-2002', 'dd-mm-yyyy'), '3315', '1');
+values ('4', '余杰', '男', to_date('11-07-1973', 'dd-mm-yyyy'), to_date('23-09-2002', 'dd-mm-yyyy'), '3315', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('5', '蔡慧敏  ', '男', to_date('12-08-1957', 'dd-mm-yyyy'), to_date('22-07-2001', 'dd-mm-yyyy'), '3453.7', '1');
+values ('5', '蔡慧敏', '男', to_date('12-08-1957', 'dd-mm-yyyy'), to_date('22-07-2001', 'dd-mm-yyyy'), '3453.7', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('6', '孔高铁  ', '男', to_date('17-11-1974', 'dd-mm-yyyy'), to_date('10-09-2000', 'dd-mm-yyyy'), '3600.5', '1');
+values ('6', '孔高铁', '男', to_date('17-11-1974', 'dd-mm-yyyy'), to_date('10-09-2000', 'dd-mm-yyyy'), '3600.5', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('7', '姚晓力  ', '女', to_date('14-08-1969', 'dd-mm-yyyy'), to_date('18-07-2001', 'dd-mm-yyyy'), '3313.8', '1');
+values ('7', '姚晓力', '女', to_date('14-08-1969', 'dd-mm-yyyy'), to_date('18-07-2001', 'dd-mm-yyyy'), '3313.8', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('8', '宋振辉  ', '男', to_date('16-05-1975', 'dd-mm-yyyy'), to_date('11-11-2000', 'dd-mm-yyyy'), '3376.6', '2');
+values ('8', '宋振辉', '男', to_date('16-05-1975', 'dd-mm-yyyy'), to_date('11-11-2000', 'dd-mm-yyyy'), '3376.6', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('9', '刘丽    ', '男', to_date('21-08-1960', 'dd-mm-yyyy'), to_date('15-01-2002', 'dd-mm-yyyy'), '3421.9', '2');
+values ('9', '刘丽', '男', to_date('21-08-1960', 'dd-mm-yyyy'), to_date('15-01-2002', 'dd-mm-yyyy'), '3421.9', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('10', '姜玲娜  ', '女', to_date('02-08-1980', 'dd-mm-yyyy'), to_date('09-08-2006', 'dd-mm-yyyy'), '3200', '2');
+values ('10', '姜玲娜', '女', to_date('02-08-1980', 'dd-mm-yyyy'), to_date('09-08-2006', 'dd-mm-yyyy'), '3200', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('11', '崔军利  ', '男', to_date('23-07-1966', 'dd-mm-yyyy'), to_date('19-12-2003', 'dd-mm-yyyy'), '3392', '1');
+values ('11', '崔军利', '男', to_date('23-07-1966', 'dd-mm-yyyy'), to_date('19-12-2003', 'dd-mm-yyyy'), '3392', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('12', '金林皎  ', '男', to_date('22-08-1968', 'dd-mm-yyyy'), to_date('05-11-2001', 'dd-mm-yyyy'), '3366', '1');
+values ('12', '金林皎', '男', to_date('22-08-1968', 'dd-mm-yyyy'), to_date('05-11-2001', 'dd-mm-yyyy'), '3366', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('13', '唐军芳  ', '男', to_date('15-06-1978', 'dd-mm-yyyy'), to_date('22-04-2004', 'dd-mm-yyyy'), '3304.1', '2');
+values ('13', '唐军芳', '男', to_date('15-06-1978', 'dd-mm-yyyy'), to_date('22-04-2004', 'dd-mm-yyyy'), '3304.1', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('14', '郑阿齐  ', '女', to_date('04-08-1960', 'dd-mm-yyyy'), to_date('07-02-2004', 'dd-mm-yyyy'), '3409.8', '1');
+values ('14', '郑阿齐', '女', to_date('04-08-1960', 'dd-mm-yyyy'), to_date('07-02-2004', 'dd-mm-yyyy'), '3409.8', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('15', '刘启芬  ', '男', to_date('19-11-1970', 'dd-mm-yyyy'), to_date('19-09-2001', 'dd-mm-yyyy'), '3432.5', '1');
+values ('15', '刘启芬', '男', to_date('19-11-1970', 'dd-mm-yyyy'), to_date('19-09-2001', 'dd-mm-yyyy'), '3432.5', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('16', '吴昊    ', '男', to_date('13-09-1963', 'dd-mm-yyyy'), to_date('23-12-2002', 'dd-mm-yyyy'), '3361.3', '1');
+values ('16', '吴昊', '男', to_date('13-09-1963', 'dd-mm-yyyy'), to_date('23-12-2002', 'dd-mm-yyyy'), '3361.3', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('17', '何文华  ', '女', to_date('13-01-1965', 'dd-mm-yyyy'), to_date('19-12-2002', 'dd-mm-yyyy'), '3306.2', '1');
+values ('17', '何文华', '女', to_date('13-01-1965', 'dd-mm-yyyy'), to_date('19-12-2002', 'dd-mm-yyyy'), '3306.2', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('18', '李萍    ', '女', to_date('28-04-1974', 'dd-mm-yyyy'), to_date('11-04-2003', 'dd-mm-yyyy'), '3295.7', '2');
+values ('18', '李萍', '女', to_date('28-04-1974', 'dd-mm-yyyy'), to_date('11-04-2003', 'dd-mm-yyyy'), '3295.7', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('19', '宋广科  ', '男', to_date('29-06-1965', 'dd-mm-yyyy'), to_date('07-08-2003', 'dd-mm-yyyy'), '3384.5', '1');
+values ('19', '宋广科', '男', to_date('29-06-1965', 'dd-mm-yyyy'), to_date('07-08-2003', 'dd-mm-yyyy'), '3384.5', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('20', '罗耀祖  ', '女', to_date('23-03-1975', 'dd-mm-yyyy'), to_date('17-05-2003', 'dd-mm-yyyy'), '3286', '1');
+values ('20', '罗耀祖', '女', to_date('23-03-1975', 'dd-mm-yyyy'), to_date('17-05-2003', 'dd-mm-yyyy'), '3286', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('21', '吴晓松  ', '男', to_date('28-12-1969', 'dd-mm-yyyy'), to_date('07-09-2002', 'dd-mm-yyyy'), '3282.5', '1');
+values ('21', '吴晓松', '男', to_date('28-12-1969', 'dd-mm-yyyy'), to_date('07-09-2002', 'dd-mm-yyyy'), '3282.5', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('22', '钱其娜  ', '女', to_date('15-12-1964', 'dd-mm-yyyy'), to_date('21-02-2002', 'dd-mm-yyyy'), '3378.3', '1');
+values ('22', '钱其娜', '女', to_date('15-12-1964', 'dd-mm-yyyy'), to_date('21-02-2002', 'dd-mm-yyyy'), '3378.3', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('23', '章明铁  ', '女', to_date('24-02-1958', 'dd-mm-yyyy'), to_date('19-01-2001', 'dd-mm-yyyy'), '3400', '1');
+values ('23', '章明铁', '女', to_date('24-02-1958', 'dd-mm-yyyy'), to_date('19-01-2001', 'dd-mm-yyyy'), '3400', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('24', '张晓明  ', '男', to_date('18-01-1960', 'dd-mm-yyyy'), to_date('15-05-2002', 'dd-mm-yyyy'), '3376', '2');
+values ('24', '张晓明', '男', to_date('18-01-1960', 'dd-mm-yyyy'), to_date('15-05-2002', 'dd-mm-yyyy'), '3376', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('25', '李丽丽  ', '男', to_date('20-09-1962', 'dd-mm-yyyy'), to_date('06-09-2004', 'dd-mm-yyyy'), '3408.8', '1');
+values ('25', '李丽丽', '男', to_date('20-09-1962', 'dd-mm-yyyy'), to_date('06-09-2004', 'dd-mm-yyyy'), '3408.8', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
 values ('26', '欧阳天民', '女', to_date('17-03-1964', 'dd-mm-yyyy'), to_date('13-08-2004', 'dd-mm-yyyy'), '3359.9', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('27', '陈晓东  ', '女', to_date('15-02-1972', 'dd-mm-yyyy'), to_date('06-01-2002', 'dd-mm-yyyy'), '3374.2', '1');
+values ('27', '陈晓东', '女', to_date('15-02-1972', 'dd-mm-yyyy'), to_date('06-01-2002', 'dd-mm-yyyy'), '3374.2', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('28', '金恰亦  ', '女', to_date('12-09-1961', 'dd-mm-yyyy'), to_date('01-03-2003', 'dd-mm-yyyy'), '3318.5', '1');
+values ('28', '金恰亦', '女', to_date('12-09-1961', 'dd-mm-yyyy'), to_date('01-03-2003', 'dd-mm-yyyy'), '3318.5', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('29', '王辉    ', '男', to_date('08-09-1980', 'dd-mm-yyyy'), to_date('05-06-2005', 'dd-mm-yyyy'), '3450', '3');
+values ('29', '王辉', '男', to_date('08-09-1980', 'dd-mm-yyyy'), to_date('05-06-2005', 'dd-mm-yyyy'), '3450', '3');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
 values ('30', '柯小於', '男', to_date('29-12-1994', 'dd-mm-yyyy'), to_date('09-04-2008', 'dd-mm-yyyy'), '3566', '3');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('31', '吴玲    ', '女', to_date('04-03-1979', 'dd-mm-yyyy'), to_date('21-07-2005', 'dd-mm-yyyy'), '3410', '3');
+values ('31', '吴玲', '女', to_date('04-03-1979', 'dd-mm-yyyy'), to_date('21-07-2005', 'dd-mm-yyyy'), '3410', '3');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('32', '任洁    ', '女', to_date('02-04-1982', 'dd-mm-yyyy'), to_date('21-07-2005', 'dd-mm-yyyy'), '3340', '2');
+values ('32', '任洁', '女', to_date('02-04-1982', 'dd-mm-yyyy'), to_date('21-07-2005', 'dd-mm-yyyy'), '3340', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('33', '洪皓    ', '男', to_date('03-04-1967', 'dd-mm-yyyy'), to_date('21-07-2001', 'dd-mm-yyyy'), '3410', '2');
+values ('33', '洪皓', '男', to_date('03-04-1967', 'dd-mm-yyyy'), to_date('21-07-2001', 'dd-mm-yyyy'), '3410', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('34', '金圆圆  ', '女', to_date('02-03-1980', 'dd-mm-yyyy'), to_date('21-07-2005', 'dd-mm-yyyy'), '3410', '2');
+values ('34', '金圆圆', '女', to_date('02-03-1980', 'dd-mm-yyyy'), to_date('21-07-2005', 'dd-mm-yyyy'), '3410', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('35', '柯敏    ', '女', to_date('01-10-1982', 'dd-mm-yyyy'), to_date('02-02-2006', 'dd-mm-yyyy'), '3410', '1');
+values ('35', '柯敏', '女', to_date('01-10-1982', 'dd-mm-yyyy'), to_date('02-02-2006', 'dd-mm-yyyy'), '3410', '1');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
 values ('36', '姚安娜', '女', to_date('26-04-1983', 'dd-mm-yyyy'), to_date('26-04-2008', 'dd-mm-yyyy'), '3456', '3');
@@ -523,7 +523,7 @@ insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, 
 values ('38', '张琪琪', '女', to_date('26-04-1958', 'dd-mm-yyyy'), to_date('26-04-2008', 'dd-mm-yyyy'), '4000', '2');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
-values ('39', '李亮    ', '男', to_date('02-03-1968', 'dd-mm-yyyy'), to_date('20-07-2001', 'dd-mm-yyyy'), '3400', '3');
+values ('39', '李亮', '男', to_date('02-03-1968', 'dd-mm-yyyy'), to_date('20-07-2001', 'dd-mm-yyyy'), '3400', '3');
 
 insert into T_EMPLOYEE (EMPLOYEE_ID, EMPLOYEE_NAME, SEX, BIRTH_DATE, HIRE_DATE, SALARY, DEPARTMENT_ID)
 values ('40', '高思修', '女', to_date('07-06-1980', 'dd-mm-yyyy'), to_date('20-07-2001', 'dd-mm-yyyy'), '3400', '3');
@@ -563,16 +563,16 @@ prompt Importing table T_DEPARTMENT...
 set feedback off
 set define off
 insert into T_DEPARTMENT (DEPARTMENT_ID, DEPARTMENT_NAME, MANAGER, DEPART_DESCRIPTION)
-values ('1', '销售部', '王丽丽  ', '主管销售');
+values ('1', '销售部', '王丽丽', '主管销售');
 
 insert into T_DEPARTMENT (DEPARTMENT_ID, DEPARTMENT_NAME, MANAGER, DEPART_DESCRIPTION)
-values ('2', '采购部', '李嘉明  ', '主管公司的产品采购');
+values ('2', '采购部', '李嘉明', '主管公司的产品采购');
 
 insert into T_DEPARTMENT (DEPARTMENT_ID, DEPARTMENT_NAME, MANAGER, DEPART_DESCRIPTION)
-values ('3', '人事部', '蒋柯南  ', '主管公司的人事关系');
+values ('3', '人事部', '蒋柯南', '主管公司的人事关系');
 
 insert into T_DEPARTMENT (DEPARTMENT_ID, DEPARTMENT_NAME, MANAGER, DEPART_DESCRIPTION)
-values ('4', '后勤部', '张绵荷  ', '主管公司的后勤工作');
+values ('4', '后勤部', '张绵荷', '主管公司的后勤工作');
 
 prompt Done.
 
@@ -688,16 +688,16 @@ prompt Importing table T_PROVIDER...
 set feedback off
 set define off
 insert into T_PROVIDER (PROVIDER_ID, PROVIDER_NAME, CONTACT_NAME, PROVIDER_ADDRESS, PROVIDER_PHONE, PROVIDER_EMAIL)
-values ('1', '上海友谊卷笔刀有限公司', '陈云海  ', '上海市南汇区南六公路1125弄三灶工业园区发展西路11号', '0577-88335572', '5er6@mail.zjitc.com');
+values ('1', '上海友谊卷笔刀有限公司', '陈云海', '上海市南汇区南六公路1125弄三灶工业园区发展西路11号', '0577-88335572', '5er6@mail.zjitc.com');
 
 insert into T_PROVIDER (PROVIDER_ID, PROVIDER_NAME, CONTACT_NAME, PROVIDER_ADDRESS, PROVIDER_PHONE, PROVIDER_EMAIL)
-values ('2', '深圳市金丰达科技有限公司', '张小平  ', '中国 广东 深圳市 福田区福华路２９号京海大厦１８Ｃ', '0577-88335573', 'hjyu7@mail.zjitc.com');
+values ('2', '深圳市金丰达科技有限公司', '张小平', '中国 广东 深圳市 福田区福华路２９号京海大厦１８Ｃ', '0577-88335573', 'hjyu7@mail.zjitc.com');
 
 insert into T_PROVIDER (PROVIDER_ID, PROVIDER_NAME, CONTACT_NAME, PROVIDER_ADDRESS, PROVIDER_PHONE, PROVIDER_EMAIL)
-values ('3', '文成软件有限公司', '汤蓬蓬  ', '福州市嘉禾区临江街 32 号', '0569-67349882', 'liqiu@163.com');
+values ('3', '文成软件有限公司', '汤蓬蓬', '福州市嘉禾区临江街 32 号', '0569-67349882', 'liqiu@163.com');
 
 insert into T_PROVIDER (PROVIDER_ID, PROVIDER_NAME, CONTACT_NAME, PROVIDER_ADDRESS, PROVIDER_PHONE, PROVIDER_EMAIL)
-values ('4', '温州神话软件有限公司', '吴慧    ', '温州东游大夏1203', '0577-89574833', 'shenghua@163.com');
+values ('4', '温州神话软件有限公司', '吴慧', '温州东游大夏1203', '0577-89574833', 'shenghua@163.com');
 
 prompt Done.
 
