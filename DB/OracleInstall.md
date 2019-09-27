@@ -586,6 +586,18 @@ Oracle缺省的时间格式即时间数据的显示形式，与所使用的字�
 
 Linux系列需要修改bash_profile文件（略）。
 
+以上方法仅对客户端的环境变量修改有效，而若要所有客户端在建立会话的时间格式起作用，可以采用创建触发器的方法。
+
+```sql
+create or replace trigger data_logon_trigger
+after logon
+ON DATABASE
+begin
+    execute immediate
+        'alter session set nls_date_format = ''yyyy-mm-dd hh24:mi:ss'' ';
+end;
+```
+
 ---
 
 参考引用：
@@ -593,4 +605,6 @@ Linux系列需要修改bash_profile文件（略）。
 [listener.ora/sqlnet.ora/tnsnames.ora配置文件详解](https://www.cnblogs.com/qianyuliang/p/6520515.html)
 
 [如何永久更改 NLS_DATE_FORMAT](http://www.voidcn.com/article/p-cfsxhmrf-ka.html)
+
+[Why doesn't the NLS_DATE_FORMAT in my init.ora work sometimes](https://asktom.oracle.com/Misc/NLSDateFormat.html)
 
