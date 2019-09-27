@@ -606,5 +606,7 @@ end;
 
 [如何永久更改 NLS_DATE_FORMAT](http://www.voidcn.com/article/p-cfsxhmrf-ka.html)
 
+[nls_date_format](https://asktom.oracle.com/pls/apex/asktom.search?tag=nls-date-format-200006)
+
 [Why doesn't the NLS_DATE_FORMAT in my init.ora work sometimes](https://asktom.oracle.com/Misc/NLSDateFormat.html)
 
