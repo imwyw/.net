@@ -2,6 +2,7 @@
 
 - [专题](#专题)
     - [Equals和==](#equals和)
+    - [反射调用TryParse](#反射调用tryparse)
     - [MD5加密](#md5加密)
     - [上传文件](#上传文件)
         - [form表单方式上传](#form表单方式上传)
@@ -21,6 +22,43 @@
 
 ![](../assets/Other/equals-compare.png)
 
+
+<a id="markdown-反射调用tryparse" name="反射调用tryparse"></a>
+## 反射调用TryParse
+```cs
+/// <summary>
+/// 检查控制台输入值是否匹配，并返回该类型
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <returns></returns>
+static T CheckConsoleInput<T>(string msg) where T : struct
+{
+    T instance = new T();
+
+    // 当有多个重载时，通过Type数组指定反射哪个重载方法，MakeByRefType返回Type类型
+    MethodInfo parseMethod = typeof(T).GetMethod("TryParse", new Type[] { typeof(string), typeof(T).MakeByRefType() });
+
+    do
+    {
+        Console.WriteLine(msg);
+        string input = Console.ReadLine();
+
+        // 两个参数，第二个参数为out参数
+        object[] args = new object[] { input, null };
+        bool successParse = (bool)parseMethod.Invoke(null, args);
+        if (successParse)
+        {
+            instance = (T)args[1];
+            return instance;
+        }
+        else
+        {
+            Console.WriteLine("输入格式有误，请重新输入！");
+        }
+    } while (true);
+
+}
+```
 
 <a id="markdown-md5加密" name="md5加密"></a>
 ## MD5加密
