@@ -423,10 +423,12 @@ static void Main(string[] args)
     th1.Name = "王富贵";
     th2.Name = "赵有才";
     th3.Name = "郑钱花";
+    th4.Name = "周天";
 
     th1.Start();
     th2.Start();
     th3.Start();
+    th4.Start();
 }
 
 static void BuyTicket()
