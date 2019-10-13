@@ -8,6 +8,7 @@
         - [.NET中装饰者模式的实现](#net中装饰者模式的实现)
         - [接口API的透明性](#接口api的透明性)
         - [总结](#总结-1)
+    - [Adapter适配器模式-加个适配器以便复用](#adapter适配器模式-加个适配器以便复用)
 
 <!-- /TOC -->
 <a id="markdown-结构型设计模式" name="结构型设计模式"></a>
@@ -63,13 +64,13 @@ Proxy代理角色：需要实现抽象角色接口，是真实角色的代理，
 
 对应类图如下图所示：
 
-![](..\assets\Design\Proxy.png)
+![](../assets/Design/Proxy.png)
 
 《图解设计模式》中的打印示例属于VirtualProxy(虚拟代理)，打印机的开机预热相对而言是一个较慢的过程，也就是打印机类实例化对象的过程很慢。
 
 可以通过虚拟代理的方式将实例化对象需要的等待时间转移到调用打印方法上，在构造时无需等待实例化的过程，只需要在首次打印时进行等待。
 
-![](..\assets\Design\print-proxy.png)
+![](../assets/Design/print-proxy.png)
 
 实现代码如下：
 ```cs
@@ -178,7 +179,7 @@ public class PrinterProxy : IPrintable
 
 以明星与经纪人的代理关系作为示例
 
-![](..\assets\Design\star-proxy.png)
+![](../assets/Design/star-proxy.png)
 
 静态实现如下：
 ```cs
@@ -289,7 +290,7 @@ public class StarProxy : Star
 
 **关键代码**： 1、Component 类充当抽象角色，不应该具体实现。 2、修饰类引用和继承 Component 类，具体扩展类重写父类方法。
 
-![](..\assets\Design\Decorator.png)
+![](../assets/Design/Decorator.png)
 
 针对上图中的基本实现代码如下：
 ```cs
@@ -394,7 +395,7 @@ public class DecoratorB : Decorator
 
 在【FoodDecorator】基础上再派生出对应的不同口味装饰，类图如下所示：
 
-![](..\assets\Design\food-decorator.png)
+![](../assets/Design/food-decorator.png)
 
 ```cs
 class Program
@@ -549,7 +550,7 @@ public class StrawberryDecorator : FoodDecorator
 
 《图解设计模式》中关于Decorator的示例如下：
 
-![](..\assets\Design\DecoratorDisplayStr.png)
+![](../assets/Design/DecoratorDisplayStr.png)
 
 ```cs
 class Program
@@ -747,7 +748,7 @@ http://blog.csdn.net/qiaoquan3/article/details/78203502
 ### .NET中装饰者模式的实现
 在.NET 类库中也有装饰者模式的实现，该类就是System.IO.Stream,下面看看Stream类结构：
 
-![](..\assets\Design\DecoratorStream.png)
+![](../assets/Design/DecoratorStream.png)
 
 ```cs
 // MemoryStream是内存流,为系统内存提供读写操作。被装饰
@@ -781,6 +782,62 @@ GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Compress, t
 装饰者模式会导致设计中出现许多小对象，如果过度使用，会让程序变的更复杂。并且更多的对象会是的差错变得困难，特别是这些对象看上去都很像。
 
 装饰者模式采用对象组合而非继承的方式实现了再运行时动态地扩展对象功能的能力，而且可以根据需要扩展多个功能，避免了单独使用继承带来的 ”灵活性差“和”多子类衍生问题“。同时它很好地符合面向对象设计原则中 ”优先使用对象组合而非继承“和”开放-封闭“原则。
+
+
+<a id="markdown-adapter适配器模式-加个适配器以便复用" name="adapter适配器模式-加个适配器以便复用"></a>
+## Adapter适配器模式-加个适配器以便复用
+
+```cs
+/// <summary>
+/// 客户端，客户想要把2个孔的插头 转变成三个孔的插头，这个转变交给适配器就好
+/// 既然适配器需要完成这个功能，所以它必须同时具体2个孔插头和三个孔插头的特征
+/// </summary>
+class Client
+{
+    static void Main(string[] args)
+    {
+        // 现在客户端可以通过电适配要使用2个孔的插头了
+        IThreeHole threehole = new PowerAdapter();
+        threehole.Request();
+        Console.ReadLine();
+    }
+}
+
+/// <summary>
+/// 三个孔的插头，也就是适配器模式中的目标角色
+/// </summary>
+public interface IThreeHole
+{
+    void Request();
+}
+
+/// <summary>
+/// 两个孔的插头，源角色——需要适配的类
+/// </summary>
+public abstract class TwoHole
+{
+    public void SpecificRequest()
+    {
+        Console.WriteLine("我是两个孔的插头");
+    }
+}
+
+/// <summary>
+/// 适配器类，接口要放在类的后面
+/// 适配器类提供了三个孔插头的行为，但其本质是调用两个孔插头的方法
+/// </summary>
+public class PowerAdapter:TwoHole,IThreeHole
+{
+    /// <summary>
+    /// 实现三个孔插头接口方法
+    /// </summary>
+    public void Request()
+    {
+        // 调用两个孔插头方法
+        this.SpecificRequest();
+    }
+}
+```
 
 ---
 

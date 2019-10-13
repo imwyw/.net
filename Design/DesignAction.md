@@ -24,7 +24,7 @@
 
 在面向对象涉及原则中还有一条是针对接口编程，所以，在迭代器模式中，抽象了2个接口，一个是聚合接口，另一个是迭代器接口，这样迭代器模式中就四个角色了，具体的类图如下所示：
 
-![](..\assets\Design\Iterator.png)
+![](../assets/Design/Iterator.png)
 
 ```cs
 class Program
@@ -174,7 +174,7 @@ public class ArrayList : IList, ICollection, IEnumerable, ICloneable
 ### IEnumerator接口
 使用IEnumerator接口方式实现一个迭代器：
 
-![](..\assets\Design\Iterator-1.png)
+![](../assets/Design/Iterator-1.png)
 
 ```cs
 class Program
@@ -433,7 +433,7 @@ public IEnumerator GetEnumerator()
 
 对应类图如下：
 
-![](..\assets\Design\Observer.png)
+![](../assets/Design/Observer.png)
 
 - **抽象主题角色(Subject)**：抽象主题把所有观察者对象的引用保存在一个列表中，并提供增加和删除观察者对象的操作，抽象主题角色又叫做抽象被观察者角色，一般由抽象类或接口实现。
 
@@ -445,7 +445,7 @@ public IEnumerator GetEnumerator()
 
 引用《图解设计模式》示例，观察数值生成，通过观察者对象作出不同的响应，该示例类图与代码如下所示：
 
-![](..\assets\Design\ObserverNumberDemo.png)
+![](../assets/Design/ObserverNumberDemo.png)
 
 ```cs
 class Program
@@ -584,7 +584,7 @@ public class GraphObserver : IObserver
 下面以微信订阅号的例子来说明观察者模式的实现。现在要实现监控腾讯游戏订阅号的状态的变化。
 类图及实现如下：
 
-![](..\assets\Design\ObserverWechat.png)
+![](../assets/Design/ObserverWechat.png)
 
 ```cs
 class Program
@@ -828,7 +828,7 @@ public class ConcreteSubscriber
 
 具体的访问者模式结构图如下所示。
 
-![](..\assets\Design\Visitor.png)
+![](../assets/Design/Visitor.png)
 
 基本Visitor的实现：
 ```cs
@@ -968,7 +968,7 @@ public class ObjectStructure
 
 类图和代码实现如下所示：
 
-![](..\assets\Design\VisitorBillDemo.png)
+![](../assets/Design/VisitorBillDemo.png)
 
 ```cs
 class Program
