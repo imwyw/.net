@@ -433,11 +433,13 @@ public class OperationSub : Operation
 
 对于上面简单工厂的示例代码来说，Main方法中并不关心具体调用哪个类的实例，只要传入约定的操作符(+-*/)即可得到运算结果。
 
-但如果需要新增运算类型的话，需要修改到原有的工厂类，违背了开放-封闭原则。
+但如果需要新增运算类型的话，需要修改到原有的【简单工厂类】，违背了开放-封闭原则。
 
 **开放-封闭原则OCP**：软件实体(类、模块、函数等)应该可以扩展，但不可以修改。对于扩展是开放的，对于更改已有的类、模块、函数等是封闭的。
 
-针对简单工厂的扩展，诞生了工厂方法，即定义一个用于创建对象的接口，让工厂类决定实例化哪一个类。工厂方法使一个类的实例化延迟到其子类中。
+针对简单工厂的扩展，诞生了工厂方法，即定义一个用于创建对象的接口，让工厂类决定实例化哪一个类。
+
+工厂方法使一个类的实例化延迟到其子类中。
 
 ![](../assets/Design/FactoryMethod.png)
 
@@ -525,7 +527,9 @@ public class SubFactory : IFactory
 }
 ```
 
-当增加新的运算时，不需要修改原有的工厂类。比如新增乘法操作，新增OperationMul乘法类，新增MulFactory乘法工厂即可，在客户端的调用如下：
+当增加新的运算时，不需要修改原有的工厂类。
+
+比如新增乘法操作，新增OperationMul乘法类，新增MulFactory乘法工厂即可，在客户端的调用如下：
 ```cs
 IFactory mulFt = new MulFactory();
 Operation optMul = mulFt.CreateOperate();
@@ -541,7 +545,9 @@ Console.WriteLine(optMul.GetResult());
 
 而工厂方法中，我们把switch的部分去除，让调用者来决定进行调用哪个工厂类进行实例化。
 
-以上，工厂方法是简单工厂的进一步抽象和推广。但缺点是，每新增一个产品，就需要一个产品工厂类，增加了额外的开发量。
+以上，工厂方法是简单工厂的进一步抽象和推广。
+
+但缺点是，每新增一个产品，就需要一个产品工厂类，增加了额外的开发量。
 
 <a id="markdown-abstract-factory模式-抽象工厂-将关联零件组装成产品" name="abstract-factory模式-抽象工厂-将关联零件组装成产品"></a>
 ## Abstract Factory模式-抽象工厂 将关联零件组装成产品
@@ -714,7 +720,9 @@ public abstract class ZhouDuckFactory
 ### .NET中抽象工厂模式实现
 抽象工厂模式在实际中的应用也是相当频繁的，然而在我们.NET类库中也存在应用抽象工厂模式的类。
 
-这个类就是System.Data.Common.DbProviderFactory，这个类位于System.Data.dll程序集中,该类扮演抽象工厂模式中抽象工厂的角色，我们可以用reflector反编译工具查看该类的实现：
+这个类就是System.Data.Common.DbProviderFactory，这个类位于System.Data.dll程序集中，
+
+该类扮演抽象工厂模式中抽象工厂的角色，我们可以用reflector反编译工具查看该类的实现：
 
 ```cs
 /// <summary>
@@ -738,7 +746,11 @@ public abstract class DbProviderFactory
 }
 ```
 
-DbProviderFactory类是一个抽象工厂类，该类提供了创建数据库连接时所需要的对象集合的接口，实际创建的工作在其子类工厂中进行，微软使用的是SQL Server数据库，因此提供了连接SQL Server数据的具体工厂实现，具体代码可以用反编译工具查看，具体代码如下：
+DbProviderFactory类是一个抽象工厂类，该类提供了创建数据库连接时所需要的对象集合的接口，
+
+实际创建的工作在其子类工厂中进行，微软使用的是SQL Server数据库，
+
+因此提供了连接SQL Server数据的具体工厂实现，具体代码可以用反编译工具查看，具体代码如下：
 
 ```cs
 /// 扮演着具体工厂的角色，用来创建连接SQL Server数据所需要的对象
