@@ -57,7 +57,50 @@ public class Singleton
 }
 ```
 
-上面的单例模式的实现在单线程下确实是完美的,然而在多线程的情况下会得到多个Singleton实例。
+上面的单例模式的实现在单线程下确实是完美的,然而在多线程的情况下会得到多个Singleton实例。如下所示：
+
+```cs
+public class Singleton
+{
+    private static Singleton uniqueInstance;
+
+    private Singleton()
+    {
+        Console.WriteLine("产生了新的对象！！！");
+    }
+
+    public static Singleton GetInstance()
+    {
+        if (uniqueInstance == null)
+        {
+            uniqueInstance = new Singleton();
+        }
+        return uniqueInstance;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // 多线程集合
+        List<Thread> threadList = new List<Thread>();
+        for (int i = 0; i < 20; i++)
+        {
+            // lambda表达式方式，线程添加方法
+            threadList.Add(new Thread(() =>
+            {
+                Singleton.GetInstance();
+            }));
+        }
+        // 启用线程
+        foreach (var item in threadList)
+        {
+            item.Start();
+        }
+    }
+}
+```
 
 因为在两个线程同时运行GetInstance方法时，此时两个线程判断(uniqueInstance == null)这个条件时都返回真，
 
