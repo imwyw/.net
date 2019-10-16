@@ -18,7 +18,9 @@
 ## Proxy代理模式-只在必要时生成实例
 代理模式：为其他对象提供一种代理以便控制对这个对象的访问。
 
-在面向对象系统中，有些对象由于某种原因（比如对象创建的开销很大，或者某些操作需要安全控制，或者需要进程外的访问等），直接访问会给使用者、或者系统结构带来很多麻烦。如何在不失去透明操作对象的同时来管理/控制这些对象特有的复杂性？增加一层间接层是软件开发中常见的解决方式。
+在面向对象系统中，有些对象由于某种原因（比如对象创建的开销很大，或者某些操作需要安全控制，或者需要进程外的访问等），直接访问会给使用者、或者系统结构带来很多麻烦。
+
+如何在不失去透明操作对象的同时来管理/控制这些对象特有的复杂性？增加一层间接层是软件开发中常见的解决方式。
 
 可以详细控制访问某个类(对象)的方法，在调用这个方法前作的前置处理(统一的流程代码放到代理中处理)。调用这个方法后做后置处理。
 
@@ -74,106 +76,89 @@ Proxy代理角色：需要实现抽象角色接口，是真实角色的代理，
 
 实现代码如下：
 ```cs
-class Program
-{
-    static void Main(string[] args)
-    {
-        //如果是直接实例化Printer类，构造函数需要耗时等待，而通过代理方式，构造时无需等待，只需调用时等待
-        IPrintable p = new PrinterProxy("jack");
-        Console.WriteLine(p.Name);
-        p.Name = "lucy";
-        Console.WriteLine(p.Name);
-        //调用代理方法时才会实例化主体类
-        p.Print("hello world");
-    }
-}
-
 /// <summary>
 /// 打印接口-Subject主体接口或抽象类
 /// </summary>
-public interface IPrintable
+interface IPrint
 {
     string Name { get; set; }
-    void Print(string str);
+    void Print(string content);
 }
 
 /// <summary>
 /// 打印机类-主体
 /// </summary>
-public class Printer : IPrintable
+class Printer : IPrint
 {
     public string Name { get; set; }
-
-    public Printer(string name)
-    {
-        Name = name;
-        HeavyJob($"Printer实例({Name})生成中");
-    }
-
     /// <summary>
-    /// 打印带本机名称的消息
+    /// 预热，耗时操作
     /// </summary>
-    /// <param name="str"></param>
-    public void Print(string str)
+    public void HeavyJob()
     {
-        Console.WriteLine($"=== {Name} ===");
-        Console.WriteLine(str);
-    }
-
-    /// <summary>
-    /// 模拟耗时操作
-    /// </summary>
-    /// <param name="msg"></param>
-    private void HeavyJob(string msg)
-    {
-        Console.Write(msg);
+        Console.Write($"{Name}的打印机正在加载中");
         for (int i = 0; i < 10; i++)
         {
             Thread.Sleep(500);
             Console.Write(".");
         }
-        Console.WriteLine("完成");
+        Console.WriteLine("加载完成!!!");
+    }
+
+    public Printer(string name)
+    {
+        Name = name;
+        HeavyJob();
+    }
+
+    public void Print(string content)
+    {
+        Console.WriteLine($"==={Name}打印机===");
+        Console.WriteLine(content);
     }
 }
 
 /// <summary>
-/// 代理类Proxy
+/// 代理类
 /// </summary>
-public class PrinterProxy : IPrintable
+class PrintProxy : IPrint
 {
-    Printer real;
-
-    string name;
-    /// <summary>
-    /// 设置代理属性的同时也设置实体的属性
-    /// </summary>
+    Printer realSubject;
     public string Name
     {
-        get { return name; }
-        set
-        {
-            if (real != null)
-            {
-                real.Name = value;
-            }
-            name = value;
-        }
+        get;
+        set;
     }
 
-    public PrinterProxy(string name)
+    public PrintProxy(string name)
     {
         Name = name;
     }
 
-    public void Print(string str)
+    public void Print(string content)
     {
-        if (null == real)
+        if (null == realSubject)
         {
-            real = new Printer(Name);
+            realSubject = new Printer(Name);
         }
-        real.Print(str);
     }
+}
 
+class Program
+{
+    public static void Main()
+    {
+        // 实例化时非常耗时
+        IPrint p1 = new Printer("jack");
+        Console.WriteLine("其他业务操作......");
+        p1.Print("在你的心上，自由的飞翔");
+
+        // 通过代理方式解决实例化时的耗时操作
+        IPrint p2 = new PrintProxy("tom");
+        Console.WriteLine("其他业务操作......");
+        p2.Print("是谁在敲打我窗");
+
+    }
 }
 ```
 
