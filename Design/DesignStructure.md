@@ -170,26 +170,28 @@ class Program
 ```cs
 class Program
 {
-    static void Main(string[] args)
+    public static void Main()
     {
-        Star baoqiang = new RealStar("王宝强");
-        Star songzhe = new StarProxy("宋喆", baoqiang);
-
-        songzhe.BookTicket();//可以由宋喆代理
-        songzhe.MakeMovie();//宋喆不可以代理，只能宝强拍电影
+        Star wangbaoqiang = new RealStar("王宝强");
+        Star agent = new StarProxy("经纪人", wangbaoqiang);
+        agent.BookTicket();
+        agent.MakeMovie();
     }
 }
 
 /// <summary>
-/// Subject抽象角色 明星和经纪人
+/// 艺人抽象类
 /// </summary>
 public abstract class Star
 {
-    public Star(string name) { Name = name; }
     /// <summary>
     /// 姓名
     /// </summary>
     public string Name { get; set; }
+    public Star(string name)
+    {
+        Name = name;
+    }
     /// <summary>
     /// 订票，可以由经纪人代理
     /// </summary>
@@ -201,52 +203,41 @@ public abstract class Star
 }
 
 /// <summary>
-/// RealSubject真实角色 明星
+/// 真实明星
 /// </summary>
 public class RealStar : Star
 {
     public RealStar(string name) : base(name) { }
-
     public override void BookTicket()
     {
-        Console.WriteLine(Name + "买票");
+        Console.WriteLine($"{Name}买票");
     }
 
     public override void MakeMovie()
     {
-        Console.WriteLine(Name + "拍电影");
+        Console.WriteLine($"{Name}电影《hello，Mr.Tree》");
     }
 }
 
 /// <summary>
-/// Proxy代理角色 经纪人
+/// 明星代理
 /// </summary>
 public class StarProxy : Star
 {
-    private Star real;
-
-    /// <summary>
-    /// 自定义构造函数，给真实角色real进行赋值
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="star"></param>
-    public StarProxy(string name, Star star) : base(name)
+    Star realStar;
+    public StarProxy(string name, Star real) : base(name)
     {
-        Name = name;
-        real = star;
+        realStar = real;
     }
-
     public override void BookTicket()
     {
-        Console.WriteLine(Name + "买票");
+        Console.WriteLine($"{Name}买票");
     }
 
-    /// <summary>
-    /// 不能代理，需要调用真实角色方法
-    /// </summary>
     public override void MakeMovie()
     {
-        real.MakeMovie();
+        Console.WriteLine($"{Name}不会演戏。。。");
+        realStar.MakeMovie();
     }
 }
 ```
