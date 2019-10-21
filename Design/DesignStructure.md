@@ -9,6 +9,8 @@
         - [接口API的透明性](#接口api的透明性)
         - [总结](#总结-1)
     - [Adapter适配器模式-加个适配器以便复用](#adapter适配器模式-加个适配器以便复用)
+        - [两种实现方式](#两种实现方式)
+        - [对象组合的实现](#对象组合的实现)
 
 <!-- /TOC -->
 <a id="markdown-结构型设计模式" name="结构型设计模式"></a>
@@ -767,57 +769,125 @@ GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Compress, t
 <a id="markdown-adapter适配器模式-加个适配器以便复用" name="adapter适配器模式-加个适配器以便复用"></a>
 ## Adapter适配器模式-加个适配器以便复用
 
+在软件开发中采用类似于电源适配器的设计和编码技巧被称为适配器模式。
+
+生活中常见的适配器案例：
+
+![](../assets/Design/adapter-ac-power.png)
+
+我带着一个国标插头的笔记本电脑, 来到欧洲, 想插入到欧洲标准的墙壁插座里面, 就需要用中间这个电源适配器.
+
+面向对象的适配器：
+
+![](../assets/Design/adapter-vendor1.png)
+
+你有个老系统, 现在来了个新供应商的类, 但是它们的接口不同, 如何使用这个新供应商的类呢?
+
+首先, 我们不想修改现有代码, 你也不能修改供应商的代码. 那么你只能写一个可以适配新供应商接口的类了:
+
+![](../assets/Design/adapter-vendor2.png)
+
+这里, 中间的适配器实现了你的类所期待的接口, 并且可以和供应商的接口交互以便处理你的请求.
+
+适配器可以看作是中间人, 它从客户接收请求, 并把它们转化为供应商可以理解的请求:
+
+![](../assets/Design/adapter-vendor3.png)
+
+所有的新代码都写在适配器里面了.
+
+<a id="markdown-两种实现方式" name="两种实现方式"></a>
+### 两种实现方式
+
+![](../assets/Design/adapter-power-request.png)
+
+适配器模式把一个类的接口转化成客户所期待的另一个接口. 适配器让原本因接口不兼容而无法一起工作的类成功的工作在了一起.
+
+类适配器（继承方式实现）：
+
+![](../assets/Design/adapter-uml-class.png)
+
+对象适配器（对象组合实现）：(**推荐**)
+
+![](../assets/Design/adapter-uml-class.png)
+
+其中 Client 只知道目标接口, 适配器实现了这个目标接口, 适配器是通过组合的方式与被适配者结合到了一起, 所有的请求都被委托给了被适配者.
+
+<a id="markdown-对象组合的实现" name="对象组合的实现"></a>
+### 对象组合的实现
+
 ```cs
-/// <summary>
-/// 客户端，客户想要把2个孔的插头 转变成三个孔的插头，这个转变交给适配器就好
-/// 既然适配器需要完成这个功能，所以它必须同时具体2个孔插头和三个孔插头的特征
-/// </summary>
-class Client
+class Program
 {
-    static void Main(string[] args)
+    public static void Main()
     {
-        // 现在客户端可以通过电适配要使用2个孔的插头了
-        IThreeHole threehole = new PowerAdapter();
-        threehole.Request();
-        Console.ReadLine();
+        // 创建火鸡一只
+        WildTurkey tk1 = new WildTurkey();
+        // 将该火鸡当作鸭子来使用
+        IDuck dk1 = new TurkeyAdapter(tk1);
+
+        // 看起来是个鸭子，其实通过火鸡来实现的
+        dk1.Quack();
+        dk1.Fly();
     }
 }
 
 /// <summary>
-/// 三个孔的插头，也就是适配器模式中的目标角色
+/// 鸭子接口，客户端调用需要
 /// </summary>
-public interface IThreeHole
-{
-    void Request();
-}
-
-/// <summary>
-/// 两个孔的插头，源角色——需要适配的类
-/// </summary>
-public abstract class TwoHole
-{
-    public void SpecificRequest()
-    {
-        Console.WriteLine("我是两个孔的插头");
-    }
-}
-
-/// <summary>
-/// 适配器类，接口要放在类的后面
-/// 适配器类提供了三个孔插头的行为，但其本质是调用两个孔插头的方法
-/// </summary>
-public class PowerAdapter:TwoHole,IThreeHole
+public interface IDuck
 {
     /// <summary>
-    /// 实现三个孔插头接口方法
+    /// 呱呱叫
     /// </summary>
-    public void Request()
+    void Quack();
+    void Fly();
+}
+
+/// <summary>
+/// 野火鸡
+/// </summary>
+public class WildTurkey
+{
+    public void Fly()
     {
-        // 调用两个孔插头方法
-        this.SpecificRequest();
+        Console.WriteLine("i'm flying a short distance");
+    }
+
+    public void Gobble()
+    {
+        Console.WriteLine("Gobble");
+    }
+}
+
+/// <summary>
+///  火鸡适配器，实现鸭子接口，当作鸭子进行使用
+/// 对象适配器模式
+/// </summary>
+public class TurkeyAdapter : IDuck
+{
+    /// <summary>
+    /// 组合方式实现适配转换
+    /// </summary>
+    private readonly WildTurkey turkey;
+    public TurkeyAdapter(WildTurkey tk)
+    {
+        turkey = tk;
+    }
+    public void Fly()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            turkey.Fly();
+        }
+    }
+
+    public void Quack()
+    {
+        turkey.Gobble();
     }
 }
 ```
+
 
 ---
 
@@ -826,3 +896,5 @@ public class PowerAdapter:TwoHole,IThreeHole
 [C#设计模式总结](http://www.cnblogs.com/zhili/p/DesignPatternSummery.html)
 
 [C#设计模式之十二代理模式（Proxy Pattern）](https://www.cnblogs.com/PatrickLiu/p/7814004.html)
+
+[使用C# (.NET Core) 实现适配器模式 (Adapter Pattern) 和外观模式 (Facade Pattern)](https://www.cnblogs.com/cgzl/p/8854372.html)
