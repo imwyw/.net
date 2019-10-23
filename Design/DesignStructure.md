@@ -808,7 +808,7 @@ GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Compress, t
 
 对象适配器（对象组合实现）：(**推荐**)
 
-![](../assets/Design/adapter-uml-class.png)
+![](../assets/Design/adapter-uml-obj.png)
 
 其中 Client 只知道目标接口, 适配器实现了这个目标接口, 适配器是通过组合的方式与被适配者结合到了一起, 所有的请求都被委托给了被适配者.
 
