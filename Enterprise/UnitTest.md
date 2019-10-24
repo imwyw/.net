@@ -45,17 +45,17 @@ TearDown Attribute | 在一个TestFixture中提供一个通用的功能集，这
 #### 安装
 我们以一个简单三层的案例来进行Nunit的示例，添加Test项目并通过NuGet包管理器添加对Nunit的引用：
 
-![](..\assets\Enterprise\Nunit_nuget1.png)
+![](../assets/Enterprise/Nunit_nuget1.png)
 
 <a id="markdown-创建测试方法" name="创建测试方法"></a>
 #### 创建测试方法
 针对上一步添加的【Test】项目添加引用，我们针对BLL业务逻辑的接口进行单元测试，添加对BLL和MODEL层的引用，如下：
 
-![](..\assets\Enterprise\Nunit_create1.png)
+![](../assets/Enterprise/Nunit_create1.png)
 
 由于我们需要通过单元测试模拟UI层的调用，测试的接口包含有数据访问，所以对应单元测试项目也要添加相应的配置文件包含数据库连接字符串。如下：
 
-![](..\assets\Enterprise\Nunit_create2.png)
+![](../assets/Enterprise/Nunit_create2.png)
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -85,15 +85,15 @@ public class TestArticle
 
 在进行Nunit单元测试的运行时，需要安装TestAdapter适配器，如果已经安装过请略过此步骤。
 
-![](..\assets\Enterprise\Nunit_adapter1.png)
+![](../assets/Enterprise/Nunit_adapter1.png)
 
 调出测试资源管理器窗口，在测试资源管理器中会自动显示当前测试项目已经添加的单元测试方法，如图：
 
-![](..\assets\Enterprise\Nunit_create3.png)
+![](../assets/Enterprise/Nunit_create3.png)
 
 接下来，我们就可以进行运行和调试，在【测试资源管理器】窗口中运行或者选择进行调试：
 
-![](..\assets\Enterprise\Nunit_run1.gif)
+![](../assets/Enterprise/Nunit_run1.gif)
 
 <a id="markdown-ms-test" name="ms-test"></a>
 ## MS Test
