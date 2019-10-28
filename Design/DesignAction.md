@@ -33,33 +33,15 @@
 ```cs
 class Program
 {
-    static void Main(string[] args)
+    public static void Main()
     {
-        ConcreteAggregate agg = new ConcreteAggregate();
-        Iterator it = agg.CreateIterator();
-
-        while (it.HasNext())
+        ConcreteAggregate agg1 = new ConcreteAggregate("hello world!");
+        Iterator it1 = agg1.CreateIterator();
+        while (it1.HasNext())
         {
-            Console.WriteLine(it.Next());
+            Console.WriteLine(it1.Next());
         }
     }
-}
-
-/// <summary>
-/// 迭代器接口
-/// </summary>
-public interface Iterator
-{
-    /// <summary>
-    /// 是否有下一个元素
-    /// </summary>
-    /// <returns></returns>
-    bool HasNext();
-    /// <summary>
-    /// 返回下一个元素
-    /// </summary>
-    /// <returns></returns>
-    object Next();
 }
 
 /// <summary>
@@ -78,35 +60,18 @@ public abstract class Aggregate
     public abstract Iterator CreateIterator();
 }
 
-/// <summary>
-/// 具体迭代器类
-/// </summary>
-public class ConcreteIterator : Iterator
+public interface Iterator
 {
     /// <summary>
-    /// 迭代器中具体聚合对象
+    /// 是否有下一个元素
     /// </summary>
-    ConcreteAggregate aggregate;
+    /// <returns></returns>
+    bool HasNext();
     /// <summary>
-    /// 当前索引
+    /// 返回当前元素，并将指针后移一位
     /// </summary>
-    int index = 0;
-    /// <summary>
-    /// 通过构造函数将聚合对象传入
-    /// </summary>
-    /// <param name="agg"></param>
-    public ConcreteIterator(ConcreteAggregate agg)
-    {
-        aggregate = agg;
-    }
-    public bool HasNext()
-    {
-        return index < aggregate.Length;
-    }
-    public object Next()
-    {
-        return aggregate[index++];
-    }
+    /// <returns></returns>
+    object Next();
 }
 
 /// <summary>
@@ -114,34 +79,50 @@ public class ConcreteIterator : Iterator
 /// </summary>
 public class ConcreteAggregate : Aggregate
 {
-    string[] array;
-    public ConcreteAggregate()
+    public ConcreteAggregate(string str)
     {
-        array = new string[] { "h", "e", "l", "l", "o" };
+        array = str.ToCharArray();
     }
+    char[] array;
 
     public override int Length
     {
-        get
-        {
-            return array.Length;
-        }
+        get { return array.Length; }
+    }
+
+    public char this[int i]
+    {
+        get { return array[i]; }
+        set { array[i] = value; }
     }
 
     public override Iterator CreateIterator()
     {
         return new ConcreteIterator(this);
     }
+}
 
+public class ConcreteIterator : Iterator
+{
     /// <summary>
-    /// 具体集合类中定义一个索引器
+    /// 当前指向的索引位置
     /// </summary>
-    /// <param name="i"></param>
-    /// <returns></returns>
-    public string this[int i]
+    int index;
+    /// <summary>
+    /// 具体的聚合对象
+    /// </summary>
+    ConcreteAggregate agg;
+    public ConcreteIterator(ConcreteAggregate concrete)
     {
-        get { return array[i]; }
-        set { array[i] = value; }
+        agg = concrete;
+    }
+    public bool HasNext()
+    {
+        return index < agg.Length;
+    }
+    public object Next()
+    {
+        return agg[index++];
     }
 }
 ```
@@ -187,17 +168,16 @@ public class ArrayList : IList, ICollection, IEnumerable, ICloneable
 ```cs
 class Program
 {
-    static void Main(string[] args)
+    public static void Main()
     {
-        StrCollection stc = new StrCollection();
-        StrIterator ite = new StrIterator(stc);
-        while (ite.MoveNext())
+        IEnumerable c1 = new StrCollection("nice day!");
+        IEnumerator it1 = c1.GetEnumerator();
+        while (it1.MoveNext())
         {
-            Console.WriteLine(ite.Current);
+            Console.WriteLine(it1.Current);
         }
-
-        //等同于上面的while循环进行遍历元素
-        foreach (var item in stc)
+        Console.WriteLine("=======================================");
+        foreach (var item in c1)
         {
             Console.WriteLine(item);
         }
@@ -211,29 +191,20 @@ class Program
 /// </summary>
 public class StrCollection : IEnumerable
 {
-    string[] collections;
-    public StrCollection()
+    char[] collections;
+    public StrCollection(string content)
     {
-        collections = new string[] { "h", "e", "l", "l", "o" };
+        collections = content.ToCharArray();
     }
-    public int GetLength()
-    {
-        return collections.Length;
-    }
-    /// <summary>
-    /// 通过索引器返回指定索引位置的元素
-    /// </summary>
-    /// <param name="i"></param>
-    /// <returns></returns>
-    public string this[int i]
+    public char this[int i]
     {
         get { return collections[i]; }
         set { collections[i] = value; }
     }
-    /// <summary>
-    /// 构造一个自定义迭代器
-    /// </summary>
-    /// <returns></returns>
+    public int Length
+    {
+        get { return collections.Length; }
+    }
     public IEnumerator GetEnumerator()
     {
         return new StrIterator(this);
@@ -247,11 +218,11 @@ public class StrCollection : IEnumerable
 public class StrIterator : IEnumerator
 {
     StrCollection aggregate;
-    int index = 0;
-    string current;
-    public StrIterator(StrCollection agg)
+    int index;
+    object current;
+    public StrIterator(StrCollection collection)
     {
-        aggregate = agg;
+        aggregate = collection;
     }
     public object Current
     {
@@ -263,117 +234,20 @@ public class StrIterator : IEnumerator
 
     public bool MoveNext()
     {
-        if (index < aggregate.GetLength())
+        if (index < aggregate.Length)
         {
             current = aggregate[index++];
             return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     public void Reset()
     {
         index = 0;
-    }
-}
-
-/// <summary>
-/// 迭代器接口
-/// </summary>
-public interface Iterator
-{
-    /// <summary>
-    /// 是否有下一个元素
-    /// </summary>
-    /// <returns></returns>
-    bool HasNext();
-    /// <summary>
-    /// 返回下一个元素
-    /// </summary>
-    /// <returns></returns>
-    object Next();
-}
-
-/// <summary>
-/// 抽象聚合类
-/// </summary>
-public abstract class Aggregate
-{
-    /// <summary>
-    /// 聚合对象拥有元素个数
-    /// </summary>
-    public abstract int Length { get; }
-    /// <summary>
-    /// 创建迭代器
-    /// </summary>
-    /// <returns></returns>
-    public abstract Iterator CreateIterator();
-}
-
-/// <summary>
-/// 具体迭代器类
-/// </summary>
-public class ConcreteIterator : Iterator
-{
-    /// <summary>
-    /// 迭代器中具体聚合对象
-    /// </summary>
-    ConcreteAggregate aggregate;
-    /// <summary>
-    /// 当前索引
-    /// </summary>
-    int index = 0;
-    /// <summary>
-    /// 通过构造函数将聚合对象传入
-    /// </summary>
-    /// <param name="agg"></param>
-    public ConcreteIterator(ConcreteAggregate agg)
-    {
-        aggregate = agg;
-    }
-    public bool HasNext()
-    {
-        return index < aggregate.Length;
-    }
-    public object Next()
-    {
-        return aggregate[index++];
-    }
-}
-
-/// <summary>
-/// 具体集合类
-/// </summary>
-public class ConcreteAggregate : Aggregate
-{
-    string[] array;
-    public ConcreteAggregate()
-    {
-        array = new string[] { "h", "e", "l", "l", "o" };
-    }
-
-    public override int Length
-    {
-        get
-        {
-            return array.Length;
-        }
-    }
-
-    public override Iterator CreateIterator()
-    {
-        return new ConcreteIterator(this);
-    }
-
-    /// <summary>
-    /// 具体集合类中定义一个索引器
-    /// </summary>
-    /// <param name="i"></param>
-    /// <returns></returns>
-    public string this[int i]
-    {
-        get { return array[i]; }
-        set { array[i] = value; }
     }
 }
 ```
@@ -382,7 +256,9 @@ public class ConcreteAggregate : Aggregate
 ### 新特性简化迭代器的实现
 在C# 2.0后可以通过yield return语句简化迭代器的实现。
 
-yield是C#为了简化遍历操作实现的语法糖，我们知道如果要某个类型支持遍历就必须要实现系统接口IEnumerable，这个接口后续实现比较繁琐要写一大堆代码才能支持真正的遍历功能。如下：
+yield是C#为了简化遍历操作实现的语法糖，我们知道如果要某个类型支持遍历就必须要实现系统接口IEnumerable，
+
+这个接口后续实现比较繁琐要写一大堆代码才能支持真正的遍历功能。如下：
 
 ```cs
 class Program
