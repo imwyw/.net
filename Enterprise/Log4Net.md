@@ -22,11 +22,11 @@ github开源：https://github.com/apache/logging-log4net
 
 在项目上右键选择【管理NuGet程序包...】，添加Log4Net扩展
 
-![](..\assets\Enterprise\Log4Net_1.png)
+![](../assets/Enterprise/Log4Net_1.png)
 
 安装后会自动添加项目引用log4net，如图：
 
-![](..\assets\Enterprise\Log4Net_2.png)
+![](../assets/Enterprise/Log4Net_2.png)
 
 【packages.config】文件中也自动添加log4net对应版本的引用：
 

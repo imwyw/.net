@@ -53,23 +53,23 @@ ORM框架负责把从数据库传回的记录集转换为对象，也可以依�
 
 在项目上右键新建项，新增【ADO.NET 实体数据模型】。
 
-![](..\assets\adonet\EF_create1.png)
+![](../assets/adonet/EF_create1.png)
 
 选择【来自数据库的EF设计器】
 
-![](..\assets\adonet\EF_create2.png)
+![](../assets/adonet/EF_create2.png)
 
 如果已经存在需要连接数据库的连接可以直接使用。否则可以进行新建连接进行创建，在【连接属性】窗口中填入对应服务器名称、验证方式、数据库名称，如下：
 
-![](..\assets\adonet\EF_create3.png)
+![](../assets/adonet/EF_create3.png)
 
 设置实体数据模型，如下：
 
-![](..\assets\adonet\EF_create4.png)
+![](../assets/adonet/EF_create4.png)
 
 项目中会自动生成对应的数据模型，如下：
 
-![](..\assets\adonet\EF_create5.png)
+![](../assets/adonet/EF_create5.png)
 
 以上，针对Database First这种创建方式就完成了。
 
@@ -80,7 +80,7 @@ ORM框架负责把从数据库传回的记录集转换为对象，也可以依�
 
 以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，在Diagram界面右键选择【从数据库更新模型...】即可，如下：
 
-![](..\assets\adonet\EF_update_model.png)
+![](../assets/adonet/EF_update_model.png)
 
 完成更新后，就会将底层最新的库表结构转换为实体类。
 
@@ -134,7 +134,7 @@ EF的重点和精华都不在Entity Client 方式，当然也不推荐这种用�
 
 DbContext的派生类【`ARTICLE_DBEntities`】相当于一个数据库，之后实例化【`ARTICLE_DBEntities`】就相当于打开了一次数据库，跟数据库建立了一次连接。
 
-![](..\assets\adonet\EF_dbcontext1.png)
+![](../assets/adonet/EF_dbcontext1.png)
 
 自定义构造方法的传参
 ```cs
@@ -598,7 +598,7 @@ var res = ArticleMgr.Manager.QueryPager<V_GET_ARTICLE>("v_get_article", "*", "",
 
 并且UI层MVC项目中的web.config文件需要添加EntityFramework的connectionStrings配置项，如下图所示：
 
-![](..\assets\adonet\EF_web_config.png)
+![](../assets/adonet/EF_web_config.png)
 
 
 <a id="markdown-其他" name="其他"></a>
@@ -609,7 +609,7 @@ var res = ArticleMgr.Manager.QueryPager<V_GET_ARTICLE>("v_get_article", "*", "",
 
 git上ABP项目PlugInDemo为例，运行前需要执行Update-Database迁移Entity Framework。如下图
 
-![](..\assets\adonet\EF-update.jpg)
+![](../assets/adonet/EF-update.jpg)
 
 
 ---
