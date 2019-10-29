@@ -313,7 +313,9 @@ public IEnumerator GetEnumerator()
 <a id="markdown-observer-观察者模式-发送状态变化的通知" name="observer-观察者模式-发送状态变化的通知"></a>
 ## Observer 观察者模式-发送状态变化的通知
 
-观察者模式定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象，这个主题对象在状态发生变化时，会通知所有观察者对象，使它们能够自动更新自己的行为。
+观察者模式定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象，
+
+这个主题对象在状态发生变化时，会通知所有观察者对象，使它们能够自动更新自己的行为。
 
 对应类图如下：
 
@@ -334,18 +336,59 @@ public IEnumerator GetEnumerator()
 ```cs
 class Program
 {
-    static void Main(string[] args)
+    public static void Main()
     {
-        NumberGenerator rdGene = new RandomNumberGenerator();
-
-        IObserver dgObs = new DigitObserver();
-        rdGene.AddObserver(dgObs);
-
-        IObserver ghObs = new GraphObserver();
-        rdGene.AddObserver(ghObs);
-
-        rdGene.Excute();
+        NumberGenerator generator = new RandomNumberGenerator();
+        generator.AddObserver(new DigitObserver());
+        generator.AddObserver(new GraphObserver());
+        for (int i = 0; i < 20; i++)
+        {
+            generator.Excute();
+        }
     }
+}
+
+/// <summary>
+/// 被观察主体 抽象类
+/// </summary>
+public abstract class NumberGenerator
+{
+    protected List<IObserver> obsList = new List<IObserver>();
+    /// <summary>
+    /// 添加观察对象
+    /// </summary>
+    /// <param name="obs"></param>
+    public void AddObserver(IObserver obs)
+    {
+        obsList.Add(obs);
+    }
+    /// <summary>
+    /// 通知所有观察对象
+    /// </summary>
+    public void NotifyObserver()
+    {
+        foreach (var item in obsList)
+        {
+            item.Update(this);
+        }
+    }
+    /// <summary>
+    /// 移除观察者
+    /// </summary>
+    /// <param name="obs"></param>
+    public void RemoveObserver(IObserver obs)
+    {
+        obsList.Remove(obs);
+    }
+    /// <summary>
+    /// 执行业务操作，最终通知所有观察对象
+    /// </summary>
+    public abstract void Excute();
+    /// <summary>
+    /// 获取数值
+    /// </summary>
+    /// <returns></returns>
+    public abstract int GetNumber();
 }
 
 /// <summary>
@@ -355,87 +398,23 @@ public interface IObserver
 {
     void Update(NumberGenerator generator);
 }
-
 /// <summary>
-/// 抽象观察主体
-/// </summary>
-public abstract class NumberGenerator
-{
-    protected List<IObserver> lstObservers = new List<IObserver>();
-
-    /// <summary>
-    /// 添加观察对象
-    /// </summary>
-    /// <param name="obs"></param>
-    public void AddObserver(IObserver obs)
-    {
-        lstObservers.Add(obs);
-    }
-
-    /// <summary>
-    /// 移除观察对象
-    /// </summary>
-    /// <param name="obs"></param>
-    public void RemoveObserver(IObserver obs)
-    {
-        lstObservers.Remove(obs);
-    }
-
-    /// <summary>
-    /// 通知更新
-    /// </summary>
-    public void NotifyObserver()
-    {
-        foreach (IObserver item in lstObservers)
-        {
-            item.Update(this);
-        }
-    }
-
-    /// <summary>
-    /// 获取数值
-    /// </summary>
-    /// <returns></returns>
-    public abstract int GetNumber();
-
-    /// <summary>
-    /// 生成数值
-    /// </summary>
-    public abstract void Excute();
-}
-
-/// <summary>
-/// 具体观察对象，被观察
+/// 随机数产生类
 /// </summary>
 public class RandomNumberGenerator : NumberGenerator
 {
-    Random rd = new Random();
-
-    //当前数值
     int number;
-
-    /// <summary>
-    /// 生成20个随机数
-    /// </summary>
+    Random rd = new Random();
     public override void Excute()
     {
-        for (int i = 0; i < 20; i++)
-        {
-            number = rd.Next(0, 50);
-            NotifyObserver();
-        }
+        number = rd.Next(0, 10);
+        NotifyObserver();
     }
-
-    /// <summary>
-    /// 获取当前数
-    /// </summary>
-    /// <returns></returns>
     public override int GetNumber()
     {
         return number;
     }
 }
-
 /// <summary>
 /// 具体观察类，数字响应
 /// </summary>
@@ -443,11 +422,9 @@ public class DigitObserver : IObserver
 {
     public void Update(NumberGenerator generator)
     {
-        Console.WriteLine("DigitObserver out:" + generator.GetNumber());
-        Thread.Sleep(100);
+        Console.WriteLine("DigitObserver:" + generator.GetNumber());
     }
 }
-
 /// <summary>
 /// 具体观察类，模拟图像响应
 /// </summary>
@@ -455,12 +432,12 @@ public class GraphObserver : IObserver
 {
     public void Update(NumberGenerator generator)
     {
-        Console.WriteLine("GraphObserver out:");
+        StringBuilder builder = new StringBuilder("GraphObserver:");
         for (int i = 0; i < generator.GetNumber(); i++)
         {
-            Console.Write("*");
+            builder.Append("*");
         }
-        Thread.Sleep(100);
+        Console.WriteLine(builder);
     }
 }
 ```
@@ -476,7 +453,7 @@ class Program
     static void Main(string[] args)
     {
         Tencent game = new TencentGame();
-        IObserverSubscriber jack = new ConcreteSubscriber("jack");
+        ISubscriber jack = new ConcreteSubscriber("jack");
         game.AddObserver(jack);
 
         //模拟发布消息
@@ -487,7 +464,7 @@ class Program
 /// <summary>
 /// 订阅者接口
 /// </summary>
-public interface IObserverSubscriber
+public interface ISubscriber
 {
     void Update(Tencent tencent);
 }
@@ -505,24 +482,24 @@ public abstract class Tencent
     /// <summary>
     /// 保存订阅者列表
     /// </summary>
-    List<IObserverSubscriber> lstObservers = new List<IObserverSubscriber>();
+    List<ISubscriber> subList = new List<ISubscriber>();
 
     /// <summary>
     /// 添加订阅者
     /// </summary>
     /// <param name="obs"></param>
-    public void AddObserver(IObserverSubscriber obs)
+    public void AddObserver(ISubscriber obs)
     {
-        lstObservers.Add(obs);
+        subList.Add(obs);
     }
 
     /// <summary>
     /// 删除订阅者
     /// </summary>
     /// <param name="obs"></param>
-    public void RemoveObserver(IObserverSubscriber obs)
+    public void RemoveObserver(ISubscriber obs)
     {
-        lstObservers.Remove(obs);
+        subList.Remove(obs);
     }
 
     /// <summary>
@@ -530,7 +507,7 @@ public abstract class Tencent
     /// </summary>
     public void NotifyObservers()
     {
-        foreach (IObserverSubscriber item in lstObservers)
+        foreach (ISubscriber item in subList)
         {
             item.Update(this);
         }
@@ -556,7 +533,7 @@ public class TencentGame : Tencent
 /// <summary>
 /// 具体订阅者类
 /// </summary>
-public class ConcreteSubscriber : IObserverSubscriber
+public class ConcreteSubscriber : ISubscriber
 {
     /// <summary>
     /// 订阅者名称
@@ -570,31 +547,39 @@ public class ConcreteSubscriber : IObserverSubscriber
 
     public void Update(Tencent tencent)
     {
-        Console.Write(Name + "\t收到新的推送消息\t");
-        Console.WriteLine("订阅消息发送至邮箱，内容：" + tencent.Message);
+        Console.Write($"{Name}\t收到新的推送消息\t");
+        Console.WriteLine($"订阅消息发送至邮箱，内容：{tencent.Message}");
     }
 }
 ```
 
 在.NET中我们还可以使用委托和事件来简化Observer模式的实现，上面腾讯订阅号使用委托和事件的实现如下：
+
 ```cs
 class Program
 {
     static void Main(string[] args)
     {
         Tencent game = new TencentGame();
-        ConcreteSubscriber jack = new ConcreteSubscriber("jack");
-        game.AddObserver(jack.Update);
 
-        ConcreteSubscriber lucy = new ConcreteSubscriber("lucy");
-        game.AddObserver(lucy.Update);
+        // 通过lambda表达式注册观察方法
+        game.AddObserver((t) =>
+        {
+            Console.WriteLine($"收到【{t.Message}】，jack不能再玩了，要专注于学习");
+        });
+        game.AddObserver((t) =>
+        {
+            Console.WriteLine($"收到【{t.Message}】，rose还要继续浪。。。");
+        });
 
-        game.Publish("快和好友一起来农药吧");
+        //模拟发布消息
+        game.Publish("王者荣耀新皮肤！双11特价");
     }
 }
 
 /// <summary>
-/// 委托 充当观察者接口
+/// 声明委托，代替观察者列表，代表观察者接口中Update方法
+/// 通过注册方法的方式增加监听
 /// </summary>
 /// <param name="sender"></param>
 public delegate void NotifyEventHandler(Tencent sender);
@@ -605,31 +590,31 @@ public delegate void NotifyEventHandler(Tencent sender);
 public abstract class Tencent
 {
     /// <summary>
+    /// 代替 List<IObserver>观察者列表
+    /// </summary>
+    NotifyEventHandler handler;
+
+    /// <summary>
     /// 消息内容
     /// </summary>
     public string Message { get; set; }
 
     /// <summary>
-    /// 充当 观察者列表
-    /// </summary>
-    NotifyEventHandler notifyEvents;
-
-    /// <summary>
     /// 添加订阅者
     /// </summary>
     /// <param name="obs"></param>
-    public void AddObserver(NotifyEventHandler ob)
+    public void AddObserver(NotifyEventHandler action)
     {
-        notifyEvents += ob;
+        handler += action;
     }
 
     /// <summary>
     /// 删除订阅者
     /// </summary>
     /// <param name="obs"></param>
-    public void RemoveObserver(NotifyEventHandler ob)
+    public void RemoveObserver(NotifyEventHandler action)
     {
-        notifyEvents -= ob;
+        handler -= action;
     }
 
     /// <summary>
@@ -637,7 +622,7 @@ public abstract class Tencent
     /// </summary>
     public void NotifyObservers()
     {
-        notifyEvents(this);
+        handler.Invoke(this);
     }
 
     /// <summary>
@@ -654,28 +639,6 @@ public class TencentGame : Tencent
         Message = msg;
         Console.WriteLine(Message);
         NotifyObservers();
-    }
-}
-
-/// <summary>
-/// 具体订阅者类
-/// </summary>
-public class ConcreteSubscriber
-{
-    /// <summary>
-    /// 订阅者名称
-    /// </summary>
-    public string Name { get; set; }
-
-    public ConcreteSubscriber(string name)
-    {
-        Name = name;
-    }
-
-    public void Update(Tencent tencent)
-    {
-        Console.Write(Name + "\t收到新的推送消息\t");
-        Console.WriteLine("订阅消息发送至邮箱，内容：" + tencent.Message);
     }
 }
 ```
