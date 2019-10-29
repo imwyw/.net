@@ -153,3 +153,12 @@ public class File
 
 
 
+---
+
+参考引用：
+
+[C#命名规则和编码规范](https://www.jianshu.com/p/dc26cb8ffcb9)
+
+[Internal Coding Guidelines](https://blogs.msdn.microsoft.com/brada/2005/01/26/internal-coding-guidelines/)
+
+[C#编码规范](https://gist.github.com/zhuqling/a2700703d088b8746f0c)
