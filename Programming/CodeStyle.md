@@ -1,7 +1,73 @@
+<!-- TOC -->
+
+- [C#编码规范](#c编码规范)
+    - [概述](#概述)
+        - [规范制定原则](#规范制定原则)
+        - [术语定义](#术语定义)
+    - [代码外观](#代码外观)
+        - [列宽](#列宽)
+        - [换行](#换行)
+        - [缩进](#缩进)
+        - [空行](#空行)
+        - [空格](#空格)
+        - [括号 - ()](#括号---)
+        - [花括号 - {}](#花括号---)
+    - [程序注释](#程序注释)
+        - [注释概述](#注释概述)
+        - [文档型注释](#文档型注释)
+        - [类c注释](#类c注释)
+        - [单行注释](#单行注释)
+    - [声明](#声明)
+        - [每行声明数](#每行声明数)
+        - [初始化](#初始化)
+        - [位置](#位置)
+        - [类和接口的声明](#类和接口的声明)
+        - [字段的声明](#字段的声明)
+    - [命名规范](#命名规范)
+        - [命名概述](#命名概述)
+        - [大小写规则](#大小写规则)
+        - [缩写](#缩写)
+        - [命名空间](#命名空间)
+        - [类](#类)
+        - [接口](#接口)
+        - [属性类 (Attribute)](#属性类-attribute)
+        - [枚举 (Enum)](#枚举-enum)
+        - [参数](#参数)
+        - [方法](#方法)
+        - [属性 (property)](#属性-property)
+        - [事件](#事件)
+        - [常量 (const)](#常量-const)
+        - [字段](#字段)
+        - [静态字段](#静态字段)
+        - [集合](#集合)
+        - [措词](#措词)
+    - [语句](#语句)
+        - [每行一个语句](#每行一个语句)
+        - [复合语句](#复合语句)
+        - [return 语句](#return-语句)
+        - [if、 if-else、if else-if 语句](#if-if-elseif-else-if-语句)
+        - [for、foreach 语句](#forforeach-语句)
+        - [while 语句](#while-语句)
+        - [do - while 语句](#do---while-语句)
+        - [switch - case 语句](#switch---case-语句)
+        - [try - catch 语句](#try---catch-语句)
+        - [using 块语句](#using-块语句)
+    - [控件命名规则](#控件命名规则)
+        - [命名方法](#命名方法)
+        - [主要控件名简写对照表](#主要控件名简写对照表)
+    - [其他](#其他)
+        - [表达式](#表达式)
+        - [类型转换](#类型转换)
+
+<!-- /TOC -->
+
+<a id="markdown-c编码规范" name="c编码规范"></a>
 # C#编码规范
 
+<a id="markdown-概述" name="概述"></a>
 ## 概述
 
+<a id="markdown-规范制定原则" name="规范制定原则"></a>
 ### 规范制定原则
 
 * 方便代码的交流和维护。
@@ -9,6 +75,7 @@
 * 使代码更美观、阅读更方便。
 * 使代码的逻辑更清晰、更易于理解。
 
+<a id="markdown-术语定义" name="术语定义"></a>
 ### 术语定义
 
 **Pascal 大小写**
@@ -59,12 +126,15 @@
 - hwnd： h表示句柄，wnd表示窗口，合起来为“窗口句柄”。
 - m_bFlag： m表示成员变量，b表示布尔，合起来为：“某个类的成员变量，布尔型，是一个状态标志”。
 
+<a id="markdown-代码外观" name="代码外观"></a>
 ## 代码外观
 
+<a id="markdown-列宽" name="列宽"></a>
 ### 列宽
 
 代码列宽控制在120字符左右。
 
+<a id="markdown-换行" name="换行"></a>
 ### 换行
 
 当表达式超出或即将超出规定的列宽，遵循以下规则进行换行
@@ -75,12 +145,14 @@
 
 当以上规则会导致代码混乱的时候自己采取更灵活的换行规则。
 
+<a id="markdown-缩进" name="缩进"></a>
 ### 缩进 
 
 缩进应该是每行一个Tab(4个空格)，不要在代码中使用Tab字符。
 
 Visual Studio 设置：工具->选项->文本编辑器->C#->制表符->插入空格，制表符大小=4，缩进大小=4
 
+<a id="markdown-空行" name="空行"></a>
 ### 空行
 
 空行是为了将逻辑上相关联的代码分块，以便提高代码的可阅读性。
@@ -101,6 +173,7 @@ Visual Studio 设置：工具->选项->文本编辑器->C#->制表符->插入空
 - 属性与方法、属性与字段、方法与字段之间。
 - 注释与它注释的语句间不空行，但与其他的语句间空一行。
 
+<a id="markdown-空格" name="空格"></a>
 ### 空格
 
 **在以下情况中要使用到空格**
@@ -130,12 +203,14 @@ PrintSize("size is " + size + "\n");
 
 ` for (expr1; expr2; expr3) `
 
+<a id="markdown-括号---" name="括号---"></a>
 ### 括号 - ()
 
 - 左括号“(”不要紧靠关键字，中间用一个空格隔开。
 - 左括号“(”与方法名之间不要添加任何空格。
 - 没有必要的话不要在返回语句中使用()。
 
+<a id="markdown-花括号---" name="花括号---"></a>
 ### 花括号 - {}
 
 - 左花括号 “{” 放于关键字或方法名的下一行并与之对齐。如：
@@ -175,8 +250,10 @@ while(1)
 } // end forever
 ```
 
+<a id="markdown-程序注释" name="程序注释"></a>
 ## 程序注释
 
+<a id="markdown-注释概述" name="注释概述"></a>
 ### 注释概述
 
 - 修改代码时，总是使代码周围的注释保持最新。
@@ -204,6 +281,7 @@ namespace SCB.Framework.Web
 } // namespace SCB.Framework.Web
 ```
 
+<a id="markdown-文档型注释" name="文档型注释"></a>
 ### 文档型注释
 
 该类注释采用.Net已定义好的Xml标签来标记，在声明接口、类、方法、属性、字段都应该使用该类注释，以便代码完成后直接生成代码文档，让别人更好的了解代码的实现和接口。如
@@ -223,6 +301,7 @@ public static void MyMethod(int Int1)
 
 注释标签的使用请参考:[http://msdn.microsoft.com/zh-cn/library/5ast78ax.aspx](http://msdn.microsoft.com/zh-cn/library/5ast78ax.aspx "Microsoft Recommended Tags for Documentation Comments (C# Programming Guide)")
 
+<a id="markdown-类c注释" name="类c注释"></a>
 ### 类c注释
 
 该类注释用于
@@ -237,6 +316,7 @@ public static void MyMethod(int Int1)
 */
 ```
 
+<a id="markdown-单行注释" name="单行注释"></a>
 ### 单行注释
 
 该类注释用于
@@ -264,8 +344,10 @@ if (1 == 1) // always true
 } // always true
 ```
 
+<a id="markdown-声明" name="声明"></a>
 ## 声明
 
+<a id="markdown-每行声明数" name="每行声明数"></a>
 ### 每行声明数
 
 一行只建议作一个声明，并按字母顺序排列。如：
@@ -276,10 +358,12 @@ int size; // 推荐
 int x, y; // 不推荐
 ```
 
+<a id="markdown-初始化" name="初始化"></a>
 ### 初始化
 
 建议在变量声明时就对其做初始化。
 
+<a id="markdown-位置" name="位置"></a>
 ### 位置
 
 变量建议置于块的开始处，不要总是在第一次使用它们的地方做声明。如：
@@ -323,12 +407,14 @@ void MyMethod()
 }
 ```
 
+<a id="markdown-类和接口的声明" name="类和接口的声明"></a>
 ### 类和接口的声明
 
 - 在方法名与其后的左括号间没有任何空格。
 - 左花括号 “{” 出现在声明的下行并与之对齐，单独成行。
 - 方法间用一个空行隔开。
 
+<a id="markdown-字段的声明" name="字段的声明"></a>
 ### 字段的声明
 
 不要使用是 public 或 protected 的实例字段。如果避免将字段直接公开给开发人员，可以更轻松地对类进行版本控制，原因是在维护二进制兼容性时字段不能被更改为属性。考虑为字段提供 get 和set 属性访问器，而不是使它们成为公共的。 get 和 set 属性访问器中可执行代码的存在使得可以进行后续改进，如在使用属性或者得到属性更改通知时根据需要创建对象。下面的代码示例阐释带有 get 和 set 属性访问器的私有实例字段的正确使用。例：
@@ -348,8 +434,10 @@ public class Control: Component
 }
 ```
 
+<a id="markdown-命名规范" name="命名规范"></a>
 ## 命名规范
 
+<a id="markdown-命名概述" name="命名概述"></a>
 ### 命名概述
 
 > 名称应该说明“什么”而不是“如何”。通过避免使用公开基础实现（它们会发生改变）的名称，可以保留简化复杂性的抽象层。例如，可以使用 `GetNextStudent()`，而不是 `GetNextArrayElement`()。 
@@ -369,6 +457,7 @@ public class Control: Component
 - 即使对于可能仅出现在几个代码行中的生存期很短的变量，仍然使用有意义的名称。仅对于短循环索引使用单字母变量名，如 i 或 j。 可能的情况下，尽量不要使用原义数字（幻数）或原义字符串，如
 `for (int i = 1; i < 7; i++)`。而是使用命名常数，如 `for (int i = 1; i < NUM_DAYS_IN_WEEK; i++)` 以便于维护和理解。
 
+<a id="markdown-大小写规则" name="大小写规则"></a>
 ### 大小写规则
 
 **大写**
@@ -471,6 +560,7 @@ SCB.Framework.UI
     </tbody>
 </table>
 
+<a id="markdown-缩写" name="缩写"></a>
 ### 缩写
 
 为了避免混淆和保证跨语言交互操作，请遵循有关区缩写的使用的下列规则： 
@@ -482,6 +572,7 @@ SCB.Framework.UI
 - 在使用缩写时，对于超过两个字符长度的缩写请使用 Pascal 大小写或 Camel 大小写。例如使用 `HtmlButton` 或 `HTMLButton`；但是，应当大写仅有两个字符的缩写，如：`System.IO`，而不是 `System.Io`。
 - 不要在标识符或参数名称中使用缩写。如果必须使用缩写，对于由多于两个字符所组成的缩写请使用Camel 大小写。
 
+<a id="markdown-命名空间" name="命名空间"></a>
 ### 命名空间
 
 - 命名命名空间时的一般性规则是使用公司名称，后跟技术名称和可选的功能与设计，如：
@@ -499,6 +590,7 @@ namespace SCB.SupplierChain.DataRules // 赛酷比公司的供应链系统的业
 - `TechnologyName` 指的是该项目的英文缩写或软件名。
 - 命名空间和类不能使用同样的名字。例如，有一个类被命名为`Debug`后，就不要再使用`Debug`作为一个名称空间名。
  
+<a id="markdown-类" name="类"></a>
 ### 类
 
 - 使用 Pascal 大小写。
@@ -515,6 +607,7 @@ public class Button
 public class String
 ```
 
+<a id="markdown-接口" name="接口"></a>
 ### 接口
 
 - 用名词或名词短语，或者描述行为的形容词命名接口。例：
@@ -545,6 +638,7 @@ public class Component: IComponent
 }
 ```
 
+<a id="markdown-属性类-attribute" name="属性类-attribute"></a>
 ### 属性类 (Attribute)
 
 应该总是将后缀 Attribute 添加到自定义属性类。例：
@@ -555,6 +649,7 @@ public class ObsoleteAttribute
 }
 ```
 
+<a id="markdown-枚举-enum" name="枚举-enum"></a>
 ### 枚举 (Enum)
 
 枚举 (Enum) 值类型从 Enum 类继承。 
@@ -565,6 +660,7 @@ public class ObsoleteAttribute
 - 对大多数 Enum 类型使用单数名称，但是对作为位域的 Enum 类型使用复数名称。
 - 总是将 `FlagsAttribute` 添加到位域 Enum 类型。
 
+<a id="markdown-参数" name="参数"></a>
 ### 参数
  
 - 使用描述性参数名称。参数名称应当具有足够的描述性，以便参数的名称及其类型可用于在大多数情况下确定它的含义。
@@ -578,6 +674,7 @@ Type GetType(string typeName)
 string Format(string format, object args)
 ```
 
+<a id="markdown-方法" name="方法"></a>
 ### 方法
  
 - 使用动词或动词短语命名方法。 
@@ -589,6 +686,7 @@ GetCharArray()
 Invoke()
 ```
 
+<a id="markdown-属性-property" name="属性-property"></a>
 ### 属性 (property)
 
 - 使用名词或名词短语命名属性。 
@@ -631,6 +729,7 @@ public class Control
 }
 ```
 
+<a id="markdown-事件" name="事件"></a>
 ### 事件
  
 - 对事件处理程序名称使用 `EventHandler` 后缀。 
@@ -679,12 +778,14 @@ public class MouseEventArgs : EventArgs
 }
 ```
 
+<a id="markdown-常量-const" name="常量-const"></a>
 ### 常量 (const)
  
 所有单词大写，多个单词之间用 "_" 隔开。 如：
 
 `public const string PAGE_TITLE = "Welcome";`
 
+<a id="markdown-字段" name="字段"></a>
 ### 字段
  
 - private、protected 使用 Camel 大小写。
@@ -729,24 +830,29 @@ public struct Color
 }
 ```
 
+<a id="markdown-静态字段" name="静态字段"></a>
 ### 静态字段
  
 - 使用名词、名词短语或者名词的缩写命名静态字段。
 - 使用 Pascal 大小写。
 - 建议尽可能使用静态属性而不是公共静态字段。
 
+<a id="markdown-集合" name="集合"></a>
 ### 集合
 
 集合是一组组合在一起的类似的类型化对象，如哈希表、查询、堆栈、字典和列表，集合的命名建议用复数。
 
+<a id="markdown-措词" name="措词"></a>
 ### 措词
 
 避免使用与常用的 .NET 框架命名空间重复的类名称。例如，不要将以下任何名称用作类名称：System、Collections、Forms 或 UI。有关 .NET 框架命名空间的列表，请参阅类库。
 
 另外，避免使用与C#语言关键字冲突的标识符。
 
+<a id="markdown-语句" name="语句"></a>
 ## 语句
 
+<a id="markdown-每行一个语句" name="每行一个语句"></a>
 ### 每行一个语句
 
 每行最多包含一个语句。如：
@@ -757,6 +863,7 @@ b--; // 推荐
 a++; b--; // 不推荐
 ```
 
+<a id="markdown-复合语句" name="复合语句"></a>
 ### 复合语句
 
 复合语句是指包含"父语句{子语句;子语句;}"的语句，使用复合语句应遵循以下几点
@@ -772,6 +879,7 @@ while(d += s++)
 }
 ```
 
+<a id="markdown-return-语句" name="return-语句"></a>
 ### return 语句
 
 return语句中不使用括号，除非它能使返回值更加清晰。如：
@@ -782,6 +890,7 @@ return myDisk.size();
 return (size ? size : defaultSize);
 ```
 
+<a id="markdown-if-if-elseif-else-if-语句" name="if-if-elseif-else-if-语句"></a>
 ### if、 if-else、if else-if 语句
  
 if、 if-else、if else-if 语句使用格式
@@ -815,6 +924,7 @@ else
 }
 ```
 
+<a id="markdown-forforeach-语句" name="forforeach-语句"></a>
 ### for、foreach 语句
 
 **for 语句使用格式**
@@ -844,6 +954,7 @@ foreach (object obj in array)
 - 在循环过程中不要修改循环计数器。
 - 对每个空循环体给出确认性注释。
 
+<a id="markdown-while-语句" name="while-语句"></a>
 ### while 语句
 
 **while 语句使用格式**
@@ -859,6 +970,7 @@ while (condition)
 
 `while (condition);`
  
+<a id="markdown-do---while-语句" name="do---while-语句"></a>
 ### do - while 语句
 
 do - while 语句使用格式
@@ -870,6 +982,7 @@ do
 } while (condition);
 ```
 
+<a id="markdown-switch---case-语句" name="switch---case-语句"></a>
 ### switch - case 语句
 
 switch - case语句使用格式
@@ -897,6 +1010,7 @@ switch (condition)
 - 为所有switch语句提供default分支。 
 - 所有的非空 case 语句必须用 break; 语句结束。
 
+<a id="markdown-try---catch-语句" name="try---catch-语句"></a>
 ### try - catch 语句
 
 try - catch语句使用格式
@@ -916,6 +1030,7 @@ finally
 }
 ```
 
+<a id="markdown-using-块语句" name="using-块语句"></a>
 ### using 块语句
 
 using 块语句使用格式
@@ -927,12 +1042,15 @@ using (object)
 }
 ```
 
+<a id="markdown-控件命名规则" name="控件命名规则"></a>
 ## 控件命名规则
 
+<a id="markdown-命名方法" name="命名方法"></a>
 ### 命名方法
 
 控件名简写+英文描述，英文描述首字母大写
 
+<a id="markdown-主要控件名简写对照表" name="主要控件名简写对照表"></a>
 ### 主要控件名简写对照表
 
 - 控件名 => 简写
@@ -961,13 +1079,16 @@ using (object)
 - ValidatorSummary => vs
 - CrystalReportViewer => rptvew
 
+<a id="markdown-其他" name="其他"></a>
 ## 其他
 
+<a id="markdown-表达式" name="表达式"></a>
 ### 表达式
 
 - 避免在表达式中用赋值语句
 - 避免对浮点类型做等于或不等于判断
 
+<a id="markdown-类型转换" name="类型转换"></a>
 ### 类型转换
 
 - 尽量避免强制类型转换。
