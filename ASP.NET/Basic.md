@@ -42,34 +42,19 @@
 
 Login.html内容如下：
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>登录</title>
-    <meta charset="utf-8" />
-</head>
-<body>
-    <h1>欢迎使用xxxx</h1>
-    <form>
-        <table>
-            <tr>
-                <td><label for="txtName">用户名：</label></td>
-                <td><input type="text" id="txtName" name="name"/></td>
-            </tr>
-            <tr>
-                <td><label for="txtPwd">密码：</label></td>
-                <td><input type="password" id="txtPwd" name="pwd"/></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" />
-                </td>
-            </tr>
-        </table>
-    </form>
-</body>
-</html>
+<form>
+	<fieldset>
+		<label for="txtName">用户名：</label>
+		<input type="text" id="txtName" name="name" />
+	</fieldset>
+	<fieldset>
+		<label for="txtPwd">密码：</label>
+		<input type="password" id="txtPwd" name="pwd" />
+	</fieldset>
+	<fieldset>
+		<input type="submit" value="登录" />
+	</fieldset>
+</form>
 ```
 
 以上，即可以通过开始执行(ctrl+f5)通过浏览器查看该页面。
@@ -113,6 +98,7 @@ public class HomeHandler : IHttpHandler
 ```
 
 修改HomeHandler.ashx一般处理程序的ProcessRequest方法，内容如下：
+
 ```cs
 /// <summary>
 /// 处理http请求
@@ -188,6 +174,7 @@ public void Login(HttpContext context)
 ```
 
 并修改上述Login.html中form的action为对应的处理程序增加/Login方法名，如下：
+
 ```html
 <form id="form1" action="/HomeHandler.ashx/Login" method="post">
 ```
@@ -301,7 +288,9 @@ Application["AllGuests"] =(int)Application["AllGuests"]+ 1;//访问网站的总�
 Application.UnLock();//同步结束
 ```
 
-考虑多用户的情况，我们使用Application进行记录在线用户数，需要处理所有的客户端请求，所以需要有一个全局的请求处理，对应如下操作：
+考虑多用户的情况，我们使用Application进行记录在线用户数，
+
+需要处理所有的客户端请求，添加【全局应用程序类】：
 
 ![](../assets/asp.net/Global.asax.jpg)
 
@@ -369,7 +358,9 @@ public class Global : System.Web.HttpApplication
 #### Cache
 Cache对象用于在HTTP请求间保存页面或数据。该对象的使用可以极大地提高整个应用程序的效率。
 
-常用于将频繁访问的大量服务器资源存储在内存中，当用户发出相同的请求后服务器不再次处理而是将Cache中保存的信息返回给用户，节省了服务器处理请求的时间。
+常用于将频繁访问的大量服务器资源存储在内存中，
+
+当用户发出相同的请求后服务器不再次处理而是将Cache中保存的信息返回给用户，节省了服务器处理请求的时间。
 
 其生存期依赖于该应用程序的生存期。
 
@@ -386,7 +377,9 @@ string NameID = context.Cache["nameID"].ToString();
 
 <a id="markdown-cookie" name="cookie"></a>
 #### Cookie
-Cookie 提供了一种在 Web 应用程序中存储用户特定信息的方法。例如，当用户访问您的站点时，您可以使用 Cookie 存储用户首选项或其他信息。
+Cookie 提供了一种在 Web 应用程序中存储用户特定信息的方法。
+
+例如，当用户访问您的站点时，您可以使用 Cookie 存储用户首选项或其他信息。
 
 当该用户再次访问您的网站时，应用程序便可以检索以前存储的信息。
 
@@ -422,7 +415,8 @@ if (context.Request.Cookies["CurUser"] != null)
 }
 
 /*
-不能直接删除用户计算机中的 Cookie。但是，可以通过将 Cookie 的到期日期设置为过去的日期，让用户的浏览器来删除 Cookie。
+不能直接删除用户计算机中的 Cookie。
+但是，可以通过将 Cookie 的到期日期设置为过去的日期，让用户的浏览器来删除 Cookie。
 当用户下一次向设置该 Cookie 的域或路径内的页发出请求时，浏览器将确定该 Cookie 已到期并将其移除。
 */
 if (context.Request.Cookies["CurUser"] != null)
@@ -484,12 +478,15 @@ JSON.parse(Cookies.get('stu')); // => {name: "lucy", age: 12}
 
 <a id="markdown-数据传递问题" name="数据传递问题"></a>
 ### 数据传递问题
+
 <a id="markdown-request" name="request"></a>
 #### Request
 请求对象，用来从客户端取得信息，包括浏览器种类、用户输入表单的数据、Cookies中的数据等信息。
 
 当客户端发出请求执行asp.net程序时，CLR会将客户端的请求信息包含在Request对象中。
+
 可以通过Request.<Collection>方式来使用该对象，其中Collection包括四种集合：
+
 1. QueryString：收集请求url地址中"?"号后面的数据
 2. Form：收集post方法传递的数据
 3. Cookies：获取客户端的Cookie值
