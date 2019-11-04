@@ -1334,3 +1334,7 @@ public class Student
 [C# 中自定义Attribute值的获取与优化](http://kb.cnblogs.com/page/87531/)
 
 [关于C# 中的Attribute 特性](http://blog.csdn.net/hegx2001/article/details/50352225)
+
+[FlagsAttribute 类](https://docs.microsoft.com/zh-cn/dotnet/api/system.flagsattribute?redirectedfrom=MSDN&view=netframework-4.8)
+
+[C#枚举中的位运算权限分配浅谈](https://blog.csdn.net/qq_27880427/article/details/52692093)
