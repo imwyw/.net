@@ -473,30 +473,13 @@ Cookies.remove('name'); // fail!
 Cookies.remove('name', { path: '' }); // removed!
 ```
 
-JSON格式：
+对象的保存，需要进行JSON格式的转换：
 ```js
-/*
-When creating a cookie you can pass an Array or Object Literal instead of a string in the value.
-If you do so, js-cookie will store the string representation of the object according to JSON.stringify:
-set()方法写入对象或数组时，js-cookie会帮你序列化操作，及通过JSON.stringify()
-*/
-Cookies.set('name', { foo: 'bar' });
+Cookies.set('stu', JSON.stringify({ name:"lucy",age:12 }));
 
-/*
-When reading a cookie with the default Cookies.get api, 
-you receive the string representation stored in the cookie:
-get()方法返回的是序列化后的字符串
-*/
-Cookies.get('name'); // => '{"foo":"bar"}'
-Cookies.get(); // => { name: '{"foo":"bar"}' }
-
-/*
-When reading a cookie with the Cookies.getJSON api, 
-you receive the parsed representation of the string stored in the cookie according to JSON.parse:
-使用getJSON()方法可以返回对象
-*/
-Cookies.getJSON('name'); // => { foo: 'bar' }
-Cookies.getJSON(); // => { name: { foo: 'bar' } }
+Cookies.get(); // => { stu: "{"name":"lucy","age":12}" }
+Cookies.get('stu'); // => '{"name":"lucy","age":12}'
+JSON.parse(Cookies.get('stu')); // => {name: "lucy", age: 12}
 ```
 
 <a id="markdown-数据传递问题" name="数据传递问题"></a>
@@ -821,3 +804,10 @@ Thanks,
 Alex Gavrilov
 由 Microsoft 在 2015/4/29 於 8:04 公佈
 Thank you for your feedback, we are currently reviewing the issue you have submitted. If you require immediate assistance with this issue, please contact product support at http://support.microsoft.com/ph/1117.
+
+
+---
+
+参考引用：
+
+[99%的人理解错 HTTP 中 GET 与 POST 的区别](https://www.oschina.net/news/77354/http-get-post-different)
