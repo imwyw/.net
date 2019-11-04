@@ -13,8 +13,11 @@
             - [Request](#request)
             - [Response](#response)
     - [Ajax](#ajax)
-        - [同步异步](#同步异步)
-        - [通过js请求](#通过js请求)
+        - [构造函数](#构造函数)
+        - [方法open()](#方法open)
+        - [方法send()](#方法send)
+        - [方法setRequestHeader()](#方法setrequestheader)
+        - [使用XMLHttpRequest对象来发送一个Ajax请求](#使用xmlhttprequest对象来发送一个ajax请求)
     - [JSON](#json)
         - [对象和JSON格式互相转换](#对象和json格式互相转换)
             - [System.Runtime.Serialization](#systemruntimeserialization)
@@ -501,39 +504,101 @@ JSON.parse(Cookies.get('stu')); // => {name: "lucy", age: 12}
 
 <a id="markdown-ajax" name="ajax"></a>
 ## Ajax
+ajax是一种技术方案，但并不是一种新技术。
 
-<a id="markdown-同步异步" name="同步异步"></a>
-### 同步异步
-同步：发送方发出请求后，等接收方发回响应后，才会发送下一个请求。
+它依赖的是现有的CSS/HTML/Javascript，而其中最核心的依赖是浏览器提供的XMLHttpRequest对象。
 
-异步：发送方发出请求后，不等接收方发回响应，直接发送下一个请求。
+使用 XMLHttpRequest（XHR）对象可以与服务器交互。
 
-<a id="markdown-通过js请求" name="通过js请求"></a>
-### 通过js请求
+可以从URL获取数据，而无需让整个的页面刷新。
+
+这允许网页在不影响用户的操作的情况下更新页面的局部内容。
+
+
+<a id="markdown-构造函数" name="构造函数"></a>
+### 构造函数
+`XMLHttpRequest()`该构造函数用于初始化一个 XMLHttpRequest 对象。
+
+```js
+var xhr = new XMLHttpRequest();
+```
+
+<a id="markdown-方法open" name="方法open"></a>
+### 方法open()
+`XMLHttpRequest.open()` 方法初始化一个请求。该方法要从JavaScript代码使用；
+
+```js
+/*
+method：要使用的HTTP方法，比如「GET」、「POST」、「PUT」、「DELETE」、等。对于非HTTP(S) URL被忽略。
+url：一个DOMString表示要向其发送请求的URL。
+async 可选：一个可选的布尔参数，默认为true，表示要不要异步执行操作。如果值为false，send()方法直到收到答复前不会返回。如果true，已完成事务的通知可供事件监听器使用。
+user 可选：可选的用户名用于认证用途；默认为null。
+password 可选：可选的密码用于认证用途，默认为null。
+*/
+xhrReq.open(method, url, [async, user, password]);
+```
+
+<a id="markdown-方法send" name="方法send"></a>
+### 方法send()
+`XMLHttpRequest.send()` 方法用于发送 HTTP 请求。
+
+如果是异步请求（默认为异步请求），则此方法会在请求发送后立即返回；
+
+如果是同步请求，则此方法直到响应到达后才会返回。
+
+`XMLHttpRequest.send()` 方法接受一个可选的参数，其作为请求主体；
+
+如果请求方法是 GET 或者 HEAD，则应将请求主体设置为 null。
+
+<a id="markdown-方法setrequestheader" name="方法setrequestheader"></a>
+### 方法setRequestHeader()
+XMLHttpRequest.setRequestHeader() 是设置HTTP请求头部的方法。
+
+- 此方法必须在  open() 方法和 send()   之间调用。
+
+- 方法的第一个参数 header 大小写不敏感，即可以写成content-type。
+
+- Content-Type的默认值与具体发送的数据类型有关。
+
+需要注意的是，xhr.send(data)中data参数的数据类型会影响请求头部content-type的默认值：
+* 如果data是 Document 类型，同时也是HTML Document类型，则content-type默认值为text/html;charset=UTF-8;否则为application/xml;charset=UTF-8；
+* 如果data是 DOMString 类型，content-type默认值为text/plain;charset=UTF-8；
+* 如果data是 FormData 类型，content-type默认值为multipart/form-data; boundary=[xxx]
+* 如果data是其他类型，则不会设置content-type的默认值
+
+通常在post请求时，将参数以键值对方式传递(name1=value1&name2=value2)，将【content-type】设置为:
+```js
+//发送合适的请求头信息
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+```
+
+<a id="markdown-使用xmlhttprequest对象来发送一个ajax请求" name="使用xmlhttprequest对象来发送一个ajax请求"></a>
+### 使用XMLHttpRequest对象来发送一个Ajax请求
 
 原生js的ajax请求流程：
 
 ```js
 1）创建XMLHttpRequest对象
-	//其中`new ActiveXObject("Microsoft.XMLHTTP")`是为旧版本的IE考虑
-	var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-
+	var req = new XMLHttpRequest();
 
 2）发送AJAX请求
 	GET请求：
-	req.open('GET', './Handlers/AjaxHandler.ashx?username=zhangsan&sex=boy', true);
+	req.open('GET', '/Handlers/AjaxHandler.ashx?username=zhangsan&sex=boy');
 	req.send(null);
+	------------------------------------------------------------
 	POST请求：
-	req.open('POST', './Handlers/AjaxHandler.ashx', true);
+	req.open('POST', '/Handlers/AjaxHandler.ashx');
+	// 发送合适的请求头信息，必不可少！
 	req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	req.send('username=zhangsan&sex=boy');
 
 3）接收AJAX响应
 	req.onreadystatechange = function () {
-		if (req.readyState == 4 && req.status == 200) {
+		if (req.readyState == XMLHttpRequest.DONE && req.status == 200) {
 			alert('响应消息的正文内容：' + req.responseText);
 		}
 	};
+	
 	其中，readyState可以取如下值：
 	0 (未初始化，XMLHttpRequest对象已经创建，但尚未初始化，还没有调用open方法)
 	1 (已经调用send方法，正在发送HTTP请求) 
@@ -541,7 +606,7 @@ JSON.parse(Cookies.get('stu')); // => {name: "lucy", age: 12}
 	3 (正在解析响应内容，但状态和响应头还不可用) 
 	4 (完成)
 
-	status的取值：
+	status 返回了XMLHttpRequest 响应中的数字状态码,status码是标准的HTTP status codes
 	1**	信息，服务器收到请求，需要请求者继续执行操作
 	2**	成功，操作被成功接收并处理
 	3**	重定向，需要进一步的操作以完成请求
@@ -554,7 +619,7 @@ JSON.parse(Cookies.get('stu')); // => {name: "lucy", age: 12}
 ```js
 //调用示例
 myAjax({
-	url: '../Handler/HomeHandler.ashx/Add',
+	url: '/Handler/HomeHandler.ashx/Add',
 	type: 'POST',
 	data: {
 		name: name,
@@ -585,7 +650,7 @@ option = {
 */
 function myAjax(option) {
 	//1、创建XMLHttpRequest对象
-	var req = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+	var req = new XMLHttpRequest();
 
 	//默认为GET方式
 	option.type = option.type || "GET";
@@ -610,9 +675,9 @@ function myAjax(option) {
 	4 (完成)
 	*/
 	req.onreadystatechange = function () {
-		if (req.readyState == 4 && req.status == 200) {
+		if (req.readyState == XMLHttpRequest.DONE && req.status == 200) {
 			option.success(req.response);
-		} else if (req.readyState == 4) {
+		} else if (req.readyState == XMLHttpRequest.DONE) {
 			option.error(req.response);
 		}
 	}
@@ -622,7 +687,7 @@ function myAjax(option) {
 function formatParams(data) {
 	var arr = [];
 	for (var name in data) {
-		// encodeURIComponent方法在编码单个URIComponent（指请求参数）应当是最常用的，它可以讲参数中的中文、特殊字符进行转义，而不会影响整个URL。
+		// encodeURIComponent方法在编码单个URIComponent（指请求参数）应当是最常用的，它可以将参数中的中文、特殊字符进行转义，而不会影响整个URL。
 		arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
 	}
 	arr.push(("v=" + Math.random()).replace(".", ""));
@@ -808,3 +873,7 @@ Thank you for your feedback, we are currently reviewing the issue you have submi
 参考引用：
 
 [99%的人理解错 HTTP 中 GET 与 POST 的区别](https://www.oschina.net/news/77354/http-get-post-different)
+
+[XMLHttpRequest](https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest)
+
+[你真的会使用XMLHttpRequest吗？](https://segmentfault.com/a/1190000004322487)
