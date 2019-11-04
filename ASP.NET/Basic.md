@@ -361,9 +361,9 @@ public class Global : System.Web.HttpApplication
 }
 ```
 
-前面说到的记录在线用户数，就需要使用`Application_BeginRequest`事件，`Session_Start`事件和`Session_End`事件
+前面说到的记录在线用户数，就需要使用`Application_Start`事件，`Session_Start`事件和`Session_End`事件
 
-在`Application_BeginRequest`程序启动时将计数归零，`Session_Start`和`Session_End`会话开始和结束的时候分别做加减。
+在`Application_Start`程序启动时将计数归零，`Session_Start`和`Session_End`会话开始和结束的时候分别做加减。
 
 <a id="markdown-cache" name="cache"></a>
 #### Cache
