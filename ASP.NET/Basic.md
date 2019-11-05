@@ -390,17 +390,17 @@ Cookie 提供了一种在 Web 应用程序中存储用户特定信息的方法�
 /*
 cookie的设置方式一
 */
-context.Response.Cookies["CurUser"]["name"] = name;
-context.Response.Cookies["CurUser"]["pwd"] = pwd;
-//设置过期时间为1小时
-context.Response.Cookies["CurUser"].Expires = DateTime.Now.AddHours(1);
+context.Response.Cookies["name"] = name;
+context.Response.Cookies["pwd"] = pwd;
+
+context.Response.Cookies["name"].Expires = DateTime.Now.AddHours(1);//设置过期时间为1小时
+context.Response.Cookies["pwd"].Expires = DateTime.Now.AddMinutes(1);//设置过期时间为1分钟
 
 /*
 cookie的设置方式二
 */
 HttpCookie hcookie = new HttpCookie("CurAdmin");
-hcookie["uid"] = name;
-hcookie["pass"] = pwd;
+hcookie.Value = "zhangsan";
 //30s后过期
 hcookie.Expires = DateTime.Now.AddSeconds(30);
 context.Response.Cookies.Add(hcookie);
@@ -408,13 +408,9 @@ context.Response.Cookies.Add(hcookie);
 /*
 cookie的读取
 */
-if (context.Request.Cookies["CurUser"] != null)
+if (context.Request.Cookies["name"] != null)
 {
-	string userSettings;
-	if (context.Request.Cookies["CurUser"]["name"] != null)
-	{
-		userSettings = context.Request.Cookies["CurUser"]["name"];
-	}
+	string userName = context.Request.Cookies["name"].Value;
 }
 
 /*
