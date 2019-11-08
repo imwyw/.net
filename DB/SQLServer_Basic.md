@@ -5,6 +5,7 @@
         - [1NF一范式](#1nf一范式)
         - [2NF二范式](#2nf二范式)
         - [3NF三范式](#3nf三范式)
+        - [BCNF范式](#bcnf范式)
     - [语句](#语句)
         - [创建数据库](#创建数据库)
         - [DDL-数据定义语言(Data Definition Language)](#ddl-数据定义语言data-definition-language)
@@ -126,6 +127,11 @@
 符合3NF的表结构：
 
 ![](../assets/SqlServer/3nf-3.jpg)
+
+<a id="markdown-bcnf范式" name="bcnf范式"></a>
+### BCNF范式
+
+TODO。。。
 
 
 <a id="markdown-语句" name="语句"></a>
