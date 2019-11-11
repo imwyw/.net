@@ -13,6 +13,7 @@
     - [SqlHelper类的封装](#sqlhelper类的封装)
         - [基本封装](#基本封装)
         - [插入Null值](#插入null值)
+    - [SqlHelper标准封装](#sqlhelper标准封装)
     - [Guid的应用](#guid的应用)
         - [Unique Int64](#unique-int64)
     - [ADO.NET Oracle](#adonet-oracle)
@@ -1007,6 +1008,12 @@ public static int Add()
     return res;
 }
 ```
+
+<a id="markdown-sqlhelper标准封装" name="sqlhelper标准封装"></a>
+## SqlHelper标准封装
+链接：
+
+> https://github.com/imwyw/.net/blob/master/Persistence/SQLHelper.cs
 
 <a id="markdown-guid的应用" name="guid的应用"></a>
 ## Guid的应用
