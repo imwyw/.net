@@ -2,9 +2,10 @@
 
 - [EntityFramework](#entityframework)
     - [三种开发方式](#三种开发方式)
-    - [Database First](#database-first)
+    - [CodeFirst](#codefirst)
+    - [DatabaseFirst](#databasefirst)
         - [EF创建](#ef创建)
-    - [更新模型](#更新模型)
+        - [更新模型](#更新模型)
     - [EF应用](#ef应用)
         - [Entity Client 方式](#entity-client-方式)
         - [Object Context 方式](#object-context-方式)
@@ -40,12 +41,16 @@ ORM框架负责把从数据库传回的记录集转换为对象，也可以依�
 
 <a id="markdown-三种开发方式" name="三种开发方式"></a>
 ## 三种开发方式
-* Code First 先设计实体类，执行后既有底层库表。即先有代码再有数据库。
-* Database First 先设计并建好数据库，然后使用VS的向导创建EF数据模型并生成实体类代码。 实用，推荐！！！
-* Model First 在可视化设计器中创建实体和它们间的关联，再生成SQL脚本，然后执行SQL脚本完成数据库的创建。不推荐
+* Code First 先设计实体类，执行后既有底层库表。即先有代码再有数据库。推荐！！！
+* Database First 先设计并建好数据库，然后使用VS的向导创建EF数据模型并生成实体类代码。
+* Model First 在可视化设计器中创建实体和它们间的关联，再生成SQL脚本，然后执行SQL脚本完成数据库的创建。
 
-<a id="markdown-database-first" name="database-first"></a>
-## Database First
+<a id="markdown-codefirst" name="codefirst"></a>
+## CodeFirst
+
+
+<a id="markdown-databasefirst" name="databasefirst"></a>
+## DatabaseFirst
 
 <a id="markdown-ef创建" name="ef创建"></a>
 ### EF创建
@@ -76,7 +81,7 @@ ORM框架负责把从数据库传回的记录集转换为对象，也可以依�
 **有一点需要特别注意，EF只能映射具有主键的表，无主键的表是无法映射的。**
 
 <a id="markdown-更新模型" name="更新模型"></a>
-## 更新模型
+### 更新模型
 
 以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，在Diagram界面右键选择【从数据库更新模型...】即可，如下：
 
@@ -619,3 +624,10 @@ git上ABP项目PlugInDemo为例，运行前需要执行Update-Database迁移Enti
 [初识EntityFramework6](http://www.cnblogs.com/wujingtao/p/5401132.html)
 
 [.NET Entity Framework(EF)使用SqlQuery直接操作SQL查询语句或者执行过程](https://www.ofnhkb1.com/chenmo/128.html)
+
+[8天掌握EF的Code First开发系列之动手写第一个Code First应用](https://www.cnblogs.com/farb/p/FirstCodeFirstApp.html)
+
+[Code First开发系列之领域建模和管理实体关系](https://www.cnblogs.com/farb/p/CodeFirstDomainModeling.html)
+
+[Code First开发系列之数据库迁移](https://www.cnblogs.com/farb/p/DBMigration.html)
+
