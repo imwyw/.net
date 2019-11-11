@@ -20,8 +20,8 @@
         - [使用XMLHttpRequest对象来发送一个Ajax请求](#使用xmlhttprequest对象来发送一个ajax请求)
     - [JSON](#json)
         - [对象和JSON格式互相转换](#对象和json格式互相转换)
+            - [Newtonsoft.Json(推荐)](#newtonsoftjson推荐)
             - [System.Runtime.Serialization](#systemruntimeserialization)
-            - [Newtonsoft.Json](#newtonsoftjson)
     - [疑难杂症](#疑难杂症)
         - [CompositionFailedException](#compositionfailedexception)
 
@@ -610,6 +610,10 @@ xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	5**	服务器错误，服务器在处理请求的过程中发生了错误
 ```
 
+get请求：
+```js
+var xhr = 
+```
 
 原生js封装ajax流程：
 ```js
@@ -727,6 +731,49 @@ JSON.parse('{"id":123,"userid":"coder1"}');// {id: 123, userid: "coder1"}
 <a id="markdown-对象和json格式互相转换" name="对象和json格式互相转换"></a>
 ### 对象和JSON格式互相转换
 
+<a id="markdown-newtonsoftjson推荐" name="newtonsoftjson推荐"></a>
+#### Newtonsoft.Json(推荐)
+使用第三方 Newtonsoft.Json.net进行序列化和反序列化：
+
+Serialize JSON
+```cs
+Product product = new Product();
+product.Name = "Apple";
+product.Expiry = new DateTime(2008, 12, 28);
+product.Sizes = new string[] { "Small" };
+
+string json = JsonConvert.SerializeObject(product);
+// {
+//   "Name": "Apple",
+//   "Expiry": "2008-12-28T00:00:00",
+//   "Sizes": [
+//     "Small"
+//   ]
+// }
+```
+
+Deserialize JSON
+```cs
+string json = @"{
+  'Name': 'Bad Boys',
+  'ReleaseDate': '1995-4-7T00:00:00',
+  'Genres': [
+    'Action',
+    'Comedy'
+  ]
+}";
+
+Movie m = JsonConvert.DeserializeObject<Movie>(json);
+
+string name = m.Name;
+// Bad Boys
+```
+
+Newtonsoft默认序列化会带来一个问题，时间格式中默认会有一个【T】，可以通过修改时间格式解决：
+```cs
+JsonConvert.SerializeObject(list, new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" });
+```
+
 <a id="markdown-systemruntimeserialization" name="systemruntimeserialization"></a>
 #### System.Runtime.Serialization
 使用.NET提供的功能，需要添加System.Runtime.Serialization.dll引用
@@ -787,49 +834,6 @@ public class ResultState
 	[DataMember]
 	public string Message { get; set; }
 }
-```
-
-<a id="markdown-newtonsoftjson" name="newtonsoftjson"></a>
-#### Newtonsoft.Json
-使用第三方 Newtonsoft.Json.net进行序列化和反序列化：
-
-Serialize JSON
-```cs
-Product product = new Product();
-product.Name = "Apple";
-product.Expiry = new DateTime(2008, 12, 28);
-product.Sizes = new string[] { "Small" };
-
-string json = JsonConvert.SerializeObject(product);
-// {
-//   "Name": "Apple",
-//   "Expiry": "2008-12-28T00:00:00",
-//   "Sizes": [
-//     "Small"
-//   ]
-// }
-```
-
-Deserialize JSON
-```cs
-string json = @"{
-  'Name': 'Bad Boys',
-  'ReleaseDate': '1995-4-7T00:00:00',
-  'Genres': [
-    'Action',
-    'Comedy'
-  ]
-}";
-
-Movie m = JsonConvert.DeserializeObject<Movie>(json);
-
-string name = m.Name;
-// Bad Boys
-```
-
-Newtonsoft默认序列化会带来一个问题，时间格式中默认会有一个【T】，可以通过修改时间格式解决：
-```cs
-JsonConvert.SerializeObject(list, new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" });
 ```
 
 <a id="markdown-疑难杂症" name="疑难杂症"></a>
