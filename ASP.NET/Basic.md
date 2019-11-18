@@ -22,6 +22,11 @@
         - [对象和JSON格式互相转换](#对象和json格式互相转换)
             - [Newtonsoft.Json(推荐)](#newtonsoftjson推荐)
             - [System.Runtime.Serialization](#systemruntimeserialization)
+    - [跨域](#跨域)
+        - [一般处理程序-CORS](#一般处理程序-cors)
+        - [JSONP](#jsonp)
+        - [和风天气调用](#和风天气调用)
+        - [心知天气调用跨域案例](#心知天气调用跨域案例)
     - [疑难杂症](#疑难杂症)
         - [CompositionFailedException](#compositionfailedexception)
 
@@ -836,6 +841,253 @@ public class ResultState
 }
 ```
 
+<a id="markdown-跨域" name="跨域"></a>
+## 跨域
+同源策略是一种约定，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，浏览器很容易受到XSS、CSRF等攻击。
+
+所谓同源是指"协议+域名+端口"三者相同，即便两个不同的域名指向同一个ip地址，也非同源。
+
+![](../assets/asp.net/url_explain.png)
+
+同源策略限制内容有：
+* Cookie、LocalStorage、IndexedDB 等存储性内容
+* DOM 节点
+* AJAX 请求发送后，结果被浏览器拦截了
+
+但是有三个标签是允许跨域加载资源：
+* `<img src=XXX>`
+* `<link href=XXX>`
+* `<script src=XXX>`
+
+当协议、子域名、主域名、端口号中任意一个不相同时，都算作不同域。不同域之间相互请求资源，就算作"跨域"。
+
+常见跨域场景如下图所示：
+
+![](../assets/asp.net/cross_domain_explain.png)
+
+跨域并不是请求发不出去，请求能发出去，服务端能收到请求并正常返回结果，只是结果被浏览器拦截了。
+
+<a id="markdown-一般处理程序-cors" name="一般处理程序-cors"></a>
+### 一般处理程序-CORS
+
+有【Student】类如下：
+```cs
+class Student
+{
+	public Student(int score) { Score = score; }
+	public int Score { get; set; }
+	public string Judge
+	{
+		get
+		{
+			if (Score < 60) { return "未通过"; }
+			else { return "已通过"; }
+		}
+	}
+}
+```
+
+一般处理程序【HomeHandler】，根据请求参数分数返回学生对象
+```cs
+public void ProcessRequest(HttpContext context)
+{
+	int score = int.Parse(context.Request["score"]);
+	Student s = new Student(score);
+	context.Response.Write(Newtonsoft.Json.JsonConvert.SerializeObject(s));
+}
+```
+
+发布网站，通过url进行访问：
+```url
+http://localhost:9001/HomeHandler.ashx?score=90
+// output: {"Score":90,"Judge":"已通过"}
+```
+
+创建新的项目，模拟跨域访问
+```js
+$.ajax({
+	url: 'http://localhost:9001/HomeHandler.ashx',
+	dataType: 'json',
+	data: { score: 90 },
+	method: 'post',
+}).done(function (resp) {
+	console.log(resp);
+}).fail(function (err) {
+	console.error(err);
+}).always(function (resp) {
+	console.info('finish');
+});
+
+/*
+抛出异常信息如下：
+Access to XMLHttpRequest at 'http://localhost:9001/HomeHandler.ashx' 
+from origin 'http://localhost:59399' has been blocked by CORS policy: 
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+*/
+```
+
+可以通过修改一般处理程序允许跨域访问，修改【ProcessRequest】方法：
+```cs
+public void ProcessRequest(HttpContext context)
+{
+	// 允许跨域访问
+	context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+
+	int score = int.Parse(context.Request["score"]);
+	Student s = new Student(score);
+	context.Response.Write(Newtonsoft.Json.JsonConvert.SerializeObject(s));
+}
+```
+
+新增【Access-Control-Allow-Origin】设置，原请求即可以正常访问。
+
+以上是通过修改后台方法实现，较为简单。
+
+<a id="markdown-jsonp" name="jsonp"></a>
+### JSONP
+JSONP是JSON with Padding的略称。
+
+它是一个非官方的协议，它允许在服务器端集成Script tags返回至客户端，
+
+通过javascript callback的形式实现跨域访问（这仅仅是JSONP简单的实现形式）。
+
+在上述案例中，修改一般处理程序【HomeHandler】如下：
+```cs
+public void ProcessRequest(HttpContext context)
+{
+	// 参数中指定的回调函数名
+	string callback = context.Request["callback"];
+	int score = int.Parse(context.Request["score"]);
+
+	Student s = new Student(score);
+	string jsonStr = Newtonsoft.Json.JsonConvert.SerializeObject(s);
+	
+	context.Response.ContentType = "application/json";
+	// 返回形式：callback(data)，即在客户端进行调用
+	context.Response.Write($"{callback}({jsonStr})");
+}
+```
+
+前端以jquery封装ajax为例进行jsonp调用：
+```js
+$.ajax({
+	url: 'http://localhost:9001/HomeHandler.ashx',
+	dataType: 'jsonp',
+	jsonpCallback: 'getResult',
+	data: { score: 90 },
+	method: 'post',
+}).done(function (resp) {
+	console.log(resp);
+}).fail(function (err) {
+	console.error(err);
+}).always(function (resp) {
+	console.info('finish');
+});
+
+function getResult(data) {
+	debugger;
+}
+```
+
+创建一个回调函数，然后在远程服务上调用这个函数并且将JSON 数据形式作为参数传递，完成回调。
+
+<a id="markdown-和风天气调用" name="和风天气调用"></a>
+### 和风天气调用
+
+[和风天气](https://dev.heweather.com/)
+
+可以跨域访问：
+```js
+$.ajax({
+	url: 'https://free-api.heweather.net/s6/weather/now',
+	dataType: 'json',
+	method: 'post',
+	data: {
+		key: '5a731c7828654c36b2cdca90c38058b1',
+		location: 'wuhu'
+	}
+}).done(function (resp) {
+	console.log(resp);
+}).fail(function (err) {
+	console.error(err);
+});
+```
+
+<a id="markdown-心知天气调用跨域案例" name="心知天气调用跨域案例"></a>
+### 心知天气调用跨域案例
+
+[心知天气](https://www.seniverse.com/)
+
+无法直接跨域访问：
+```js
+$.ajax({
+	url: 'https://api.seniverse.com/v3/weather/now.json',
+	dataType: 'json',
+	method: 'post',
+	data: {
+		key: 'SdkANqWkZKziScAnm',
+		location: 'wuhu'
+	}
+}).done(function (resp) {
+	console.log(resp);
+}).fail(function (err) {
+	console.error(err);
+});
+
+/*
+抛出异常信息：
+
+Access to XMLHttpRequest at 'https://api.seniverse.com/v3/weather/now.json' 
+from origin 'http://localhost:59399' has been blocked by CORS policy: 
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+*/
+```
+
+在一般处理程序中可以实现如下封装：
+```cs
+public class WeatherHandler : IHttpHandler
+{
+	public void ProcessRequest(HttpContext context)
+	{
+		// 查询天气的城市
+		string location = context.Request["location"];
+		// 基本url
+		string baseUrl = "https://api.seniverse.com/v3/weather/now.json";
+		// 个人账户的key值
+		string key = "SdkANqWkZKziScAnm";
+		// 拼接天气查询url
+		string url = $"{baseUrl}?key={key}&location={location}";
+
+		// 模拟请求调用
+		HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+		req.Method = "GET";
+		HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+		string jsonStr = string.Empty;
+		using (Stream stream = res.GetResponseStream())
+		{
+			StreamReader sr = new StreamReader(stream, Encoding.UTF8);
+			jsonStr = sr.ReadToEnd();
+		}
+		context.Response.Write(jsonStr);
+	}
+
+	public bool IsReusable
+	{
+		get
+		{
+			return false;
+		}
+	}
+}
+```
+
+前端直接进行调用接口：
+```js
+$.getJSON('/WeatherHandler.ashx?location=wuhu', function (data) {
+	console.log(data);
+});
+```
+
 <a id="markdown-疑难杂症" name="疑难杂症"></a>
 ## 疑难杂症
 <a id="markdown-compositionfailedexception" name="compositionfailedexception"></a>
@@ -877,3 +1129,6 @@ Thank you for your feedback, we are currently reviewing the issue you have submi
 [XMLHttpRequest](https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest)
 
 [你真的会使用XMLHttpRequest吗？](https://segmentfault.com/a/1190000004322487)
+
+[九种跨域方式实现原理（完整版）](https://juejin.im/post/5c23993de51d457b8c1f4ee1)
+
