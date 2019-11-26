@@ -449,7 +449,8 @@ public class View2Controller : Controller
     }
 
     /// <summary>
-    /// 通过表单提交参数
+    /// 通过原始的Request.QueryString或Request.Form
+    /// 可以通过形参直接绑定
     /// </summary>
     /// <param name="userid"></param>
     /// <param name="userpwd"></param>
@@ -461,14 +462,26 @@ public class View2Controller : Controller
     }
 
     /// <summary>
-    /// 通过ajax传递参数
+    /// 通过模型绑定传参
+    /// 类型属性和传参对应，默认不区分大小写
     /// </summary>
     /// <param name="param"></param>
     /// <returns></returns>
-    public ActionResult GetDataAjax(SimpleParams param)
+    public ActionResult GetDataByModel(SimpleParams param)
     {
         //json序列化后再返回
         return Json(param);
+    }
+
+    /// <summary>
+    /// 通过FormCollection传参
+    /// 通过key或者index进行访问
+    /// </summary>
+    /// <param name="form"></param>
+    /// <returns></returns>
+    public ActionResult SaveDataCollCollection(FormCollection form)
+    {
+        return Content($"{form["xxx"]}");
     }
 }
 
@@ -534,7 +547,7 @@ public class SimpleParams
     });
 
     function getData() {
-        var url = "/View2/GetDataAjax";
+        var url = "/View2/GetDataByModel";
         var params = {
             Type: $("#selType").val(),
             Level: $("#selLevel").val()
