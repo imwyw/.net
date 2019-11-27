@@ -510,6 +510,7 @@ public class SqlHelper
 {
     private SqlHelper() { }
 
+    // ConfigurationManager 需要添加对 System.Configuration.dll 的引用
     static string connStr = ConfigurationManager.AppSettings["ConnStr"];
 
     #region DML操作封装，如INSERT,UPDATE,DELETE
@@ -528,8 +529,10 @@ public class SqlHelper
         SqlCommand cmd = conn.CreateCommand();
         cmd.CommandType = cmdType;
         cmd.CommandText = cmdText;
+        
         if (sqlParams != null && sqlParams.Length > 0)
         {
+            CheckParameterNull2DbNull(sqlParams);
             cmd.Parameters.AddRange(sqlParams);
         }
 
@@ -539,14 +542,14 @@ public class SqlHelper
         }
         try
         {
-            LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
+            //LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
             int res = cmd.ExecuteNonQuery();
             return res;
         }
         catch (Exception ex)
         {
             //Console.WriteLine(ex.Message);
-            LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
+            //LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
             return -1;
         }
         finally
@@ -583,14 +586,14 @@ public class SqlHelper
         }
         try
         {
-            LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
+            //LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
             int res = int.Parse(cmd.ExecuteScalar().ToString());
             return res;
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
+            //Console.WriteLine(ex.Message);
+            //LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
             return -1;
         }
         finally
@@ -630,7 +633,7 @@ public class SqlHelper
         }
         try
         {
-            LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
+            //LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 List<T> lstRes = new List<T>();
@@ -671,7 +674,7 @@ public class SqlHelper
         catch (Exception ex)
         {
             //发生异常时记录日志
-            LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
+            //LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
             return null;
         }
         finally
@@ -712,7 +715,7 @@ public class SqlHelper
         try
         {
             //记录日志
-            LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
+            //LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
@@ -747,7 +750,7 @@ public class SqlHelper
         catch (Exception ex)
         {
             //发生异常时记录日志
-            LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
+            //LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
 
             //需要限定where T : class, new() 有class引用类型才可确定返回null
             return null;
@@ -826,7 +829,7 @@ public class SqlHelper
 
         try
         {
-            LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
+            //LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
             DataTable dt = new DataTable();
             SqlDataAdapter adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
@@ -836,7 +839,7 @@ public class SqlHelper
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
+            //LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
             return null;
         }
         finally
@@ -893,7 +896,7 @@ public class SqlHelper
 
         try
         {
-            LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
+            //LogHelper.Log("SQL:", cmd.CommandText + "\n" + Params2String(cmd.Parameters));
             // 执行命令
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -931,7 +934,7 @@ public class SqlHelper
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
+            //LogHelper.Log("发生异常:" + ex.Message, ex.StackTrace);
             return null;
         }
         finally
@@ -960,6 +963,22 @@ public class SqlHelper
             builder.AppendFormat("[{0},{1}],", item.ParameterName, item.Value);
         }
         return builder.ToString().Substring(0, builder.ToString().Length - 1);
+    }
+
+    /// <summary>
+    /// SqlCommand新增记录时，参数为null时，会抛出异常。
+    /// 若要插入null至数据库中，需要转换null类型为DBNull
+    /// </summary>
+    /// <param name="sqlParams"></param>
+    static void CheckParameterNull2DbNull(SqlParameter[] sqlParams)
+    {
+        foreach (var item in sqlParams)
+        {
+            if (null == item.Value)
+            {
+                item.Value = DBNull.Value;
+            }
+        }
     }
 }
 ```
