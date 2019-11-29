@@ -6,6 +6,7 @@
     - [DatabaseFirst](#databasefirst)
         - [EF创建](#ef创建)
         - [更新模型](#更新模型)
+        - [在三层架构中的应用](#在三层架构中的应用)
     - [EF应用](#ef应用)
         - [Entity Client 方式](#entity-client-方式)
         - [Object Context 方式](#object-context-方式)
@@ -19,7 +20,6 @@
         - [SqlQuery](#sqlquery)
         - [DbSet下的SqlQuery](#dbset下的sqlquery)
         - [EF存储过程](#ef存储过程)
-    - [在三层架构中的应用](#在三层架构中的应用)
     - [其他](#其他)
         - [命令更新](#命令更新)
 
@@ -83,11 +83,24 @@ ORM框架负责把从数据库传回的记录集转换为对象，也可以依�
 <a id="markdown-更新模型" name="更新模型"></a>
 ### 更新模型
 
-以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，在Diagram界面右键选择【从数据库更新模型...】即可，如下：
+以Database First为例，当底层库表结构发生变化时，需要更新模型，操作也很简单，
+
+在Diagram界面右键选择【从数据库更新模型...】即可，如下：
 
 ![](../assets/adonet/EF_update_model.png)
 
 完成更新后，就会将底层最新的库表结构转换为实体类。
+
+<a id="markdown-在三层架构中的应用" name="在三层架构中的应用"></a>
+### 在三层架构中的应用
+
+需要特别注意，通常将EntityFramework实体数据模型(edmx)放置在Model层，DAL层和UI层均需要添加对EntityFramework的引用。
+
+可以使用NuGet程序包管理器添加EntityFramework的引用。
+
+并且UI层MVC项目中的web.config文件需要添加EntityFramework的connectionStrings配置项，如下图所示：
+
+![](../assets/adonet/EF_web_config.png)
 
 <a id="markdown-ef应用" name="ef应用"></a>
 ## EF应用
@@ -96,7 +109,9 @@ ORM框架负责把从数据库传回的记录集转换为对象，也可以依�
 ### Entity Client 方式
 它是 ADO.NET Entity Framework 中的本地用户端 (Native Client)，它的对象模型和 ADO.NET 的其他用户端非常相似：
 
-一样有 Connection, Command, DataReader 等对象，但最大的差异就是，它有自己的 SQL 指令 (Entity SQL)，可以用 SQL 的方式访问 EDM。
+一样有 Connection, Command, DataReader 等对象，但最大的差异就是，
+
+它有自己的 SQL 指令 (Entity SQL)，可以用 SQL 的方式访问 EDM。
 
 实质上，还是把 EDM 当成一个实体数据库。
 
@@ -137,7 +152,9 @@ EF的重点和精华都不在Entity Client 方式，当然也不推荐这种用�
 ### Object Context 方式
 它是微软在 Entity Client 的上层加上了一个供编程语言直接访问的界面。实质上，是把 EDM 当成对象集合的访问。
 
-DbContext的派生类【`ARTICLE_DBEntities`】相当于一个数据库，之后实例化【`ARTICLE_DBEntities`】就相当于打开了一次数据库，跟数据库建立了一次连接。
+DbContext的派生类【`ARTICLE_DBEntities`】相当于一个数据库，
+
+之后实例化【`ARTICLE_DBEntities`】就相当于打开了一次数据库，跟数据库建立了一次连接。
 
 ![](../assets/adonet/EF_dbcontext1.png)
 
@@ -594,16 +611,7 @@ sp_paged_data @sqlTable,@sqlColumns,@sqlWhere,@sqlSort,@pageIndex,@pageSize,@row
 var res = ArticleMgr.Manager.QueryPager<V_GET_ARTICLE>("v_get_article", "*", "", "id", 2, 10);
 ```
 
-<a id="markdown-在三层架构中的应用" name="在三层架构中的应用"></a>
-## 在三层架构中的应用
 
-需要特别注意，通常将EntityFramework实体数据模型(edmx)放置在Model层，DAL层和UI层均需要添加对EntityFramework的引用。
-
-可以使用NuGet程序包管理器添加EntityFramework的引用。
-
-并且UI层MVC项目中的web.config文件需要添加EntityFramework的connectionStrings配置项，如下图所示：
-
-![](../assets/adonet/EF_web_config.png)
 
 
 <a id="markdown-其他" name="其他"></a>
