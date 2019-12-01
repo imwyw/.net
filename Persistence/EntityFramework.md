@@ -3,6 +3,9 @@
 - [EntityFramework](#entityframework)
     - [三种开发方式](#三种开发方式)
     - [CodeFirst](#codefirst)
+        - [理解CodeFirst的约定和配置](#理解codefirst的约定和配置)
+        - [ADO.NET 实体数据模型](#adonet-实体数据模型)
+        - [数据的操作](#数据的操作)
     - [DatabaseFirst](#databasefirst)
         - [EF创建](#ef创建)
         - [更新模型](#更新模型)
@@ -48,6 +51,80 @@ ORM框架负责把从数据库传回的记录集转换为对象，也可以依�
 <a id="markdown-codefirst" name="codefirst"></a>
 ## CodeFirst
 
+<a id="markdown-理解codefirst的约定和配置" name="理解codefirst的约定和配置"></a>
+### 理解CodeFirst的约定和配置
+我们需要搞清楚的第一件事就是约定大于配置的概念。
+
+CodeFirst方式期望模型类遵守一些约定，这样的话数据库持久化逻辑就可以从模型中提取出来。
+
+比如，如果我们给一个模型定义了一个Id属性，那么它就会映射到数据库中该类所对应的那张表的主键。
+
+这种基于约定的方式的好处在于，如果我们遵守了这些约定，那么我们就不必写额外的代码来管理数据库持久逻辑。
+
+缺点在于，如果没有遵守某个约定，那么EF就不会从模型中提取到需要的信息，运行时会抛异常。
+
+> EF使用模型类的复数的约定来创建数据表名，创建的列名和该类的属性名是一样的。
+
+EF这个ORM工具就是用来解决.NET 类型和SQL Server列类型之间的阻抗失配的问题。
+
+![](../assets/adonet/ef-sql-clr-datatype.png)
+
+<a id="markdown-adonet-实体数据模型" name="adonet-实体数据模型"></a>
+### ADO.NET 实体数据模型
+新建Empty MVC模板项目，以【CompanySales】数据库为例，添加实体数据模型：
+
+![](../assets/adonet/ef-new-ado-model.png)
+
+
+选择模型包含【来自数据库的CodeFirst】内容，如下：
+
+![](../assets/adonet/ef-new-ado-model-content.png)
+
+创建数据库连接：
+
+![](../assets/adonet/ef-new-ado-connect.png)
+
+选择与在第一部分中创建的数据库的连接，然后单击 "下一步"
+
+![](../assets/adonet/ef-new-ado-connect-save.png)
+
+单击 "表" 旁边的复选框以导入所有表，然后单击 "完成"
+
+![](../assets/adonet/ef-new-ado-model-tables.png)
+
+项目结构、数据库上下文context如下：
+
+![](../assets/adonet/ef-ado-model-context.png)
+
+<a id="markdown-数据的操作" name="数据的操作"></a>
+### 数据的操作
+
+上下文表示与数据库的会话，从而使我们能够查询并保存数据。 
+
+上下文公开模型中每个类型的DbSet<TEntity> 
+
+你还会注意到，默认构造函数使用名称 = 语法调用基构造函数。 
+
+这会告知 Code First 应从配置文件加载要用于此上下文的连接字符串。
+
+```cs
+public partial class SalesContext : DbContext
+{
+    public SalesContext()
+        : base("name=SalesContext")
+    {
+    }
+
+    public virtual DbSet<Customer> Customer { get; set; }
+    public virtual DbSet<Department> Department { get; set; }
+    public virtual DbSet<Employee> Employee { get; set; }
+    public virtual DbSet<Product> Product { get; set; }
+    public virtual DbSet<Provider> Provider { get; set; }
+    public virtual DbSet<Purchase_order> Purchase_order { get; set; }
+    public virtual DbSet<Sell_Order> Sell_Order { get; set; }
+    public virtual DbSet<Users> Users { get; set; }
+}
+```
 
 <a id="markdown-databasefirst" name="databasefirst"></a>
 ## DatabaseFirst
@@ -638,4 +715,6 @@ git上ABP项目PlugInDemo为例，运行前需要执行Update-Database迁移Enti
 [Code First开发系列之领域建模和管理实体关系](https://www.cnblogs.com/farb/p/CodeFirstDomainModeling.html)
 
 [Code First开发系列之数据库迁移](https://www.cnblogs.com/farb/p/DBMigration.html)
+
+[Code First 到现有数据库](https://docs.microsoft.com/zh-cn/ef/ef6/modeling/code-first/workflows/existing-database#3-reverse-engineer-model)
 
