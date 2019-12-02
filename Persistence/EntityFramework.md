@@ -6,14 +6,15 @@
         - [理解CodeFirst的约定和配置](#理解codefirst的约定和配置)
         - [ADO.NET 实体数据模型](#adonet-实体数据模型)
         - [数据的操作](#数据的操作)
+        - [查询](#查询)
     - [DatabaseFirst](#databasefirst)
         - [EF创建](#ef创建)
         - [更新模型](#更新模型)
-        - [在三层架构中的应用](#在三层架构中的应用)
-    - [EF应用](#ef应用)
         - [Entity Client 方式](#entity-client-方式)
         - [Object Context 方式](#object-context-方式)
         - [Linq to Entities 方式](#linq-to-entities-方式)
+        - [在三层架构中的应用](#在三层架构中的应用)
+    - [EF应用](#ef应用)
         - [添加数据](#添加数据)
         - [修改数据](#修改数据)
         - [删除数据](#删除数据)
@@ -126,6 +127,133 @@ public partial class SalesContext : DbContext
 }
 ```
 
+<a id="markdown-查询" name="查询"></a>
+### 查询
+**基本查询**
+
+直接DbSet属性ToList()即可，以Controller中代码为例：
+```cs
+/// <summary>
+///  显示所有产品
+/// </summary>
+/// <returns></returns>
+public JsonResult GetAllProducts()
+{
+    using (SalesContext db = new SalesContext())
+    {
+        var list = db.Product.ToList();
+        return Json(list);
+    }
+}
+```
+
+前端调用如下：
+```js
+$.post('/Home/GetAllProducts', null, function (resp) {
+    console.table(resp);
+});
+```
+在浏览器调试窗口中查看即可。
+
+**复杂条件查询**
+
+```cs
+using (SalesContext db = new SalesContext())
+{
+    var list = db.Product
+        .Where(t => t.ProductName.Contains("笔") && t.Price > 4)
+        .ToList();
+    return Json(list);
+}
+```
+
+**使用LINQ查询**
+
+查询所有记录行：
+```cs
+using (SalesContext db = new SalesContext())
+{
+    var list = from row in db.Product
+                select row;
+    return Json(list.ToList());
+}
+```
+
+多条件筛选：
+```cs
+using (SalesContext db = new SalesContext())
+{
+    var list = from row in db.Product
+                where row.ProductName.Contains("笔")
+                && row.Price < 20
+                select row;
+    return Json(list.ToList());
+}
+```
+
+多表关联LINQ快速查询：
+领域模型类【SellOrderDomain】
+```cs
+public class SellOrderDomain
+{
+    public int SellOrderID { get; set; }
+    public int? ProductID { get; set; }
+    public string ProductName { get; set; }
+    public int? EmpID { get; set; }
+    public string EmpName { get; set; }
+    public int? CustomerID { get; set; }
+    public string CompanyName { get; set; }
+}
+```
+
+三张表关联查询如下：
+
+```cs
+using (SalesContext db = new SalesContext())
+{
+    var query = from sell in db.Sell_Order
+                join prod in db.Product on sell.ProductID equals prod.ProductID
+                join cus in db.Customer on sell.CustomerID equals cus.CustomerID
+                join emp in db.Employee on sell.EmployeeID equals emp.EmployeeID
+                where prod.Price > 5
+                select new SellOrderDomain
+                {
+                    SellOrderID = sell.SellOrderID,
+                    ProductID = sell.ProductID,
+                    ProductName = prod.ProductName,
+                    EmpID = sell.EmployeeID,
+                    EmpName = emp.EmployeeName,
+                    CustomerID = sell.CustomerID,
+                    CompanyName = cus.CompanyName
+                };
+    var list = query.ToList();
+    return Json(list);
+}
+```
+
+或者以匿名对象的方式进行查询也可以，这样就不需要提前定义一个模型类：
+```cs
+using (SalesContext db = new SalesContext())
+{
+    var query = from sell in db.Sell_Order
+                join prod in db.Product on sell.ProductID equals prod.ProductID
+                join cus in db.Customer on sell.CustomerID equals cus.CustomerID
+                join emp in db.Employee on sell.EmployeeID equals emp.EmployeeID
+                where prod.Price > 5
+                select new
+                {
+                    SellOrderID = sell.SellOrderID,
+                    ProductName = prod.ProductName,
+                    EmpName = emp.EmployeeName,
+                    CompanyName = cus.CompanyName
+                };
+    var list = query.ToList();
+    return Json(list);
+}
+```
+
+
+
 <a id="markdown-databasefirst" name="databasefirst"></a>
 ## DatabaseFirst
 
@@ -167,20 +295,6 @@ public partial class SalesContext : DbContext
 ![](../assets/adonet/EF_update_model.png)
 
 完成更新后，就会将底层最新的库表结构转换为实体类。
-
-<a id="markdown-在三层架构中的应用" name="在三层架构中的应用"></a>
-### 在三层架构中的应用
-
-需要特别注意，通常将EntityFramework实体数据模型(edmx)放置在Model层，DAL层和UI层均需要添加对EntityFramework的引用。
-
-可以使用NuGet程序包管理器添加EntityFramework的引用。
-
-并且UI层MVC项目中的web.config文件需要添加EntityFramework的connectionStrings配置项，如下图所示：
-
-![](../assets/adonet/EF_web_config.png)
-
-<a id="markdown-ef应用" name="ef应用"></a>
-## EF应用
 
 <a id="markdown-entity-client-方式" name="entity-client-方式"></a>
 ### Entity Client 方式
@@ -324,6 +438,20 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
 }
 ```
 
+<a id="markdown-在三层架构中的应用" name="在三层架构中的应用"></a>
+### 在三层架构中的应用
+
+需要特别注意，通常将EntityFramework实体数据模型(edmx)放置在Model层，DAL层和UI层均需要添加对EntityFramework的引用。
+
+可以使用NuGet程序包管理器添加EntityFramework的引用。
+
+并且UI层MVC项目中的web.config文件需要添加EntityFramework的connectionStrings配置项，如下图所示：
+
+![](../assets/adonet/EF_web_config.png)
+
+<a id="markdown-ef应用" name="ef应用"></a>
+## EF应用
+
 <a id="markdown-添加数据" name="添加数据"></a>
 ### 添加数据
 向数据库中添加数据就跟往List<>集合添加数据一样，不过最后需要调用SaveChanges()向数据库保存一下数据。
@@ -440,7 +568,6 @@ using (ARTICLE_DBEntities context = new ARTICLE_DBEntities())
     return context.SaveChanges();
 }
 ```
-
 
 <a id="markdown-事务" name="事务"></a>
 ### 事务
