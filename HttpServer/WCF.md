@@ -37,11 +37,11 @@ WCF服务可以寄宿在很多宿主类型中，常见的有控制台、IIS和Wi
 
 新建项目，选择【WCF服务应用程序】，如下：
 
-![](..\assets\SOA\wcf_create1.png)
+![](../assets/SOA/wcf_create1.png)
 
 在新建的项目中添加新的服务【CalculatorService】，添加后解决方案资源管理器中会自动创建【CalculatorService.svc】和【ICalculatorService.cs】文件，如下：
 
-![](..\assets\SOA\wcf_create2.png)
+![](../assets/SOA/wcf_create2.png)
 
 服务契约ICalculatorService.cs：
 ```cs
@@ -76,11 +76,11 @@ public class CalculatorService : ICalculatorService
 ### 客户端调用
 最简单的测试调用，启动调试，即可进行服务测试客户端查看调用情况：
 
-![](..\assets\SOA\wcf_create3.png)
+![](../assets/SOA/wcf_create3.png)
 
 以下是在ASP.NET应用程序中的调用，以MVC的控制器中为例。先在项目中添加服务引用，可以手动写入服务地址也可以点击【发现】按钮，自动识别项目中服务：
 
-![](..\assets\SOA\wcf_client1.png)
+![](../assets/SOA/wcf_client1.png)
 
 调用代码：
 ```cs
@@ -289,7 +289,7 @@ public class BookService : IBookService
 
 客户端访问：
 
-![](..\assets\SOA\wcf_client_json.png)
+![](../assets/SOA/wcf_client_json.png)
 
 ---
 

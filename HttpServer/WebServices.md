@@ -1,4 +1,15 @@
+<!-- TOC -->
 
+- [WebService](#webservice)
+    - [创建](#创建)
+    - [WebMethod](#webmethod)
+    - [在ASP.NET程序中调用WebService](#在aspnet程序中调用webservice)
+    - [SOAP](#soap)
+        - [使用SOAP头自定义身份验证](#使用soap头自定义身份验证)
+
+<!-- /TOC -->
+
+<a id="markdown-webservice" name="webservice"></a>
 # WebService
 Web Service也叫XML Web Service WebService是一种可以接收从Internet或者Intranet上的其它系统中传递过来的请求，轻量级的独立的通讯技术。
 
@@ -16,20 +27,22 @@ WebService是一种跨编程语言和跨操作系统平台的远程调用技术�
 
 * UDDI (Universal Description, Discovery, and Integration) 是一个主要针对Web服务供应商和使用者的新项目。在用户能够调用Web服务之前，必须确定这个服务内包含哪些商务方法，找到被调用的接口定义，还要在服务端来编制软件，UDDI是一种根据描述文档来引导系统查找相应服务的机制。UDDI利用SOAP消息机制（标准的XML/HTTP）来发布，编辑，浏览以及查找注册信息。它采用XML格式来封装各种不同类型的数据，并且发送到注册中心或者由注册中心来返回需要的数据。
 
+<a id="markdown-创建" name="创建"></a>
 ## 创建
 
 新建一个空的ASP.NET项目作为WebService项目，在项目上右键，新建项，选择【Web服务(ASMX)】，如下：
 
-![](..\assets\SOA\webservice_create1.png)
+![](../assets/SOA/webservice_create1.png)
 
 在刚添加的asmx文件上右键，选择【在浏览器中查看】，
 
-![](..\assets\SOA\webservice_create2.png)
+![](../assets/SOA/webservice_create2.png)
 
 浏览器中呈现 WebMethod HelloWorld，即表明服务新建成功：
 
-![](..\assets\SOA\webservice_create3.png)
+![](../assets/SOA/webservice_create3.png)
 
+<a id="markdown-webmethod" name="webmethod"></a>
 ## WebMethod
 
 新增一个WebMethod，在浏览器中查看或者发布均可，代码如下：
@@ -66,21 +79,22 @@ public class Student
 
 页面直接调用效果如下显示：
 
-![](..\assets\SOA\webservice_webmethod.gif)
+![](../assets/SOA/webservice_webmethod.gif)
 
+<a id="markdown-在aspnet程序中调用webservice" name="在aspnet程序中调用webservice"></a>
 ## 在ASP.NET程序中调用WebService
 
 针对前面小节中已经部署的WebService的调用为例，我们在ASP.NET应用程序中添加服务引用，在项目引用上右键添加服务引用，
 
-![](..\assets\SOA\webservice_client1.png)
+![](../assets/SOA/webservice_client1.png)
 
 在【添加服务引用】窗口内点击【发现】按钮，寻找项目中存在的WebService，命名空间可以修改也可以选择默认，如下：
 
-![](..\assets\SOA\webservice_client2.png)
+![](../assets/SOA/webservice_client2.png)
 
 引用成功后，会新增服务引用，如下：
 
-![](..\assets\SOA\webservice_client3.png)
+![](../assets/SOA/webservice_client3.png)
 
 对应的调用代码：
 ```cs
@@ -92,7 +106,7 @@ var res = srv.PostData("jack", "admin");
 
 不跨域的话，还可以通过jquery ajax进行调用，项目结构和代码如下：
 
-![](..\assets\SOA\webservice_ajax1.png)
+![](../assets/SOA/webservice_ajax1.png)
 
 ```js
 $.ajax({
@@ -115,17 +129,17 @@ $.ajax({
 
 添加服务引用窗口选择【高级】选项，然后选择【添加Web引用】，如图所示：
 
-![](..\assets\SOA\webservice_web_client1.png)
+![](../assets/SOA/webservice_web_client1.png)
 
 粘贴免费WebService地址确定，添加引用即可：
 
 > http://www.webxml.com.cn/WebServices/WeatherWebService.asmx
 
-![](..\assets\SOA\webservice_web_client2.png)
+![](../assets/SOA/webservice_web_client2.png)
 
 完成引用后，即自动创建文件夹【Web References】及对应的web服务：
 
-![](..\assets\SOA\webservice_web_client3.png)
+![](../assets/SOA/webservice_web_client3.png)
 
 调用也很简单，如下：
 ```cs
@@ -133,6 +147,7 @@ cn.com.webxml.www.WeatherWebService srv = new cn.com.webxml.www.WeatherWebServic
 var cityWeather = srv.getWeatherbyCityName("芜湖");
 ```
 
+<a id="markdown-soap" name="soap"></a>
 ## SOAP
 SOAP（Simple Object Access Protocol ）简单对象访问协议，它是在分散或分布式的环境中交换信息的简单的协议，是一个基于XML的协议，它包括四个部分：
 
@@ -141,8 +156,11 @@ SOAP（Simple Object Access Protocol ）简单对象访问协议，它是在分�
 3. RPC表示：表示远程过程调用和应答的协定
 4. SOAP绑定：使用底层协议交换信息。
 
+<a id="markdown-使用soap头自定义身份验证" name="使用soap头自定义身份验证"></a>
 ### 使用SOAP头自定义身份验证
-身份验证和授权是控制用户访问所有Web应用程序时的两道安全机制，第一道是如何标识身份，第二道是如何分配权限。这里，我们来着重讨论一下在ASP.NET Web服务框架中如何实现身份验证机制。
+身份验证和授权是控制用户访问所有Web应用程序时的两道安全机制，第一道是如何标识身份，第二道是如何分配权限。
+
+这里，我们来着重讨论一下在ASP.NET Web服务框架中如何实现身份验证机制。
 
 在ASP.NET Web服务框架中，常见的身份验证的类型有三种：
 
@@ -152,7 +170,7 @@ SOAP（Simple Object Access Protocol ）简单对象访问协议，它是在分�
 
 我们使用自定义头身份验证实现一个简单的身份验证功能,添加验证处理类 【SoapHeaderHelper.cs】，项目结构和代码如下：
 
-![](..\assets\SOA\webservice_soap_header1.png)
+![](../assets/SOA/webservice_soap_header1.png)
 
 ```cs
 /// <summary>
