@@ -26,6 +26,7 @@
         - [EF存储过程](#ef存储过程)
     - [其他](#其他)
         - [命令更新](#命令更新)
+        - [ObjectDisposedException](#objectdisposedexception)
 
 <!-- /TOC -->
 
@@ -828,6 +829,44 @@ git上ABP项目PlugInDemo为例，运行前需要执行Update-Database迁移Enti
 
 ![](../assets/adonet/EF-update.jpg)
 
+<a id="markdown-objectdisposedexception" name="objectdisposedexception"></a>
+### ObjectDisposedException
+
+![](../assets/adonet/EF-ObjectDisposedException.png)
+
+关闭延迟加载，不加载关联实体。
+
+或删除外键，并更新实体类即可。实体类中需要移除关联属性，否则仍然无法加载。
+
+```cs
+[Table("Employee")]
+public partial class Employee
+{
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public int EmployeeID { get; set; }
+
+    [StringLength(50)]
+    public string EmployeeName { get; set; }
+
+    [StringLength(2)]
+    public string Sex { get; set; }
+
+    [Column(TypeName = "smalldatetime")]
+    public DateTime? BirthDate { get; set; }
+
+    [Column(TypeName = "smalldatetime")]
+    public DateTime? HireDate { get; set; }
+
+    [Column(TypeName = "money")]
+    public decimal? Salary { get; set; }
+
+    public int? DepartmentID { get; set; }
+
+    // 需要注释，否则仍无法加载
+    //public virtual Department Department { get; set; }
+}
+```
+
 
 ---
 
@@ -844,4 +883,6 @@ git上ABP项目PlugInDemo为例，运行前需要执行Update-Database迁移Enti
 [Code First开发系列之数据库迁移](https://www.cnblogs.com/farb/p/DBMigration.html)
 
 [Code First 到现有数据库](https://docs.microsoft.com/zh-cn/ef/ef6/modeling/code-first/workflows/existing-database#3-reverse-engineer-model)
+
+[Code First Data Annotations数据注解](https://docs.microsoft.com/zh-cn/ef/ef6/modeling/code-first/data-annotations)
 
