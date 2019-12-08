@@ -10,7 +10,12 @@
 <!-- /TOC -->
 <a id="markdown-log4net" name="log4net"></a>
 # Log4Net
-日志记录往往是软件开发周期中的重要组成部分。它具有以下几个优点：它可以提供应用程序运行时的精确环境，可供开发人员尽快找到应用程序中的Bug；一旦在程序中加入了Log 输出代码，程序运行过程中就能生成并输出日志信息而无需人工干预。另外，日志信息可以输出到不同的地方（控制台，文件等）以备以后研究之用。
+日志记录往往是软件开发周期中的重要组成部分。
+
+它具有以下几个优点：
+* 它可以提供应用程序运行时的精确环境，可供开发人员尽快找到应用程序中的Bug；
+* 一旦在程序中加入了Log 输出代码，程序运行过程中就能生成并输出日志信息而无需人工干预。
+* 另外，日志信息可以输出到不同的地方（控制台，文件等）以备以后研究之用。
 
 github开源：https://github.com/apache/logging-log4net
 
@@ -38,17 +43,13 @@ github开源：https://github.com/apache/logging-log4net
 
 <a id="markdown-组成" name="组成"></a>
 ## 组成
-1. Logger：用于记录日志是输出方式和日志的输出级别。
-    log4net支持输出的日志媒介主要有数据库、控制台、文件、邮件等。
-    log4net支持多级别的日志，依次为FATAL>ERROR>WARN>INFO>DEBUG。
+1. Logger：用于记录日志是输出方式和日志的输出级别。log4net支持输出的日志媒介主要有数据库、控制台、文件、邮件等。log4net支持多级别的日志，依次为FATAL>ERROR>WARN>INFO>DEBUG。
 
-2. Appenders：描述日志的输出方式，
-      常见的有AdoNetAppender、ConsoleAppender、FileAppender、SmtpAppender等。
+2. Appenders：描述日志的输出方式，常见的有AdoNetAppender、ConsoleAppender、FileAppender、SmtpAppender等。
 
 3. Filters：过滤器，可以按照不同的标准（比如级别）控制日志的输出。
 
-4. Layouts：定义日志输出的显示格式，
-      比如："%timestamp [%thread] %-5level %logger - %message%newline"
+4. Layouts：定义日志输出的显示格式，比如："%timestamp [%thread] %-5level %logger - %message%newline"
 
 5. Object Renders：通过它，log4net将按照用户定义的标准输出日志消息。
 
@@ -61,44 +62,44 @@ log4net框架会在相对于AppDomain.CurrentDomain.BaseDirectory 属性定义�
 
 我们也可以自定义log4net配置单独文件存放，创建log4net帮助类：
 ```cs
+/// <summary>
+/// log4net实例获取
+/// 单例模式的应用
+/// </summary>
+public class Log4Helper
+{
     /// <summary>
-    /// log4net实例获取
-    /// 单例模式的应用
+    /// lock对象
     /// </summary>
-    public class Log4Helper
+    private static object lockLog = new object();
+
+    /// <summary>
+    ///  日志记录器
+    /// </summary>
+    private static ILog _log = null;
+
+    /// <summary>
+    /// 日志记录接口
+    /// </summary>
+    public static ILog Log
     {
-        /// <summary>
-        /// lock对象
-        /// </summary>
-        private static object lockLog = new object();
-
-        /// <summary>
-        ///  日志记录器
-        /// </summary>
-        private static ILog _log = null;
-
-        /// <summary>
-        /// 日志记录接口
-        /// </summary>
-        public static ILog Log
+        get
         {
-            get
+            if (_log == null)
             {
-                if (_log == null)
-                {
-                    // 初始化配置，从当前项目下读取log4net.config配置文件
-                    string configFile = AppDomain.CurrentDomain.BaseDirectory + "log4net.config";
-                    log4net.Config.XmlConfigurator.Configure(new FileInfo(configFile));
+                // 初始化配置，从当前项目下读取log4net.config配置文件
+                string configFile = AppDomain.CurrentDomain.BaseDirectory + "log4net.config";
+                log4net.Config.XmlConfigurator.Configure(new FileInfo(configFile));
 
-                    lock (lockLog)
-                    {
-                        _log = LogManager.GetLogger("WebLogger");
-                    }
+                lock (lockLog)
+                {
+                    _log = LogManager.GetLogger("WebLogger");
                 }
-                return _log;
             }
+            return _log;
         }
     }
+}
 ```
 
 一个基本的【log4net.config】配置如下：
@@ -237,6 +238,27 @@ Log4Helper.Log.Debug("日志测试");
 ```cs
 Log4Helper.InfoLog.Info("过程消息：xxxxxx" + name);
 Log4Helper.ErrorLog.Info("发生异常：。。。。。" + name);
+```
+
+结合ASP.NET MVC，统一记录异常信息，新增自定义【BaseController】类
+```cs
+public abstract class BaseController : Controller
+{
+    protected override void OnException(ExceptionContext filterContext)
+    {
+        base.OnException(filterContext);
+        Log4Helper.ErrorLog.Error(filterContext.Exception);
+    }
+}
+
+public class XXXController : BaseController
+{
+    public ActionResult Index()
+    {
+        // 发生异常进入 OnException ，父类中重写记录日志
+        return View();
+    }
+}
 ```
 
 更多配置参考：http://logging.apache.org/log4net/release/config-examples.html
