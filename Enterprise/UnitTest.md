@@ -8,6 +8,7 @@
             - [创建测试方法](#创建测试方法)
             - [进行测试](#进行测试)
     - [MS Test](#ms-test)
+    - [Bogus](#bogus)
 
 <!-- /TOC -->
 
@@ -100,6 +101,44 @@ public class TestArticle
 微软提供的单元测试，更多内容请自行查阅
 
 > http://www.cnblogs.com/ColdJokeLife/p/3158812.html
+
+<a id="markdown-bogus" name="bogus"></a>
+## Bogus
+Bogus一个简单而强大的假数据生成器,用于C#,F#和VB.NET.从著名的faker.js移植过来.
+
+在测试或者需要一些虚拟的数据时,Bogus就可以派上用场了.这是一个移植自faker.js的一个.NET的库,帮助你快速生成看起来有意义的假数据.
+
+快速上手：
+
+Nuget包管理器安装【Bogus】包，单元测试中模拟构建数据：
+
+```cs
+[TestMethod]
+public void TestAddProduct()
+{
+    /*
+    Product entity = new Product();
+    entity.ProductName = "日光灯";
+    entity.ProductID = 200;
+    entity.Price = 20;
+    entity.ProductStockNumber = 100;
+    */
+
+    var entity = new Bogus.Faker<Product>("zh_CN") // 使用中文数据，目前仅对名称有效
+          .RuleFor(t => t.ProductID, f => f.Random.Int())// 生成Int.MinValue到Int.MaxValue随机数
+          .RuleFor(t => t.ProductName, f => f.Commerce.ProductName())// 获取随机的产品名称。
+          .RuleFor(t => t.ProductStockNumber, f => f.Random.Number(1, 100)) // 1-100 随机值
+          .RuleFor(t => t.Price, f => f.Finance.Random.Double(0, 1000));// 随机浮点数 0-1000之间
+
+    bool res = ProductMgr.AddProduct(entity);
+
+    Assert.IsTrue(res);
+}
+```
+
+> https://github.com/bchavez/Bogus#bogus-api-support
+
+
 
 ---
 
