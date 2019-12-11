@@ -11,7 +11,7 @@ namespace CompanySales.Model.Domain
     /// </summary>
     public class SellOrderDomain
     {
-        public int? ID { get; set; }
+        public int? SellOrderID { get; set; }
         public int? ProductID { get; set; }
         public int? SellOrderNumber { get; set; }
         public int? EmployeeID { get; set; }

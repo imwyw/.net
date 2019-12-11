@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "SellOrderList";
+}
+
+@section Styles{
+    <style>
+        .layui-btn {
+            color: white;
+        }
+    </style>
+}
+<form class="layui-form layui-form-pane">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">产品名称</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" id="txtProductName" />
+            </div>
+        </div>
+        <button class="layui-btn" id="btnQuery">查询</button>
+    </div>
+</form>
+
+<table class="layui-hide" id="tt1" lay-filter="tt1"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+@section Scripts{
+    <script>
+        layui.use(['jquery', 'table'], function () {
+            layui.table.render({
+                elem: '#tt1'
+                , url: '/Order/GetSellOrderList'
+                , request: {
+                    pageName: 'pageindex'
+                    , limitName: 'pagesize'
+                }
+                , method: 'post'
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , defaultToolbar: ['filter', 'exports', 'print', {
+                    //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                    title: '提示'
+                  , layEvent: 'LAYTABLE_TIPS'
+                  , icon: 'layui-icon-tips'
+                }]
+                , title: '销售订单记录'
+                , cols: [[
+                  { type: 'checkbox', fixed: 'left' }
+                  , { field: 'SellOrderID', title: '订单编号', fixed: 'left' }
+                  , { field: 'ProductID', title: '产品编号' }
+                  , { field: 'ProductName', title: '产品名称' }
+                  , { field: 'SellOrderNumber', title: '订单数量' }
+                  , { field: 'EmployeeID', title: '员工编号' }
+                  , { field: 'EmployeeName', title: '员工姓名' }
+                  , { field: 'CustomerID', title: '客户编号' }
+                  , { field: 'CompanyName', title: '公司名称' }
+                  , { field: 'ContactName', title: '客户联系人' }
+                  , { field: 'SellOrderDate', title: '订单日期' }
+                  , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 }
+                ]]
+                , page: true
+                , parseData: function (res) {
+                    return {
+                        "code": 0
+                        , "count": res.Total
+                        , "data": res.Rows
+                    };
+                }
+            });
+
+            //头工具栏事件
+            layui.table.on('toolbar(tt1)', function (obj) {
+                var checkStatus = layui.table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'getCheckData':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                        //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            layui.table.on('tool(tt1)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除行么', function (index) {
+                        obj.del();
+                        layer.close(index);
+                    });
+                } else if (obj.event === 'edit') {
+                    layer.prompt({
+                        formType: 2
+                      , value: data.email
+                    }, function (value, index) {
+                        obj.update({
+                            email: value
+                        });
+                        layer.close(index);
+                    });
+                }
+            });
+
+            bindEvent();
+        });
+
+        function bindEvent() {
+            $('#btnQuery').click(function (e) {
+                e.preventDefault();
+                layui.table.reload('tt1', {
+                    where: {
+                        ProductName: $('#txtProductName').val(),
+                    }
+                });
+            });
+        }
+    </script>
+}
+
