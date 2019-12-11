@@ -147,3 +147,7 @@ public void TestAddProduct()
 [nunit/docs](https://github.com/nunit/docs/wiki/Installation)
 
 [nunit2.6.4-docs](http://nunit.org/docs/2.6.4/docHome.html)
+
+[C#单元测试，带你快速入门](https://www.cnblogs.com/zhaopei/p/UnitTesting.html)
+
+
