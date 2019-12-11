@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../../Scripts/base.js"></script>
+    <script src="../../Scripts/jquery-3.4.1.js"></script>
+    <style>
+        #tt1 td a {
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>显示产品列表</h2>
+    <div>
+        <table id="tt1" border="1"></table>
+    </div>
+    <script>
+        $(function () {
+            loadData();
+            bindEvent();
+        })
+
+        function loadData() {
+            appendHeaderInfo();
+            $.post('/Handlers/ProductHandler.ashx/GetList',
+                function (resp) {
+                    // 产品数组
+                    var productArray = JSON.parse(resp);
+                    productArray.forEach(function (t, i) {
+                        insert2TableHtml(t);
+                    });
+                });
+        }
+
+        function bindEvent() {
+            /*
+            动态委托事件
+            click：第一个参数是事件名
+            a[class^=prod]：选择器，用于过滤出被选中的元素中能触发事件的后代元素，筛选样式类以prod开头的a标签
+            function(e){}：事件触发执行的函数
+            */
+            $('#tt1').on('click', 'a[class^=prod]', function (e) {
+                //debugger;
+                var id = $(e.target).closest('td').attr('data-id');
+                if ($(e.target).hasClass('prod-edit')) {
+                    editProduct(id);
+                } else if ($(e.target).hasClass('prod-delete')) {
+                    deleteById(id);
+                }
+            });
+        }
+
+        function insert2TableHtml(prod) {
+            // ES6 模板字符串
+            var trHtml = `<tr>
+                <td>${prod.ProductID}</td>
+                <td><a href="#">${prod.ProductName}</a></td>
+                <td>${prod.Price}</td>
+                <td>${prod.ProductStockNumber}</td>
+                <td>${prod.ProductSellNumber}</td>
+                <td data-id="${prod.ProductID}">
+                <a href="#" class ="prod-edit">编辑</a>
+                <a href="#" class ="prod-delete">删除</a>
+                </td>
+                </tr>`;
+            $('#tt1').append(trHtml);
+        }
+
+        function deleteById(id) {
+            var url = '/Handlers/ProductHandler.ashx/DeleteById?ProductID=' + id;
+
+            $.get(url, function (resp) {
+                var obj = JSON.parse(resp);
+                if (obj.Status) {
+                    alert('删除成功！');
+                    loadData();
+                } else {
+                    alert('无法删除，请联系管理员！');
+                }
+            });
+        }
+
+        // 添加表头信息
+        function appendHeaderInfo() {
+            $('#tt1').html(`
+            <tr>
+                <th>产品编号</th>
+                <th>产品名称</th>
+                <th>价格</th>
+                <th>库存</th>
+                <th>已销售数量</th>
+                <th>操作</th>
+            </tr>`);
+        }
+
+        function editProduct(id) {
+            location.href = `product-add.html?id=${id}`;
+        }
+
+    </script>
+</body>
+</html>

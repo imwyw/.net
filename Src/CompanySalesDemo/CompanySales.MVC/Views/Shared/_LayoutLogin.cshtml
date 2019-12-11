@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title> @ViewBag.Title - xxx进销存管理系统</title>
+    <meta charset="utf-8" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            height: 100vh;
+            background-image: url('../../Images/bg.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #tipMsg {
+            color: red;
+            font-size: 20px;
+            /*display: none;*/
+        }
+
+        div.row div.col-md-4 {
+            top: 100px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        input.btn-block {
+            letter-spacing: 10px;
+        }
+    </style>
+    @RenderSection("Styles", false)
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 offset-6">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/base.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <!--bootstrap的组件js引用必须放在jQuery的后面-->
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    @RenderSection("Scripts", false)
+</body>
+</html>

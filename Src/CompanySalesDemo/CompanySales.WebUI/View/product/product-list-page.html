@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+
+    <style>
+        #tt1 td a {
+            margin: 0 5px;
+        }
+
+        div.col-md-6 {
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h4>显示产品列表</h4>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <input type="text" id="txtProductName" value="" placeholder="模糊匹配产品名称" />
+                    <button class="btn btn-primary" id="btnQuery">查询</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnCheckAll">全选</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnCheckReverse">反选</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnBatchDelete">批量删除</button>
+        </div>
+        <table id="tt1" class="table table-bordered"></table>
+        <div>
+            <a href="#" class="page-opt" id="prevPage">上一页</a>
+            <a href="#" class="page-opt" id="nextPage">下一页</a>
+            <span>
+                当前第<strong id="currentPage"></strong>页，
+                总记录数:<strong id="totalCount"></strong>，
+                共有<strong id="totalPage"></strong>页.
+            </span>
+            每页显示
+            <select id="selPageSize">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>条记录
+        </div>
+    </div>
+    <script src="../../Scripts/base.js"></script>
+    <script src="../../Scripts/jquery-3.4.1.js"></script>
+    <script src="../../Scripts/bootstrap.min.js"></script>
+    <script>
+        // 当前页码，索引从0开始
+        var pageIndex = 0;
+        var pageSize = 10;// 默认每页10条记录
+        var totalPage = 0;// 总共有几页
+
+        $(function () {
+            loadData(pageIndex);
+            bindEvent();
+        })
+
+        // index 分页查询时附加的页码（索引从0开始）
+        function loadData(index) {
+            appendHeaderInfo();
+            $.post('/Handlers/ProductHandler.ashx/GetListByPage',
+                { pageIndex: index, pageSize: pageSize },
+                function (resp) {
+                    // 产品数组
+                    var pageObj = JSON.parse(resp);
+                    pageObj.Rows.forEach(function (t, i) {
+                        insert2TableHtml(t);
+                    });
+                    refreshPageInfo(pageObj);
+                });
+        }
+
+        function bindEvent() {
+            /*
+            动态委托事件
+            click：第一个参数是事件名
+            a[class^=prod]：选择器，用于过滤出被选中的元素中能触发事件的后代元素，筛选样式类以prod开头的a标签
+            function(e){}：事件触发执行的函数
+            */
+            $('#tt1').on('click', 'a[class^=prod]', function (e) {
+                //debugger;
+                var id = $(e.target).closest('tr').attr('data-id');
+                if ($(e.target).hasClass('prod-edit')) {
+                    editProduct(id);
+                } else if ($(e.target).hasClass('prod-delete')) {
+                    deleteById(id);
+                }
+            });
+
+            // 翻页事件，绑定页码跳转事件，jQuery可以实现批量绑定
+            $('.page-opt').click(pageChange);
+            // 切换每页显示记录事件
+            $('#selPageSize').on('change', pageSizeChange);
+
+            // 全选事件
+            $('#btnCheckAll').click(function (e) {
+                $.each($('#tt1 input:checkbox'), function (i, t) {
+                    $(t).prop('checked', true);
+                });
+            });
+
+            // 反选事件
+            $('#btnCheckReverse').click(function (e) {
+                $.each($('#tt1 td input:checkbox'), function (i, t) {
+                    $(t).prop('checked', !$(t).prop('checked'));
+                });
+                checkInline();
+            });
+
+            // 表头选中事件
+            $('#tt1 th input:checkbox').click(function (e) {
+                var checkAll = $(e.target).prop('checked');
+
+                $.each($('#tt1 td input:checkbox'), function (i, t) {
+                    $(t).prop('checked', checkAll);
+                });
+            });
+
+            // 表格数据行内check事件
+            $('#tt1').on('click', 'td input:checkbox', checkInline);
+
+            function checkInline(e) {
+                /*
+                var checkAll = true;
+                $.each($('#tt1 td input:checkbox'), function (i, t) {
+                    if (!$(t).prop('checked')) {
+                        checkAll = false;
+                        return false;
+                    }
+                });
+                $('#tt1 th input:checkbox').prop('checked', checkAll);
+                */
+                var checkAll = $('#tt1 td input:checkbox:not(:checked)').length == 0;
+                $('#tt1 th input:checkbox').prop('checked', checkAll);
+            }
+
+            // 批量删除事件
+            $('#btnBatchDelete').click(function (e) {
+                var ids = [];
+
+                $.each($('#tt1 td input:checkbox:checked'), function (i, t) {
+                    ids.push($(t).closest('tr').attr('data-id'));
+                });
+
+                var url = '/Handlers/ProductHandler.ashx/BatchDelete?ids=' + ids.join();
+                $.get(url, function (resp) {
+                    var obj = JSON.parse(resp);
+                    if (obj.Status) {
+                        alert('批量删除成功！');
+                        refreshCurrentPage();
+                    } else {
+                        alert('发生异常，无法进行批量删除');
+                        console.error(resp.Message);
+                    }
+                });
+            });
+        }
+
+        // 处理上一页/下一页的页码跳转
+        function pageChange(e) {
+            if (e.target.id === 'prevPage') {
+                if (pageIndex > 0) {
+                    loadData(--pageIndex);
+                }
+            } else if (e.target.id === 'nextPage') {
+                if (pageIndex + 1 < totalPage) {
+                    loadData(++pageIndex);
+                }
+            }
+        }
+
+        // 刷新页码信息至表格底部
+        function refreshPageInfo(pageObj) {
+
+            $('#currentPage').text(pageIndex + 1);
+            $('#totalCount').text(pageObj.Total);
+            totalPage = Math.ceil(pageObj.Total / pageSize);
+            $('#totalPage').text(totalPage);
+        }
+
+        function pageSizeChange(e) {
+            pageSize = parseInt($(e.target).val());
+            pageIndex = 0;
+            loadData(pageIndex);
+        }
+
+        function insert2TableHtml(prod) {
+            // ES6 模板字符串
+            var trHtml = `<tr data-id=${prod.ProductID}>
+                <td><input type="checkbox" /></td>
+                <td>${prod.ProductID}</td>
+                <td><a href="#">${prod.ProductName}</a></td>
+                <td>${prod.Price}</td>
+                <td>${prod.ProductStockNumber}</td>
+                <td>${prod.ProductSellNumber}</td>
+                <td>
+                <a href="#" class ="prod-edit">编辑</a>
+                <a href="#" class ="prod-delete">删除</a>
+                </td>
+                </tr>`;
+            $('#tt1').append(trHtml);
+        }
+
+        function deleteById(id) {
+            var url = '/Handlers/ProductHandler.ashx/DeleteById?ProductID=' + id;
+
+            $.get(url, function (resp) {
+                var obj = JSON.parse(resp);
+                if (obj.Status) {
+                    alert('删除成功！');
+                    refreshCurrentPage();
+                } else {
+                    alert('无法删除，请联系管理员！');
+                }
+            });
+        }
+
+        // 添加表头信息
+        function appendHeaderInfo() {
+            $('#tt1').html(`
+            <tr>
+                <th><input type="checkbox"/></th>
+                <th>产品编号</th>
+                <th>产品名称</th>
+                <th>价格</th>
+                <th>库存</th>
+                <th>已销售数量</th>
+                <th>操作</th>
+            </tr>`);
+        }
+
+        function editProduct(id) {
+            location.href = `product-add.html?id=${id}`;
+        }
+
+        function refreshCurrentPage() {
+            var curPage = $('#currentPage').text();
+            loadData(parseInt(curPage) - 1);
+        }
+    </script>
+</body>
+</html>

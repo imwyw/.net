@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>进销存系统</title>
+    <meta charset="utf-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            height: 100vh;
+            background-image: url('https://cn.bing.com/th?id=OHR.AtchafalayaCypress_ZH-CN0183179230_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #tipMsg {
+            color: red;
+            font-size: 20px;
+            /*display: none;*/
+        }
+
+        div.row div.col-md-4 {
+            top: 150px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        input.btn-block {
+            letter-spacing: 10px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 offset-6">
+                <div class="form-group">
+                    <label for="txtUserId">用户ID</label>
+                    <input type="text" class="form-control" id="txtUserId" placeholder="用户ID">
+                </div>
+                <div class="form-group">
+                    <label for="txtUserPwd">密码</label>
+                    <input type="password" class="form-control" id="txtUserPwd" placeholder="password">
+                </div>
+                <div class="form-group">
+                    <span id="tipMsg"></span>
+                </div>
+                <div class="form-group">
+                    <input type="button" class="btn btn-primary btn-block" id="btnLogin" value="登录" />
+                </div>
+                <div class="form-group">
+                    <a href="#" id="btnRegister">没有账号？点我注册</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="Scripts/base.js"></script>
+    <script src="Scripts/jquery-3.4.1.js"></script>
+    <!--bootstrap的组件js引用必须放在jQuery的后面-->
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            bindEvent();
+        })
+
+        function bindEvent() {
+            $('#btnLogin').click(login);
+            $('#btnRegister').click(register);
+        }
+
+        function login() {
+            var method = 'post',
+                url = '/Handlers/UserHandler.ashx/Login',
+                isAsync = true;
+            var userId = $('#txtUserId').val(),
+                userPwd = $('#txtUserPwd').val();
+
+            if (userId == '' || userPwd == '') {
+                $('#tipMsg').html('用户名和密码不允许为空！');
+                return;
+            }
+
+            $.post('/Handlers/UserHandler.ashx/Login',
+                { uid: userId, pwd: userPwd },
+                function (resp) {
+                    var obj = JSON.parse(resp);
+                    if (obj.Status) {
+                        location.href = 'Index.html';
+                    } else {
+                        $('#txtUserPwd').val('');
+                        $('#tipMsg').html(obj.Message);
+                        $('#txtUserPwd').focus();
+                    }
+                });
+
+        }
+
+        function register() {
+            location.href = 'Register.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>进销存-主页</title>
+    <meta charset="utf-8" />
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+
+    <style type="text/css">
+        div.layui-tab {
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        ul.layui-tab-title {
+            height: 40px;
+        }
+
+        div.layui-tab-content {
+            flex: auto;
+        }
+
+        div.layui-tab div.layui-tab-item {
+            height: 100%;
+        }
+
+        li.layui-this {
+            background-color: aliceblue;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">ifly 进销存</div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item"><a href="">控制台</a></li>
+                <li class="layui-nav-item"><a href="">商品管理</a></li>
+                <li class="layui-nav-item"><a href="">用户</a></li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">其它系统</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">邮件管理</a></dd>
+                        <dd><a href="">消息管理</a></dd>
+                        <dd><a href="">授权管理</a></dd>
+                    </dl>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <img src="~/layui/images/face/0.gif" class="layui-nav-img">
+                        @ViewBag.CurUserID
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">基本资料</a></dd>
+                        <dd><a href="">安全设置</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/Security/Logout">注销</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a class="" href="javascript:;">产品管理</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+                                <a class="menu-link" href="javascript:;" data-action="/Product/ProductList" data-menuid="prod-list">产品列表</a>
+                            </dd>
+                            <dd>
+                                <a class="menu-link" href="javascript:;" data-action="/Product/ProductDetail" data-menuid="prod-detail">新增产品</a>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">解决方案</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;">列表一</a></dd>
+                            <dd><a href="javascript:;">列表二</a></dd>
+                            <dd><a href="">超链接</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a href="">云市场</a></li>
+                    <li class="layui-nav-item"><a href="">发布商品</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+            <div class="layui-tab" lay-filter="tabContainer" lay-allowclose="true">
+                <ul class="layui-tab-title"></ul>
+                <div class="layui-tab-content">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-footer">
+            <!-- 底部固定区域 -->
+            © layui.com - 底部固定区域
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/base.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+
+    <script>
+        /*
+        layui.use 加载所需模块
+        第一个参数是依赖的模块名称，
+        第二个参数加载完成后的回调函数
+        */
+        layui.use(['element'], function () {
+            bindEvent();
+        });
+
+        function bindEvent() {
+            // 菜单事件绑定
+            $('a.menu-link').click(function (e) {
+                // 获取菜单选项配置的值，TODO后期可以考虑放入数据库中维护
+                var url = $(this).attr('data-action');
+                var tabName = $(this).text();
+                var tabid = $(this).attr('data-menuid');
+                var tabFilter = 'tabContainer';
+
+                //判断tab选项卡是否已存在
+                var tabExist = $(`ul.layui-tab-title>li[lay-id=${tabid}]`).length > 0;
+
+                if (!tabExist) {
+                    // 添加新的tab
+                    layui.element.tabAdd(tabFilter, {
+                        title: tabName,//tab名称
+                        content: `<iframe name="frmContent" src="${url}" frameborder="0"></iframe>`,//tab的内容
+                        id: tabid//tab的id，用于change和close
+                    });
+                }
+                //选中指定id的tab选项卡
+                layui.element.tabChange(tabFilter, tabid);
+            });
+        }
+    </script>
+</body>
+</html>

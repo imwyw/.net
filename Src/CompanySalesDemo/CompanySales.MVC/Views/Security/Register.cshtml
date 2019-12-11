@@ -1,0 +1,79 @@
+﻿
+@{
+    ViewBag.Title = "注册";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<form>
+    <div class="form-group">
+        <label for="txtUserId">请填写用户id</label>
+        <input class="form-control" type="text" id="txtUserId" placeholder="请填写用户id" />
+    </div>
+    <div class="form-group">
+        <label for="txtUserPwd">请填写用户密码</label>
+        <input class="form-control" type="password" id="txtUserPwd" placeholder="xxxx" />
+    </div>
+    <div class="form-group">
+        <label for="txtUserPwdRepeat">请填写确认密码</label>
+        <input class="form-control" type="password" id="txtUserPwdRepeat" placeholder="xxxxx" />
+    </div>
+    <div class="form-group">
+        <label for="txtName">请填写用户昵称</label>
+        <input class="form-control" type="text" id="txtName" placeholder="用户的昵称" />
+    </div>
+    <div class="form-group">
+        <label for="txtAddress">请填写用户地址</label>
+        <input class="form-control" type="text" id="txtAddress" placeholder="xx省xx市xx区/县...." />
+    </div>
+    <div class="form-group">
+        <span id="tipMsg"></span>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-block" id="btnSave">注册</button>
+    </div>
+</form>
+
+@section Scripts{
+    <script>
+        $(function () {
+            bindEvent();
+        })
+
+        function bindEvent() {
+            $('#btnSave').on('click', save);
+        }
+
+        function save(e) {
+            // 阻止表单的默认提交事件
+            e.preventDefault();
+            var userObj = {
+                Name: $('#txtName').val(),
+                UserId: $('#txtUserId').val(),
+                Password: $('#txtUserPwd').val(),
+                Address: $('#txtAddress').val(),
+                RepeatPwd: $('#txtUserPwdRepeat').val()
+            };
+
+            if (userObj.UserId == '' || userObj.Password == '' || userObj.RepeatPwd == '') {
+                $('#tipMsg').text('用户id和密码不可为空！');
+                return;
+            }
+            if (userObj.Password != userObj.RepeatPwd) {
+                $('#tipMsg').text('两次密码输入不一致，请重新输入！');
+                $('#txtUserPwdRepeat').focus();
+                return;
+            }
+
+            function regis(resp) {
+                var obj = getObj(resp);
+                if (obj.Status) {
+                    location.href = '/Security/Login';
+                } else {
+                    $('#tipMsg').text(obj.Message);
+                }
+            }
+
+            $.post('/Security/AddUser', userObj, regis);
+        }
+    </script>
+}

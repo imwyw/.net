@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h4 id="title">添加产品</h4>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="txtProductID">输入产品编号</label>
+                    <input type="text" class="form-control" id="txtProductID" aria-describedby="idTipMsg" value="" placeholder="输入数字编号" />
+                    <small id="idTipMsg" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                    <label for="txtProductName">名称</label>
+                    <input type="text" class="form-control" id="txtProductName" value="" placeholder="输入产品中文名称" />
+                </div>
+                <div class="form-group">
+                    <label for="txtPrice">价格</label>
+                    <input type="number" class="form-control" id="txtPrice" value="" placeholder="输入价格数字" />
+                </div>
+                <div class="form-group">
+                    <label for="txtProductStockNumber">库存</label>
+                    <input type="number" class="form-control" id="txtProductStockNumber" value="" placeholder="库存量（数字）" />
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block" id="btnSave">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../Scripts/base.js"></script>
+    <script src="../../Scripts/jquery-3.4.1.js"></script>
+    <script src="../../Scripts/bootstrap.min.js"></script>
+    <script>
+        // 定义全局变量
+        var id = getQueryString('id');// 从url获取key对应的value值
+        var isEdit = false;// 标识当前的操作业务，false为新增业务，true为更新业务
+
+        $(function () {
+            init();
+            bindEvent();
+        })
+
+        function init() {
+            if (id) {
+                isEdit = true;
+                $('#txtProductID').attr('disabled', true);
+            }
+            if (isEdit) {
+                $('#title').html('更新产品信息');
+                getProductById();
+            }
+        }
+
+        function bindEvent() {
+            $('#btnSave').on('click', saveProduct);
+            $('#txtProductID').on('blur', checkProductID);
+        }
+
+        function saveProduct() {
+            var prod = {
+                ProductID: getEm('txtProductID').value,
+                ProductName: getEm('txtProductName').value,
+                Price: getEm('txtPrice').value,
+                ProductStockNumber: getEm('txtProductStockNumber').value,
+            };
+            var actionName = isEdit ? "UpdateProduct" : "SaveProduct";
+
+            var url = `/Handlers/ProductHandler.ashx/${actionName}`;
+            $.post(url, prod, function (resp) {
+                var obj = JSON.parse(resp);
+                if (obj.Status) {
+                    alert('保存成功！');
+                } else {
+                    alert(obj.Message);
+                }
+            });
+        }
+
+        function checkProductID() {
+            var url = `/Handlers/ProductHandler.ashx/CheckProductById?ProductID=${$('#txtProductID').val()}`;
+            $.get(url, function (resp) {
+                var obj = JSON.parse(resp);
+                if (obj.Status) {
+                    $('#idTipMsg').html('该编号产品已存在，请更换产品编号！');
+                    $('#idTipMsg').css('color', 'red');
+                } else {
+                    $('#idTipMsg').html('该产品编号可用！');
+                    $('#idTipMsg').css('color', 'green');
+                }
+            });
+        }
+
+        function setModel2View(entity) {
+            $('#txtProductID').val(entity.ProductID);
+            $('#txtProductName').val(entity.ProductName);
+            $('#txtPrice').val(entity.Price);
+            $('#txtProductStockNumber').val(entity.ProductStockNumber);
+        }
+
+        function getProductById() {
+            var url = '/Handlers/ProductHandler.ashx/GetProductById';
+            $.post(url, { ProductID: id }, function (resp) {
+                var obj = JSON.parse(resp);
+                // 将产品对象绑定到页面显示
+                setModel2View(obj);
+            });
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>注册新用户</title>
+    <meta charset="utf-8" />
+    <style>
+        #tipMsg {
+            color: red;
+            font-size: 20px;
+            /*display: none;*/
+        }
+    </style>
+    <script src="Scripts/base.js"></script>
+    <script src="Scripts/jquery-3.4.1.js"></script>
+</head>
+<body>
+    <div>
+        <fieldset>
+            <input type="text" id="txtUserId" placeholder="请填写用户id" />
+        </fieldset>
+        <fieldset>
+            <input type="password" id="txtUserPwd" placeholder="请填写用户密码" />
+        </fieldset>
+        <fieldset>
+            <input type="password" id="txtUserPwdRepeat" placeholder="请填写确认密码" />
+        </fieldset>
+        <fieldset>
+            <input type="text" id="txtName" placeholder="请填写用户昵称" />
+        </fieldset>
+        <fieldset>
+            <input type="text" id="txtAddress" placeholder="请填写用户地址" />
+        </fieldset>
+        <fieldset>
+            <span id="tipMsg"></span><br />
+            <input type="button" id="btnSave" value="注册" />
+        </fieldset>
+    </div>
+    <script>
+        $(function () {
+            bindEvent();
+        })
+
+        function bindEvent() {
+            $('#btnSave').on('click', save);
+        }
+
+        function save() {
+            var userId = $('#txtUserId').val(),
+             userPwd = $('#txtUserPwd').val(),
+             pwdRepeat = $('#txtUserPwdRepeat').val(),
+             uname = $('#txtName').val(),
+             address = $('#txtAddress').val();
+
+            if (userId == '' || userPwd == '' || pwdRepeat == '') {
+                $('#tipMsg').text('用户id和密码不可为空！');
+                return;
+            }
+            if (userPwd != pwdRepeat) {
+                $('#tipMsg').text('两次密码输入不一致，请重新输入！');
+                $('#txtUserPwdRepeat').focus();
+                return;
+            }
+
+            var url = '/Handlers/UserHandler.ashx/Register',
+                dataParam = {
+                    uid: userId,
+                    pwd: userPwd,
+                    name: uname,
+                    address: address
+                };
+
+            function regis(resp) {
+                var obj = JSON.parse(resp);
+                if (obj.Status) {
+                    location.href = 'Login.html';
+                } else {
+                    getEm('tipMsg').innerText = obj.Message;
+                }
+            }
+
+            $.post(url, dataParam, regis);
+        }
+    </script>
+</body>
+</html>

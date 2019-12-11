@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>进销存-主页</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <style type="text/css">
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        header, footer {
+            color:white;
+            text-align: center;
+            background-color: #563d7c;
+        }
+
+        header {
+            height: 60px;
+        }
+
+        footer {
+            height: 30px;
+        }
+
+        main {
+            flex: auto;
+            display: flex;
+        }
+
+        #dd1 {
+            width: 200px;
+        }
+
+        iframe {
+            flex: auto;
+        }
+    </style>
+</head>
+<body>
+    <header><h2>进销存管理系统</h2></header>
+    <main>
+        <div id="dd1">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="View/product/product-list-page.html" target="frmContent">产品列表</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="View/product/product-list.html" target="frmContent">产品列表-nopage</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="View/product/product-add.html" target="frmContent">添加产品</a>
+                </li>
+            </ul>
+        </div>
+        <iframe name="frmContent" src=""></iframe>
+    </main>
+    <footer>by iflytek copyright @2019 </footer>
+    <script src="Scripts/jquery-3.4.1.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <script>
+        $(function () {
+            bindEvent();
+        })
+
+        function bindEvent() {
+            $('#dd1 a.nav-link').on('click', function (e) {
+                $('#dd1 a.nav-link').removeClass('active');
+                $(e.target).addClass('active');
+            });
+        }
+    </script>
+</body>
+</html>

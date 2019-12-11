@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewBag.Title = "登录";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<form>
+    <div class="form-group">
+        <label for="txtUserId">用户ID</label>
+        <input type="text" class="form-control" id="txtUserId" placeholder="用户ID">
+    </div>
+    <div class="form-group">
+        <label for="txtUserPwd">密码</label>
+        <input type="password" class="form-control" id="txtUserPwd" placeholder="password">
+    </div>
+    <div class="form-group">
+        <span id="tipMsg"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary btn-block" id="btnLogin" value="登录" />
+    </div>
+    <div class="form-group">
+        <a href="#" id="btnRegister">没有账号？点我注册</a>
+    </div>
+</form>
+
+@section Scripts{
+    <script>
+        $(function () {
+            bindEvent();
+        })
+
+        function bindEvent() {
+            $('#btnLogin').click(login);
+            $('#btnRegister').click(register);
+        }
+
+        function login(e) {
+            // 阻止表单的默认提交事件
+            e.preventDefault();
+            var method = 'post',
+                url = '/Security/SignIn';
+            var userId = $('#txtUserId').val(),
+                userPwd = $('#txtUserPwd').val();
+
+            if (userId == '' || userPwd == '') {
+                $('#tipMsg').html('用户名和密码不允许为空！');
+                return;
+            }
+
+            $.post(url,
+                { uid: userId, pwd: userPwd },
+                function (resp) {
+                    var obj = getObj(resp);
+                    if (obj.Status) {
+                        location.href = '/Home/Index';
+                    } else {
+                        $('#txtUserPwd').val('');
+                        $('#tipMsg').html(obj.Message);
+                        $('#txtUserPwd').focus();
+                    }
+                });
+        }
+
+        function register() {
+            location.href = '/Security/Register';
+        }
+    </script>
+}
