@@ -48,17 +48,25 @@ namespace CompanySales.MVC.Core
             //ContextObjects.CurrentUser.Roles 当登录时从数据库读取
             if (!string.IsNullOrEmpty(ContextObject.CurrentUser.Roles))
             {
-                //特性中配置的角色
-                string[] requireRoles = Roles.Split(',');
-
-                //当前用户所具有的角色
-                string[] userRoles = ContextObject.CurrentUser.Roles.Split(',');
-
-                //判断是否有匹配角色
-                foreach (string rRole in requireRoles)
+                // 当没有为该控制器设置角色时，默认具有访问权限
+                if (string.IsNullOrEmpty(Roles))
                 {
-                    if (userRoles.Contains(rRole))
-                    { isAuthorize = true; break; }
+                    isAuthorize = true;
+                }
+                else
+                {
+                    //特性中配置的角色
+                    string[] requireRoles = Roles.Split(',');
+
+                    //当前用户所具有的角色
+                    string[] userRoles = ContextObject.CurrentUser.Roles.Split(',');
+
+                    //判断是否有匹配角色
+                    foreach (string rRole in requireRoles)
+                    {
+                        if (userRoles.Contains(rRole))
+                        { isAuthorize = true; break; }
+                    }
                 }
             }
 
