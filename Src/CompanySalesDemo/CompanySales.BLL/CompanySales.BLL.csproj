@@ -55,12 +55,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContextObject.cs" />
-    <Compile Include="CustomerMgr.cs" />
-    <Compile Include="EmployeeMgr.cs" />
-    <Compile Include="OrderMgr.cs" />
-    <Compile Include="ProductMgr.cs" />
+    <Compile Include="Mgr\CustomerMgr.cs" />
+    <Compile Include="Mgr\EmployeeMgr.cs" />
+    <Compile Include="Mgr\ProductMgr.cs" />
+    <Compile Include="Mgr\UserMgr.cs" />
+    <Compile Include="Mgr\OrderMgr.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserMgr.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CompanySales.Common\CompanySales.Common.csproj">

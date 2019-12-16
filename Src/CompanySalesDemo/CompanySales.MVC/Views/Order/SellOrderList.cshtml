@@ -28,6 +28,7 @@
         <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
         <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
         <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDelete">批量删除</button>
     </div>
 </script>
 
@@ -39,10 +40,29 @@
 @section Scripts{
     <script>
         layui.use(['jquery', 'table'], function () {
+            initTable();
+            initTableToolbar();
+            initTableInlineTool();
+            bindEvent();
+        });
+
+        function bindEvent() {
+            $('#btnQuery').click(function (e) {
+                e.preventDefault();
+                layui.table.reload('tt1', {
+                    where: {
+                        ProductName: $('#txtProductName').val(),
+                    }
+                });
+            });
+        }
+
+        // 初始化表格
+        function initTable() {
             layui.table.render({
-                elem: '#tt1'
-                , url: '/Order/GetSellOrderList'
-                , request: {
+                elem: '#tt1'// 渲染表格的【lay-filter】
+                , url: '/Order/GetSellOrderList' //请求数据的url
+                , request: {// 请求附加参数，修改默认分页传参key的名称
                     pageName: 'pageindex'
                     , limitName: 'pagesize'
                 }
@@ -55,7 +75,7 @@
                   , icon: 'layui-icon-tips'
                 }]
                 , title: '销售订单记录'
-                , cols: [[
+                , cols: [[// 绑定表格 数据列 配置
                   { type: 'checkbox', fixed: 'left' }
                   , { field: 'SellOrderID', title: '订单编号', fixed: 'left' }
                   , { field: 'ProductID', title: '产品编号' }
@@ -69,18 +89,21 @@
                   , { field: 'SellOrderDate', title: '订单日期' }
                   , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 }
                 ]]
-                , page: true
-                , parseData: function (res) {
+                , page: true// 开启分页
+                , parseData: function (res) {// 对后端响应数据做进一步处理
                     return {
-                        "code": 0
+                        "code": 0// 返回成功有效code为0
                         , "count": res.Total
                         , "data": res.Rows
                     };
                 }
             });
+        }
 
-            //头工具栏事件
+        // 表头工具栏
+        function initTableToolbar() {
             layui.table.on('toolbar(tt1)', function (obj) {
+                // obj.config.id 即渲染表格的【lay-filter】，checkStatus获取选中行相关数据
                 var checkStatus = layui.table.checkStatus(obj.config.id);
                 switch (obj.event) {
                     case 'getCheckData':
@@ -94,18 +117,27 @@
                     case 'isAll':
                         layer.msg(checkStatus.isAll ? '全选' : '未全选');
                         break;
-
                         //自定义头工具栏右侧图标 - 提示
                     case 'LAYTABLE_TIPS':
                         layer.alert('这是工具栏右侧自定义的一个图标按钮');
                         break;
+                    case 'batchDelete':
+                        if (checkStatus.data.length == 0) {
+                            layui.layer.msg('请选中数据后进行删除！');
+                        } else {
+                            var sellidArray = checkStatus.data.map(function (t, i) { return t.SellOrderID; });
+                            deleteByBatch(sellidArray);
+                        }
+                        break;
                 };
             });
+        }
 
-            //监听行工具事件
+        // 行内编辑事件
+        function initTableInlineTool() {
             layui.table.on('tool(tt1)', function (obj) {
+                // 当前行数据，包括没有绑定表格显示的属性
                 var data = obj.data;
-                //console.log(obj)
                 if (obj.event === 'del') {
                     layer.confirm('真的删除行么', function (index) {
                         obj.del();
@@ -123,20 +155,11 @@
                     });
                 }
             });
-
-            bindEvent();
-        });
-
-        function bindEvent() {
-            $('#btnQuery').click(function (e) {
-                e.preventDefault();
-                layui.table.reload('tt1', {
-                    where: {
-                        ProductName: $('#txtProductName').val(),
-                    }
-                });
-            });
         }
+
+
+        // todo实现 批量删除方法
+        function deleteByBatch(array) { }
     </script>
 }
 
