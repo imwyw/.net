@@ -1,4 +1,5 @@
 ﻿using CompanySales.Model.Entity;
+using CompanySales.Model.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,11 @@ namespace CompanySales.UnitTest
         public void TestGetListByPage()
         {
             // 查询第2页数据
-            var res = BLL.ProductMgr.GetListByPage(1, 10);
+            ProductParameter parameter = new ProductParameter();
+            parameter.PageIndex = 2;
+            parameter.PageSize = 10;
+
+            var res = BLL.ProductMgr.GetListByPage(parameter);
             Assert.IsTrue(res.Total > 0 && res.Rows != null);
         }
 

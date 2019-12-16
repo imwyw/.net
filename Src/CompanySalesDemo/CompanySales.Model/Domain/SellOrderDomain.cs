@@ -19,8 +19,8 @@ namespace CompanySales.Model.Domain
         public DateTime? SellOrderDate { get; set; }
         public string ProductName { get; set; }
         public decimal? Price { get; set; }
-        public int ProductStockNumber { get; set; }
-        public int ProductSellNumber { get; set; }
+        public int? ProductStockNumber { get; set; }
+        public int? ProductSellNumber { get; set; }
         public string EmployeeName { get; set; }
         public string Sex { get; set; }
         public DateTime? BirthDate { get; set; }

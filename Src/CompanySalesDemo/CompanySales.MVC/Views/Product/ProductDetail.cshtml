@@ -3,35 +3,46 @@
     ViewBag.Title = "ProductDetail";
 }
 
-<div class="container">
-    <div class="row">
-        <h4 id="title">添加产品</h4>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend id="title">新增产品</legend>
+</fieldset>
+<form class="layui-form" action="" lay-filter="prodInfo">
+    <div class="layui-form-item">
+        <label class="layui-form-label">产品编号</label>
+        <div class="layui-input-inline">
+            <input type="text" name="ProductID" required lay-verify="required"
+                   placeholder="请输入产品编号" autocomplete="off" class="layui-input">
+        </div>
+        <!--产品编号可用提示框-->
+        <div class="layui-form-mid" id="idTipMsg"></div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="txtProductID">输入产品编号</label>
-                <input type="text" class="form-control" id="txtProductID" aria-describedby="idTipMsg" value="" placeholder="输入数字编号" />
-                <small id="idTipMsg" class="form-text text-muted"></small>
-            </div>
-            <div class="form-group">
-                <label for="txtProductName">名称</label>
-                <input type="text" class="form-control" id="txtProductName" value="" placeholder="输入产品中文名称" />
-            </div>
-            <div class="form-group">
-                <label for="txtPrice">价格</label>
-                <input type="number" class="form-control" id="txtPrice" value="" placeholder="输入价格数字" />
-            </div>
-            <div class="form-group">
-                <label for="txtProductStockNumber">库存</label>
-                <input type="number" class="form-control" id="txtProductStockNumber" value="" placeholder="库存量（数字）" />
-            </div>
-            <div class="form-group">
-                <button class="btn btn-primary btn-block" id="btnSave">保存</button>
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">产品名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="ProductName" required lay-verify="required"
+                   placeholder="请输入产品名称" autocomplete="off" class="layui-input">
         </div>
     </div>
-</div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-block">
+            <input type="text" name="Price" required lay-verify="required"
+                   placeholder="请输入产品价格" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">库存</label>
+        <div class="layui-input-block">
+            <input type="text" name="ProductStockNumber" required lay-verify="required"
+                   placeholder="请输入产品库存" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveProd">保存</button>
+        </div>
+    </div>
+</form>
 
 @section Scripts{
     <script>
@@ -39,15 +50,21 @@
         var id = getQueryString('id');// 从url获取key对应的value值
         var isEdit = false;// 标识当前的操作业务，false为新增业务，true为更新业务
 
-        $(function () {
+        layui.use(['form'], function () {
             init();
+
+            layui.form.on('submit(saveProd)', function (data) {
+                saveProduct(data.field); // data.field 对应表单模型数据
+                return false;// 阻止默认事件
+            });
+
             bindEvent();
-        })
+        });
 
         function init() {
             if (id) {
                 isEdit = true;
-                $('#txtProductID').attr('disabled', true);
+                $('input[name=ProductID]').attr('disabled', true);
             }
             if (isEdit) {
                 $('#title').html('更新产品信息');
@@ -56,49 +73,40 @@
         }
 
         function bindEvent() {
-            $('#btnSave').on('click', saveProduct);
-            $('#txtProductID').on('blur', checkProductID);
+            $('input[name=ProductID]').on('blur', checkProductID);
         }
 
-        function saveProduct() {
-            var prod = {
-                ProductID: getEm('txtProductID').value,
-                ProductName: getEm('txtProductName').value,
-                Price: getEm('txtPrice').value,
-                ProductStockNumber: getEm('txtProductStockNumber').value,
-            };
+        function saveProduct(prod) {
             var actionName = isEdit ? "UpdateProduct" : "SaveProduct";
 
             var url = `/Product/${actionName}`;
             $.post(url, prod, function (resp) {
                 var obj = getObj(resp);
                 if (obj.Status) {
-                    alert('保存成功！');
+                    layui.layer.msg('保存成功！');
                 } else {
-                    alert(obj.Message);
+                    layui.layer.msg(obj.Message);
                 }
             });
         }
 
         function checkProductID() {
-            var url = `/Product/CheckProductById?id=${$('#txtProductID').val()}`;
+            var id = $('input[name=ProductID]').val();
+            var url = `/Product/CheckProductById?id=${id}`;
             $.get(url, function (resp) {
                 var obj = getObj(resp);
                 if (obj.Status) {
                     $('#idTipMsg').html('该编号产品已存在，请更换产品编号！');
-                    $('#idTipMsg').css('color', 'red');
+                    $('#idTipMsg').css('color', '#FF5722');
                 } else {
                     $('#idTipMsg').html('该产品编号可用！');
-                    $('#idTipMsg').css('color', 'green');
+                    $('#idTipMsg').css('color', '#5FB878');
                 }
             });
         }
 
         function setModel2View(entity) {
-            $('#txtProductID').val(entity.ProductID);
-            $('#txtProductName').val(entity.ProductName);
-            $('#txtPrice').val(entity.Price);
-            $('#txtProductStockNumber').val(entity.ProductStockNumber);
+            layui.form.val('prodInfo', entity);
         }
 
         function getProductById() {

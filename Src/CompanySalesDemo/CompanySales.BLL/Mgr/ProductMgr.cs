@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CompanySales.Model.Parameter;
 
 namespace CompanySales.BLL
 {
@@ -49,11 +50,10 @@ namespace CompanySales.BLL
             return ProductDAO.Update(entity);
         }
 
-        public static Pager<Product> GetListByPage(int pageindex, int pagesize)
+        public static Pager<Product> GetListByPage(ProductParameter parameter)
         {
-            return ProductDAO.GetListByPage(pageindex, pagesize);
+            return ProductDAO.GetListByPage(parameter);
         }
-
 
         public static bool BatchDelete(string ids)
         {

@@ -17,6 +17,18 @@
                 <input class="layui-input" type="text" id="txtProductName" />
             </div>
         </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">员工姓名</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" id="txtEmployeeName" />
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">销售日期</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" id="dateSell" />
+            </div>
+        </div>
         <button class="layui-btn" id="btnQuery">查询</button>
     </div>
 </form>
@@ -39,12 +51,20 @@
 
 @section Scripts{
     <script>
-        layui.use(['jquery', 'table'], function () {
+        layui.use(['jquery', 'table', 'form', 'laydate'], function () {
+            init();
             initTable();
             initTableToolbar();
             initTableInlineTool();
             bindEvent();
         });
+
+        function init() {
+            // 日期控件渲染
+            layui.laydate.render({
+                elem: '#dateSell'
+            });
+        }
 
         function bindEvent() {
             $('#btnQuery').click(function (e) {
@@ -52,6 +72,8 @@
                 layui.table.reload('tt1', {
                     where: {
                         ProductName: $('#txtProductName').val(),
+                        EmployeeName: $('#txtEmployeeName').val(),
+                        SellOrderDate: $('#dateSell').val(),
                     }
                 });
             });

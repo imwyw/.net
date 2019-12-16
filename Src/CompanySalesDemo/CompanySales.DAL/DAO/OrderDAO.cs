@@ -58,8 +58,18 @@ WHERE 1=1
             List<SqlParameter> paramList = new List<SqlParameter>();
             if (!string.IsNullOrEmpty(parameter.ProductName))
             {
-                sqlLayout.Append($" AND prod.ProductName like @ProductName");
+                sqlLayout.Append($" AND prod.ProductName like @ProductName ");
                 paramList.Add(new SqlParameter("@ProductName", $"%{parameter.ProductName}%"));
+            }
+            if (!string.IsNullOrEmpty(parameter.EmployeeName))
+            {
+                sqlLayout.Append($" AND emp.EmployeeName like @EmployeeName ");
+                paramList.Add(new SqlParameter("@EmployeeName", $"%{parameter.EmployeeName}%"));
+            }
+            if (null != parameter.SellOrderDate)
+            {
+                sqlLayout.Append($" AND a.SellOrderDate = @SellOrderDate");
+                paramList.Add(new SqlParameter("@SellOrderDate", parameter.SellOrderDate));
             }
 
             // 统计数目

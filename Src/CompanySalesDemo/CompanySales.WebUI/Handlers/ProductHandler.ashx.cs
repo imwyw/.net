@@ -1,5 +1,6 @@
 ﻿using CompanySales.BLL;
-using CompanySales.Model.Entity;using CompanySales.Model;
+using CompanySales.Model.Entity;
+using CompanySales.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Reflection;
 using System.Web;
 using Newtonsoft.Json;
 using CompanySales.Common;
+using CompanySales.Model.Parameter;
 
 namespace CompanySales.WebUI.Handlers
 {
@@ -42,7 +44,11 @@ namespace CompanySales.WebUI.Handlers
         {
             int pageIndex = int.Parse(context.Request["pageIndex"]);
             int pageSize = int.Parse(context.Request["pageSize"]);
-            Pager<Product> result = ProductMgr.GetListByPage(pageIndex, pageSize);
+            ProductParameter parameter = new ProductParameter();
+            parameter.PageIndex = pageIndex;
+            parameter.PageSize = pageSize;
+
+            Pager<Product> result = ProductMgr.GetListByPage(parameter);
 
             string json = JsonConvert.SerializeObject(result);
             context.Response.Write(json);

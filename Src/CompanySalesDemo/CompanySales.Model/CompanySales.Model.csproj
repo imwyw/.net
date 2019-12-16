@@ -63,6 +63,7 @@
     <Compile Include="Entity\User.cs" />
     <Compile Include="Pager.cs" />
     <Compile Include="Parameter\PageParameter.cs" />
+    <Compile Include="Parameter\ProductParameter.cs" />
     <Compile Include="Parameter\SellOrderParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateModel.cs" />

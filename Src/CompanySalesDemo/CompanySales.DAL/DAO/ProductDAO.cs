@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CompanySales.Common;
+using CompanySales.Model.Parameter;
 
 namespace CompanySales.DAL
 {
@@ -60,7 +61,9 @@ namespace CompanySales.DAL
                 {
                     dbEntity.Price = entity.Price;
                     dbEntity.ProductName = entity.ProductName;
-                    dbEntity.ProductSellNumber = entity.ProductSellNumber;
+                    
+                    // 更新时不更新库存和已销售数量
+                    //dbEntity.ProductSellNumber = entity.ProductSellNumber;
                     //dbEntity.ProductStockNumber = entity.ProductStockNumber;
                     db.SaveChanges();
                     return true;
@@ -68,16 +71,21 @@ namespace CompanySales.DAL
             }
         }
 
-        public static Pager<Product> GetListByPage(int pageindex, int pagesize)
+        public static Pager<Product> GetListByPage(ProductParameter parameter)
         {
             Pager<Product> result = new Pager<Product>();
             using (SaleContext db = new SaleContext())
             {
-                result.Total = db.Product.Count();
-                result.Rows = db.Product
-                    .OrderBy(t => t.ProductID)
-                    .Skip(pageindex * pagesize)
-                    .Take(pagesize)
+                var query = db.Product.AsQueryable();
+                if (!string.IsNullOrEmpty(parameter.ProductName))
+                {
+                    query = query.Where(t => t.ProductName.Contains(parameter.ProductName));
+                }
+
+                result.Total = query.Count();
+                result.Rows = query.OrderBy(t => t.ProductID)
+                    .Skip(parameter.Skip)
+                    .Take(parameter.PageSize)
                     .ToList();
                 return result;
             }

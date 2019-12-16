@@ -1,11 +1,13 @@
 ﻿using CompanySales.BLL;
-using CompanySales.Model.Entity;using CompanySales.Model;
+using CompanySales.Model.Entity;
+using CompanySales.Model;
 using CompanySales.MVC.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CompanySales.Model.Parameter;
 
 namespace CompanySales.MVC.Controllers
 {
@@ -34,9 +36,9 @@ namespace CompanySales.MVC.Controllers
             return Json(list);
         }
 
-        public JsonResult GetListByPage(int pageIndex, int pageSize)
+        public JsonResult GetListByPage(ProductParameter parameter)
         {
-            Pager<Product> result = ProductMgr.GetListByPage(pageIndex, pageSize);
+            Pager<Product> result = ProductMgr.GetListByPage(parameter);
             return Json(result);
         }
 
