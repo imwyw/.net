@@ -122,7 +122,7 @@
                         });
                     });
                 } else if (obj.event === 'edit') {
-                    editProduct(data.ProductID);
+                    editProduct(data);
                 }
             });
         }
@@ -165,8 +165,14 @@
             });
         }
 
-        function editProduct(id) {
-            location.href = `/Product/ProductDetail?id=${id}`;
+        function editProduct(prod) {
+            // 不在当前页进行跳转，优化调整为从主页新增tab页方式
+            //location.href = `/Product/ProductDetail?id=${id}`;
+
+            var tabName = `${prod.ProductName}-${prod.ProductID}`,
+                tabid = `prod-${prod.ProductID}`,
+                src = `/Product/ProductDetail?id=${prod.ProductID}`;
+            top.addIndexTab(tabName, tabid, src);
         }
 
     </script>

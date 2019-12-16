@@ -152,23 +152,35 @@
                 var url = $(this).attr('data-action');
                 var tabName = $(this).text();
                 var tabid = $(this).attr('data-menuid');
-                var tabFilter = 'tabContainer';
 
-                //判断tab选项卡是否已存在
-                var tabExist = $(`ul.layui-tab-title>li[lay-id=${tabid}]`).length > 0;
-
-                if (!tabExist) {
-                    // 添加新的tab
-                    layui.element.tabAdd(tabFilter, {
-                        title: tabName,//tab名称
-                        content: `<iframe name="frmContent" src="${url}" frameborder="0"></iframe>`,//tab的内容
-                        id: tabid//tab的id，用于change和close
-                    });
-                }
-                //选中指定id的tab选项卡
-                layui.element.tabChange(tabFilter, tabid);
+                addIndexTab(tabName, tabid, url);
             });
         }
+
+        /* 在主页选项卡上添加tab面板
+        tabName:选项卡标题
+        tabid：选项卡id，需要保持唯一
+        src：选项卡内联框架iframe的src连接
+        */
+        function addIndexTab(tabName, tabid, src) {
+            // layui tab容器的filter
+            var tabFilter = 'tabContainer';
+
+            //判断tab选项卡是否已存在
+            var tabExist = $(`ul.layui-tab-title>li[lay-id=${tabid}]`).length > 0;
+
+            if (!tabExist) {
+                // 添加新的tab
+                layui.element.tabAdd(tabFilter, {
+                    title: tabName,//tab名称
+                    content: `<iframe name="frmContent" src="${src}" frameborder="0"></iframe>`,//tab的内容
+                    id: tabid//tab的id，用于change和close
+                });
+            }
+            //选中指定id的tab选项卡
+            layui.element.tabChange(tabFilter, tabid);
+        }
+
     </script>
 </body>
 </html>
