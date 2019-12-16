@@ -30,5 +30,25 @@ namespace CompanySales.BLL
         {
             return UserDAO.AddBatchUser(list);
         }
+
+        public static User GetUserById(int id)
+        {
+            return UserDAO.GetUserById(id);
+        }
+
+        public static bool UpdateInfo(User entity)
+        {
+            return UserDAO.UpdateInfo(entity);
+        }
+
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static bool UpdateImage(User entity)
+        {
+            return UserDAO.UpdateImage(entity);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CompanySales.BLL;
-using CompanySales.Model.Entity;using CompanySales.Model;
+using CompanySales.Model.Entity;
+using CompanySales.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,12 @@ namespace CompanySales.MVC.Controllers
                 // 当前用户对象赋值给session
                 // Session["uname"] = result;
                 ContextObject.CurrentUser = result;
+
+                // 登录成功后，将用户基本信息写至cookie，方便前端使用
+                Response.Cookies.Add(new HttpCookie("u_id", result.ID.ToString()));
+                Response.Cookies.Add(new HttpCookie("userid", result.UserId));
+                Response.Cookies.Add(new HttpCookie("username", result.Name));
+
                 state.Message = "登录成功";
             }
             else

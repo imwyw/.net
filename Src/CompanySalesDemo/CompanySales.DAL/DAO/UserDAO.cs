@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CompanySales.Common;
 
 namespace CompanySales.DAL
 {
@@ -43,6 +44,69 @@ namespace CompanySales.DAL
                 db.Users.AddRange(list);
                 db.SaveChanges();
                 return true;
+            }
+        }
+
+        /// <summary>
+        ///  更新用户头像
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static bool UpdateImage(User entity)
+        {
+            using (SaleContext db = new SaleContext())
+            {
+                var dbEntity = db.Users.Find(entity.ID);
+                dbEntity.HeadImg = entity.HeadImg;
+
+                db.SaveChanges();
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// 根据主键获取用户实体对象
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static User GetUserById(int id)
+        {
+            using (SaleContext db = new SaleContext())
+            {
+                User res = db.Users.Find(id);
+                return res;
+            }
+        }
+
+        /// <summary>
+        /// 更新用户信息，但不包含头像，头像单独进行更新
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static bool UpdateInfo(User entity)
+        {
+            using (SaleContext db = new SaleContext())
+            {
+                var dbEntity = db.Users.Find(entity.ID);
+                if (null == dbEntity)
+                {
+                    Log4Helper.InfoLog.Warn("未找到该user id：" + entity.ID);
+                    return false;
+                }
+                else
+                {
+                    dbEntity.Name = entity.Name;
+                    dbEntity.Address = entity.Address;
+                    dbEntity.BirthDate = entity.BirthDate;
+                    dbEntity.Gender = entity.Gender;
+
+                    // 用户角色和头像需要单独进行设置，TODO
+                    //dbEntity.Roles = entity.Roles;
+                    //dbEntity.HeadImg = entity.HeadImg;
+
+                    db.SaveChanges();
+                    return true;
+                }
             }
         }
 

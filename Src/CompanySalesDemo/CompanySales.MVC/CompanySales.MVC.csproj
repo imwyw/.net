@@ -261,7 +261,13 @@
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
+    <Content Include="Scripts\jquery.cookie-1.4.1.min.js" />
+    <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment-with-locales.js" />
+    <Content Include="Scripts\moment-with-locales.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\popper-utils.js" />
     <Content Include="Scripts\popper-utils.min.js" />
     <Content Include="Scripts\popper.js" />
@@ -290,6 +296,7 @@
     <Compile Include="Base\JsonConvertResult.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Core\CusAuthAttribute.cs" />
@@ -311,6 +318,8 @@
     <Content Include="Views\Product\ProductDetail.cshtml" />
     <Content Include="Views\Order\SellOrderList.cshtml" />
     <Content Include="Views\Order\PurchaseOrderList.cshtml" />
+    <Content Include="Views\Personal\BasicInfoView.cshtml" />
+    <Content Include="Views\Personal\PasswordView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

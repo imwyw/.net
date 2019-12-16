@@ -30,5 +30,14 @@ namespace CompanySales.Model.Entity
 
         [StringLength(100)]
         public string Roles { get; set; }
+
+        /// <summary>
+        /// 用户上传头像的保存
+        /// 实际保存的是图片在服务器保存的全路径名
+        /// </summary>
+        [StringLength(200)]
+        public string HeadImg { get; set; }
+        public DateTime? BirthDate { get; set; }
+        public string Gender { get; set; }
     }
 }

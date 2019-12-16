@@ -64,12 +64,17 @@
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item">
                     <a href="javascript:;">
-                        <img src="~/layui/images/face/0.gif" class="layui-nav-img">
+                        <!--请求图片资源增加随机传参 ?rd=Math.random() 防止图片资源缓存 -->
+                        <img id="imgHead" src="/Personal/GetUserImg?rd=Math.random()" class="layui-nav-img">
                         @ViewBag.CurUserID
                     </a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="">基本资料</a></dd>
-                        <dd><a href="">安全设置</a></dd>
+                    <dl class="layui-nav-child" id="currentUserInfo">
+                        <dd>
+                            <a href="javascript:;" data-action="/Personal/BasicInfoView">基本资料</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" data-action="/Personal/PasswordView">安全设置</a>
+                        </dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
@@ -118,9 +123,7 @@
             <!-- 内容主体区域 -->
             <div class="layui-tab" lay-filter="tabContainer" lay-allowclose="true">
                 <ul class="layui-tab-title"></ul>
-                <div class="layui-tab-content">
-
-                </div>
+                <div class="layui-tab-content"></div>
             </div>
         </div>
 
@@ -155,6 +158,13 @@
 
                 addIndexTab(tabName, tabid, url);
             });
+
+            // 个人基本信息操作绑定
+            $('#currentUserInfo a').click(function (e) {
+                var url = $(this).attr('data-action');
+                var tabName = $(this).text();
+                addIndexTab(tabName, tabName, url);
+            });
         }
 
         /* 在主页选项卡上添加tab面板
@@ -181,6 +191,10 @@
             layui.element.tabChange(tabFilter, tabid);
         }
 
+        // 刷新头像，在内联框架中进行调用，用于上传头像后的及时更新
+        function refreshHeadImg() {
+            $('#imgHead').attr('src', '/Personal/GetUserImg?rd=' + Math.random());
+        }
     </script>
 </body>
 </html>
