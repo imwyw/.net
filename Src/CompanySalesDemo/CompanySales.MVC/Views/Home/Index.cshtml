@@ -14,6 +14,12 @@
     <link href="~/layui/css/layui.css" rel="stylesheet" />
 
     <style type="text/css">
+        div.layui-logo {
+            font-size: 18px;
+            font-weight: bolder;
+            cursor: pointer;
+        }
+
         div.layui-tab {
             margin: 0;
             height: 100%;
@@ -46,7 +52,10 @@
 <body class="layui-layout-body">
     <div class="layui-layout layui-layout-admin">
         <div class="layui-header">
-            <div class="layui-logo">ifly 进销存</div>
+            <div class="layui-logo">
+                <i class="layui-icon layui-icon-face-smile"></i>
+                ifly 进销存
+            </div>
             <!-- 头部区域（可配合layui已有的水平导航） -->
             <ul class="layui-nav layui-layout-left">
                 <li class="layui-nav-item"><a href="">控制台</a></li>
@@ -86,35 +95,51 @@
         <div class="layui-side layui-bg-black">
             <div class="layui-side-scroll">
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-                <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <ul class="layui-nav layui-nav-tree">
                     <li class="layui-nav-item layui-nav-itemed">
-                        <a class="" href="javascript:;">产品管理</a>
+                        <a class="" href="javascript:;">
+                            <i class="fa fa-3x fa-product-hunt" aria-hidden="true"></i>
+                            <span>产品管理</span>
+                        </a>
                         <dl class="layui-nav-child">
                             <dd>
                                 <a class="menu-link" href="javascript:;" data-action="/Product/ProductList"
-                                   data-menuid="prod-list">产品列表</a>
+                                   data-menuid="prod-list"><span>产品列表</span></a>
                             </dd>
                             <dd>
                                 <a class="menu-link" href="javascript:;" data-action="/Product/ProductDetail"
-                                   data-menuid="prod-detail">新增产品</a>
+                                   data-menuid="prod-detail"><span>新增产品</span></a>
                             </dd>
                         </dl>
                     </li>
                     <li class="layui-nav-item">
-                        <a href="javascript:;">订单管理</a>
+                        <a href="javascript:;">
+                            <i class="fa fa-3x fa-first-order" aria-hidden="true"></i>
+                            <span>订单管理</span>
+                        </a>
                         <dl class="layui-nav-child">
                             <dd>
                                 <a class="menu-link" href="javascript:;" data-action="/Order/SellOrderList"
-                                   data-menuid="sell-order">销售订单</a>
+                                   data-menuid="sell-order"><span>销售订单</span></a>
                             </dd>
                             <dd>
                                 <a class="menu-link" href="javascript:;" data-action="/Order/PurchaseOrderList"
-                                   data-menuid="purchase-order">采购订单</a>
+                                   data-menuid="purchase-order"><span>采购订单</span></a>
                             </dd>
                         </dl>
                     </li>
-                    <li class="layui-nav-item"><a href="">云市场</a></li>
-                    <li class="layui-nav-item"><a href="">发布商品</a></li>
+                    <li class="layui-nav-item">
+                        <a href="">
+                            <i class="fa fa-3x fa-cloud" aria-hidden="true"></i>
+                            <span>云市场</span>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="">
+                            <i class="fa fa-3x fa-cloud" aria-hidden="true"></i>
+                            <span>发布商品</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -126,6 +151,7 @@
                 <div class="layui-tab-content"></div>
             </div>
         </div>
+
 
         <div class="layui-footer">
             <!-- 底部固定区域 -->
@@ -147,6 +173,9 @@
         layui.use(['element'], function () {
             bindEvent();
         });
+
+        // 标记左侧菜单隐藏？
+        var hideMenu = false;
 
         function bindEvent() {
             // 菜单事件绑定
@@ -178,6 +207,32 @@
                     // 选中样式有冲突，简单粗暴直接移除
                     $('#btnRebuildData').closest('li').removeClass('layui-this');
                 });
+            });
+
+            // 点击logo实现左侧菜单栏的伸缩
+            $('div.layui-logo').click(function (e) {
+                //找出所有的span，即菜单文本，并判断是不是hidden
+                $('li.layui-nav-item span').each(function () {
+                    if ($(this).is(':hidden')) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                if (hideMenu) {
+                    // 展开菜单
+                    $('li.admin-itemed').removeClass('admin-itemed').addClass('layui-nav-itemed');
+                    $('div.layui-side').css('width', '200px');
+                    $('div.layui-body').css('left', '200px');
+                    hideMenu = false;
+                } else {
+                    // 收缩菜单
+                    $('li.layui-nav-itemed').removeClass('layui-nav-itemed').addClass('admin-itemed');
+                    $('div.layui-side').css('width', '50px');
+                    $('div.layui-body').css('left', '50px');
+                    hideMenu = true;
+                }
             });
         }
 
