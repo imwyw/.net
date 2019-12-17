@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CompanySales.Common;
+using System.IO;
 
 namespace CompanySales.DAL
 {
@@ -110,5 +111,20 @@ namespace CompanySales.DAL
             }
         }
 
+        /// <summary>
+        /// 重新数据库，执行【InitTables.sql】脚本
+        /// </summary>
+        /// <returns></returns>
+        public static bool RebuildData()
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "db_Script", "InitTables.sql");
+            string sql = File.ReadAllText(path);
+
+            using (SaleContext db = new SaleContext())
+            {
+                db.Database.ExecuteSqlCommand(sql);
+                return true;
+            }
+        }
     }
 }

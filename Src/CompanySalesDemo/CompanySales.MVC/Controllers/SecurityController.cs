@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CompanySales.MVC.Base;
 
 namespace CompanySales.MVC.Controllers
 {
     /// <summary>
     /// 用户相关操作
     /// </summary>
-    public class SecurityController : Controller
+    public class SecurityController : BaseController
     {
         /// <summary>
         /// 登录页面
@@ -50,9 +51,9 @@ namespace CompanySales.MVC.Controllers
                 ContextObject.CurrentUser = result;
 
                 // 登录成功后，将用户基本信息写至cookie，方便前端使用
-                Response.Cookies.Add(new HttpCookie("u_id", result.ID.ToString()));
-                Response.Cookies.Add(new HttpCookie("userid", result.UserId));
-                Response.Cookies.Add(new HttpCookie("username", result.Name));
+                AddCookie("u_id", result.ID.ToString());
+                AddCookie("userid", result.UserId);
+                AddCookie("username", result.Name);
 
                 state.Message = "登录成功";
             }

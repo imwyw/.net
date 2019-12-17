@@ -50,7 +50,7 @@
             <!-- 头部区域（可配合layui已有的水平导航） -->
             <ul class="layui-nav layui-layout-left">
                 <li class="layui-nav-item"><a href="">控制台</a></li>
-                <li class="layui-nav-item"><a href="">商品管理</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" id="btnRebuildData">初始化表结构和数据!!!</a></li>
                 <li class="layui-nav-item"><a href="">用户</a></li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">其它系统</a>
@@ -164,6 +164,20 @@
                 var url = $(this).attr('data-action');
                 var tabName = $(this).text();
                 addIndexTab(tabName, tabName, url);
+            });
+
+            // 重新数据库，执行脚本保持最新表结构!!!
+            $('#btnRebuildData').click(function (e) {
+                $.post('/Home/RebuildData', null, function (resp) {
+                    var ro = getObj(resp);
+                    if (ro.Status) {
+                        layui.layer.msg('重建成功！');
+                    } else {
+                        layui.layer.msg('无法重建，请检查异常信息');
+                    }
+                    // 选中样式有冲突，简单粗暴直接移除
+                    $('#btnRebuildData').closest('li').removeClass('layui-this');
+                });
             });
         }
 

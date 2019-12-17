@@ -50,5 +50,10 @@ namespace CompanySales.BLL
         {
             return UserDAO.UpdateImage(entity);
         }
+
+        public static bool RebuildData()
+        {
+            return UserDAO.RebuildData();
+        }
     }
 }

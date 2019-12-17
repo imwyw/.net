@@ -51,7 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\AttachmentType.cs" />
     <Compile Include="Domain\SellOrderDomain.cs" />
+    <Compile Include="Entity\Attachment.cs" />
     <Compile Include="Entity\Customer.cs" />
     <Compile Include="Entity\Department.cs" />
     <Compile Include="Entity\Employee.cs" />

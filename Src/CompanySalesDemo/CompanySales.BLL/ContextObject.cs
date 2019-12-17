@@ -55,5 +55,16 @@ namespace CompanySales.BLL
                 return Path.Combine(BaseFilePath, "UserImage");
             }
         }
+
+        /// <summary>
+        /// 产品相关图片
+        /// </summary>
+        public static string ProductImagePath
+        {
+            get
+            {
+                return Path.Combine(BaseFilePath, "ProductImage");
+            }
+        }
     }
 }

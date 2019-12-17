@@ -7,6 +7,10 @@ namespace CompanySales.Model.Entity
 
     public partial class SaleContext : DbContext
     {
+        /// <summary>
+        /// name=SaleContext
+        /// SaleContext 对应 web.config 中【connectionStrings】配置节点
+        /// </summary>
         public SaleContext()
             : base("name=SaleContext")
         {
@@ -17,9 +21,11 @@ namespace CompanySales.Model.Entity
         public virtual DbSet<Employee> Employee { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<Provider> Provider { get; set; }
-        public virtual DbSet<PurchaseOrder> Purchase_order { get; set; }
-        public virtual DbSet<SellOrder> Sell_Order { get; set; }
+        public virtual DbSet<PurchaseOrder> PurchaseOrder { get; set; }
+        public virtual DbSet<SellOrder> SellOrder { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Attachment> Attachment { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

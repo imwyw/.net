@@ -3,6 +3,15 @@
     ViewBag.Title = "ProductDetail";
 }
 
+@section Styles{
+    <style>
+        img.img-preview {
+            width: 450px;
+            height: 300px;
+        }
+    </style>
+}
+
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
     <legend id="title">新增产品</legend>
 </fieldset>
@@ -44,59 +53,84 @@
     </div>
 </form>
 
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>产品图片</legend>
+</fieldset>
+<div class="layui-collapse ">
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">
+            外观及细节
+        </h2>
+        <div class="layui-colla-content layui-show">
+            <!-- 在此处会动态插入图片 -->
+            <div class="img-container"></div>
+            <button class="layui-btn layui-btn-fluid layui-btn-normal" id="btnUpload">上传图片</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts{
     <script>
         // 定义全局变量
-        var id = getQueryString('id');// 从url获取key对应的value值
-        var isEdit = false;// 标识当前的操作业务，false为新增业务，true为更新业务
+        var globalProdId = getQueryString('id');// 从url获取key对应的value值
+        var isEdit = Boolean(globalProdId);// 标识当前的操作业务，false为新增业务，true为更新业务
 
-        layui.use(['form'], function () {
-            init();
-
-            layui.form.on('submit(saveProd)', function (data) {
-                saveProduct(data.field); // data.field 对应表单模型数据
-                return false;// 阻止默认事件
-            });
-
+        layui.use(['form', 'upload', 'layer', 'element'], function () {
+            initTitleInfo();
+            initUpload();
+            bindImages();
+            bindImageDelete();
             bindEvent();
         });
 
-        function init() {
-            if (id) {
-                isEdit = true;
-                $('input[name=ProductID]').attr('disabled', true);
-                $('input[name=ProductID]').addClass('layui-disabled');
-            }
+        // 新增和更新的提示消息区分
+        function initTitleInfo() {
             if (isEdit) {
                 $('#title').html('更新产品信息');
+                // 更新业务，禁用编号文本框，不允许修改编号
+                disableInpuByID('input[name=ProductID]', true);
                 getProductById();
+                disableInpuByID('#btnUpload', false);
+            } else {
+                disableInpuByID('#btnUpload', true);
             }
         }
 
         function bindEvent() {
             $('input[name=ProductID]').on('blur', checkProductID);
+
+            // layui表单提交事件，或者单独绑定至按钮也同样
+            layui.form.on('submit(saveProd)', function (data) {
+                saveProduct(data.field); // data.field 对应表单模型数据
+                return false;// 阻止默认事件
+            });
         }
 
+        // 保存产品信息，包含新增和更新业务
         function saveProduct(prod) {
             var actionName = isEdit ? "UpdateProduct" : "SaveProduct";
 
             var url = `/Product/${actionName}`;
             $.post(url, prod, function (resp) {
-                var obj = getObj(resp);
-                if (obj.Status) {
+                var ro = getObj(resp);
+                if (ro.Status) {
                     layui.layer.msg('保存成功！');
+                    globalProdId = prod.ProductID;
+                    isEdit = true;
+                    initTitleInfo();
                 } else {
-                    layui.layer.msg(obj.Message);
+                    layui.layer.msg(ro.Message);
                 }
             });
         }
 
+        // 因产品编号由人工指定，在录入产品编号时需要验证该编号是否可用
         function checkProductID() {
             var id = $('input[name=ProductID]').val();
             var url = `/Product/CheckProductById?id=${id}`;
             $.get(url, function (resp) {
-                var obj = getObj(resp);
-                if (obj.Status) {
+                var ro = getObj(resp);
+                if (ro.Status) {
                     $('#idTipMsg').html('该编号产品已存在，请更换产品编号！');
                     $('#idTipMsg').css('color', '#FF5722');
                 } else {
@@ -106,17 +140,99 @@
             });
         }
 
-        function setModel2View(entity) {
-            layui.form.val('prodInfo', entity);
-        }
-
+        // 根据id获取产品实体，绑定至页面
         function getProductById() {
             var url = '/Product/GetProductById';
-            $.post(url, { id: id }, function (resp) {
-                var obj = getObj(resp);
+            $.post(url, { id: globalProdId }, function (resp) {
+                var ro = getObj(resp);
                 // 将产品对象绑定到页面显示
-                setModel2View(obj);
+                layui.form.val('prodInfo', ro);
             });
+        }
+
+        // 上传图片初识化
+        function initUpload() {
+            layui.upload.render({
+                elem: '#btnUpload'
+                , url: '/Product/UploadProductImg'
+                , data: {
+                    productID: function () {
+                        // 多套一层函数，用于上传时取最新变量
+                        return globalProdId;
+                    }
+                }//额外参数
+                , done: function (res, index, upload) {
+                    layui.layer.msg(res.Message);
+
+                    // 上传成功的话，则添加显示
+                    if (res.Code == 0) {
+                        addImage(res.Data.id, res.Data.src);
+                    }
+
+                }//done end
+                , error: function (err) {
+                    console.error(err);
+                    layui.layer.msg('上传发生异常，请重新上传');
+                }
+            });
+        }
+
+        // 加载所有产品图片
+        function bindImages() {
+            if (!isEdit) { return; }
+            $.post('/Attachment/GetListByRelatedId', {
+                relatedId: globalProdId
+            }, function (resp) {
+                var arr = getObj(resp);
+                // 循环添加img元素，并设置src加载图片
+                $.each(arr, function (i, t) {
+                    addImage(t.ID, t.PhysicalPath);
+                });
+            });
+        }
+
+        // 动态添加图片标签至图片面板
+        function addImage(attId, imgPath) {
+            var html = `
+                <div class ="layui-upload-list">
+                <img class ="layui-upload-img img-preview" >
+                <button class ="layui-btn layui-btn-warm layui-btn-sm img-del" data-id="${attId}" >删除</button>
+                </div>
+                `;
+            $('div.img-container').append(html);
+            // 设置图片src，显示刚刚上传的图片
+            $('div.img-container img:last').attr('src', `/Attachment/GetImageByPath?fullPath=${imgPath}`);
+        }
+
+        // 绑定图片右侧的删除按钮事件
+        function bindImageDelete() {
+            $('div.img-container').on('click', 'button.img-del', function (e) {
+                // 当前图片附件的主键ID
+                var _id = $(this).attr('data-id');
+                // 找到要删除图片的div，删除图片后需要移除该div
+                var imgPart = $(this).closest('div.layui-upload-list');
+                $.post('/Attachment/RemoveAttachById', { id: _id }, function (resp) {
+                    var ro = getObj(resp);
+                    if (ro.Status) {
+                        layer.msg('删除成功！');
+                        imgPart.remove();
+                    } else {
+                        layer.msg('无法删除！');
+                    }
+                });
+            });
+        }
+
+        // 禁用组件设置
+        function disableInpuByID(emid, isDisabled) {
+            if (isDisabled) {
+                // 禁用上传按钮
+                $(emid).attr('disabled', 'disabled');
+                $(emid).addClass('layui-btn-disabled');
+            } else {
+                $(emid).removeAttr('disabled');
+                $(emid).removeClass('layui-btn-disabled');
+            }
         }
 
     </script>
