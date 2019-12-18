@@ -225,12 +225,14 @@
                     $('li.admin-itemed').removeClass('admin-itemed').addClass('layui-nav-itemed');
                     $('div.layui-side').css('width', '200px');
                     $('div.layui-body').css('left', '200px');
+                    $('div.layui-footer').css('left', '200px');
                     hideMenu = false;
                 } else {
                     // 收缩菜单
                     $('li.layui-nav-itemed').removeClass('layui-nav-itemed').addClass('admin-itemed');
                     $('div.layui-side').css('width', '50px');
                     $('div.layui-body').css('left', '50px');
+                    $('div.layui-footer').css('left', '50px');
                     hideMenu = true;
                 }
             });
