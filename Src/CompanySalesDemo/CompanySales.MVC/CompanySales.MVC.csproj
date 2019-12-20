@@ -263,6 +263,7 @@
     <Content Include="layui\font\iconfont.woff2" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\index.d.ts" />
+    <Content Include="Scripts\jigsaw.min.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -327,6 +328,7 @@
     <Content Include="Views\Order\PurchaseOrderList.cshtml" />
     <Content Include="Views\Personal\BasicInfoView.cshtml" />
     <Content Include="Views\Personal\PasswordView.cshtml" />
+    <Content Include="Views\Security\LoginImgVerify.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

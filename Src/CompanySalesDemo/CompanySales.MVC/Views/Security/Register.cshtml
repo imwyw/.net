@@ -31,6 +31,9 @@
     <div class="form-group">
         <button class="btn btn-primary btn-block" id="btnSave">注册</button>
     </div>
+    <div class="form-group">
+        <a href="javascript:;" id="btnLogin">返回登录</a>
+    </div>
 </form>
 
 @section Scripts{
@@ -41,6 +44,7 @@
 
         function bindEvent() {
             $('#btnSave').on('click', save);
+            $('#btnLogin').click(function (e) { location.href = '/Security/Login'; });
         }
 
         function save(e) {

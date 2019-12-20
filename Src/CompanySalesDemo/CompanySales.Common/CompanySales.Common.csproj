@@ -37,6 +37,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,10 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EncryptHelper.cs" />
     <Compile Include="IdGenerator.cs" />
     <Compile Include="Log4Helper.cs" />
     <Compile Include="MyLogHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidateCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

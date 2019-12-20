@@ -1,0 +1,103 @@
+﻿
+@{
+    ViewBag.Title = "登录";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+@section Styles{
+    <style>
+        /*验证码输入框*/
+        #txtValidate {
+            width: 275px;
+            display: inline;
+        }
+
+            /*验证码图片*/
+            #txtValidate + img {
+                cursor: pointer;
+            }
+    </style>
+}
+
+<form>
+    <div class="form-group">
+        <input type="text" class="form-control" id="txtUserId" placeholder="用户ID">
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control" id="txtUserPwd" placeholder="密码">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="txtValidate"
+               name="validateCode" placeholder="验证码" maxlength="4" required />
+        <img id="imgValid" src="/Security/GetValidateImg" alt="验证码" title="点我刷新" />
+    </div>
+    <div class="form-group">
+        <span id="tipMsg"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" class="btn btn-warning btn-block"
+               id="btnLogin" value="登录" />
+    </div>
+</form>
+
+
+@section Scripts{
+    <script>
+        $(function () {
+            bindEvent();
+        })
+
+        function bindEvent() {
+            $('#btnLogin').click(login);
+
+            /* 点击图片，验证码刷新。
+            此处加载图片采用另外一种方式，后台生成图片转成base64编码，设置src显示
+            */
+            $('#txtValidate + img').on('click', function () {
+                var url = '/Security/GetValidateImgBase64?rd=' + Math.random();
+                $.post(url, null, function (resp) {
+                    var ro = getObj(resp);
+                    $('#txtValidate + img').attr('src', ro);
+                });
+            });
+        }
+
+        function login(e) {
+            // 阻止表单的默认提交事件
+            e.preventDefault();
+
+            var user = {
+                uid: $('#txtUserId').val(),
+                pwd: $('#txtUserPwd').val(),
+                validateCode: $("#txtValidate").val()
+            };
+
+            if (user.uid == '' || user.pwd == '' || user.validateCode == '') {
+                $('#tipMsg').text('用户名、密码、验证码不允许为空！');
+                return;
+            }
+
+            // 登录时显示加载中模态窗口
+            layerLoadIndex = layer.load('', {
+                icon: 1,// loading模态窗口的图标
+                shade: 0.5// 模态窗口的透明度
+            });
+            $.post('/Security/SignByImageVerify', user, function (resp) {
+                var ro = getObj(resp);
+                if (ro.Status) {
+                    location.href = '/Home/Index';
+                } else {
+                    layer.msg(ro.Message);
+                    // trigger用于代码触发事件，登录失败后需要重刷验证码
+                    $('#txtValidate + img').trigger('click');
+                    $('#txtValidate').val('');
+                    $('#txtValidate').focus();
+                }
+            }).always(function (e) {
+                // always 完成回调，即不管success或error都将执行
+                layer.close(layerLoadIndex);
+            });
+        }
+
+    </script>
+}

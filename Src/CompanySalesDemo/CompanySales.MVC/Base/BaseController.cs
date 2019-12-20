@@ -34,7 +34,7 @@ namespace CompanySales.MVC.Base
         /// <param name="value"></param>
         protected void AddCookie(string name, string value)
         {
-            AddCookie(name, value, DateTime.Now.AddDays(3));
+            AddCookie(name, value, null);
         }
 
         /// <summary>
@@ -45,19 +45,11 @@ namespace CompanySales.MVC.Base
         /// <param name="expiresTime"></param>
         protected void AddCookie(string name, string value, DateTime? expiresTime)
         {
-            if (Response.Cookies[name] != null)
-            {
-                Response.Cookies[name].Expires = expiresTime.GetValueOrDefault(DateTime.Now.AddDays(3));
-                Response.Cookies[name].Value = value;
-            }
-            else
-            {
-                HttpCookie cookie = new HttpCookie(name, value);
-                // 如没有传参则默认3天过期
-                cookie.Expires = expiresTime.GetValueOrDefault(DateTime.Now.AddDays(3));
+            HttpCookie cookie = new HttpCookie(name, value);
+            // 如没有传参则默认3天过期
+            cookie.Expires = expiresTime.GetValueOrDefault(DateTime.Now.AddDays(3));
 
-                Response.Cookies.Add(cookie);
-            }
+            Response.Cookies.Add(cookie);
         }
 
         /// <summary>
@@ -76,7 +68,22 @@ namespace CompanySales.MVC.Base
         /// <param name="name"></param>
         protected void RemoveCookie(string name)
         {
-            AddCookie(name, null, DateTime.Now.AddDays(-1));
+            if (Request.Cookies[name] != null)
+            {
+                Response.Cookies[name].Expires = DateTime.Now.AddDays(-1);
+            }
+        }
+
+        /// <summary>
+        /// 移除所有cookie
+        /// </summary>
+        protected void RemoveAllCookie()
+        {
+            string[] cookieArray = Request.Cookies.AllKeys;
+            foreach (var item in cookieArray)
+            {
+                Response.Cookies[item].Expires = DateTime.Now.AddDays(-1);
+            }
         }
     }
 }

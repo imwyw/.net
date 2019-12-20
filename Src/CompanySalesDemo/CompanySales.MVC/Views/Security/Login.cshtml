@@ -4,7 +4,27 @@
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<form>
+@section Styles{
+    <style>
+        div.slide-verify {
+            display: none;
+        }
+
+        #btnRebuild {
+            color: gray;
+            margin-left: 10px;
+        }
+
+        div.layui-form-switch {
+            margin: 0 3px;
+            vertical-align: baseline;
+            height: 24px;
+            line-height: 24px;
+        }
+    </style>
+}
+
+<form class="layui-form" lay-filter="formUser">
     <div class="form-group">
         <label for="txtUserId">用户ID</label>
         <input type="text" class="form-control" id="txtUserId" placeholder="用户ID">
@@ -19,27 +39,52 @@
     <div class="form-group">
         <input type="submit" class="btn btn-primary btn-block" id="btnLogin" value="登录" />
     </div>
+    <div class="layui-form-item">
+        <label title="为了您的安全，请不要在网吧或公用电脑上使用此功能">
+            三天内免登录
+        </label>
+        <input type="checkbox" id="chkAutoLogin" lay-skin="switch" lay-text="开启|关闭">
+    </div>
     <div class="form-group">
         <a href="#" id="btnRegister">没有账号？点我注册</a>
+        <a href="#" id="btnRebuild">初始化数据库</a>
+    </div>
+    <div class="form-group">
+        <a class="btn btn-outline-secondary btn-block" href="/Security/LoginImgVerify">
+            切换至传统验证码
+        </a>
     </div>
 </form>
 
+
+@section BodyOutside{
+    <!-- 滑动拼图弹窗，防止在body外面，否则影响页面本身 -->
+    <div class="slide-verify">
+        <div id="captcha"></div>
+    </div>
+}
+
 @section Scripts{
     <script>
+        layui.use(['form'], function () {
+
+        });
+
         $(function () {
+            initVerify();
             bindEvent();
         })
 
         function bindEvent() {
             $('#btnLogin').click(login);
             $('#btnRegister').click(register);
+            $('#btnRebuild').click(rebuild);
         }
 
         function login(e) {
             // 阻止表单的默认提交事件
             e.preventDefault();
-            var method = 'post',
-                url = '/Security/SignIn';
+
             var userId = $('#txtUserId').val(),
                 userPwd = $('#txtUserPwd').val();
 
@@ -48,22 +93,98 @@
                 return;
             }
 
-            $.post(url,
-                { uid: userId, pwd: userPwd },
-                function (resp) {
-                    var obj = getObj(resp);
-                    if (obj.Status) {
-                        location.href = '/Home/Index';
-                    } else {
-                        $('#txtUserPwd').val('');
-                        $('#tipMsg').html(obj.Message);
-                        $('#txtUserPwd').focus();
-                    }
-                });
+            noticeVerify();
         }
 
         function register() {
             location.href = '/Security/Register';
         }
+
+        function rebuild() {
+            // 全局变量 记录load窗口index
+            loadIndex = layer.load();
+            $.ajax({
+                url: '/Home/RebuildData',
+                method: 'post'
+            }).done(function (resp) {
+                var ro = getObj(resp);
+                if (ro.Status) {
+                    layer.msg('重建成功！');
+                } else {
+                    layer.msg('无法重建，请检查异常信息');
+                }
+            }).always(function (resp) {
+                layer.close(loadIndex);
+            });
+        }
+
+        // 显示滑动拼图弹窗
+        function noticeVerify() {
+            // 滑动拼图弹窗
+            layer.open({
+                type: 1,// 0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                title: '请完成安全验证', // 标题栏
+                closeBtn: 1,// 关闭按钮的样式
+                id: 'verify',// 用于控制弹层唯一标识
+                area: ['330px;', '270px'],// 宽高
+                shade: 0.6,// 遮罩的透明度
+                shadeClose: true,// 是否点击遮罩关闭
+                content: $('div.slide-verify'), // 弹窗显示内容
+                success: function () {
+                    // 成功弹出后显示滑动拼图
+                    $('div.slide-verify').show();
+                },
+                cancel: function () {
+                    // 关闭后需要隐藏滑动拼图窗口
+                    $('div.slide-verify').show();
+                }
+            });
+        }
+
+        // 请求登录，判断用户名密码是否正确
+        function signIn() {
+            var method = 'post',
+                url = '/Security/SignIn';
+            var userId = $('#txtUserId').val(),
+                userPwd = $('#txtUserPwd').val(),
+                autoLogin = $('#chkAutoLogin').prop('checked');
+
+            // 登录时显示加载中模态窗口
+            layer.load('', {
+                icon: 1,// loading模态窗口的图标
+                shade: 0.5// 模态窗口的透明度
+            });
+            $.post(url,
+                { uid: userId, pwd: userPwd, autoLogin: autoLogin },
+                function (resp) {
+                    var ro = getObj(resp);
+                    if (ro.Status) {
+                        location.href = '/Home/Index';
+                    } else {
+                        $('#txtUserPwd').val('');
+                        $('#tipMsg').html(ro.Message);
+                        $('#txtUserPwd').focus();
+
+                        // 密码错误，关闭滑动拼图窗口和loading窗口
+                        layer.closeAll();
+                        initVerify();
+                    }
+                });
+        }
+
+        // 初始化滑动拼图验证
+        function initVerify() {
+            $('#captcha').empty();
+            jigsaw.init({
+                el: document.getElementById('captcha'),
+                onSuccess: function () {
+                    // 滑动拼图成功
+                    signIn();
+                },
+                onFail: function () { },
+                onRefresh: function () { }
+            })
+        }
+
     </script>
 }

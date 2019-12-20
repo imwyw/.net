@@ -19,7 +19,7 @@ namespace CompanySales.DAL
             {
                 var res = db.Users
                     .Where(t => t.UserId == uid && t.Password == pwd)
-                    .First();
+                    .FirstOrDefault();
                 return res;
             }
         }

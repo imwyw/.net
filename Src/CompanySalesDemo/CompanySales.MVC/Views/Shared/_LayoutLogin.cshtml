@@ -5,6 +5,7 @@
     <title> @ViewBag.Title - xxx进销存管理系统</title>
     <meta charset="utf-8" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
     <style>
         body {
             height: 100vh;
@@ -19,8 +20,15 @@
             /*display: none;*/
         }
 
-        div.row div.col-md-4 {
-            top: 100px;
+        div.container-fluid {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        div.form-container {
+            width: 400px;
             background: rgba(255,255,255,0.8);
             border-radius: 5px;
             padding: 20px;
@@ -33,11 +41,9 @@
     @RenderSection("Styles", false)
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 offset-6">
-                @RenderBody()
-            </div>
+    <div class="container-fluid">
+        <div class="form-container">
+            @RenderBody()
         </div>
     </div>
 
@@ -46,8 +52,12 @@
     <!--bootstrap的组件js引用必须放在jQuery的后面-->
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.cookie.js"></script>
+    <script src="~/layui/layui.all.js"></script>
     <!-- js 日期处理类库 -->
     <script src="~/Scripts/moment.js"></script>
+    <!-- 滑动拼图 验证，简单的纯前端验证 -->
+    <script src="~/Scripts/jigsaw.min.js"></script>
     @RenderSection("Scripts", false)
 </body>
+@RenderSection("BodyOutside", false)
 </html>

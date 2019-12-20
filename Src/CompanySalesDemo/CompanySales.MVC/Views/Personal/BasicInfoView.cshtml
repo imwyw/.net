@@ -81,7 +81,7 @@
             layui.form.on('submit(btnSave)', function (data) {
                 console.log(data.field);//对应form表单提交的内容
                 // 更新用户信息需要主键ID，从cookie中获取
-                data.field.ID = $.cookie('u_id');
+                data.field.ID = $.cookie('int_id');
                 $.post('/Personal/SaveUserInfo', data.field, function (resp) {
                     var ro = getObj(resp);
                     if (ro.Status) {
@@ -97,7 +97,7 @@
         // 获取当前登录用户的详细信息，并绑定至页面，此处如有vue之类的双向绑定更加方便
         function bindData() {
             // 当前用户的ID保存在cookie中
-            $.post('/Personal/GetUserInfo', { id: $.cookie('u_id') }, function (resp) {
+            $.post('/Personal/GetUserInfo', { id: $.cookie('int_id') }, function (resp) {
                 var ro = getObj(resp);
 
                 // 使用moment.js类库，将【YYYY-MM-DD HH:mm:ss】调整为 【YYYY-MM-DD】

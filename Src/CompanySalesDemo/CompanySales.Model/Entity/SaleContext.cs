@@ -4,6 +4,8 @@ namespace CompanySales.Model.Entity
     using System.Data.Entity;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
+    using System.Threading;
+    using Common;
 
     public partial class SaleContext : DbContext
     {
@@ -14,6 +16,8 @@ namespace CompanySales.Model.Entity
         public SaleContext()
             : base("name=SaleContext")
         {
+            // 记录SQL的委托，LogFormat处理每个SQL
+            Database.Log = LogFormat;
         }
 
         public virtual DbSet<Customer> Customer { get; set; }
@@ -120,6 +124,13 @@ namespace CompanySales.Model.Entity
             modelBuilder.Entity<User>()
                 .Property(e => e.Roles)
                 .IsUnicode(false);
+        }
+
+        private void LogFormat(string message)
+        {
+            // 将EF执行的SQL语句记录至log文件
+            Log4Helper.InfoLog.DebugFormat("[{0}]{1}-- {2}", Thread.CurrentThread.ManagedThreadId,
+                DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"), message.Trim());
         }
     }
 }

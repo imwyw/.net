@@ -29,8 +29,11 @@ namespace CompanySales.MVC.Controllers
         /// 重新数据库，执行【InitTables.sql】脚本
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]//允许绕过登录验证，匿名进行请求
         public JsonResult RebuildData()
         {
+            RemoveAllCookie();
+
             StateModel state = new StateModel();
             state.Status = UserMgr.RebuildData();
 
