@@ -64,7 +64,7 @@ namespace CompanySales.Model.Entity
                 .IsUnicode(false);
 
             modelBuilder.Entity<Department>()
-                .Property(e => e.Depart_Description)
+                .Property(e => e.DepartDescription)
                 .IsUnicode(false);
 
             modelBuilder.Entity<Employee>()

@@ -58,6 +58,7 @@
     <Compile Include="ContextObject.cs" />
     <Compile Include="Mgr\AttachmentMgr.cs" />
     <Compile Include="Mgr\CustomerMgr.cs" />
+    <Compile Include="Mgr\DepartmentMgr.cs" />
     <Compile Include="Mgr\EmployeeMgr.cs" />
     <Compile Include="Mgr\ProductMgr.cs" />
     <Compile Include="Mgr\UserMgr.cs" />

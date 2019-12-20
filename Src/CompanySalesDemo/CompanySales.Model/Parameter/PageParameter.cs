@@ -11,10 +11,17 @@ namespace CompanySales.Model.Parameter
     /// </summary>
     public class PageParameter
     {
-        public PageParameter(int pageindex = 1, int pagesize = 10)
+        /// <summary>
+        /// 自定义构造函数
+        /// </summary>
+        /// <param name="pageindex">当前页码，从1开始</param>
+        /// <param name="pagesize">每页显示多少条记录</param>
+        /// <param name="isPage">是否分页查询，默认开启分页查询</param>
+        public PageParameter(int pageindex = 1, int pagesize = 10, bool isPage = true)
         {
             PageIndex = pageindex;
             PageSize = pagesize;
+            IsPage = isPage;
         }
         /// <summary>
         /// 当前页码，默认值为1
@@ -34,5 +41,9 @@ namespace CompanySales.Model.Parameter
                 return (PageIndex - 1) * PageSize;
             }
         }
+        /// <summary>
+        /// 是否开启分页查询，分页关闭则查询所有数据
+        /// </summary>
+        public bool IsPage { get; set; }
     }
 }

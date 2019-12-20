@@ -1,4 +1,5 @@
-﻿using CompanySales.Model.Entity;using CompanySales.Model;
+﻿using CompanySales.Model.Entity;
+using CompanySales.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,36 +19,12 @@ namespace CompanySales.DAL
         /// <returns></returns>
         public static bool Add(Employee emp)
         {
-            string sql = @"
-INSERT  INTO dbo.Employee
-        ( EmployeeID ,
-          EmployeeName ,
-          Sex ,
-          BirthDate ,
-          HireDate ,
-          Salary ,
-          DepartmentID
-        )
-VALUES  ( @EmployeeID ,
-          @EmployeeName ,
-          @Sex ,
-          @BirthDate ,
-          @HireDate ,
-          @Salary ,
-          @DepartmentID  
-        )";
-            SqlParameter[] sqlParams = new SqlParameter[] {
-                new SqlParameter("@EmployeeID",emp.EmployeeID),
-                new SqlParameter("@EmployeeName",emp.EmployeeName),
-                new SqlParameter("@Sex",emp.Sex),
-                new SqlParameter("@BirthDate",emp.BirthDate),
-                new SqlParameter("@HireDate",emp.HireDate),
-                new SqlParameter("@Salary",emp.Salary),
-                new SqlParameter("@DepartmentID",emp.DepartmentID),
-            };
-
-            int res = MySqlHelper.ExecuteMyDML(sql, sqlParams);
-            return res > 0;
+            using (SaleContext db = new SaleContext())
+            {
+                db.Employee.Add(emp);
+                db.SaveChanges();
+                return true;
+            }
         }
 
         /// <summary>
@@ -69,62 +46,49 @@ FROM    dbo.Employee;";
             return dt;
         }
 
+        public static List<Employee> GetList()
+        {
+            using (SaleContext db = new SaleContext())
+            {
+                return db.Employee.ToList();
+            }
+        }
+
         public static bool Delete(int id)
         {
-            string sql = @"
-DELETE FROM dbo.Employee WHERE EmployeeID = @EmployeeID";
-            SqlParameter[] sqlParams = new SqlParameter[] {
-                new SqlParameter("@EmployeeID",id),
-            };
-
-            int res = MySqlHelper.ExecuteMyDML(sql, sqlParams);
-            return res > 0;
+            using (SaleContext db = new SaleContext())
+            {
+                var entity = db.Employee.Find(id);
+                db.Employee.Remove(entity);
+                db.SaveChanges();
+                return true;
+            }
         }
 
         public static bool Update(Employee emp)
         {
-            string sql = @"
-UPDATE  dbo.Employee
-SET     EmployeeName = @EmployeeName ,
-        Sex = @Sex ,
-        BirthDate = @BirthDate ,
-        HireDate = @HireDate ,
-        Salary = @Salary ,
-        DepartmentID = @DepartmentID
-WHERE   EmployeeID = @EmployeeID";
+            using (SaleContext db = new SaleContext())
+            {
+                var dbEntity = db.Employee.Find(emp.EmployeeID);
+                dbEntity.BirthDate = emp.BirthDate;
+                dbEntity.DepartmentID = emp.DepartmentID;
+                dbEntity.EmployeeName = emp.EmployeeName;
+                dbEntity.HireDate = emp.HireDate;
+                dbEntity.Salary = emp.Salary;
+                dbEntity.Sex = emp.Sex;
 
-            SqlParameter[] sqlParams = new SqlParameter[] {
-                new SqlParameter("@EmployeeName",emp.EmployeeName),
-                new SqlParameter("@Sex",emp.Sex),
-                new SqlParameter("@BirthDate",emp.BirthDate),
-                new SqlParameter("@HireDate",emp.HireDate),
-                new SqlParameter("@Salary",emp.Salary),
-                new SqlParameter("@DepartmentID",emp.DepartmentID),
-                new SqlParameter("@EmployeeID",emp.EmployeeID),
-            };
-
-            int res = MySqlHelper.ExecuteMyDML(sql, sqlParams);
-            return res > 0;
+                db.SaveChanges();
+                return true;
+            }
         }
 
         public static Employee GetEmployeeById(int id)
         {
-            string sql = @"
-SELECT  EmployeeID ,
-        EmployeeName ,
-        Sex ,
-        CONVERT(VARCHAR, BirthDate, 111) BirthDate ,
-        CONVERT(VARCHAR, HireDate, 111) HireDate ,
-        CAST(Salary AS DECIMAL(10, 1)) Salary ,
-        DepartmentID
-FROM    dbo.Employee
-WHERE EmployeeID = @EmployeeID";
-            SqlParameter[] sqlParams = new SqlParameter[] {
-                new SqlParameter("@EmployeeID",id),
-            };
-
-            Employee emp = MySqlHelper.ExecuteReaderFirst<Employee>(sql, sqlParams);
-            return emp;
+            using (SaleContext db = new SaleContext())
+            {
+                var entity = db.Employee.Find(id);
+                return entity;
+            }
         }
     }
 }

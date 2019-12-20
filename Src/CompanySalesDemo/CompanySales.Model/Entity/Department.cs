@@ -19,6 +19,7 @@ namespace CompanySales.Model.Entity
         public string Manager { get; set; }
 
         [StringLength(50)]
-        public string Depart_Description { get; set; }
+        [Column("Depart_Description")]
+        public string DepartDescription { get; set; }
     }
 }

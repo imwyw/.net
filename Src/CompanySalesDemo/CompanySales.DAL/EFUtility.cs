@@ -77,9 +77,17 @@ namespace CompanySales.DAL
 
             using (SaleContext db = new SaleContext())
             {
-                var list = db.Database.SqlQuery<T>(sql, paramClone.ToArray())
-                    .Skip(pageInfo.Skip).Take(pageInfo.PageSize)
-                    .ToList();
+                var query = db.Database
+                    .SqlQuery<T>(sql, paramClone.ToArray())
+                    .AsQueryable();
+
+                // 如果开启分页，则进行 skip take
+                if (pageInfo.IsPage)
+                {
+                    query = query.Skip(pageInfo.Skip).Take(pageInfo.PageSize);
+                }
+                List<T> list = query.ToList();
+
                 return list;
             }
         }

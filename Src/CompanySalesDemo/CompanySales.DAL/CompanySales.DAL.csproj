@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="DAO\AttachmentDAO.cs" />
     <Compile Include="DAO\CustomerDAO.cs" />
+    <Compile Include="DAO\DepartmentDAO.cs" />
     <Compile Include="DAO\EmployeeDAO.cs" />
     <Compile Include="EFUtility.cs" />
     <Compile Include="MySqlHelper.cs" />

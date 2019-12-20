@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewBag.Title = "DepartmentList";
+}
+
+@section Styles{
+    <style>
+        #treeDept {
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 180px;
+            overflow-y: scroll;
+        }
+
+        /* 树组件和表格 左右间隔 */
+        div.layui-col-xs6 {
+            padding: 0 5px;
+        }
+    </style>
+}
+
+<div class="layui-row">
+    <div class="layui-col-xs6">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>
+                组织结构
+                <a class="layui-btn layui-btn-normal layui-btn-sm" href="javascript:;" id="refreshTree">刷新</a>
+            </legend>
+        </fieldset>
+        <!-- 树组件 显示部门员工关系 -->
+        <div id="treeDept"></div>
+    </div>
+    <div class="layui-col-xs6">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>部门列表</legend>
+        </fieldset>
+        <tablel id="depTable"></tablel>
+    </div>
+</div>
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>员工列表</legend>
+</fieldset>
+<form class="layui-form layui-form-pane">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">员工姓名</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" id="txtEmployeeName" />
+            </div>
+        </div>
+        <a href="javascript:;" class="layui-btn" id="btnQuery">查询</a>
+    </div>
+</form>
+<table id="empTable"></table>
+
+<!--表格行内操作模板-->
+<script type="text/html" id="barDep">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!--表格行内操作模板-->
+<script type="text/html" id="barEmp">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+@section Scripts{
+    <script>
+        layui.use(['tree', 'form', 'table'], function () {
+            loadTreeData(initTree);
+            initDepTable();
+            initEmpTable();
+            bindEvent();
+        });
+
+        /* 由于加载异步的关系，采用回调函数方式加载树组件
+        */
+        function loadTreeData(callback) {
+            $.ajax({
+                url: '/Employee/GetDeptEmpData',
+                method: 'post',
+            }).done(function (resp) {
+                var arr = getObj(resp);
+                callback(arr); // 采用回调方式初始化树形组件
+            });
+        }
+
+        /* 初始化树组件
+        array 树形组件的数据源
+        */
+        function initTree(array) {
+            $('#treeDept').empty();// 简单粗暴，清空再来
+            var treeOption = {
+                elem: '#treeDept', // 指向容器选择器
+                data: array,  //数据源
+                id: 'dept', //设定实例唯一索引，用于基础方法传参使用。
+                accordion: true, //是否开启手风琴模式，默认 false
+                showLine: true, //是否开启连接线。默认 true，若设为 false，则节点左侧出现三角图标。
+            };
+            layui.tree.render(treeOption);
+        }
+
+        function bindEvent() {
+            $('#refreshTree').click(function (e) {
+                loadTreeData(initTree);
+            });
+            $('#btnQuery').click(function (e) {
+                e.preventDefault();
+                loadEmpData();
+            });
+        }
+
+        // 初始化部门表格
+        function initDepTable() {
+            layui.table.render({
+                elem: '#depTable',// 渲染表格的【lay-filter】
+                url: '/Employee/GetDepartmentData', //请求数据的url
+                method: 'post',
+                title: '部门列表',
+                cols: [[// 绑定表格 数据列 配置
+                  { field: 'DepartmentID', title: '部门编号', width: 100 },
+                  { field: 'DepartmentName', title: '部门名称', width: 100 },
+                  { field: 'Manager', title: '管理人', width: 100 },
+                  { field: 'DepartDescription', title: '部门描述' },
+                  { fixed: 'right', title: '操作', toolbar: '#barDep', width: 100 },
+                ]],
+                page: false,// 部门不会很多，关闭分页
+                parseData: function (res) {// 对后端响应数据做进一步处理
+                    return {
+                        "code": 0// 返回成功有效code为0
+                        , "count": res.length
+                        , "data": res
+                    };
+                },
+            });
+        }
+
+        // 初始化员工表格
+        function initEmpTable() {
+            layui.table.render({
+                elem: '#empTable',// 渲染表格的【lay-filter】
+                url: '/Employee/GetEmployeeData', //请求数据的url
+                request: {// 请求附加参数，修改默认分页传参key的名称
+                    pageName: 'pageindex',
+                    limitName: 'pagesize'
+                },
+                method: 'post',
+                title: '员工列表',
+                cols: [[// 绑定表格 数据列 配置
+                  { field: 'EmployeeID', title: '员工编号', width: 100 },
+                  { field: 'EmployeeName', title: '员工姓名' },
+                  { field: 'DepartmentName', title: '所在部门' },
+                  { field: 'Manager', title: '部门经理' },
+                  { field: 'Sex', title: '性别', width: 80 },
+                  { field: 'BirthDate', title: '出生日期' },
+                  { field: 'HireDate', title: '入职日期' },
+                  { field: 'Salary', title: '薪水' },
+                  { fixed: 'right', title: '操作', toolbar: '#barEmp' },
+                ]],
+                page: true,// 开启分页
+                parseData: function (res) {// 对后端响应数据做进一步处理
+                    return {
+                        "code": 0// 返回成功有效code为0
+                        , "count": res.Total
+                        , "data": res.Rows
+                    };
+                },
+            });
+        }
+
+        // 重新拉取数据并绑定至表格
+        function loadEmpData() {
+            layui.table.reload('empTable', {
+                where: {
+                    EmployeeName: $('#txtEmployeeName').val(),
+                }
+            });
+        }
+    </script>
+}

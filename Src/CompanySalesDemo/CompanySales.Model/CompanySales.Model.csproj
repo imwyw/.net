@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\AttachmentType.cs" />
+    <Compile Include="Domain\DeptEmpInfo.cs" />
     <Compile Include="Domain\SellOrderDomain.cs" />
     <Compile Include="Entity\Attachment.cs" />
     <Compile Include="Entity\Customer.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Entity\SellOrder.cs" />
     <Compile Include="Entity\User.cs" />
     <Compile Include="Pager.cs" />
+    <Compile Include="Parameter\DeptEmpParameter.cs" />
     <Compile Include="Parameter\PageParameter.cs" />
     <Compile Include="Parameter\ProductParameter.cs" />
     <Compile Include="Parameter\SellOrderParam.cs" />

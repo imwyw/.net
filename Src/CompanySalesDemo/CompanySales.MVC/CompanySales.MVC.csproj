@@ -302,6 +302,7 @@
     <Compile Include="Base\BaseController.cs" />
     <Compile Include="Base\JsonConvertResult.cs" />
     <Compile Include="Controllers\AttachmentController.cs" />
+    <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
@@ -312,6 +313,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\LayTreeItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -329,6 +331,7 @@
     <Content Include="Views\Personal\BasicInfoView.cshtml" />
     <Content Include="Views\Personal\PasswordView.cshtml" />
     <Content Include="Views\Security\LoginImgVerify.cshtml" />
+    <Content Include="Views\Employee\DepartmentList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -338,7 +341,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CompanySales.BLL\CompanySales.BLL.csproj">

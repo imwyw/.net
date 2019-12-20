@@ -15,7 +15,6 @@ namespace CompanySales.BLL
         {
             // 一些对员工的业务操作
 
-
             return EmployeeDAO.Add(emp);
         }
 
@@ -37,6 +36,11 @@ namespace CompanySales.BLL
         public static Employee GetEmployeeById(int id)
         {
             return EmployeeDAO.GetEmployeeById(id);
+        }
+
+        public static List<Employee> GetList()
+        {
+            return EmployeeDAO.GetList();
         }
     }
 }
