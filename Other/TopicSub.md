@@ -9,6 +9,7 @@
         - [FormData对象上传](#formdata对象上传)
         - [使用组件上传](#使用组件上传)
     - [下载文件](#下载文件)
+    - [Base64 编码](#base64-编码)
     - [echart统计图表](#echart统计图表)
     - [富文本编辑](#富文本编辑)
 
@@ -202,6 +203,10 @@ public FileResult DownFile(string filePath)
 需要注意的是，实际下载文件操作都是从数据库中读取文件信息，通过保存的路径和名称信息进行下载。
 
 如果多个文件下载，会打包后再进行下载。添加压缩和解压缩可以参考SharpZipLib库。
+
+<a id="markdown-base64-编码" name="base64-编码"></a>
+## Base64 编码
+TODO...
 
 <a id="markdown-echart统计图表" name="echart统计图表"></a>
 ## echart统计图表
