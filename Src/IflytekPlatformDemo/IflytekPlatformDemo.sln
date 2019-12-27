@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IflytekPlatformDemo", "IflytekPlatformDemo\IflytekPlatformDemo.csproj", "{0B220A2B-BA43-4ACE-A9D9-CB973A6A8AA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IflySdk", "IflySdk\IflySdk.csproj", "{B9A9DACE-6319-4B13-BC76-8FC3487334BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B220A2B-BA43-4ACE-A9D9-CB973A6A8AA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B220A2B-BA43-4ACE-A9D9-CB973A6A8AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B220A2B-BA43-4ACE-A9D9-CB973A6A8AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B220A2B-BA43-4ACE-A9D9-CB973A6A8AA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9A9DACE-6319-4B13-BC76-8FC3487334BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9A9DACE-6319-4B13-BC76-8FC3487334BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9A9DACE-6319-4B13-BC76-8FC3487334BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9A9DACE-6319-4B13-BC76-8FC3487334BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
