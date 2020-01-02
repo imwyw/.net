@@ -134,7 +134,7 @@ namespace CompanySales.MVC.Controllers
 
         #endregion
 
-        #region 产品图片
+        #region 产品资料相关附件
         /// <summary>
         /// 上传产品图片
         /// </summary>
@@ -146,6 +146,22 @@ namespace CompanySales.MVC.Controllers
                 HttpContext.Request.Files,
                 productID,
                 AttachmentType.ProductImage);
+
+            return Json(state);
+        }
+
+        /// <summary>
+        /// 上传产品描述视频
+        /// 上传较大文件需要在web.config中进行配置 maxRequestLength和maxAllowedContentLength
+        /// </summary>
+        /// <param name="productID"></param>
+        /// <returns></returns>
+        public JsonResult UploadProductVideo(int productID)
+        {
+            StateModel state = AttachmentMgr.AddAttachment(
+                HttpContext.Request.Files,
+                productID,
+                AttachmentType.ProductVideo);
 
             return Json(state);
         }

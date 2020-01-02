@@ -98,13 +98,14 @@ namespace CompanySales.BLL
         public static bool DeleteById(int id)
         {
             Attachment entity = AttachmentDAO.Get(id);
-            bool res = AttachmentDAO.DeleteById(id);
-
-            // 数据库删掉后，再从磁盘里删掉
-            if (File.Exists(entity.PhysicalPath) && res)
+            bool res = AttachmentDAO.DeleteById(id, () =>
             {
-                File.Delete(entity.PhysicalPath);
-            }
+                // 数据库删掉后，再从磁盘里删掉
+                if (File.Exists(entity.PhysicalPath))
+                {
+                    File.Delete(entity.PhysicalPath);
+                }
+            });
 
             return res;
         }
@@ -121,6 +122,8 @@ namespace CompanySales.BLL
             {
                 case AttachmentType.ProductImage:
                     return ContextObject.ProductImagePath;
+                case AttachmentType.ProductVideo:
+                    return ContextObject.ProductVideoPath;
                 default:
                     return ContextObject.BaseFilePath;
             }

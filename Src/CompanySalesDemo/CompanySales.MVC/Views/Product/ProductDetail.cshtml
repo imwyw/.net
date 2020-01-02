@@ -67,6 +67,13 @@
             <button class="layui-btn layui-btn-fluid layui-btn-normal" id="btnUpload">上传图片</button>
         </div>
     </div>
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">视频展示</h2>
+        <div class="layui-colla-content layui-show">
+            <div class="video-container"></div>
+            <button class="layui-btn layui-btn-fluid layui-btn-normal" id="btnUploadVideo">上传视频</button>
+        </div>
+    </div>
 </div>
 
 @section Scripts{
@@ -77,8 +84,9 @@
 
         layui.use(['form', 'upload', 'layer', 'element'], function () {
             initTitleInfo();
-            initUpload();
-            bindImages();
+            initUploadImage();
+            initUploadVideo();
+            bindAttachment();
             bindImageDelete();
             bindEvent();
         });
@@ -150,18 +158,17 @@
             });
         }
 
-        // 上传图片初识化
-        function initUpload() {
+        // 上传图片
+        function initUploadImage() {
             layui.upload.render({
-                elem: '#btnUpload'
-                , url: '/Product/UploadProductImg'
-                , data: {
+                elem: '#btnUpload',
+                url: '/Product/UploadProductImg',
+                data: {//额外参数
                     productID: function () {
                         // 多套一层函数，用于上传时取最新变量
                         return globalProdId;
                     }
-                }//额外参数
-                , done: function (res, index, upload) {
+                }, done: function (res, index, upload) {
                     layui.layer.msg(res.Message);
 
                     // 上传成功的话，则添加显示
@@ -169,16 +176,44 @@
                         addImage(res.Data.id, res.Data.src);
                     }
 
-                }//done end
-                , error: function (err) {
+                }, error: function (err) {
                     console.error(err);
                     layui.layer.msg('上传发生异常，请重新上传');
                 }
             });
         }
 
-        // 加载所有产品图片
-        function bindImages() {
+        // 上传视频
+        function initUploadVideo() {
+            layui.upload.render({
+                elem: '#btnUploadVideo',
+                url: '/Product/UploadProductVideo',
+                accept: 'video', //上传视频
+                progress: function (n) { //上传进度回调
+
+                },
+                data: {
+                    productID: function () {
+                        // 多套一层函数，用于上传时取最新变量
+                        return globalProdId;
+                    }
+                }, done: function (res, index, upload) {
+                    layui.layer.msg(res.Message);
+
+                    // 上传成功的话，则添加显示
+                    if (res.Code == 0) {
+                        addVideo(res.Data.id, res.Data.src);
+                    }
+
+                }, error: function (err) {
+                    console.error(err);
+                    layui.layer.msg('上传发生异常，请重新上传');
+                }
+            });
+        }
+
+        // 加载所有产品相关资料
+        function bindAttachment() {
             if (!isEdit) { return; }
             $.post('/Attachment/GetListByRelatedId', {
                 relatedId: globalProdId
@@ -186,7 +221,11 @@
                 var arr = getObj(resp);
                 // 循环添加img元素，并设置src加载图片
                 $.each(arr, function (i, t) {
-                    addImage(t.ID, t.PhysicalPath);
+                    if (t.AttachmentType == 'ProductImage') {
+                        addImage(t.ID, t.PhysicalPath);
+                    } else if (t.AttachmentType == 'ProductVideo') {
+                        addVideo(t.ID, t.PhysicalPath);
+                    }
                 });
             });
         }
@@ -196,7 +235,7 @@
             var html = `
                 <div class ="layui-upload-list">
                 <img class ="layui-upload-img img-preview" >
-                <button class ="layui-btn layui-btn-warm layui-btn-sm img-del" data-id="${attId}" >删除</button>
+                <button class ="layui-btn layui-btn-warm layui-btn-sm attachment-del" data-id="${attId}" >删除</button>
                 </div>
                 `;
             $('div.img-container').append(html);
@@ -204,18 +243,29 @@
             $('div.img-container img:last').attr('src', `/Attachment/GetImageByPath?fullPath=${imgPath}`);
         }
 
+        // 动态加载视频是展示页
+        function addVideo(attId, videoPath) {
+            var html = `
+                <div class ="layui-upload-list">
+                <video controls="controls" width="500" height="280" src="/Attachment/GetVideoByRange?fullPath=${videoPath}"></video>
+                <button class ="layui-btn layui-btn-warm layui-btn-sm attachment-del" data-id="${attId}" >删除</button>
+                </div>
+                `;
+            $('div.video-container').append(html);
+        }
+
         // 绑定图片右侧的删除按钮事件
         function bindImageDelete() {
-            $('div.img-container').on('click', 'button.img-del', function (e) {
+            $('div.img-container,div.video-container').on('click', 'button.attachment-del', function (e) {
                 // 当前图片附件的主键ID
                 var _id = $(this).attr('data-id');
                 // 找到要删除图片的div，删除图片后需要移除该div
-                var imgPart = $(this).closest('div.layui-upload-list');
+                var attachmentPart = $(this).closest('div.layui-upload-list');
                 $.post('/Attachment/RemoveAttachById', { id: _id }, function (resp) {
                     var ro = getObj(resp);
                     if (ro.Status) {
                         layer.msg('删除成功！');
-                        imgPart.remove();
+                        attachmentPart.remove();
                     } else {
                         layer.msg('无法删除！');
                     }

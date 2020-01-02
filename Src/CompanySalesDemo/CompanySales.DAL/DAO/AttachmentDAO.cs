@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CompanySales.Model.Entity;
+using CompanySales.Common;
 
 namespace CompanySales.DAL
 {
@@ -14,14 +15,32 @@ namespace CompanySales.DAL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static bool DeleteById(int id)
+        public static bool DeleteById(int id, Action removeAction)
         {
             using (SaleContext db = new SaleContext())
             {
-                var entity = db.Attachment.Find(id);
-                db.Attachment.Remove(entity);
-                db.SaveChanges();
-                return true;
+                // 开始事务
+                var tran = db.Database.BeginTransaction();
+                try
+                {
+                    var entity = db.Attachment.Find(id);
+                    db.Attachment.Remove(entity);
+                    db.SaveChanges();
+
+                    // 调用委托方法，执行删除后的清理工作
+                    removeAction.Invoke();
+
+                    // 确认无误，进行事务提交
+                    tran.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    // 发生异常进行回滚
+                    tran.Rollback();
+                    Log4Helper.ErrorLog.Error(ex);
+                    return false;
+                }
             }
         }
 

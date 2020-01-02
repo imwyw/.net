@@ -12,6 +12,7 @@ namespace CompanySales.Model.Domain
     public enum AttachmentType
     {
         ProductImage = 1,
+        ProductVideo,
         EmployeeImage,
         SellOrder,
     }
