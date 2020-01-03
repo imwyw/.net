@@ -71,6 +71,10 @@
         <h2 class="layui-colla-title">视频展示</h2>
         <div class="layui-colla-content layui-show">
             <div class="video-container"></div>
+            <!-- 视频上传的进度条 -->
+            <div class="layui-progress" lay-showpercent="true" lay-filter="video-progress">
+                <div class="layui-progress-bar" lay-percent="0%"></div>
+            </div>
             <button class="layui-btn layui-btn-fluid layui-btn-normal" id="btnUploadVideo">上传视频</button>
         </div>
     </div>
@@ -189,8 +193,12 @@
                 elem: '#btnUploadVideo',
                 url: '/Product/UploadProductVideo',
                 accept: 'video', //上传视频
-                progress: function (n) { //上传进度回调
-
+                before: function (obj) {
+                    disableUploadButton(true);
+                },
+                progress: function (n) {
+                    //上传进度回调，显示上传进度
+                    layui.element.progress('video-progress', `${n}%`);
                 },
                 data: {
                     productID: function () {
@@ -198,18 +206,33 @@
                         return globalProdId;
                     }
                 }, done: function (res, index, upload) {
+                    disableUploadButton(false);
+
                     layui.layer.msg(res.Message);
 
                     // 上传成功的话，则添加显示
                     if (res.Code == 0) {
                         addVideo(res.Data.id, res.Data.src);
                     }
-
                 }, error: function (err) {
                     console.error(err);
                     layui.layer.msg('上传发生异常，请重新上传');
+                    disableUploadButton(false);
                 }
             });
+
+            // 控制上传视频按钮是否禁用
+            function disableUploadButton(disabled) {
+                // 进度条重置，恢复到 0%
+                layui.element.progress('video-progress', '0%');
+
+                $('#btnUploadVideo').attr('disabled', disabled);
+                if (disabled) {
+                    $('#btnUploadVideo').addClass('layui-btn-disabled');
+                } else {
+                    $('#btnUploadVideo').removeClass('layui-btn-disabled');
+                }
+            }
         }
 
         // 加载所有产品相关资料
