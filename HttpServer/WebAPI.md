@@ -645,7 +645,7 @@ TokenEndpointPath = new PathString("/token"),
 在新的请求header中附加token信息，在Headers中新增【Authorization】，值为：【bearer token】
 
 ```
-Authorization:bearer Gqq4cdp4E3MxX0GFWnnqMG_Qs6csz7v7Np2uJUHjaKEbtorUL84mIBAYcwG1QARec1_HLzwbQ4CHmOto3D0azsChCWgdnQ-8g3ASK4sYZ9nYZjxPjEsfxfjVsEXETlWAOkM3riWXrp6gv3o8bY3oJdM5KiVkhHO7Yfbg8MctxqGDbSIcAr3Qc4p9ne-KTTXYAUjt-75-WkLsTXBwbR7CNfVCmfY3wolXrTrlzCxIl_E
+Authorization:bearer Gqq4cdp4E3MxX0GFWnnqMG_Qs6csz7v7....
 ```
 
 
