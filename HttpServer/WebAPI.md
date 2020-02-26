@@ -21,8 +21,8 @@
     - [token验证](#token验证)
         - [安全问题](#安全问题)
         - [添加Owin包](#添加owin包)
-        - [StartUp类](#startup类)
         - [添加验证类](#添加验证类)
+        - [StartUp类](#startup类)
         - [Authorize授权](#authorize授权)
         - [前端html请求](#前端html请求)
 
@@ -513,7 +513,6 @@ Install-Package Microsoft.AspNet.WebApi.Owin
 Install-Package Microsoft.Owin.Host.SystemWeb
 Install-Package Microsoft.AspNet.Identity.Owin
 Install-Package Microsoft.Owin.Cors
-Install-Package EntityFramework
 ```
 
 如下所示：
@@ -613,20 +612,46 @@ PM> Install-Package Microsoft.Owin.Cors
 程序包“Microsoft.Owin.Cors.4.0.1”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
 已将程序包“Microsoft.Owin.Cors.4.0.1”添加到“packages.config”
 已将“Microsoft.Owin.Cors 4.0.1”成功安装到 ProductApp
-PM> Install-Package EntityFramework
-正在尝试收集与目标为“.NETFramework,Version=v4.5”的项目“ProductApp”有关的程序包“EntityFramework.6.2.0”的相关依赖项信息
-正在尝试解析程序包“EntityFramework.6.2.0”的依赖项，DependencyBehavior 为“Lowest”
-正在解析操作以安装程序包“EntityFramework.6.2.0”
-已解析操作以安装程序包“EntityFramework.6.2.0”
-程序包“EntityFramework.6.2.0”已存在于文件夹“D:\Codes\dotNet\WebApiDemo\packages”中
-已将程序包“EntityFramework.6.2.0”添加到“packages.config”
-正在执行脚本文件“D:\Codes\dotNet\WebApiDemo\packages\EntityFramework.6.2.0\tools\init.ps1”
-正在执行脚本文件“D:\Codes\dotNet\WebApiDemo\packages\EntityFramework.6.2.0\tools\install.ps1”
 
-Type 'get-help EntityFramework' to see all available Entity Framework commands.
-已将“EntityFramework 6.2.0”成功安装到 ProductApp
 PM> 
 ```
+
+<a id="markdown-添加验证类" name="添加验证类"></a>
+### 添加验证类
+
+在项目下添加 SimpleAuthorizationServerProvider 类，用于用户的授权认证。
+
+```cs
+public class SimpleAuthorizationServerProvider : OAuthAuthorizationServerProvider
+{
+    public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
+    {
+        context.Validated();
+    }
+
+    public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
+    {
+
+        context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
+
+        //模拟登陆验证未通过
+        if (!context.UserName.Equals("admin") || !context.Password.Equals("123"))
+        {
+            context.SetError("验证失败", "用户名或密码错误");
+            return;
+        }
+
+
+        var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+        identity.AddClaim(new Claim("sub", context.UserName));
+        identity.AddClaim(new Claim("role", "user"));
+
+        context.Validated(identity);
+    }
+}
+```
+
+在ASP.NET Web API中启用OAuth的Access Token验证非常简单，只需在相应的Controller或Action加上[Authorize]标记
 
 <a id="markdown-startup类" name="startup类"></a>
 ### StartUp类
@@ -668,43 +693,6 @@ namespace ProductApp
 
 使用Owin的Setup类，就不需要MVC的Global类了，删除之。
 
-<a id="markdown-添加验证类" name="添加验证类"></a>
-### 添加验证类
-
-在项目下添加 SimpleAuthorizationServerProvider 类，用于用户的授权认证。
-
-```cs
-public class SimpleAuthorizationServerProvider : OAuthAuthorizationServerProvider
-{
-    public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
-    {
-        context.Validated();
-    }
-
-    public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
-    {
-
-        context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
-
-        //模拟登陆验证未通过
-        if (!context.UserName.Equals("admin") || !context.Password.Equals("123"))
-        {
-            context.SetError("验证失败", "用户名或密码错误");
-            return;
-        }
-
-
-        var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-        identity.AddClaim(new Claim("sub", context.UserName));
-        identity.AddClaim(new Claim("role", "user"));
-
-        context.Validated(identity);
-    }
-}
-```
-
-在ASP.NET Web API中启用OAuth的Access Token验证非常简单，只需在相应的Controller或Action加上[Authorize]标记
-
 <a id="markdown-authorize授权" name="authorize授权"></a>
 ### Authorize授权
 
@@ -737,7 +725,6 @@ TokenEndpointPath = new PathString("/token"),
 ```
 Authorization:bearer Gqq4cdp4E3MxX0GFWnnqMG_Qs6csz7v7....
 ```
-
 
 ![](../assets/webapi/get_all_by_token.png)
 
