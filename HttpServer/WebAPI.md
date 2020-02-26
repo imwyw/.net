@@ -11,9 +11,13 @@
         - [创建项目](#创建项目)
         - [新建Model和Controller](#新建model和controller)
         - [前端模拟交互](#前端模拟交互)
-    - [操作结果](#操作结果)
     - [路由](#路由)
         - [路由表](#路由表)
+    - [返回类型](#返回类型)
+        - [void](#void)
+        - [IHttpActionResult](#ihttpactionresult)
+        - [HttpResponseMessage](#httpresponsemessage)
+        - [自定义类型](#自定义类型)
     - [token验证](#token验证)
         - [安全问题](#安全问题)
         - [添加Owin包](#添加owin包)
@@ -29,8 +33,6 @@
 
 Web API是一个比较宽泛的概念。这里我们提到Web API特指ASP.NET Web API。
 
-这篇文章中我们主要介绍Web API的主要功能以及与其他同类型框架的对比，最后通过一些相对复杂的实例展示如何通过Web API构建http服务，同时也展示了Visual Studio构建.net项目的各种强大。
-
 <a id="markdown-概念" name="概念"></a>
 ## 概念
 
@@ -39,7 +41,6 @@ Web API是一个比较宽泛的概念。这里我们提到Web API特指ASP.NET W
 官方定义如下，强调两个关键点，即可以对接各种客户端（浏览器，移动设备），构建http服务的框架。
 
 > ASP.NET Web API is a framework that makes it easy to build HTTP services that reach a broad range of clients, including browsers and mobile devices. ASP.NET Web API is an ideal platform for building RESTful applications on the .NET Framework.
-
 
 Web API在ASP.NET完整框架中地位如下图，与SignalR一起同为构建Service的框架。
 
@@ -99,13 +100,13 @@ Web API的主要功能
 ## 入门项目
 <a id="markdown-创建项目" name="创建项目"></a>
 ### 创建项目
-在模板窗格中，选择已安装的模板展开Visual C# 节点。 下Visual C#，选择Web。 在项目模板列表中选择ASP.NET Web 应用程序。 
+在项目模板列表中选择ASP.NET Web 应用程序，新建Web应用程序
 
 命名项目"ProductsApp"，然后单击确定。
 
 ![](../assets/webapi/webapi-create.jpg)
 
-在中新建 ASP.NET 项目对话框中，选择空模板。 下"添加文件夹和核心引用"，检查Web API。 单击 “确定”。
+在中新建 ASP.NET 项目对话框中，选择【Empty】空模板，勾选【Web API】选项引用。 单击 “确定”。
 
 ![](../assets/webapi/webapi-create2.jpg)
 
@@ -129,7 +130,7 @@ namespace ProductsApp.Models
 }
 ```
 
-新建控制器,在添加基架对话框中，选择Web API 控制器-空，如图：
+新建控制器,选择Web API 控制器-空，如图：
 
 ![](../assets/webapi/webapi-create-controller1.jpg)
 
@@ -234,18 +235,6 @@ public class ProductsController : ApiController
 
 ![](../assets/webapi/webapi-res1.jpg)
 
-<a id="markdown-操作结果" name="操作结果"></a>
-## 操作结果
-
-Web API 控制器操作可以返回以下任一项：
-
-返回类型 | Web API 创建响应的方式
------|----------------
-void | 返回空 204 （无内容）
-HttpResponseMessage | 转换为直接 HTTP 响应消息。
-IHttpActionResult | 调用ExecuteAsync来创建HttpResponseMessage，然后将转换为 HTTP 响应消息。
-其他类型 | 将序列化的返回值写入到响应正文中;返回 200 （正常）。
-
 <a id="markdown-路由" name="路由"></a>
 ## 路由
 
@@ -290,7 +279,7 @@ Web API 框架接收 HTTP 请求时，它尝试匹配根据一个路由表中的
 * 若要查找操作，Web API 的 HTTP 方法，将查看，然后查找其名称以与该 HTTP 方法名称的操作。 例如，使用 GET 请求，Web API 查找操作以开头的"GET..."，如"GetContact"或"GetAllContacts"。 此约定仅适用于GET、 POST、 PUT 和 DELETE 方法。 可以通过在控制器上使用属性来启用其他 HTTP 方法。 我们将看到一个示例说明更高版本。
 * 其他占位符变量在路由模板中，如 {id} 映射到操作参数。
 
-让我们看一个示例。 假设定义以下控制器：
+让我们看一个示例，假设定义以下控制器：
 ```cs
 public class ProductsController : ApiController
 {
@@ -308,7 +297,9 @@ GET | api/products | GetAllProducts | （无）
 GET | api/products/4 | GetProductById | 4
 DELETE | api/products/4 | DeleteProduct | 4
 
-请注意， {id} 段的 URI，如果存在，将映射到id操作的操作参数。 在此示例中，控制器定义了两个 GET 方法，另一个使用id参数，另一个不带任何参数。
+请注意， {id} 段的 URI，如果存在，将映射到id操作的操作参数。 
+
+在此示例中，控制器定义了两个 GET 方法，另一个使用id参数，另一个不带任何参数。
 
 以上，为默认的apil路由，相比较mvc的路由缺少了{action}段，在使用上来看并没有那么方便。
 
@@ -322,7 +313,9 @@ routes.MapHttpRoute(
 );
 ```
 
-在此路由模板中， {action} 参数名称在控制器上的操作方法。 使用此样式的路由，使用属性来指定允许的 HTTP 方法。
+在此路由模板中， {action} 参数名称在控制器上的操作方法。 
+
+使用此样式的路由，使用属性来指定允许的 HTTP 方法。
 
 例如，假设您的控制器具有以下方法：
 
@@ -366,7 +359,104 @@ public string GetPrivateData() { ... }
 
 尝试访问会返回：No action was found on the controller 'ControllerName' that matches the name 'ActionName'.
 
-WebAPI对于复杂对象的传递也十分的方便，如下：
+
+<a id="markdown-返回类型" name="返回类型"></a>
+## 返回类型
+
+Web API 控制器操作可以返回以下任一项：
+
+返回类型 | Web API 创建响应的方式
+-----|----------------
+void | 返回空 204 （无内容）
+HttpResponseMessage | 转换为直接 HTTP 响应消息。
+IHttpActionResult | 调用ExecuteAsync来创建HttpResponseMessage，然后将转换为 HTTP 响应消息。
+其他类型 | 将序列化的返回值写入到响应正文中;返回 200 （正常）。
+
+<a id="markdown-void" name="void"></a>
+### void
+```cs
+public class ValuesController : ApiController
+{
+    [HttpGet]
+    public void Get()
+    {
+        int a = 1;
+        int b = 2;
+        int c = a + b;
+        //.....................
+    }
+}
+```
+
+使用postman，测试接口：
+
+![](../assets/webapi/return_void.png)
+
+可以看到，void声明的接口，在请求成功的时候得不到返回值，而且会返回http的状态码为204，表示没有返回值。
+
+<a id="markdown-ihttpactionresult" name="ihttpactionresult"></a>
+### IHttpActionResult
+IHttpActionResult是WebApi最常用的一种返回值类型，常用的方式有：
+
+Json(T content)、Ok()、 Ok(T content)、NotFound()、Content(HttpStatusCode statusCode, T value)、BadRequest()、Redirect(string location)等
+
+Json(T content)在WebApi的ApiController这个抽象类里面，为我们封装了Json(T content)这个方法，它的用法和MVC里面的JsonResult基本类似。
+
+```cs
+[HttpGet]
+public IHttpActionResult getJson()
+{
+    var list = new List<userinfo>();
+    list.Add(new UserInfo { Name="jeck",age=22 });
+    list.Add(new UserInfo { Name = "poor", age = 23 });
+    return Json<List<UserInfo>>(list);
+}
+
+public class UserInfo{
+    public string Name { get; set; }
+    public int age { get; set; }
+}
+```
+
+测试结果：
+
+![](../assets/webapi/return_json.png)
+
+<a id="markdown-httpresponsemessage" name="httpresponsemessage"></a>
+### HttpResponseMessage
+HttpResponseMessage这个对象，表示向客户端返回一个http响应的消息对象（包含http状态码和需要返回客户端的消息）。
+
+这个对象也有它独特的使用场景：需要向客户端返回HttpResponse时就要用到这个对象。
+
+以导出为例，由于需要将导出的Excel文件输出到客户端浏览器，Webapi的服务端需要向Web的客户端输出文件流，
+
+这个时候一般的IHttpActionResult对象不方便解决这个问题，于是HttpReponseMessage派上了用场。
+
+```cs
+[HttpGet]
+public HttpResponseMessage DownloadFile()
+{
+    string fileName = HttpContext.Current.Server.MapPath("~/App_Data/1.xlsx");
+    FileStream fs = new FileStream(fileName, FileMode.Open);
+
+    HttpResponseMessage resp = new HttpResponseMessage(HttpStatusCode.OK);
+    resp.Content = new StreamContent(fs);
+    string mimetype = MimeMapping.GetMimeMapping(fileName);
+    resp.Content.Headers.ContentType = new MediaTypeHeaderValue(mimetype);
+    resp.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+    {
+        FileName = HttpUtility.UrlEncode(Path.GetFileName(fileName))
+    };
+
+    return resp;
+}
+```
+
+通过浏览器访问即可下载
+
+<a id="markdown-自定义类型" name="自定义类型"></a>
+### 自定义类型
+WebApi会自动序列化你自定义任何返回类型，然后将序列化的值写到响应正文里，状态码统一返回200。
 
 ```cs
 static List<Product> listProducts = new List<Product>();
