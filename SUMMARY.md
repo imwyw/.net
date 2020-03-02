@@ -57,6 +57,7 @@
     * [单元测试](./Enterprise/UnitTest.md)
     * [AutoMapper](./Enterprise/AutoMapper.md)
     * [Autofac](./Enterprise/Autofac.md)
+    * [SignalR](./Enterprise/SignalR.md)
 
 * [其他]()
     * [专题](./Other/TopicSub.md)
