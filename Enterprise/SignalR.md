@@ -21,6 +21,9 @@
             - [Hub前端调用](#hub前端调用)
             - [多浏览器测试](#多浏览器测试)
             - [MVC中Hub应用](#mvc中hub应用)
+    - [通信案例](#通信案例)
+        - [一对一通信](#一对一通信)
+            - [OneToOne集线器](#onetoone集线器)
 
 <!-- /TOC -->
 
@@ -383,4 +386,293 @@ var chat = $.connection.chatHub;
 
 [教程： SignalR 2 和 MVC 5 的实时聊天](https://docs.microsoft.com/zh-cn/aspnet/signalr/overview/getting-started/tutorial-getting-started-with-signalr-and-mvc)
 
+<a id="markdown-通信案例" name="通信案例"></a>
+## 通信案例
 
+<a id="markdown-一对一通信" name="一对一通信"></a>
+### 一对一通信
+
+新建一个空的ASP.NET Mvc项目，取名为：SignalROneToOne。
+
+添加Hub集线器，命名为：【OneToOneHub.cs】。
+
+关于SignalR组件更新过程省略。
+
+以下给出关键步骤
+
+<a id="markdown-onetoone集线器" name="onetoone集线器"></a>
+#### OneToOne集线器
+
+在Model文件夹中创建用户实体类【User】：
+```cs
+/// <summary>
+/// 用户实体类
+/// </summary>
+public class User
+{
+    /// <summary>
+    /// 连接ID
+    /// </summary>
+    [Key]
+    public string ConnectionID { get; set; }
+
+    public string Name { get; set; }
+
+    public User(string name, string connectionId)
+    {
+        Name = name;
+        ConnectionID = connectionId;
+    }
+}
+```
+
+整体实现思路：
+1. 先实现在线用户列表的展示
+2. 实现聊天窗口的添加
+3. 聊天消息的发送和接收，接收方默认自动打开聊天窗口
+
+【OneToOneHub】集线器代码如下：
+```cs
+/// <summary>
+/// 点对点聊天
+/// </summary>
+[HubName("chat")]
+public class OneToOneHub : Hub
+{
+    /// <summary>
+    /// 在线用户列表
+    /// </summary>
+    public static List<User> userList = new List<User>();
+
+    /// <summary>
+    /// 重写连接事件
+    /// </summary>
+    /// <returns></returns>
+    public override Task OnConnected()
+    {
+        // 根据connectionId判断用户是否已在用户列表中
+        var user = userList.FirstOrDefault(t => t.ConnectionId == Context.ConnectionId);
+        if (null == user)
+        {
+            // 首次建立连接时无姓名信息，需要后面再设置姓名
+            user = new User("", Context.ConnectionId);
+            userList.Add(user);
+        }
+
+        return base.OnConnected();
+    }
+
+    /// <summary>
+    /// 重写断开连接事件
+    /// </summary>
+    /// <param name="stopCalled"></param>
+    /// <returns></returns>
+    public override Task OnDisconnected(bool stopCalled)
+    {
+        // 断开连接后从用户列表移除
+        var user = userList.FirstOrDefault(t => t.ConnectionId == Context.ConnectionId);
+        if (null != user)
+        {
+            userList.Remove(user);
+        }
+
+        UpdateOnlineUser();
+
+        return base.OnDisconnected(stopCalled);
+    }
+
+    /// <summary>
+    /// 更新在线用户列表中用户姓名
+    /// </summary>
+    /// <param name="name"></param>
+    public void UpdateUserName(string name)
+    {
+        var currentUser = userList.FirstOrDefault(t => t.ConnectionId == Context.ConnectionId);
+        if (null != currentUser)
+        {
+            // 更新姓名
+            currentUser.Name = name;
+        }
+        UpdateOnlineUser();
+    }
+
+    /// <summary>
+    /// 通知所有客户端更新 在线用户列表
+    /// </summary>
+    private void UpdateOnlineUser()
+    {
+        var list = userList.Select(t => new { t.Name, t.ConnectionId }).ToList();
+
+        string jsonUsers = JsonConvert.SerializeObject(list);
+        Clients.All.updateOnlineUser(jsonUsers);
+    }
+
+    /// <summary>
+    /// 发送消息
+    /// </summary>
+    /// <param name="targetConnId">对方ConnectionId</param>
+    /// <param name="message">消息内容</param>
+    public void SendMessage(string targetConnId, string message)
+    {
+        var targetUser = userList.FirstOrDefault(t => t.ConnectionId == targetConnId);
+        var currentUser = userList.FirstOrDefault(t => t.ConnectionId == Context.ConnectionId);
+
+        if (null != targetUser && null != currentUser)
+        {
+            // 发给接收方
+            Clients.Client(targetConnId).addMessage(message, currentUser.Name, currentUser.ConnectionId);
+
+            // 给自己发送，表示消息已送达
+            Clients.Client(Context.ConnectionId).addMessage(message, targetUser.Name, targetUser.ConnectionId);
+        }
+    }
+
+}
+```
+
+前端页面代码如下：
+```html
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>一对一聊天</title>
+    <style>
+        div.chat-window {
+            margin: 5px 0;
+            width: 700px;
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <h2>开始寻找好友聊天吧</h2>
+
+    <div>
+        <div>用户名称：【<strong id="userName"></strong>】</div>
+        <div>当前连接id：【<label id="connId"></label>】</div>
+
+        <div style="width:600px;border:1px solid #007acc">
+            <div>在线用户列表：</div>
+            <ul id="onlineUser"></ul>
+        </div>
+
+        <div id="discussion">
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        // 当前用户
+        var currentUser = {
+            name: '',
+            connectionId: ''
+        };
+        var chat;
+
+        $(function () {
+            chat = $.connection.chat;
+            registerClientWork();
+
+            // done() 建立连接成功回调
+            $.connection.hub.start().done(function () {
+                // 连接成功就有 connectionid，和服务端 Context.ConnectionId 一致
+                currentUser.connectionId = $.connection.hub.id;
+                currentUser.name = prompt('enter your name:');
+
+                $('#userName').text(currentUser.name);
+                $('#connId').text(currentUser.connectionId);
+
+                // 通知服务端更新当前用户名
+                chat.server.updateUserName(currentUser.name);
+            });
+        })
+
+        // 注册客户端方法
+        function registerClientWork() {
+            // 当有用户接入(更新名称时)或者断开时需要更新列表
+            chat.client.updateOnlineUser = function (data) {
+                let userArray = JSON.parse(data);
+                if (userArray.length > 0) {
+                    $('#onlineUser').empty();
+                    for(let uu of userArray) {
+                        let chatButton = '';
+                        if (uu.ConnectionId != currentUser.connectionId) {
+                            // 当前用户不显示聊天按钮
+                            chatButton = `<button class="chat-button"
+                                data-connid="${uu.ConnectionId}"
+                                data-name="${uu.Name}" >聊天</button>`;
+                        }
+                        $('#onlineUser').append(`<li>用户名：【${uu.Name}】${chatButton}</li>`);
+                    }
+                }
+            }
+
+            // 收到服务端消息，插入到聊天窗口中显示
+            chat.client.addMessage = function (message, targetName, targetConnId) {
+                //debugger;
+                // 在聊天窗口中根据 targetConnId 寻找聊天窗口，找不到则创建
+                if ($(`#${targetConnId}`).length == 0) {
+                    showChatWindow(targetConnId, targetName);
+                }
+                $(`#${targetConnId}`).find('ul.chat-content').append(`<li>${message}</li>`);
+            }
+
+            bindChat();
+            bindMessageSend();
+        }
+
+        // 委托方式绑定聊天事件
+        function bindChat() {
+            $('#onlineUser').on('click', 'button.chat-button', function (e) {
+                // debugger;
+                let targetConnId = $(e.target).attr('data-connid');
+                let targetName = $(e.target).attr('data-name');
+                console.log('targetConnId:' + targetConnId);
+                showChatWindow(targetConnId, targetName);
+            });
+        }
+
+        // 新增聊天窗口
+        function showChatWindow(connid, uname) {
+            // 避免重复创建聊天窗口
+            if ($(`#${connid}`).length > 0) {
+                return;
+            }
+            let html = `
+                <div class="chat-window" id="${connid}">
+                <div><span>正在与【${uname}】聊天中...</span></div>
+                <ul class="chat-content"></ul>
+                <div>
+                    <input type="text" />
+                    <button data-connid="${connid}" class="btn-send">send</button>
+                </div>
+                </div>
+                `;
+            $('#discussion').append(html);
+        }
+
+        // 绑定消息发送事件
+        function bindMessageSend() {
+            $('#discussion').on('click', 'button.btn-send', function (e) {
+                let targetConnId = $(e.target).attr('data-connid');
+                let message = $(e.target).prev().val();
+                message = `${currentUser.name}：${message}`;
+                console.log(`targetConnId:${targetConnId},msg:${message}`);
+                // 调用服务端方法，指定对方connid发送消息
+                chat.server.sendMessage(targetConnId, message);
+                // 清空输入框
+                $(e.target).prev().val('');
+            });
+        }
+
+    </script>
+</body>
+</html>
+
+```
