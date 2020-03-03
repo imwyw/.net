@@ -6,13 +6,21 @@
         - [WebSocket](#websocket)
         - [对比](#对比)
     - [通信模型](#通信模型)
+        - [Connection连接](#connection连接)
+            - [创建MVC项目](#创建mvc项目)
+            - [持久连接类](#持久连接类)
+            - [启动路由注册](#启动路由注册)
+            - [组件更新](#组件更新)
+            - [界面处理](#界面处理)
+            - [建立持久连接](#建立持久连接)
         - [Hub聊天应用](#hub聊天应用)
             - [应用程序](#应用程序)
             - [Hub集线器](#hub集线器)
             - [注册SignalR](#注册signalr)
-            - [组件更新](#组件更新)
+            - [组件更新](#组件更新-1)
             - [Hub前端调用](#hub前端调用)
             - [多浏览器测试](#多浏览器测试)
+            - [MVC中Hub应用](#mvc中hub应用)
 
 <!-- /TOC -->
 
@@ -74,6 +82,146 @@ Hubs | Hubs是基于连接Api的更高级别的通信管道，它允许客户端
 
 SignalR 将整个连接，信息交换过程封装得非常漂亮，客户端与服务器端全部使用 JSON 来交换数据。
 
+<a id="markdown-connection连接" name="connection连接"></a>
+### Connection连接
+
+<a id="markdown-创建mvc项目" name="创建mvc项目"></a>
+#### 创建MVC项目
+Connection连接的方式和Hub集线器非常类似，创建过程如下：
+
+![](../assets/signalR/mvc_connection_new.png)
+
+<a id="markdown-持久连接类" name="持久连接类"></a>
+#### 持久连接类
+
+添加连接类
+
+![](../assets/signalR/mvc_connection_connection.png)
+
+修改默认生成的【ChatConnection.cs】如下：
+
+```cs
+public class ChatConnection : PersistentConnection
+{
+    /// <summary>
+    /// 当前连接用户数
+    /// </summary>
+    static int _connectionCount = 0;
+
+    protected override Task OnConnected(IRequest request, string connectionId)
+    {
+        /*
+        Interlocked 为多个线程共享的变量提供原子操作，保障多线程操作时同步
+        Increment() 用于递增，同样的也有 Decrement() 方法
+        https://docs.microsoft.com/zh-cn/dotnet/api/system.threading.interlocked?view=netframework-4.8
+        */
+        Interlocked.Increment(ref _connectionCount);
+        // 广播消息
+        Connection.Broadcast($"新的连接加入，连接ID：{connectionId}，已有连接数：{_connectionCount}");
+        return Connection.Send(connectionId, $"双向连接成功，连接ID：{connectionId}");
+    }
+
+    protected override Task OnDisconnected(IRequest request, string connectionId, bool stopCalled)
+    {
+        Interlocked.Decrement(ref _connectionCount);
+        return Connection.Broadcast($"{connectionId} 退出连接，也有连接数：{_connectionCount}");
+    }
+
+    protected override Task OnReceived(IRequest request, string connectionId, string data)
+    {
+        var message = $"{connectionId} 发送内容>> {data}";
+
+        return Connection.Broadcast(data);
+    }
+}
+```
+
+<a id="markdown-启动路由注册" name="启动路由注册"></a>
+#### 启动路由注册
+新增【Owin Startup】类，进行路由注册
+
+```cs
+public class Startup
+{
+    public void Configuration(IAppBuilder app)
+    {
+        app.MapSignalR<ChatConnection>("/Connections/ChatConnection");
+    }
+}
+```
+
+<a id="markdown-组件更新" name="组件更新"></a>
+#### 组件更新
+由于默认添加的SignalR版本并不是最新的，在升级jQuery版本时，也需要一并升级SignalR。
+
+打开项目的 "Nuget程序包" 管理器，对【jQuery】和【Microsoft.AspNet.SignalR】进行更新
+
+![](../assets/signalR/signalR_nuget_update1.png)
+
+![](../assets/signalR/signalR_nuget_update2.png)
+
+<a id="markdown-界面处理" name="界面处理"></a>
+#### 界面处理
+新增Home控制器，在默认Index视图中修改代码如下：
+
+```html
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SingnalR持久连接类 Demo</title>
+</head>
+<body>
+    <h1>SignalR永久连接类 Demo</h1>
+    <div>
+        <input type="text" id="message" placeholder="请输入消息内容..." />
+        <button id="btnSend">Send</button>
+        <ul id="discussion"></ul>
+    </div>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script>
+        const conn = $.connection('/Connections/ChatConnection');
+        conn.logging = true;
+
+        // 客户端接收消息处理
+        conn.received(function (data) {
+            $('#discussion').append(`<li>${data}</li>`);
+        });
+
+        // 连接错误处理
+        conn.error(function (err) {
+            console.error(`与服务器连接异常：${err}`);
+        });
+
+        conn.start().done(function () {
+            $('#btnSend').click(function () {
+                // 向服务端发送消息
+                conn.send($('#message').val());
+            });
+        });
+
+    </script>
+</body>
+</html>
+
+```
+
+<a id="markdown-建立持久连接" name="建立持久连接"></a>
+#### 建立持久连接
+
+![](../assets/signalR/mvc_connection_connid.png)
+
+通过多个浏览器进行测试，关闭浏览器标签会同步显示对应connection退出连接。
+
+需要注意的是，如果是刷新页面，需要一定的时间才能响应退出连接。//TODO
+
+
+
 <a id="markdown-hub聊天应用" name="hub聊天应用"></a>
 ### Hub聊天应用
 
@@ -116,6 +264,7 @@ Send 方法演示了几个中心概念：
 * 使用 Microsoft.AspNet.SignalR.Hub.Clients 动态属性与连接到此集线器的所有客户端通信。
 * 在客户端上调用一个函数（如 broadcastMessage 函数）以更新客户端。
 
+
 <a id="markdown-注册signalr" name="注册signalr"></a>
 #### 注册SignalR
 
@@ -140,7 +289,7 @@ namespace SignalRChat
 }
 ```
 
-<a id="markdown-组件更新" name="组件更新"></a>
+<a id="markdown-组件更新-1" name="组件更新-1"></a>
 #### 组件更新
 由于默认添加的SignalR版本并不是最新的，在升级jQuery版本时，也需要一并升级SignalR。
 
@@ -226,6 +375,12 @@ var chat = $.connection.chatHub;
 
 ![](../assets/signalR/signalr_hub_chat_demo.gif)
 
+<a id="markdown-mvc中hub应用" name="mvc中hub应用"></a>
+#### MVC中Hub应用
+在MVC项目中Hub应用类似，在MVC模板中添加Owin启动类【Startup】，注册集线器的连接。
 
+具体可以参考微软案例：
+
+[教程： SignalR 2 和 MVC 5 的实时聊天](https://docs.microsoft.com/zh-cn/aspnet/signalr/overview/getting-started/tutorial-getting-started-with-signalr-and-mvc)
 
 
