@@ -23,7 +23,10 @@
             - [MVC中Hub应用](#mvc中hub应用)
     - [通信案例](#通信案例)
         - [一对一通信](#一对一通信)
+            - [用户实体类](#用户实体类)
             - [OneToOne集线器](#onetoone集线器)
+            - [用户列表及聊天窗口](#用户列表及聊天窗口)
+            - [聊天演示](#聊天演示)
 
 <!-- /TOC -->
 
@@ -400,8 +403,8 @@ var chat = $.connection.chatHub;
 
 以下给出关键步骤
 
-<a id="markdown-onetoone集线器" name="onetoone集线器"></a>
-#### OneToOne集线器
+<a id="markdown-用户实体类" name="用户实体类"></a>
+#### 用户实体类
 
 在Model文件夹中创建用户实体类【User】：
 ```cs
@@ -425,6 +428,9 @@ public class User
     }
 }
 ```
+
+<a id="markdown-onetoone集线器" name="onetoone集线器"></a>
+#### OneToOne集线器
 
 整体实现思路：
 1. 先实现在线用户列表的展示
@@ -529,6 +535,9 @@ public class OneToOneHub : Hub
 
 }
 ```
+
+<a id="markdown-用户列表及聊天窗口" name="用户列表及聊天窗口"></a>
+#### 用户列表及聊天窗口
 
 前端页面代码如下：
 ```html
@@ -676,3 +685,10 @@ public class OneToOneHub : Hub
 </html>
 
 ```
+
+<a id="markdown-聊天演示" name="聊天演示"></a>
+#### 聊天演示
+
+![](../assets/signalR/hub_chat_one.gif)
+
+
