@@ -416,7 +416,6 @@ public class User
     /// <summary>
     /// 连接ID
     /// </summary>
-    [Key]
     public string ConnectionID { get; set; }
 
     public string Name { get; set; }
