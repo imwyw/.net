@@ -31,6 +31,7 @@
 
 * [设计]()
     * [三层架构](./Design/UIBLLDAL.md)
+    * [依赖反转](./Design/DI.md)
     * [设计模式](./Design/DesignPattern.md)
     * [设计模式-创建型模式](./Design/DesignCreate.md)
     * [设计模式-结构型模式](./Design/DesignStructure.md)
