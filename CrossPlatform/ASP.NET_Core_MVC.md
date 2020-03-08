@@ -10,17 +10,6 @@
         - [Program](#program)
         - [Startup](#startup)
         - [路由](#路由)
-        - [模型绑定](#模型绑定)
-        - [模型验证](#模型验证)
-        - [依赖关系注入](#依赖关系注入)
-        - [筛选器](#筛选器)
-        - [Areas](#areas)
-        - [Web API](#web-api)
-        - [可测试性](#可测试性)
-        - [Razor视图引擎](#razor视图引擎)
-        - [强类型视图](#强类型视图)
-        - [标记帮助程序](#标记帮助程序)
-        - [视图组件](#视图组件)
 
 <!-- /TOC -->
 
@@ -171,66 +160,93 @@ public class Startup
 }
 ```
 
+不管你命名成什么，只要将 `webBuilder.UseStartup<>()` 中的泛型类配置成你定义的入口类即可。
+
+**构造函数**
+
+* IConfiguration：表示一组键/值应用程序配置属性。
+* IHostingEnvironment：是一个包含与运行应用程序的Web宿主环境相关信息的接口。使用这个接口方法，我们可以改变应用程序的行为。
+
 **ConfigureServices**
+
+使用 `ConfigureServices` 方法将服务添加到容器。简单说，用于配置依赖注入
 
 对于需要大量设置的功能，IServiceCollection 上有 Add{Service} 扩展方法。 
 
-例如，AddControllersWithViews、AddDefaultIdentity、AddEntityFrameworkStores 和 AddRazorPages：
+例如，`AddControllersWithViews、AddDefaultIdentity、AddEntityFrameworkStores 和 AddRazorPages`
 
 **Configure 方法**
 
+`Configure` 方法用于指定应用响应 HTTP 请求的方式。简单说，用于设置中间件、路由规则等
 
-
+* IApplicationBuilder：是一个包含与当前环境相关的属性和方法的接口。它用于获取应用程序中的环境变量。
 
 <a id="markdown-路由" name="路由"></a>
 ### 路由
+大多数应用应选择基本的描述性路由方案，让 URL 有可读性和意义。 
 
+默认传统路由 {controller=Home}/{action=Index}/{id?}：
 
-<a id="markdown-模型绑定" name="模型绑定"></a>
-### 模型绑定
+* 支持基本的描述性路由方案。
+* 是基于 UI 的应用的有用起点。
 
+中间件 RouterMiddleware 的路由注册方式大致分为两种：
+* 全局注册。如：MapRoute。
+* 局部注册。如：RouteAttribute。
 
-<a id="markdown-模型验证" name="模型验证"></a>
-### 模型验证
+预设路由的顺序如下：
 
+![](../assets/asp.net.core/router顺序.png)
 
-<a id="markdown-依赖关系注入" name="依赖关系注入"></a>
-### 依赖关系注入
+```cs
+public void Configure(IApplicationBuilder app)
+{
+    // Matches request to an endpoint.
+    app.UseRouting();
 
+    // Endpoint aware middleware. 
+    // Middleware can use metadata from the matched endpoint.
+    app.UseAuthorization();
 
-<a id="markdown-筛选器" name="筛选器"></a>
-### 筛选器
+    // Execute the matched endpoint.
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+    });
+}
+```
 
+属性路由使用一组属性将操作直接映射到路由模板。
 
-<a id="markdown-areas" name="areas"></a>
-### Areas
+```cs
+public class HomeController : Controller
+{
+   [Route("")]
+   [Route("Home")]
+   [Route("Home/Index")]
+   public IActionResult Index()
+   {
+      return View();
+   }
+   [Route("Home/About")]
+   public IActionResult About()
+   {
+      return View();
+   }
+   [Route("Home/Contact")]
+   public IActionResult Contact()
+   {
+      return View();
+   }
+}
+```
 
-
-<a id="markdown-web-api" name="web-api"></a>
-### Web API
-
-
-<a id="markdown-可测试性" name="可测试性"></a>
-### 可测试性
-
-
-<a id="markdown-razor视图引擎" name="razor视图引擎"></a>
-### Razor视图引擎
-
-
-<a id="markdown-强类型视图" name="强类型视图"></a>
-### 强类型视图
-
-
-<a id="markdown-标记帮助程序" name="标记帮助程序"></a>
-### 标记帮助程序
-
-
-<a id="markdown-视图组件" name="视图组件"></a>
-### 视图组件
 
 ---
 
 参考引用：
 
 [](https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/startup?view=aspnetcore-3.1)
+
