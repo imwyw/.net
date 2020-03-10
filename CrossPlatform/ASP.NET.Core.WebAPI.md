@@ -5,9 +5,11 @@
         - [项目初始化修改](#项目初始化修改)
         - [watch_run](#watch_run)
     - [认证与授权](#认证与授权)
+        - [认证](#认证)
         - [JWT](#jwt)
         - [JWT组件](#jwt组件)
         - [获取token值](#获取token值)
+        - [授权](#授权)
 
 <!-- /TOC -->
 
@@ -70,6 +72,8 @@ dotnet-watch 是 asp.net 项目下的一个工具，用于实时监视项目文�
 <a id="markdown-认证与授权" name="认证与授权"></a>
 ## 认证与授权
 
+<a id="markdown-认证" name="认证"></a>
+### 认证
 修改 `WeatherForecastController` 控制器，对 `Get` 接口增加 `[Authorize]`标签
 
 ```cs
@@ -230,15 +234,79 @@ public class LoginController : ControllerBase
 
 如上所示，token验证通过。
 
+<a id="markdown-授权" name="授权"></a>
+### 授权
+
+前面通过获取 `token` ，我们已经可以认证通过并访问所有接口资源。
+
+但实际业务场景中，经常会有不同角色权限的区分，比如某些接口只允许管理员进行访问。
+
+授权对应的中间件是： `app.UseAuthorization();`
+
+首先，我们针对接口的特性 `Authorize` 增加角色配置，修改【WeatherForecastController】控制器：
+```cs
+[HttpGet]
+[Authorize(Roles = "Admin")]// 角色为Admin用户才有权限访问
+public IEnumerable<WeatherForecast> Get()
+{
+    var rng = new Random();
+    return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+    {
+        Date = DateTime.Now.AddDays(index),
+        TemperatureC = rng.Next(-20, 55),
+        Summary = Summaries[rng.Next(Summaries.Length)]
+    })
+    .ToArray();
+}
+```
+
+此时访问 WeatherForecast 接口，虽然通过了服务器的认证，但未通过该接口的授权
+
+![](../assets/asp.net.core/webapi.jwt.未授权403.png)
+
+服务端返回的 403 ，并非之前的 401。注意这两个状态码的区分
+
+为了通过 `token` 可以确认当前用户是否可以授权，我们需要在 `token` 中增加更多的 `Claim` 身份信息。
+
+修改【LoginController】中 `GetToken` 方法
+```cs
+/// <summary>
+/// 获取令牌
+/// </summary>
+/// <returns></returns>
+public string GetToken()
+{
+    // 此处秘钥需要和 Startup 中保持一致
+    var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("wangyuanweiwangyuanwei"));
+
+    SecurityToken securityToken = new JwtSecurityToken(
+        issuer: "颁发者",
+        audience: "接收者",
+        signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256),
+        expires: DateTime.Now.AddMinutes(20),
+        claims: new Claim[] {
+            // 增加身份信息，此处设置角色为 Admin，与标签 [Authorize(Roles = "Admin")] 匹配
+            new Claim(ClaimTypes.Role,"Admin")
+        }
+    );
+
+    string jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
+    return jwt;
+}
+```
+
+重新获取新的添加有身份信息的 `token` 值，并重新请求前面案例中的 `WeatherForecast` 接口测试。结果略。。。
 
 
 
 
 
 
+---
 
+参考引用：
 
-
+[什么是Security token? 什么是Claim?](https://www.cnblogs.com/awpatp/archive/2012/07/09/2582402.html)
 
 
 
