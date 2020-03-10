@@ -7,6 +7,7 @@
     - [认证与授权](#认证与授权)
         - [JWT](#jwt)
         - [JWT组件](#jwt组件)
+        - [获取token值](#获取token值)
 
 <!-- /TOC -->
 
@@ -141,12 +142,12 @@ public void ConfigureServices(IServiceCollection services)
             // 是否验证颁发者
             ValidateIssuer = true,
             // 颁发者的名称
-            ValidIssuer = "issuer",
-            
+            ValidIssuer = "颁发者",
+
             // 是否验证接收者
             ValidateAudience = true,
             // 接受者名称
-            ValidAudience = "audience",
+            ValidAudience = "接收者",
 
             // 是否必须具有“过期”值。
             RequireExpirationTime = true,
@@ -183,13 +184,51 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 ![](../assets/asp.net.core/webapi.jwt.未认证401.png)
 
+<a id="markdown-获取token值" name="获取token值"></a>
+### 获取token值
+新增控制器 【LoginController】，核心代码如下：
 
+```cs
+[Route("[controller]")]
+[ApiController]
+public class LoginController : ControllerBase
+{
+    /// <summary>
+    /// 获取令牌
+    /// </summary>
+    /// <returns></returns>
+    public string GetToken()
+    {
+        // 此处秘钥需要和 Startup 中保持一致
+        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("wangyuanweiwangyuanwei"));
 
+        SecurityToken securityToken = new JwtSecurityToken(
+            issuer: "颁发者",
+            audience: "接收者",
+            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256),
+            expires: DateTime.Now.AddMinutes(20),
+            claims: new Claim[] { }
+        );
 
+        string jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
+        return jwt;
+    }
+}
+```
 
+【PostMan】中进行测试，返回一个 `token` 值：
 
+![](../assets/asp.net.core/webapi.jwt.GetToken.png)
 
+这个 token 值可以在官网 `https://jwt.io/` 进行校验：
 
+![](../assets/asp.net.core/webapi.jwt.token.decode.png)
+
+在【PostMan】中测试 `WeatherForecast` 接口，请求头中附加 `Authorization` 信息【Bearer token】
+
+![](../assets/asp.net.core/webapi.jwt.token.GetData.png)
+
+如上所示，token验证通过。
 
 
 
