@@ -10,6 +10,9 @@
         - [JWT组件](#jwt组件)
         - [获取token值](#获取token值)
         - [授权](#授权)
+    - [AOP](#aop)
+        - [AOP说明](#aop说明)
+        - [AOP开源类库](#aop开源类库)
 
 <!-- /TOC -->
 
@@ -297,9 +300,182 @@ public string GetToken()
 
 重新获取新的添加有身份信息的 `token` 值，并重新请求前面案例中的 `WeatherForecast` 接口测试。结果略。。。
 
+<a id="markdown-aop" name="aop"></a>
+## AOP
 
+<a id="markdown-aop说明" name="aop说明"></a>
+### AOP说明
+AOP全称 Aspect Oriented Progarmming(面向切面编程)，其实 AOP 对 ASP.NET 程序员来说一点都不神秘，
 
+你也许早就通过Filter来完成一些通用的功能，例如你使用 `Authorization Filter` 来拦截所有的用户请求，
 
+验证 `Http Header` 中是否有合法的token。或者使用 `Exception Filter` 来处理某种特定的异常。
+
+你之所以可以拦截所有的用户请求，能够在期望的时机来执行某些通用的行为，是因为 `ASP.NET Core` 在框架级别预留了一些钩子，
+
+他允许你在特定的时机注入一些行为。对 `ASP.NET Core` 应用程序来说，这个时机就是 HTTP 请求在执行 MVC Action 的中间件时。
+
+显然这个时机并不能满足你的所有求，比如你在 `Repository` 层有一个读取数据库的方法：
+
+```cs
+public void GetUser()
+{
+    //Get user from db
+}
+```
+
+你试图得到该方法执行的时间，首先想到的方式就是在整个方法外面包一层用来计算时间的代码：
+
+```cs
+public void GetUserWithTime()
+{
+    var stopwatch = Stopwatch.StartNew();
+    try
+    {
+        //Get user from db
+    }
+    finally
+    {
+        stopwatch.Stop();
+        Trace.WriteLine("Total" + stopwatch.ElapsedMilliseconds + "ms");
+    }
+}
+```
+
+如果仅仅是为了得到这一个方法的执行时间，这种方式可以满足你的需求。
+
+问题在于你有可能还想得到 `DeleteUser` 或者 `UpdateUser` 等方法的执行时间。
+
+修改每一个方法并添加计算时间的代码明显是不合适的。
+
+一个比较优雅的做法是给需要计算时间的方法标记一个Attribute，但只适用于
+
+```cs
+[Time]
+public void GetUser()
+{
+    //Get user from db
+}
+```
+
+把计算时间这个功能当做一个切面(Aspect)注入到了现有的逻辑中，这是一个AOP的典型应用。
+
+<a id="markdown-aop开源类库" name="aop开源类库"></a>
+### AOP开源类库
+C#中可以用来做AOP的类库有很多，我们以使用率较高的 【Castle.Core】举例说明：
+
+通过 NuGet 程序包管理添加【Castle.Core】组件，并添加 `Service` 和 `Interceptor` 拦截器文件夹，项目结构如下：
+
+![](../assets/asp.net.core/myaop.webapi.png)
+
+创建 `IUserService` 和 `UserService` 模拟具体的业务操作，相当于 `Repository` 层：
+
+```cs
+public interface IUserService
+{
+    bool Login(string uid, string pwd);
+    bool Delete(string uid);
+}
+```
+
+```cs
+public class UserService : IUserService
+{
+    public bool Delete(string uid)
+    {
+        Console.WriteLine("正在删除中....");
+        Thread.Sleep(1000);// 模拟业务耗时操作
+        Console.WriteLine("已成功删除！");
+        return true;
+    }
+
+    public bool Login(string uid, string pwd)
+    {
+        Console.WriteLine("正在登录中....");
+        Thread.Sleep(1500);// 模拟业务耗时操作
+        bool success = uid.Equals("admin");
+        if (success)
+        {
+            Console.WriteLine("登录成功！");
+        }
+        else
+        {
+            Console.WriteLine("登录成功！");
+        }
+        return success;
+    }
+}
+```
+
+增加拦截器（代理） `TimeWatcherInterceptor` 类：
+```cs
+public class TimeWatcherInterceptor : Castle.DynamicProxy.IInterceptor
+{
+    public void Intercept(IInvocation invocation)
+    {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        Console.WriteLine($"TimeWatcherInterceptor:开始...");
+        stopwatch.Start();
+
+        invocation.Proceed();
+
+        stopwatch.Stop();
+        Console.WriteLine($"TimeWatcherInterceptor:结束，耗时：{stopwatch.Elapsed.TotalSeconds}s");
+    }
+}
+```
+
+我们需要在 `Startup` 中进行注入，并且设置接口的实现以及针对接口实现的代理：
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddControllers();
+
+    services.AddScoped<UserService>();
+    services.AddScoped<TimeWatcherInterceptor>();
+
+    services.AddScoped(provider =>
+    {
+        var generator = new ProxyGenerator();
+        // 服务实例，实际业务操作
+        var target = provider.GetService<UserService>();
+        // 拦截器(代理)的实例化
+        var interceptor = provider.GetService<TimeWatcherInterceptor>();
+
+        // 根据 接口创建对应服务的代理
+        return generator.CreateInterfaceProxyWithTarget<IUserService>(target, interceptor);
+    });
+}
+```
+
+在 `WeatherForecastController` 控制器中即可通过构造的注入获取到服务实例，并进行模拟业务操作：
+```cs
+[ApiController]
+[Route("[controller]")]
+public class WeatherForecastController : ControllerBase
+{
+    private readonly IUserService _userService;
+
+    public WeatherForecastController(IUserService userService)
+    {
+        _userService = userService;
+    }
+
+    [HttpGet]
+    public bool Get()
+    {
+        return _userService.Login(HttpContext.Request.Form["uname"], "");
+    }
+}
+```
+
+可以观察到，对于原先的业务接口 `IUserService` 和业务实现 `UserService` 没有任何侵入性
+
+通过拦截（代理）的方式，实现了运行时间的统计，其余的切面操作也是类似。
+
+![](../assets/asp.net.core/myaop.webapi.showlogin.png)
+
+多个服务可以采用批量注入的方式，todo。。。。
 
 
 ---
@@ -308,6 +484,6 @@ public string GetToken()
 
 [什么是Security token? 什么是Claim?](https://www.cnblogs.com/awpatp/archive/2012/07/09/2582402.html)
 
-
+[.NET Core中实现AOP编程](https://www.cnblogs.com/xiandnc/p/10088159.html)
 
 
