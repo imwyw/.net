@@ -13,6 +13,7 @@
     - [AOP](#aop)
         - [AOP说明](#aop说明)
         - [AOP开源类库](#aop开源类库)
+    - [跨域](#跨域)
 
 <!-- /TOC -->
 
@@ -449,6 +450,7 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 在 `WeatherForecastController` 控制器中即可通过构造的注入获取到服务实例，并进行模拟业务操作：
+
 ```cs
 [ApiController]
 [Route("[controller]")]
@@ -476,6 +478,67 @@ public class WeatherForecastController : ControllerBase
 ![](../assets/asp.net.core/myaop.webapi.showlogin.png)
 
 多个服务可以采用批量注入的方式，todo。。。。
+
+
+<a id="markdown-跨域" name="跨域"></a>
+## 跨域
+如果两个 Url 具有相同的方案、主机和端口（RFC 6454），则它们具有相同的源。
+
+对于不同源的请求，通常都会报错，如下：
+
+```
+Access to XMLHttpRequest at 'http://localhost:5000/xxxxx' from origin 'null' has been blocked by CORS policy: 
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+```
+
+WebAPI 通常都需要进行跨域处理，CORS 中间件处理跨域请求。
+
+修改【Startup】类中 `ConfigureServices` 方法，注入跨域配置：
+
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddControllers();
+
+    // 注入跨域设置
+    services.AddCors(opt =>
+    {
+        // 增加全局跨域规则，global_cors 是规则名称，UseCors需要使用到
+        opt.AddPolicy("global_cors", cor =>
+        {
+            // 允许所有来源的 CORS 请求和任何方案（http 或 https）
+            cor.AllowAnyOrigin();
+        });
+    });
+}
+```
+
+修改 Configure 方法，启用注入的跨域配置：
+
+```cs
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+
+    // 按照规则名称应用跨域规则
+    app.UseCors("global_cors");
+
+    app.UseRouting();
+
+    app.UseAuthorization();
+
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
+}
+```
+
+按照以上配置即可启用全局的允许所有来源的跨域请求。
+
 
 
 ---
