@@ -14,6 +14,9 @@
         - [AOP说明](#aop说明)
         - [AOP开源类库](#aop开源类库)
     - [跨域](#跨域)
+    - [数据绑定与获取](#数据绑定与获取)
+        - [来源注解](#来源注解)
+        - [简单类型和复杂类型](#简单类型和复杂类型)
 
 <!-- /TOC -->
 
@@ -523,7 +526,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         app.UseDeveloperExceptionPage();
     }
 
-    // 按照规则名称应用跨域规则
+    // 按照规则名称应用跨域规则，必须在 UseRouting 前应用
     app.UseCors("global_cors");
 
     app.UseRouting();
@@ -539,6 +542,128 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 按照以上配置即可启用全局的允许所有来源的跨域请求。
 
+<a id="markdown-数据绑定与获取" name="数据绑定与获取"></a>
+## 数据绑定与获取
+
+<a id="markdown-来源注解" name="来源注解"></a>
+### 来源注解
+HTTP 请求中，会携带很多参数，这些参数可以在前端设置，例如表单、Header、文件、Cookie、Session、Token等。
+
+微软定义了以下注解用于区分数据获取的方式：
+
+特性 | 绑定源
+---|----
+`[FromBody]` | 请求正文
+`[FromForm]` | 请求正文中的表单数据
+`[FromHeader]` | 请求标头
+`[FromQuery]` | 请求查询字符串参数
+`[FromRoute]` | 当前请求中的路由数据
+`[FromServices]` | 作为操作参数插入的请求服务
+
+<a id="markdown-简单类型和复杂类型" name="简单类型和复杂类型"></a>
+### 简单类型和复杂类型
+
+下面我们以较为常见的 `[FromBody]` 和 `[FromForm]` 举例说明。
+
+对于 WebApi 来说，如果默认不加任何注解，简单类型默认为 Query ，复杂类型为 Json。
+
+以微软官网WebAPI中Product案例为基础，【Product】类：
+
+```cs
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Category { get; set; }
+    public decimal Price { get; set; }
+}
+```
+
+创建API控制器【ProductController】：
+
+```cs
+// 通过 action 区分 api，不是 RestfulAPI
+[Route("api/[controller]/[action]")]
+[ApiController]
+public class ProductController : ControllerBase
+{
+    static IList<Product> products = new List<Product>()
+    {
+        new Product { Id = 1, Name = "Tomato Soup", Category = "Groceries", Price = 1 },
+        new Product { Id = 2, Name = "Yo-yo", Category = "Toys", Price = 3.75M },
+        new Product { Id = 3, Name = "Hammer", Category = "Hardware", Price = 16.99M }
+    };
+
+    // 此处 id 为默认类型，参数来源Query，即url传参
+    [HttpGet]
+    public IList<Product> GetProducts(int? id)
+    {
+        if (id.HasValue)
+        {
+            return products.Where(t => t.Id == id.Value).ToList();
+        }
+        else
+        {
+            return products;
+        }
+    }
+
+    [HttpPost]
+    public bool AddProduct(Product entity)
+    {
+        // Id 值不允许重复
+        if (products.Count(t => t.Id == entity.Id) > 0)
+        {
+            return false;
+        }
+        products.Add(entity);
+        return true;
+    }
+}
+```
+
+【ProductController】类中 `GetProducts` 方法，基本类型参数 id 来源于 `[FromQuery]`
+
+下图 `PostMan` 中测试情况，在 Body 中附加参数无法获取。
+
+![](../assets/asp.net.core/webapi_基本类型默认获取.png)
+
+【ProductController】类中 `AddProduct` 方法，复杂类型(对象) `entity` 来源于 `[FromBody]`
+
+等价于下面的定义：
+
+```cs
+[HttpPost]
+public bool AddProduct([FormBody]Product entity){
+    // .....
+}
+```
+
+在 PostMan 中调用如下：
+
+![](../assets/asp.net.core/webapi_复杂类型默认获取.png)
+
+默认是以 `content-type : application/json;` 进行传参的，这里必须要注意！
+
+针对传统的 `content-type : application/x-www-form-urlencoded` 类型，需要修改数据注解：
+
+```cs
+[HttpPost]
+public bool AddProduct([FormForm]Product entity){
+    // .....
+}
+```
+
+此处省略 `PostMan` 测试...
+
+
+
+
+
+
+
+
+
 
 
 ---
@@ -549,4 +674,4 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 [.NET Core中实现AOP编程](https://www.cnblogs.com/xiandnc/p/10088159.html)
 
-
+[小范笔记：ASP.NET Core API 基础知识与Axios前端提交数据](https://www.cnblogs.com/whuanle/p/11135299.html)
