@@ -675,3 +675,7 @@ public bool AddProduct([FormForm]Product entity){
 [.NET Core中实现AOP编程](https://www.cnblogs.com/xiandnc/p/10088159.html)
 
 [小范笔记：ASP.NET Core API 基础知识与Axios前端提交数据](https://www.cnblogs.com/whuanle/p/11135299.html)
+
+[ASP.NET Core 中的模型绑定](https://docs.microsoft.com/zh-cn/aspnet/core/mvc/models/model-binding?view=aspnetcore-3.1)
+
+
