@@ -63,6 +63,7 @@
 * [.NET Core](./CrossPlatform/CrossPlatform.md)
     * [ASP.NET Core MVC](./CrossPlatform/ASP.NET.Core.MVC.md)
     * [ASP.NET Core WebAPI](./CrossPlatform/ASP.NET.Core.WebAPI.md)
+    * [EntityFrameworkCore](./CrossPlatform/EFCore.md)
 
 * [其他]()
     * [专题](./Other/TopicSub.md)
