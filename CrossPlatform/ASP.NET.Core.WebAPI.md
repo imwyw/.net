@@ -17,6 +17,8 @@
     - [数据绑定与获取](#数据绑定与获取)
         - [来源注解](#来源注解)
         - [简单类型和复杂类型](#简单类型和复杂类型)
+    - [其他](#其他)
+        - [json数据key大小写](#json数据key大小写)
 
 <!-- /TOC -->
 
@@ -656,7 +658,26 @@ public bool AddProduct([FormForm]Product entity){
 
 此处省略 `PostMan` 测试...
 
+<a id="markdown-其他" name="其他"></a>
+## 其他
 
+<a id="markdown-json数据key大小写" name="json数据key大小写"></a>
+### json数据key大小写
+在 Startup 类里的 ConfigureServices 方法里进行配置即可：
+
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddControllers().AddJsonOptions(opt =>
+    {
+        // json序列化默认方式 camel命名
+        //opt.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
+        // json序列化时不修改大小写，与属性大小写保持一致
+        opt.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+}
+```
 
 
 
