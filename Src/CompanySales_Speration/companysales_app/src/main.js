@@ -23,6 +23,7 @@ new Vue({
   router,
   render: h => h(App),
   created() {
+    // 设置全局的 webapi url 基路径
     this.axios.defaults.baseURL = 'http://localhost:5000/api';
   }
   // components: { App },

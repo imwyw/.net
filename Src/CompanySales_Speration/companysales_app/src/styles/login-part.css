@@ -1,0 +1,30 @@
+/* 整个页面背景及布局设计 */
+.fill-container {
+  height: 100vh;
+  background-image: url("../assets/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 表单设计 */
+.login-container {
+  height: 350px;
+  width: 400px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* 表单每一行样式控制 */
+.el-form-item {
+  text-align: left;
+  margin-bottom: 10px;
+}
