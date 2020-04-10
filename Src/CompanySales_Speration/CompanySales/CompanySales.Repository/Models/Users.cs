@@ -5,7 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CompanySales.Repository.Models
 {
-    public partial class Users
+    [Table("users")]
+    public partial class User
     {
         [Key]
         [Column("ID")]

@@ -23,7 +23,7 @@ namespace CompanySales.Repository.Models
         public virtual DbSet<Provider> Provider { get; set; }
         public virtual DbSet<PurchaseOrder> PurchaseOrder { get; set; }
         public virtual DbSet<SellOrder> SellOrder { get; set; }
-        public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -122,7 +122,7 @@ namespace CompanySales.Repository.Models
                 entity.Property(e => e.SellOrderId).ValueGeneratedNever();
             });
 
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Address).IsUnicode(false);
 
