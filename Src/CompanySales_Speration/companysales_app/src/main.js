@@ -21,7 +21,10 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  render: h => h(App)
+  render: h => h(App),
+  created() {
+    this.axios.defaults.baseURL = 'http://localhost:5000/api';
+  }
   // components: { App },
   // template: '<App/>'
 })
