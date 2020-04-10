@@ -19,6 +19,7 @@
         - [简单类型和复杂类型](#简单类型和复杂类型)
     - [其他](#其他)
         - [json数据key大小写](#json数据key大小写)
+        - [api返回DataTable](#api返回datatable)
 
 <!-- /TOC -->
 
@@ -679,12 +680,28 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
+<a id="markdown-api返回datatable" name="api返回datatable"></a>
+### api返回DataTable
+webapi返回DataTable数据，抛出以下问题：
 
+```
+System.NotSupportedException: The collection type 'System.Data.DataRelationCollection' on 'System.Data.DataTable.ChildRelations' is not supported.
+```
 
+[Exception in serialization of System.Data.DataTable using the new “System.Text.Json” class (Asp.net core 3.0 preview 8)](https://stackoverflow.com/questions/57548928/exception-in-serialization-of-system-data-datatable-using-the-new-system-text-j)
 
+安装 Newtonsoft 代替原 System.Text.Json。
 
+NuGet 包管理器中安装 `Microsoft.AspNetCore.Mvc.NewtonsoftJson` ，在 `ConfigureServices()` 方法注入 `AddNewtonsoftJson()` 处理方法
 
-
+```cs
+services.AddControllers()
+    .AddNewtonsoftJson(set =>
+    {
+        // Use the default property (Pascal) casing
+        set.SerializerSettings.ContractResolver = new DefaultContractResolver();
+    });
+```
 
 
 ---
