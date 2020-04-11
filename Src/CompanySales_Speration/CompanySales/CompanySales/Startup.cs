@@ -33,6 +33,7 @@ namespace CompanySales
                 {
                     // Use the default property (Pascal) casing
                     set.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                    set.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                 });
 
             // ×¢Èë¿çÓòÉèÖÃ
