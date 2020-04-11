@@ -23,10 +23,11 @@ const router = new Router({
 https://router.vuejs.org/zh/guide/advanced/navigation-guards.html#%E5%85%A8%E5%B1%80%E5%89%8D%E7%BD%AE%E5%AE%88%E5%8D%AB
 */
 router.beforeEach((to, from, next) => {
+  debugger;
   // 判断该路由是否需要登录权限
   if (to.meta.requireAuth) {
     // 没有 token ，则跳转至 登录页面
-    if (!localStorage.getItem('token')) {
+    if (!localStorage.getItem('Token')) {
       next({ name: 'Login' });
     } else {
       next();

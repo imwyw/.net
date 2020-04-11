@@ -12,8 +12,13 @@ Vue.use(ElementUI);
 // 导入 axios 组件
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-
 Vue.use(VueAxios, axios);
+
+/* vue-cookies 工具
+https://www.npmjs.com/package/vue-cookies
+*/
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies);
 
 Vue.config.productionTip = false
 

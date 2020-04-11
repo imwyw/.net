@@ -58,9 +58,13 @@ export default {
             .get(`/Security/Login?uid=${sdata.userid}&pwd=${sdata.password}`)
             .then(res => {
               // 验证通过
-              if (res.data.status) {
+              if (res.data.Status) {
                 // 路由跳转
                 this.$router.push({ name: "Home" });
+                // token 信息写入 localStorage 中
+                localStorage.setItem("Token", res.data.Data.Token);
+                // 用户信息写入 cookie 中
+                this.$cookies.set("User", JSON.stringify(res.data.Data.User));
               } else {
                 this.$message.error("用户名或密码错误");
               }
