@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
 
 namespace CompanySales
 {
@@ -26,7 +27,13 @@ namespace CompanySales
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            // AddNewtonsoftJson 使用 Newtonsoft 代替微软的 System.Text.Json
+            services.AddControllers()
+                .AddNewtonsoftJson(set =>
+                {
+                    // Use the default property (Pascal) casing
+                    set.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                });
 
             // 注入跨域设置
             services.AddCors(opt =>
