@@ -43,7 +43,7 @@ namespace CompanySales
                 opt.AddPolicy("global_cors", cor =>
                 {
                     // 允许所有来源的 CORS 请求和任何方案（http 或 https）
-                    cor.AllowAnyOrigin();
+                    cor.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
                 });
             });
 
