@@ -4,6 +4,10 @@ import Router from 'vue-router'
 import Login from '@/views/Login'
 import Home from '@/views/Home'
 
+// 产品相关
+import ProductList from '@/views/product/ProductList'
+import ProductDetail from '@/views/product/ProductDetail'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -12,7 +16,17 @@ const router = new Router({
     { path: '/Login', name: 'Login', component: Login },
     {
       path: '/Home', name: 'Home', component: Home,
-      meta: { requireAuth: true }// requireAuth 添加该字段，表示进入这个路由是需要登录的
+      meta: { requireAuth: true },// requireAuth 添加该字段，表示进入这个路由是需要登录的
+      children: [
+        {
+          path: '/ProductList', name: 'ProductList', component: ProductList,
+          meta: { requireAuth: true }// requireAuth 添加该字段，表示进入这个路由是需要登录的
+        },
+        {
+          path: '/ProductDetail', name: 'ProductDetail', component: ProductDetail,
+          meta: { requireAuth: true }// requireAuth 添加该字段，表示进入这个路由是需要登录的
+        },
+      ]
     },
     { path: '/', redirect: { name: 'Home' } },// 默认跳转主页
   ]
@@ -23,7 +37,6 @@ const router = new Router({
 https://router.vuejs.org/zh/guide/advanced/navigation-guards.html#%E5%85%A8%E5%B1%80%E5%89%8D%E7%BD%AE%E5%AE%88%E5%8D%AB
 */
 router.beforeEach((to, from, next) => {
-  debugger;
   // 判断该路由是否需要登录权限
   if (to.meta.requireAuth) {
     // 没有 token ，则跳转至 登录页面
