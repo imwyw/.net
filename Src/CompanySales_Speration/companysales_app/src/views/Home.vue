@@ -18,7 +18,7 @@
     </el-header>
     <el-container>
       <!-- 侧边栏，二级导航 -->
-      <el-aside>
+      <el-aside width="auto">
         <el-menu
           :router="true"
           default-active="2-1"
@@ -40,7 +40,7 @@
         </el-menu>
       </el-aside>
       <el-main>
-        <router-view></router-view>
+        <router-view />
       </el-main>
     </el-container>
   </el-container>
