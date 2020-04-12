@@ -700,6 +700,8 @@ services.AddControllers()
     {
         // Use the default property (Pascal) casing
         set.SerializerSettings.ContractResolver = new DefaultContractResolver();
+        // 修改 json 序列号时时间格式
+        set.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
     });
 ```
 
