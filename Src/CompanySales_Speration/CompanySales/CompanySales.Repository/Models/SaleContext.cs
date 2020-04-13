@@ -1,4 +1,5 @@
 ﻿using System;
+using CompanySales.Repository.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -30,7 +31,10 @@ namespace CompanySales.Repository.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.;Database=CompanySales;Trusted_Connection=True;uid=sa;pwd=123456;");
+                //optionsBuilder.UseSqlServer("Server=.;Database=CompanySales;Trusted_Connection=True;uid=sa;pwd=123456;");
+                // 从配置中读取连接字符串
+                var connStr = ConfigHelper.GetConfig()["DbConfig:ConnectionString"];
+                optionsBuilder.UseSqlServer(connStr);
             }
         }
 
