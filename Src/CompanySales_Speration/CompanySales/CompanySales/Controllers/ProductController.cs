@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CompanySales.Repository.Business;
 using CompanySales.Repository.Models;
@@ -16,6 +17,13 @@ namespace CompanySales.Controllers
     [Authorize]// 控制器下所有 action 均需要认证
     public class ProductController : ControllerBase
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ProductController(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         /// <summary>
         /// 分页查询产品列表信息
         /// Postman 进行测试，需要设置 request body 设置 raw json格式
@@ -28,6 +36,7 @@ namespace CompanySales.Controllers
         public Pager<Product> GetList([FromBody]ProductParameter parameter)
         {
             var res = ProductBiz.GetListByPage(parameter);
+            var claims = _httpContextAccessor.HttpContext.User.Claims;
             return res;
         }
 

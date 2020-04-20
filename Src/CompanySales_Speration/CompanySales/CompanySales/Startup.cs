@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CompanySales.Repository.Business;
 using CompanySales.Repository.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +77,8 @@ namespace CompanySales
                     ValidateLifetime = true
                 };
             });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,6 +103,10 @@ namespace CompanySales
             {
                 endpoints.MapControllers();
             });
+
+            // …Ë÷√ MyHttpContext
+            var accessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+            MyHttpContext.Configure(accessor);
         }
     }
 }

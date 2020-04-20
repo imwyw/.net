@@ -49,6 +49,7 @@ namespace CompanySales.Repository.Business
 
         public static Pager<Product> GetListByPage(ProductParameter parameter)
         {
+            var res = MyHttpContext.Claims;
             return ProductDAO.GetListByPage(parameter);
         }
 

@@ -19,10 +19,14 @@ namespace CompanySales.Controllers
     [ApiController]
     public class SecurityController : ControllerBase
     {
-        public SecurityController(IConfiguration configuration)
+        private readonly IHttpContextAccessor HttpContextAccessor;
+
+        public SecurityController(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             // 注入configuration 配置，可以访问配置信息
             Configuration = configuration;
+
+            HttpContextAccessor = httpContextAccessor;
         }
         public IConfiguration Configuration { get; }
 
@@ -57,7 +61,8 @@ namespace CompanySales.Controllers
                 expires: DateTime.Now.AddMinutes(20),
                 claims: new Claim[] {
                     // 增加身份信息，此处设置角色为 Admin，与标签 [Authorize(Roles = "Admin")] 匹配
-                    new Claim(ClaimTypes.Role,user.Roles)
+                    new Claim(ClaimTypes.Role,user.Roles),
+                    new Claim("UserName",user.Name),
                 }
             );
 
