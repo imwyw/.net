@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CompanySales.Repository.Business;
+using CompanySales.Repository.Common;
 using CompanySales.Repository.Models;
 using CompanySales.Repository.Parameter;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +37,12 @@ namespace CompanySales.Controllers
         public Pager<Product> GetList([FromBody]ProductParameter parameter)
         {
             var res = ProductBiz.GetListByPage(parameter);
+            // 测试获取用户身份信息
             var claims = _httpContextAccessor.HttpContext.User.Claims;
+
+            // 测试写入日志信息
+            Log4Helper.Debug("控制器中调用GetList方法，调用者：" + MyHttpContext.UserName);
+
             return res;
         }
 

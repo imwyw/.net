@@ -1,4 +1,5 @@
-﻿using CompanySales.Repository.Models;
+﻿using CompanySales.Repository.Common;
+using CompanySales.Repository.Models;
 using CompanySales.Repository.Parameter;
 using System;
 using System.Collections.Generic;
@@ -77,6 +78,8 @@ namespace CompanySales.Repository.DAO
                 {
                     query = query.Where(t => t.ProductName.Contains(parameter.ProductName));
                 }
+
+                Log4Helper.Info("DAO层中写入日志信息：" + parameter.ProductName);
 
                 result.Total = query.Count();
                 result.Rows = query.OrderBy(t => t.ProductId)

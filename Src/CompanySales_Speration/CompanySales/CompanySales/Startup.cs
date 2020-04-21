@@ -82,7 +82,8 @@ namespace CompanySales
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env
+            , ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -107,6 +108,9 @@ namespace CompanySales
             // 设置 MyHttpContext
             var accessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             MyHttpContext.Configure(accessor);
+
+            // 设置日志处理，需要安装 Microsoft.Extensions.Logging.Log4Net.AspNetCore 包
+            loggerFactory.AddLog4Net();
         }
     }
 }
