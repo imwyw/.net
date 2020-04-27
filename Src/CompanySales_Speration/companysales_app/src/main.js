@@ -30,6 +30,10 @@ new Vue({
   created() {
     // 设置全局的 webapi url 基路径
     this.axios.defaults.baseURL = 'http://localhost:5000/api';
+    // 简单处理，拦截请求，添加token信息
+    if (localStorage.getItem('Token')) {
+      this.axios.defaults.headers.common['Authorization'] = `bearer ${localStorage.getItem('Token')}`;
+    }
   }
   // components: { App },
   // template: '<App/>'

@@ -63,6 +63,7 @@ export default {
                 this.$router.push({ name: "Home" });
                 // token 信息写入 localStorage 中
                 localStorage.setItem("Token", res.data.Data.Token);
+                
                 // 用户信息写入 cookie 中
                 this.$cookies.set("User", JSON.stringify(res.data.Data.User));
               } else {
