@@ -24,7 +24,7 @@ const router = new Router({
         },
         {
           path: '/ProductDetail', name: 'ProductDetail', component: ProductDetail,
-          meta: { requireAuth: true }// requireAuth 添加该字段，表示进入这个路由是需要登录的
+          meta: { requireAuth: false }// requireAuth 添加该字段，表示进入这个路由是需要登录的
         },
       ]
     },

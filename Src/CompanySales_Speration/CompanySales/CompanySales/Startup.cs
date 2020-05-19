@@ -93,6 +93,8 @@ namespace CompanySales
             // 按照规则名称应用跨域规则，必须在 UseRouting 前应用
             app.UseCors("global_cors");
 
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             // 管道中应用认证中间件

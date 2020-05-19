@@ -19,7 +19,7 @@ export default {
   },
   mounted() {
     this.axios
-      .post("/Product/GetList", {})
+      .post("/Product/GetList", {ProductName:"笔"})
       .then(res => {
         console.log(res);
         this.productList = res.data.Rows;

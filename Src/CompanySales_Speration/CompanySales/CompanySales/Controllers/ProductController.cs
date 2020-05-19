@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CompanySales.Model;
 using CompanySales.Repository.Business;
 using CompanySales.Repository.Common;
 using CompanySales.Repository.Models;
@@ -45,7 +46,6 @@ namespace CompanySales.Controllers
 
             return res;
         }
-
 
     }
 }
